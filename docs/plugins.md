@@ -339,33 +339,19 @@ To include arbitrary data output from your job, which will be automatically pass
 
 The format of the `data` object is freeform, and can contain whatever content you want.  Note that the above example is pretty-printed for display, but in practice all messages must be sent as single lines, so remember to compact your JSON when serializing it.
 
-Note that if you send multiple messages containing `data`, the top-level data object properties are shallow-merged (the latter prevails on duplicate keys).  Using this you can add data incrementally during a job run.
-
-As an advanced option, you can also incrementally *append to arrays* inside the `data` object using this syntax:
+Note that if you send multiple messages containing `data` within the same job, the top-level data object properties are shallow-merged (the latter prevails on duplicate keys).  Using this you can add data incrementally during a job run.  Additionally, if you are overwriting a top-level array with another array, it will be *concatenated* instead of replaced.  Example:
 
 ```json
-{
-	"xy": 1,
-	"push": {
-		"data.arr": [0, 1, 2]
-	}
-}
+{ "xy": 1, "data": { "arr": [0, 1, 2] } }
 ```
 
-This would append to an array named `arr` (it will be created if needed).  You can use simple `dot.path.notation` to access any array deep inside the data object.  
-
-Then, if you sent an additional message with another `push` on the same array like this:
+Then later, in the same job:
 
 ```json
-{
-	"xy": 1,
-	"push": {
-		"data.arr": [3, 4, 5]
-	}
-}
+{ "xy": 1, "data": { "arr": [3, 4, 5] } }
 ```
 
-The `arr` array would grow accordingly, and contain all 6 elements upon job completion.
+This would end up with `[0, 1, 2, 3, 4, 5]` in the final `arr` data array when the job completes.
 
 ##### Output Files
 
@@ -487,9 +473,9 @@ To update the [Workflow Data](workflows.md#sharing-data-between-all-nodes) for t
 }
 ```
 
-Note that the workflow data is shallow-merged, so you can specify a sparsely-populated object and it will only add / replace the included top-level properties.  If your job outputs multiple messages with `workflowData` they are all shallow-merged together.
+Note that the workflow data is shallow-merged, so you can specify a sparsely-populated object and it will only add / replace the included top-level properties.  If your job outputs multiple messages with `workflowData` they are all shallow-merged together.  Additionally, top-level arrays are concatenated when merging.
 
-The workflow data is only updated when the job completes.
+The workflow data is only updated in the parent workflow when the sub-job completes.
 
 ### Action Plugins
 
