@@ -2875,9 +2875,9 @@ Page.PageUtils = class PageUtils extends Page.Base {
 		return (''+csv).split(/\,\s*/).map( function(item) {
 			if (item.match(re)) {
 				var id = RegExp.$1;
-				return { id, title: item.replace(re, '').trim() };
+				return { id, title: item.replace(re, '').trim() || '(None)' };
 			}
-			else return { id: item, title: item };
+			else return { id: item, title: item || '(None)' };
 		} );
 	}
 	

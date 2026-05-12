@@ -1291,6 +1291,10 @@ app.extend({
 		// add aria roles and keyboard handlers to all buttons inside container
 		if (!sel) sel = '.button, .form_suffix_icon';
 		$cont.find(sel).attr({ role: 'button', tabindex: '0', onkeypress: 'app.buttonKey(this,event)' });
+		
+		// also menuize plugin / event params
+		if ($cont.hasClass('plugin_param_editor_cont')) SingleSelect.init( $cont.find('select') );
+		else SingleSelect.init( $cont.find('div.plugin_param_editor_cont select') );
 	},
 	
 	initAccessibility() {
