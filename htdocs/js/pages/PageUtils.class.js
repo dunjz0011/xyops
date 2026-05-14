@@ -2654,7 +2654,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 				
 				case 'select':
 					elem_value = (param.id in params) ? params[param.id] : param.value.replace(/\,.*$/, '').replace(/^.+\[([\w\-\.]+)\]\s*$/, '$1');
-					html += self.getFormMenu({ id: elem_id, value: elem_value, options: self.csvToMenuItems(param.value), disabled: elem_dis });
+					html += self.getFormMenuSingle({ id: elem_id, value: elem_value, options: self.csvToMenuItems(param.value), disabled: elem_dis, title: param.title });
 				break;
 				
 				case 'bucket':
@@ -2662,10 +2662,10 @@ Page.PageUtils = class PageUtils extends Page.Base {
 					if (bucket) {
 						elem_value = (param.id in params) ? params[param.id] : '';
 						var menu_opts = self.getBucketMenuItems(bucket.id, param.bucket_path, elem_id, elem_value);
-						html += self.getFormMenu({ id: elem_id, value: elem_value, options: menu_opts, disabled: elem_dis });
+						html += self.getFormMenuSingle({ id: elem_id, value: elem_value, options: menu_opts, disabled: elem_dis, title: param.title });
 					}
 					else {
-						html += self.getFormMenu({ id: elem_id, value: '', options: [ { id: '', title: "(Bucket Not Found)" } ], disabled: elem_dis });
+						html += self.getFormMenuSingle({ id: elem_id, value: '', options: [ { id: '', title: "(Bucket Not Found)" } ], disabled: elem_dis, title: param.title });
 					}
 				break;
 				
@@ -2688,7 +2688,14 @@ Page.PageUtils = class PageUtils extends Page.Base {
 						elem_value = tool.id;
 					}
 					
-					html += self.getFormMenu({ id: elem_id, value: elem_value, options: tools, disabled: elem_dis, onChange: `$P().changePluginParamTool('${plugin_id}','${param.id}',${explore})` });
+					html += self.getFormMenuSingle({ 
+						id: elem_id, 
+						value: elem_value, 
+						options: tools, 
+						disabled: elem_dis, 
+						title: param.title,
+						onChange: `$P().changePluginParamTool('${plugin_id}','${param.id}',${explore})` 
+					});
 					
 					html += `<fieldset id="fs_toolset_${plugin_id}_${param.id}" class="info_fieldset">`;
 					html += `<legend>${strip_html(tool.title)}</legend>`;
@@ -2730,7 +2737,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 			var $menu = $('#' + dom_id);
 			if (!$menu.length) return; // sanity
 			
-			$menu.html( render_menu_options( items, elem_value, false ) );
+			$menu.html( render_menu_options( items, elem_value, false ) ).trigger('change');
 		}); // api.get
 		
 		return [ { id: '', title: "..." } ];
@@ -5157,7 +5164,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 				
 				case 'select':
 					elem_value = (param.id in params) ? params[param.id] : param.value.replace(/\,.*$/, '').replace(/^.+\[([\w\-\.]+)\]\s*$/, '$1');
-					html += self.getFormMenu({ id: elem_id, value: elem_value, options: self.csvToMenuItems(param.value), disabled: elem_dis });
+					html += self.getFormMenuSingle({ id: elem_id, value: elem_value, options: self.csvToMenuItems(param.value), disabled: elem_dis, title: param.title });
 				break;
 				
 				case 'bucket':
@@ -5165,10 +5172,10 @@ Page.PageUtils = class PageUtils extends Page.Base {
 					if (bucket) {
 						elem_value = (param.id in params) ? params[param.id] : '';
 						var menu_opts = self.getBucketMenuItems(bucket.id, param.bucket_path, elem_id, elem_value);
-						html += self.getFormMenu({ id: elem_id, value: elem_value, options: menu_opts, disabled: elem_dis });
+						html += self.getFormMenuSingle({ id: elem_id, value: elem_value, options: menu_opts, disabled: elem_dis, title: param.title });
 					}
 					else {
-						html += self.getFormMenu({ id: elem_id, value: '', options: [ { id: '', title: "(Bucket Not Found)" } ], disabled: elem_dis });
+						html += self.getFormMenuSingle({ id: elem_id, value: '', options: [ { id: '', title: "(Bucket Not Found)" } ], disabled: elem_dis, title: param.title });
 					}
 				break;
 				
