@@ -4576,14 +4576,17 @@ Page.PageUtils = class PageUtils extends Page.Base {
 				
 				case 'select':
 					pairs.push([ 'Items', '(' + strip_html(param.value) + ')' ]);
+					if (param.multiple) nice_type += ' (Multi)';
 				break;
 				
 				case 'bucket':
 					pairs.push([ self.getNiceBucket(param.bucket_id) ]);
+					if (param.multiple) nice_type += ' (Multi)';
 				break;
 				
 				case 'system':
 					pairs.push([ self.getNiceSystemList(param.list_id) ]);
+					if (param.multiple) nice_type += ' (Multi)';
 				break;
 				
 				case 'toolset':
