@@ -1188,6 +1188,12 @@ In this fictional example, the toolset menu would show two tools: "Upload Files"
 
 Note that when all the parameter values are collected from the user, they are "flattened" into a single-level object.
 
+### Group
+
+Use the `group` control type to automatically group all controls below into a fieldset (a visual box).  The group will encompass all controls until the end of the parameter list, or until another group is defined.
+
+Groups are visual separators only, and do not change any functionality, parameter names, etc.
+
 ## Macro Expansion
 
 All Plugin Parameter string values support inline macro expansion using the common `{{ mustache }}` syntax.  Using this feature you can dynamically insert values into parameters from arbitrary data passed into the job from a previous job (connected workflow node or launched by action).  Here is how it works.  Imagine that a previous job completes, and outputs the following data:

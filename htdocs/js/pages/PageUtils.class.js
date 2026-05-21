@@ -2596,12 +2596,22 @@ Page.PageUtils = class PageUtils extends Page.Base {
 			explore_end = `</div><div class="form_suffix_icon mdi mdi-database-search-outline" title="Open Job Data Explorer..." onClick="$P().openJobDataExplorer(this)"></div></div>`;
 		}
 		
+		var in_group = false;
+		
 		plugin.params.forEach( function(param) {
 			var elem_id = 'fe_pp_' + plugin_id + '_' + param.id;
 			var elem_value = (param.id in params) ? params[param.id] : param.value;
 			var elem_dis = (param.locked && !app.isAdmin()) ? 'disabled' : undefined; 
 			var elem_icon = config.ui.control_type_icons[param.type];
 			if (param.type == 'hidden') return;
+			
+			if (param.type == 'group') {
+				if (in_group) html += `</fieldset>`;
+				html += `<fieldset class="info_fieldset">`;
+				html += `<legend>${strip_html(param.title)}</legend>`;
+				in_group = true;
+				return;
+			}
 			
 			if (param.type != 'checkbox') {
 				if (elem_dis) html += '<div class="info_label" style="color:var(--red)"><i class="mdi mdi-lock">&nbsp;</i>' + param.title + ' (Admin Locked)</div>';
@@ -2752,6 +2762,8 @@ Page.PageUtils = class PageUtils extends Page.Base {
 			
 			html += '</div>';
 		} ); // foreach param
+		
+		if (in_group) html += `</fieldset>`;
 		
 		return html;
 	}
@@ -3712,6 +3724,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 			var elem_icon = config.ui.control_type_icons[param.type];
 			var append_html = '';
 			if (param.type == 'hidden') return;
+			if (param.type == 'group') return;
 			
 			html += '<div>'; // grid unit
 			html += '<div class="info_label">' + (param.locked ? '<i class="mdi mdi-lock-outline">&nbsp;</i>' : '') + strip_html(param.title) + '</div>';
@@ -4531,6 +4544,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 			actions.push( '<button class="link" onClick="$P().editParam('+idx+')"><b>Edit</b></button>' );
 			actions.push( '<button class="link danger" onClick="$P().deleteParam('+idx+')"><b>Delete</b></button>' );
 			
+			var nice_id = item.id;
 			var nice_type = config.ui.control_type_labels[item.type];
 			var nice_icon = config.ui.control_type_icons[item.type];
 			var nice_label_icon = item.locked ? 'lock' : 'cube-outline';
@@ -4593,6 +4607,11 @@ Page.PageUtils = class PageUtils extends Page.Base {
 					if (param.data && param.data.tools && param.data.tools.length) pairs.push([ commify(param.data.tools.length) + " tools in set" ]);
 					else pairs.push([ "(No tools in set)" ]);
 				break;
+				
+				case 'group':
+					pairs.push([ '&nbsp;' ]);
+					nice_id = '&nbsp;';
+				break;
 			}
 			for (var idy = 0, ley = pairs.length; idy < ley; idy++) {
 				if (pairs[idy].length == 2) pairs[idy] = '<b>' + pairs[idy][0] + ':</b> ' + pairs[idy][1];
@@ -4602,7 +4621,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 			return [
 				'<div class="td_drag_handle" draggable="true" title="Drag to reorder"><i class="mdi mdi-menu"></i></div>',
 				'<div class="td_big nowrap"><button class="link" onClick="$P().editParam('+idx+')"><i class="mdi mdi-' + nice_label_icon + '"></i>' + item.title + '</button></div>',
-				'<div class="ellip mono">' + item.id + '</div>',
+				'<div class="ellip mono">' + nice_id + '</div>',
 				'<div class="ellip"><i class="mdi mdi-' + nice_icon + '">&nbsp;</i>' + nice_type + '</div>',
 				'<div class="ellip">' + pairs.join(', ') + '</div>',
 				'<div class="">' + actions.join(' | ') + '</div>'
@@ -4642,7 +4661,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 		var old_param = param;
 		
 		// prepare control type menu
-		var ctypes = (this.controlTypes || ['checkbox', 'code', 'json', 'hidden', 'select', 'bucket', 'system', 'text', 'textarea']).map (function(key) { 
+		var ctypes = (this.controlTypes || ['checkbox', 'code', 'json', 'hidden', 'select', 'bucket', 'system', 'text', 'textarea', 'group']).map (function(key) { 
 			return { 
 				id: key, 
 				title: config.ui.control_type_labels[key],
@@ -4655,6 +4674,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 		
 		// id
 		html += this.getFormRow({
+			id: 'd_epa_id',
 			label: 'Param ID:',
 			content: this.getFormText({
 				id: 'fe_epa_id',
@@ -4837,6 +4857,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 		
 		// caption
 		html += this.getFormRow({
+			id: 'd_epa_caption',
 			label: 'Caption:',
 			content: this.getFormTextarea({
 				id: 'fe_epa_caption',
@@ -4848,7 +4869,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 			caption: 'Optionally enter a caption for the parameter, which will be displayed below it.'
 		});
 		
-		// required
+		// multiple
 		html += this.getFormRow({
 			id: 'd_epa_multiple',
 			label: 'Menu Options:',
@@ -4891,8 +4912,10 @@ Page.PageUtils = class PageUtils extends Page.Base {
 			
 			// start a fresh param object so we don't taint the original on errors
 			param = {};
+			param.type = $('#fe_epa_type').val();
 			
 			param.id = $('#fe_epa_id').val().trim();
+			if (!param.id.length && (param.type == 'group')) param.id = get_short_id('d');
 			if (!param.id.length) return app.badField('#fe_epa_id', "The ID field is required.");
 			if (!param.id.match(/^[\w\-\.]+$/)) return app.badField('#fe_epa_id', `The ID field must contain only alphanumerics, underscore, dash and period.`);
 			if (!param.id.match(/^[A-Za-z_]/)) return app.badField('#fe_epa_id', `The ID field must begin with an alpha character or underscore.`);
@@ -4909,7 +4932,6 @@ Page.PageUtils = class PageUtils extends Page.Base {
 			param.title = strip_html( $('#fe_epa_title').val().trim() );
 			if (!param.title.length) return app.badField('#fe_epa_title', "The Title field is required.");
 			
-			param.type = $('#fe_epa_type').val();
 			param.caption = $('#fe_epa_caption').val();
 			param.locked = !!$('#fe_epa_locked').is(':checked');
 			
@@ -4980,6 +5002,13 @@ Page.PageUtils = class PageUtils extends Page.Base {
 					delete param.value;
 					delete param.locked;
 				break;
+				
+				case 'group':
+					delete param.required;
+					delete param.value;
+					delete param.locked;
+					delete param.caption;
+				break;
 			} // switch action.type
 			
 			if (param.type != 'text') delete param.variant;
@@ -5001,9 +5030,11 @@ Page.PageUtils = class PageUtils extends Page.Base {
 		var change_param_type = function(new_type) {
 			$('#d_epa_value_text, #d_epa_value_textarea, #d_epa_value_code, #d_epa_value_json, #d_epa_value_checkbox, #d_epa_value_select, #d_epa_value_hidden, #d_epa_value_toolset, #d_epa_bucket_id, #d_epa_bucket_path, #d_epa_list_id').hide();
 			$('#d_epa_value_' + new_type).show();
+			$('#d_epa_id').toggle( !new_type.match(/^(group)$/) );
+			$('#d_epa_caption').toggle( !new_type.match(/^(group)$/) );
 			$('#d_epa_required').toggle( !!new_type.match(/^(text|textarea|code)$/) );
 			$('#d_epa_text_variant').toggle( !!new_type.match(/^(text)$/) );
-			$('#d_epa_locked').toggle( !new_type.match(/^(toolset)$/) );
+			$('#d_epa_locked').toggle( !new_type.match(/^(toolset|group)$/) );
 			$('#d_epa_bucket_id, #d_epa_bucket_path').toggle( !!new_type.match(/^(bucket)$/) );
 			$('#d_epa_list_id').toggle( !!new_type.match(/^(system)$/) );
 			$('#d_epa_multiple').toggle( !!new_type.match(/^(select|bucket|system)$/) );
@@ -5284,12 +5315,22 @@ Page.PageUtils = class PageUtils extends Page.Base {
 			explore_end = `</div><div class="form_suffix_icon mdi mdi-database-search-outline" title="Open Job Data Explorer..." onClick="$P().openJobDataExplorer(this)"></div></div>`;
 		}
 		
+		var in_group = false;
+		
 		fields.forEach( function(param) {
 			var elem_id = 'fe_uf_' + param.id;
 			var elem_value = (param.id in params) ? params[param.id] : param.value;
 			var elem_dis = (param.locked && !app.isAdmin()) ? 'disabled' : undefined;
 			var elem_icon = config.ui.control_type_icons[param.type];
 			if (param.type == 'hidden') return;
+			
+			if (param.type == 'group') {
+				if (in_group) html += `</fieldset>`;
+				html += `<fieldset class="info_fieldset">`;
+				html += `<legend>${strip_html(param.title)}</legend>`;
+				in_group = true;
+				return;
+			}
 			
 			if (param.type != 'checkbox') {
 				if (elem_dis) html += '<div class="info_label" style="color:var(--red)"><i class="mdi mdi-lock">&nbsp;</i>' + param.title + ' (Admin Locked)</div>';
@@ -5406,6 +5447,8 @@ Page.PageUtils = class PageUtils extends Page.Base {
 			
 			html += '</div>';
 		} ); // foreach param
+		
+		if (in_group) html += `</fieldset>`;
 		
 		return html;
 	}
