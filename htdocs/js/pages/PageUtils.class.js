@@ -4609,8 +4609,8 @@ Page.PageUtils = class PageUtils extends Page.Base {
 				break;
 				
 				case 'group':
-					pairs.push([ '&nbsp;' ]);
-					nice_id = '&nbsp;';
+					pairs.push([ '-' ]);
+					nice_id = '-';
 				break;
 			}
 			for (var idy = 0, ley = pairs.length; idy < ley; idy++) {
