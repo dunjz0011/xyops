@@ -400,6 +400,11 @@ See [JobHookData](data.md#jobhookdata) and [AlertHookData](data.md#alerthookdata
 
 This section configures the multi-server subsystem.
 
+### multi.enable_version_checks
+<!-- Title: Enable Version Checks -->
+
+When set to `true`, xyOps will check for version updates of the core app, which will make external web requests to the Release Metadata URL.
+
 ### multi.list_url
 <!-- Title: Release Metadata URL -->
 
@@ -433,11 +438,6 @@ Default:
 { "rejectUnauthorized": false }
 ```
 
-### multi.enable_version_checks
-<!-- Title: Enable Version Checks -->
-
-When set to `true`, xyOps will automatically check for version updates of the core app, and display hints in the UI.
-
 
 
 ## satellite
@@ -445,6 +445,11 @@ When set to `true`, xyOps will automatically check for version updates of the co
 <!-- Type: Group -->
 
 This section configures xySat, our remote satellite agent.
+
+### satellite.enable_version_checks
+<!-- Title: Enable Version Checks -->
+
+When set to `true`, xyOps will check for version updates of the xySat app, which will make external web requests to the Release Metadata URL.
 
 ### satellite.list_url
 <!-- Title: Release Metadata URL -->
@@ -475,11 +480,6 @@ This number (seconds) sets the cache TTL for satellite release metadata and tarb
 <!-- Title: xySat Configuration -->
 
 This object contains web server and runtime settings for xySat; these options are passed along when managing or provisioning satellite nodes (defaults provided in the sample config).
-
-### satellite.enable_version_checks
-<!-- Title: Enable Version Checks -->
-
-When set to `true`, xyOps will automatically check for version updates of the xySat app, and display hints in the UI.
 
 
 
@@ -520,11 +520,6 @@ https://raw.githubusercontent.com/[id]/refs/tags/[version]/[filename]
 <!-- Title: Time-to-Live (seconds) -->
 
 This is the number of seconds to cache the marketplace metadata locally before re-fetching from origin.  The default is `3600` (one hour).
-
-### marketplace.enable_version_checks
-<!-- Title: Enable Version Checks -->
-
-When set to `true`, xyOps will automatically check for version updates of all installed marketplace plugins, and display hints in the UI.
 
 
 
@@ -671,6 +666,11 @@ Maximum size of job output to display inline on the details page (default: `5 MB
 <!-- Title: Hold Alt to Toggle -->
 
 Requires the user to hold the Opt/Alt key to toggle the `enabled` property of certain entities in the UI (prevents accidental clicks).
+
+### client.outdated_badges
+<!-- Title: Show Outdated Version Badges -->
+
+When set to `true`, will show a colored badge on sidebar sections for outdated software versions on the Conductors, Servers and Marketplace tabs.  Admin only.
 
 ### client.new_event_template
 <!-- Title: New Event Template -->

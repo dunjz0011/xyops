@@ -143,7 +143,6 @@
 		"enabled": true,
 		"metadata_url": "https://raw.githubusercontent.com/pixlcore/xyops-marketplace/refs/heads/main/marketplace.json",
 		"repo_url_template": "https://raw.githubusercontent.com/[id]/refs/tags/[version]/[filename]",
-		"enable_version_checks": true,
 		"ttl": 3600
 	},
 	
@@ -284,6 +283,7 @@
 		"max_menu_items": 1000,
 		"max_job_output": "5 MB",
 		"alt_to_toggle": false,
+		"outdated_badges": true,
 		
 		"new_event_template": { 
 			"id": "",
