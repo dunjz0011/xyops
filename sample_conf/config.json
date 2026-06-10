@@ -278,7 +278,6 @@
 		
 		"items_per_page": 50,
 		"alt_items_per_page": 25,
-		"events_per_page": 500,
 		"max_table_rows": 500,
 		"max_menu_items": 1000,
 		"api_timeout_ms": 10000,

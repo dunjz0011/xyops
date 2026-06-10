@@ -642,11 +642,6 @@ This number sets the default page size for list views and searches (default: `50
 
 This number sets the secondary page size for inline widgets and dropdown lists (default: `25`).
 
-### client.events_per_page
-<!-- Title: Events Per Page -->
-
-This number controls how many additional events are loaded per increment in the Events view (default: `500`).
-
 ### client.max_table_rows
 <!-- Title: Max Table Rows -->
 
