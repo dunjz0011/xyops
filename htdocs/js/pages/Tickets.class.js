@@ -667,13 +667,10 @@ Page.Tickets = class Tickets extends Page.PageUtils {
 		html += '</div>';
 		html += '<div class="box_content">';
 		
-		this.ticket = {
+		var ticket = this.ticket = deep_copy_object( merge_objects( {
 			status: "open",
-			username: app.username,
 			assignees: [],
-			// due: normalize_time( time_now() + (86400 * config.default_ticket_due_days), { hour:0, min:0, sec:0 } ),
 			due: 0,
-			id: "",
 			type: "change",
 			subject: "",
 			body: "",
@@ -682,7 +679,19 @@ Page.Tickets = class Tickets extends Page.PageUtils {
 			cc: [],
 			notify: [],
 			tags: []
-		};
+		}, app.config.new_ticket_template || {} ) );
+		
+		ticket.id = '';
+		ticket.username = app.username;
+		if (!ticket.due) ticket.due = 0;
+		
+		if (typeof(ticket.due) == 'string') {
+			ticket.due = get_seconds_from_text( ticket.due ) || 0;
+		}
+		if ((typeof(ticket.due) == 'number') && (ticket.due > 0) && (ticket.due < 315360000)) {
+			var due_date = this.formatDateTZ(app.epoch + ticket.due, '[yyyy]-[mm]-[dd]', config.tz);
+			ticket.due = this.parseDateTZ( due_date + ' 00:00:00', config.tz );
+		}
 		
 		html += this.get_ticket_edit_html();
 		

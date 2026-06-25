@@ -2358,6 +2358,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 		// ticket assignees
 		html += this.getFormRow({
 			id: 'd_nt_assignees',
+			label: 'Ticket Assignees:',
 			content: this.getFormMenuMulti({
 				id: 'fe_nt_assignees',
 				options: app.users.map( function(user) { return { id: user.username, title: user.full_name, icon: user.icon || 'account' }; } ),
@@ -2375,6 +2376,18 @@ Page.PageUtils = class PageUtils extends Page.Base {
 				id: 'fe_nt_tags',
 				options: app.tags,
 				values: action.ticket_tags || [],
+				// 'data-shrinkwrap': 1
+			})
+		});
+		
+		// ticket due
+		html += this.getFormRow({
+			id: 'd_nt_due_preset',
+			label: 'Ticket Due Date:',
+			content: this.getFormMenuSingle({
+				id: 'fe_nt_due_preset',
+				options: config.ui.new_ticket_dues,
+				value: '',
 				// 'data-shrinkwrap': 1
 			})
 		});
@@ -2476,6 +2489,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 					action.ticket_type = $('#fe_nt_type').val();
 					action.ticket_assignees = $('#fe_nt_assignees').val();
 					action.ticket_tags = $('#fe_nt_tags').val();
+					action.ticket_due = $('#fe_nt_due_preset').val();
 				break;
 				
 				case 'suspend':
@@ -2504,7 +2518,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 		} ); // Dialog.confirm
 		
 		var change_action_type = function(new_type) {
-			$('#d_eja_email, #d_eja_users, #d_eja_body, #d_eja_web_hook, #d_eja_web_hook_text, #d_eja_run_job, #d_eja_target_server, #d_eja_clear_alert, #d_eja_event_params, #d_eja_start_delay, #d_eja_channel, #d_eja_bucket, #d_eja_bucket_sync, #d_eja_bucket_glob, #d_nt_type, #d_nt_assignees, #d_nt_tags, #d_eja_tags, #d_eja_suspend_sources, #d_eja_plugin, #d_eja_plugin_params').hide();
+			$('#d_eja_email, #d_eja_users, #d_eja_body, #d_eja_web_hook, #d_eja_web_hook_text, #d_eja_run_job, #d_eja_target_server, #d_eja_clear_alert, #d_eja_event_params, #d_eja_start_delay, #d_eja_channel, #d_eja_bucket, #d_eja_bucket_sync, #d_eja_bucket_glob, #d_nt_type, #d_nt_assignees, #d_nt_tags, #d_nt_due_preset, #d_eja_tags, #d_eja_suspend_sources, #d_eja_plugin, #d_eja_plugin_params').hide();
 			
 			switch (new_type) {
 				case 'email':
@@ -2544,7 +2558,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 				break;
 				
 				case 'ticket':
-					$('#d_nt_type, #d_nt_assignees, #d_nt_tags').show();
+					$('#d_nt_type, #d_nt_assignees, #d_nt_tags, #d_nt_due_preset').show();
 				break;
 				
 				case 'suspend':
@@ -2595,7 +2609,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 		}); // event change
 		
 		MultiSelect.init( $('#fe_eja_users, #fe_nt_assignees, #fe_nt_tags, #fe_eja_tags, #fe_eja_suspend_sources') );
-		SingleSelect.init( $('#fe_eja_condition, #fe_eja_type, #fe_eja_event, #fe_eja_channel, #fe_eja_web_hook, #fe_eja_plugin, #fe_eja_bucket, #fe_eja_bucket_sync, #fe_nt_type') );
+		SingleSelect.init( $('#fe_eja_condition, #fe_eja_type, #fe_eja_event, #fe_eja_channel, #fe_eja_web_hook, #fe_eja_plugin, #fe_eja_bucket, #fe_eja_bucket_sync, #fe_nt_type, #fe_nt_due_preset') );
 		RelativeTime.init( $('#fe_eja_start_delay') );
 		
 		Dialog.autoResize();

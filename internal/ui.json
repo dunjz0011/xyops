@@ -331,6 +331,13 @@
 			"title": "Select tags to apply",
 			"placeholder": "Select tags to apply..."
 		},
+		"d_nt_due_preset": {
+			"label": "Due Date:",
+			"caption": "Optionally select the ticket due date (reminders are sent out after this)."
+		},
+		"fe_nt_due_preset": {
+			"title": "Select Due Date"
+		},
 		
 		"d_ete_scope": {
 			"label": "Test Scope:",
@@ -1484,6 +1491,26 @@
 		"created": "created ticket.",
 		"delete": "deleted comment."
 	},
+	
+	"new_ticket_dues": [
+		{ "id": "", "title": "(None)" },
+		{ "id": "1d", "title": "+1 Day" },
+		{ "id": "2d", "title": "+2 Days" },
+		{ "id": "3d", "title": "+3 Days" },
+		{ "id": "4d", "title": "+4 Days" },
+		{ "id": "5d", "title": "+5 Days" },
+		{ "id": "6d", "title": "+6 Days" },
+		{ "id": "7d", "title": "+1 Week" },
+		{ "id": "14d", "title": "+2 Weeks" },
+		{ "id": "21d", "title": "+3 Weeks" },
+		{ "id": "30d", "title": "+1 Month" },
+		{ "id": "60d", "title": "+2 Months" },
+		{ "id": "90d", "title": "+3 Months" },
+		{ "id": "120d", "title": "+4 Months" },
+		{ "id": "150d", "title": "+5 Months" },
+		{ "id": "180d", "title": "+6 Months" },
+		{ "id": "365d", "title": "+1 Year" }
+	],
 	
 	"new_hook_templates": [
 		{
