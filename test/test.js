@@ -39,8 +39,9 @@ module.exports = {
 		try { Tools.rimraf.sync('test/temp'); } catch(e) {;}
 		
 		// load suites
-		this.tests = this.tests.concat( 
+		this.tests = this.tests.concat(
 			require('./suites/test-initial.js').tests,
+			require('./suites/test-sso-google.js').tests,
 			require('./suites/test-buckets.js').tests,
 			require('./suites/test-categories.js').tests,
 			require('./suites/test-channels.js').tests,

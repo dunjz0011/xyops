@@ -37,7 +37,9 @@ Page.Login = class Login extends Page.Base {
 		// app.setHeaderTitle( '<i class="mdi mdi-login">&nbsp;</i>Login' );
 		app.setHeaderTitle( '' );
 		app.showSidebar(false);
-		
+
+		var show_google_sso = config.sso && config.sso.enabled && (config.sso.provider == 'google');
+		var show_local_login = !config.sso || (config.sso.allow_local_login !== false);
 		var html = '';
 		html += '<form action="post">';
 		
@@ -46,8 +48,15 @@ Page.Login = class Login extends Page.Base {
 			html += '<div class="dialog_intro">Enter the username and password associated with your ' + config.name + ' account.</div>';
 			html += '<div class="dialog_content">';
 			html += '<div class="box_content">';
-			
-				html += '<div style="height:20px;"></div>';
+
+				if (show_google_sso) {
+					html += '<div style="height:20px;"></div>';
+					html += '<center><div class="button primary" style="display:inline-block;" onClick="$P().doGoogleSSO()"><i class="mdi mdi-google">&nbsp;</i>' + encode_entities(config.sso.button_label || 'Sign in with Google') + '</div></center>';
+					if (show_local_login) html += '<div style="height:20px; border-bottom:1px solid var(--border-color);"></div>';
+				}
+
+				if (show_local_login) {
+					html += '<div style="height:20px;"></div>';
 				
 				// username
 				html += this.getFormRow({
@@ -73,17 +82,23 @@ Page.Login = class Login extends Page.Base {
 					}),
 					suffix: app.get_password_toggle_html()
 				});
-				
+				}
+				else {
+					html += '<div class="caption" style="text-align:center; margin-top:20px;">Local login is disabled by SSO configuration.</div>';
+				}
+
 			html += '</div>';
 			
-			html += '<div class="dialog_buttons">';
-				// if (config.free_accounts) {
-				// 	html += '<div class="button" onClick="$P().navCreateAccount()">Create Account...</div>';
-				// }
-				// html += '<div class="button mobile_hide" onClick="$P().cancelCreate()">Cancel</div>';
-				html += '<div class="button" onClick="$P().navPasswordRecovery()">Forgot Password...</div>';
-				html += '<div class="button primary" onClick="$P().doLogin()"><i class="mdi mdi-key">&nbsp;</i>Login</div>';
-			html += '</div>';
+			if (show_local_login) {
+				html += '<div class="dialog_buttons">';
+					// if (config.free_accounts) {
+					// 	html += '<div class="button" onClick="$P().navCreateAccount()">Create Account...</div>';
+					// }
+					// html += '<div class="button mobile_hide" onClick="$P().cancelCreate()">Cancel</div>';
+					html += '<div class="button" onClick="$P().navPasswordRecovery()">Forgot Password...</div>';
+					html += '<div class="button primary" onClick="$P().doLogin()"><i class="mdi mdi-key">&nbsp;</i>Login</div>';
+				html += '</div>';
+			}
 		
 		html += '</div>'; // box_content
 		html += '</div>'; // dialog_content
@@ -93,20 +108,26 @@ Page.Login = class Login extends Page.Base {
 		this.div.html( html ).buttonize();
 		
 		setTimeout( function() {
-			$( app.getPref('username') ? '#fe_login_password' : '#fe_login_username' ).focus();
-			
-			 $('#fe_login_username, #fe_login_password').keypress( function(event) {
-				if (event.keyCode == '13') { // enter key
-					event.preventDefault();
-					$P().doLogin();
-				}
-			} );
-			
+			if (show_local_login) {
+				$( app.getPref('username') ? '#fe_login_password' : '#fe_login_username' ).focus();
+
+				 $('#fe_login_username, #fe_login_password').keypress( function(event) {
+					if (event.keyCode == '13') { // enter key
+						event.preventDefault();
+						$P().doLogin();
+					}
+				} );
+			}
 		}, 1 );
 		
 		return true;
 	}
 	
+	doGoogleSSO() {
+		Dialog.showProgress(1.0, 'Redirecting to Google...');
+		window.location.href = '/api/app/google_sso_start';
+	}
+
 	doLogin() {
 		// attempt to log user in
 		var self = this;
