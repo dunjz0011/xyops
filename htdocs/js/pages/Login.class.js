@@ -51,7 +51,7 @@ Page.Login = class Login extends Page.Base {
 
 				if (show_google_sso) {
 					html += '<div style="height:20px;"></div>';
-					html += '<center><div class="button primary" style="display:inline-block;" onClick="$P().doGoogleSSO()"><i class="mdi mdi-google">&nbsp;</i>' + encode_entities(config.sso.button_label || 'Sign in with Google') + '</div></center>';
+					html += '<center><a class="google-sso-btn" href="javascript:void(0)" onClick="$P().doGoogleSSO()"><div class="google-sso-icon"></div><span class="google-sso-text">' + encode_entities(config.sso.button_label || 'Sign in with Google') + '</span></a></center>';
 					if (show_local_login) html += '<div style="height:20px; border-bottom:1px solid var(--border-color);"></div>';
 				}
 
