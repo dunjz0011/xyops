@@ -2,7 +2,7 @@ name: ptops
 
 services:
   ptops:
-    image: "${PTOPS_IMAGE:-dunjz00/ptops}:${PTOPS_IMAGE_TAG:-latest}"
+    image: "${PTOPS_IMAGE:-dungjz123/ptops}:${PTOPS_IMAGE_TAG:-latest}"
 
     container_name: ptops
     hostname: "${PTOPS_HOSTNAME:-ptops01}"
