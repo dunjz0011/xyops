@@ -146,7 +146,7 @@ Page.Plugins = class Plugins extends Page.PageUtils {
 	getNicePluginSource(plugin) {
 		// marketplace, stock, or user
 		if (plugin.marketplace) return '<span class="nowrap"><i class="mdi mdi-cart-variant"></i>Marketplace</span>';
-		else if (plugin.stock) return '<span class="nowrap"><i class="mdi mdi-rocket-launch-outline"></i>xyOps Default</span>';
+		else if (plugin.stock) return '<span class="nowrap"><i class="mdi mdi-rocket-launch-outline"></i>PTOps Default</span>';
 		else return this.getNiceUser(plugin.username, app.isAdmin());
 	}
 	
@@ -1032,7 +1032,7 @@ Page.Plugins = class Plugins extends Page.PageUtils {
 					value: plugin.id
 				}),
 				suffix: this.getFormIDCopier(),
-				caption: 'This is a unique ID for the plugin, used by the xyOps API.  It cannot be changed.'
+				caption: 'This is a unique ID for the plugin, used by the PTOps API.  It cannot be changed.'
 			});
 		}
 		

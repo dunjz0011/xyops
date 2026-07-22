@@ -135,7 +135,7 @@
 			"type": "event",
 			"kill": "parent",
 			"icon": "test-tube",
-			"notes": "The Test Plugin exists mainly to test xyOps, but it can also be useful for testing pieces of workflows.  It outputs sample data and optionally a sample file, which are passed to downstream events, if connected.  It can also simulate various job outcomes (success, fail, etc.).",
+			"notes": "The Test Plugin exists mainly to test PTOps, but it can also be useful for testing pieces of workflows.  It outputs sample data and optionally a sample file, which are passed to downstream events, if connected.  It can also simulate various job outcomes (success, fail, etc.).",
 			"modified": 1434125333,
 			"created": 1434125333,
 			"params": [
@@ -181,7 +181,7 @@
 			"params": [
 				{ "type":"select", "id":"method", "title":"Method", "value":"GET, HEAD, POST, PUT, DELETE" }, 
 				{ "type":"text", "id":"url", "title":"URL", "value":"https://", "required": true, "locked": true }, 
-				{ "type":"textarea", "id":"headers", "title":"Request Headers", "value":"User-Agent: xyOps/HTTP-Plugin" }, 
+				{ "type":"textarea", "id":"headers", "title":"Request Headers", "value":"User-Agent: PTOps/HTTP-Plugin" },
 				{ "type":"textarea", "id":"data", "title":"POST Data", "value":"" }, 
 				{ "type":"text", "variant":"number", "id":"timeout", "title":"Timeout (Seconds)", "value":"30" }, 
 				{ "type":"text", "variant":"number", "id":"idle_timeout", "title":"Idle Timeout (Seconds)", "value":"30" }, 
@@ -425,7 +425,7 @@
 			"method": "POST",
 			"headers": [
 				{ "name": "Content-Type", "value": "application/json" },
-				{ "name": "User-Agent", "value": "xyOps/WebHook" }
+				{ "name": "User-Agent", "value": "PTOps/WebHook" }
 			],
 			"body": "{\n\t\"text\": \"{{text}}\",\n\t\"content\": \"{{text}}\",\n\t\"message\": \"{{text}}\"\n}",
 			"timeout": 30,
@@ -895,7 +895,7 @@
 			{
 				"action": "printMessage",
 				"lines": [
-					"Welcome to xyOps!",
+					"Welcome to PTOps!",
 					"First time installing?  You should configure your settings in '/opt/xyops/conf/config.json'.",
 					"Then, to start the service, type: '/opt/xyops/bin/control.sh start'.",
 					"For full docs, please visit: http://github.com/pixlcore/xyops",

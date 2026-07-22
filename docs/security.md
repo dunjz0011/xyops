@@ -1,47 +1,47 @@
-# Security
+# Bảo Mật
 
-## Overview
+## Tổng Quan
 
-The xyOps team takes security very seriously. Due to the nature of how xyOps is installed on large server fleets a lot of decisions are made with security being the priority, and we always aim to implement security by design.
+Nhóm phát triển PTOps rất coi trọng vấn đề bảo mật. Do bản chất của việc PTOps được cài đặt trên các hạ tầng server quy mô lớn, nhiều quyết định được đưa ra với bảo mật là ưu tiên hàng đầu, và chúng tôi luôn hướng đến việc triển khai bảo mật ngay từ khâu thiết kế (security by design).
 
-## Coordinated vulnerability disclosure
+## Công bố lỗ hổng có phối hợp (Coordinated Vulnerability Disclosure)
 
-xyOps follows the [coordinated vulnerability disclosure](https://en.wikipedia.org/wiki/Coordinated_vulnerability_disclosure) model when dealing with security vulnerabilities. This was previously known as responsible disclosure. We strongly urge anyone reporting vulnerabilities to xyOps or any other project to follow this model as it is considered as a best practice by many in the security industry.
+PTOps áp dụng mô hình [công bố lỗ hổng có phối hợp](https://en.wikipedia.org/wiki/Coordinated_vulnerability_disclosure) khi xử lý các lỗ hổng bảo mật. Mô hình này trước đây được gọi là "responsible disclosure". Chúng tôi khuyến khích mạnh mẽ bất kỳ ai báo cáo lỗ hổng cho PTOps hoặc dự án khác nên tuân theo mô hình này, vì nó được xem là một thông lệ tốt (best practice) trong ngành bảo mật.
 
-If you believe you have identified a security vulnerability or security related bug with xyOps please make every effort to contact us privately using one of the contact options below. Please do not open an issue, do not notify us in public, and do not disclose this issue to third parties.
+Nếu bạn tin rằng mình đã phát hiện một lỗ hổng bảo mật hoặc lỗi liên quan đến bảo mật trong PTOps, vui lòng liên hệ với chúng tôi một cách riêng tư qua một trong các phương thức liên hệ dưới đây. Vui lòng không mở issue công khai, không thông báo công khai, và không tiết lộ vấn đề này cho bên thứ ba.
 
-Using this process helps ensure that users affected have an avenue to fixing the issue as close to the issue being made public as possible. This mitigates the increasing the attack surface (via improving attacker knowledge) for diligent administrators simply via the act of disclosing the security issue.
+Quy trình này giúp đảm bảo người dùng bị ảnh hưởng có cơ hội khắc phục vấn đề trước khi nó được công bố rộng rãi. Điều này giúp giảm thiểu việc mở rộng bề mặt tấn công (do cải thiện hiểu biết của kẻ tấn công) đối với các quản trị viên cẩn trọng, chỉ đơn giản qua hành động công khai lỗ hổng.
 
-## Contact Options
+## Các Phương Thức Liên Hệ
 
-Several contact options exist however it's important you specifically use a security contact method when reporting a security vulnerability or security related bug. These methods are clearly documented below.
+Có nhiều phương thức liên hệ khác nhau, tuy nhiên điều quan trọng là bạn cần sử dụng đúng phương thức liên hệ bảo mật khi báo cáo một lỗ hổng hoặc lỗi liên quan đến bảo mật. Các phương thức này được ghi rõ dưới đây.
 
 ### GitHub Security
 
-Users can utilize GitHub's security vulnerability system to privately [report a vulnerability](https://github.com/pixlcore/xyops/security/advisories/new). This is an easy method for users who have a GitHub account.
+Người dùng có thể sử dụng hệ thống báo cáo lỗ hổng bảo mật của GitHub để [báo cáo lỗ hổng](https://github.com/pixlcore/xyops/security/advisories/new) một cách riêng tư. Đây là cách dễ dàng cho người dùng đã có tài khoản GitHub.
 
 ### Email
 
-Users can utilize the [security@pixlcore.com](mailto:security@pixlcore.com) email address to privately report a vulnerability. This is an easy method of users who do not have a GitHub account.
+Người dùng có thể sử dụng địa chỉ email [security@pixlcore.com](mailto:security@pixlcore.com) để báo cáo lỗ hổng một cách riêng tư. Đây là cách dễ dàng cho người dùng không có tài khoản GitHub.
 
-This email account is only accessible by members of the core team for the purpose of disclosing security vulnerabilities and issues within the xyOps code base.
+Tài khoản email này chỉ có thể được truy cập bởi các thành viên trong nhóm nòng cốt (core team), với mục đích tiếp nhận báo cáo về các lỗ hổng và vấn đề bảo mật trong mã nguồn PTOps.
 
-## Process
+## Quy Trình
 
-1. The user privately reports a potential vulnerability.
-2. The report is acknowledged as received.
-3. The report is reviewed to ascertain if additional information is required. If it is required:
-   1. The user is informed that the additional information is required.
-   2. The user privately adds the additional information.
-   3. The process begins at step 3 again, proceeding to step 4 if the additional information provided is sufficient.
-4. The vulnerability is reproduced.
-5. The vulnerability is patched, and if possible the user reporting the bug is given access to a fixed binary, docker image, and git patch.
-6. The patch is confirmed to resolve the vulnerability.
-7. The fix is released and users are notified that they should update urgently.
-8. The [security advisory](https://github.com/pixlcore/xyops/security/advisories) is published when (whichever happens sooner):
-  - The CVE details are published by [MITRE](https://www.mitre.org/), [NIST](https://www.nist.gov/), etc.
-  - Roughly 7 days after users have been notified the update is available.
+1. Người dùng báo cáo riêng tư về một lỗ hổng tiềm ẩn.
+2. Báo cáo được xác nhận đã tiếp nhận.
+3. Báo cáo được xem xét để xác định có cần thêm thông tin hay không. Nếu cần:
+   1. Người dùng được thông báo rằng cần bổ sung thêm thông tin.
+   2. Người dùng bổ sung thêm thông tin một cách riêng tư.
+   3. Quy trình quay lại bước 3, và chuyển sang bước 4 nếu thông tin bổ sung đã đủ.
+4. Lỗ hổng được tái hiện (reproduce).
+5. Lỗ hổng được vá (patch), và nếu có thể, người báo cáo lỗi được cấp quyền truy cập vào bản binary đã sửa, docker image, và git patch.
+6. Bản vá được xác nhận đã khắc phục lỗ hổng.
+7. Bản sửa lỗi được phát hành và người dùng được thông báo cần cập nhật ngay.
+8. [Thông báo bảo mật (security advisory)](https://github.com/pixlcore/xyops/security/advisories) được công bố khi (điều nào xảy ra trước):
+  - Thông tin CVE được công bố bởi [MITRE](https://www.mitre.org/), [NIST](https://www.nist.gov/), v.v.
+  - Khoảng 7 ngày sau khi người dùng đã được thông báo rằng bản cập nhật đã có sẵn.
 
-## Credit
+## Ghi Nhận Công
 
-Users who report bugs will at their discretion (i.e. they do not have to be if they wish to remain anonymous) be credited for the discovery. Both in the [security advisory](https://github.com/pixlcore/xyops/security/advisories) and in our documentation.
+Người dùng báo cáo lỗi sẽ được ghi nhận công phát hiện theo quyết định của họ (nghĩa là họ không bắt buộc phải được ghi nhận nếu muốn giữ ẩn danh). Việc ghi nhận này xuất hiện cả trong [thông báo bảo mật](https://github.com/pixlcore/xyops/security/advisories) và trong tài liệu của chúng tôi.

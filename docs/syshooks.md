@@ -1,22 +1,22 @@
 # System Hooks
 
-## Overview
+## Tổng Quan
 
-System Hooks let you run custom background actions in response to global activity across xyOps. Activity includes user transactions (create/update/delete of objects, secret access), system events (servers connecting/disconnecting, conductor changes), and general notices (`notice`, `warning`, `error`, `critical`). Hook actions can fire a web hook, run a shell command, send email, and/or create a ticket.
+System Hooks cho phép bạn chạy các action tuỳ chỉnh ở nền để phản hồi hoạt động toàn hệ thống trong PTOps. Hoạt động bao gồm transaction của người dùng (tạo/sửa/xoá object, truy cập secret), sự kiện hệ thống (server kết nối/mất kết nối, thay đổi conductor), và các thông báo chung (`notice`, `warning`, `error`, `critical`). Hook action có thể gọi web hook, chạy lệnh shell, gửi email, và/hoặc tạo ticket.
 
-System Hooks are configured in `config.json` under the `hooks` object. Hook actions run in parallel and always in the background.
+System Hooks được cấu hình trong `config.json` dưới object `hooks`. Hook action chạy song song và luôn chạy ở nền.
 
-## Configuration
+## Cấu Hình
 
-Hooks are configured in the main `config.json` file (see `sample_conf/config.json`). By default, no hooks are defined:
+Hook được cấu hình trong file `config.json` chính (xem `sample_conf/config.json`). Theo mặc định, không có hook nào được định nghĩa:
 
 ```json
 "hooks": {}
 ```
 
-Each key under `hooks` is an activity type ID, and the value is an object describing one or more hook actions to run. You can combine actions within the same hook, and they will all fire.
+Mỗi key dưới `hooks` là một activity type ID, và giá trị là một object mô tả một hoặc nhiều hook action sẽ chạy. Bạn có thể kết hợp nhiều action trong cùng một hook, và tất cả sẽ chạy.
 
-Example configuration:
+Ví dụ cấu hình:
 
 ```json
 "hooks": {
@@ -37,32 +37,32 @@ Example configuration:
 }
 ```
 
-## Activity Type IDs
+## Activity Type ID
 
-- See [Activity.action](data.md#activity-action) for a list of all the activity type IDs you can attach global system hook actions to:
-- See [Activity](data.md#activity) for details on the activity payload format and common properties.
+- Xem [Activity.action](data.md#activity-action) để biết danh sách toàn bộ activity type ID mà bạn có thể gắn system hook action toàn cục vào:
+- Xem [Activity](data.md#activity) để biết chi tiết về định dạng payload activity và các thuộc tính chung.
 
-## Job and Alert Conditions
+## Điều Kiện Job và Alert
 
-All job actions also fire System Hooks, using a `job_` prefix on the action condition. Common examples include:
+Tất cả job action cũng kích hoạt System Hooks, sử dụng tiền tố `job_` trên điều kiện action. Các ví dụ phổ biến bao gồm:
 
-- `job_complete`: Any job completion (success or failure)
-- `job_success`: Successful completion
-- `job_error`: Any failed completion
-- `job_warning`: Completion with warning code
-- `job_critical`: Completion with critical code
-- `job_abort`: Job aborted by user or failure condition
+- `job_complete`: Bất kỳ job nào hoàn thành (thành công hoặc thất bại)
+- `job_success`: Hoàn thành thành công
+- `job_error`: Bất kỳ hoàn thành thất bại nào
+- `job_warning`: Hoàn thành với mã warning
+- `job_critical`: Hoàn thành với mã critical
+- `job_abort`: Job bị huỷ bởi người dùng hoặc điều kiện thất bại
 
-Tag-based job actions also emit hooks using the same `job_` prefix (for example, `job_tag:deploy`). See the "Action Conditions" section in [Actions](actions.md) for the full list of job and alert action conditions.
+Job action dựa trên tag cũng phát ra hook sử dụng cùng tiền tố `job_` (ví dụ, `job_tag:deploy`). Xem phần "Action Conditions" trong [Actions](actions.md) để biết danh sách đầy đủ điều kiện action của job và alert.
 
-Alert actions also fire System Hooks:
+Alert action cũng kích hoạt System Hooks:
 
 - `alert_new`
 - `alert_cleared`
 
-## Firehose Hook
+## Hook Firehose
 
-You can configure a catch-all hook using a `*` (asterisk) key. This fires for every activity type:
+Bạn có thể cấu hình một hook bắt-tất-cả bằng key `*` (dấu hoa thị). Nó sẽ kích hoạt cho mọi activity type:
 
 ```json
 "hooks": {
@@ -72,18 +72,18 @@ You can configure a catch-all hook using a `*` (asterisk) key. This fires for ev
 }
 ```
 
-## Hook Action Types
+## Các Loại Hook Action
 
-System Hooks support these action types. You can use any combination within a single hook, and all actions run in parallel.
+System Hooks hỗ trợ các loại action sau. Bạn có thể dùng bất kỳ kết hợp nào trong một hook, và tất cả action sẽ chạy song song.
 
 ### Web Hook
 
-You have two options for firing web hooks:
+Bạn có hai tuỳ chọn để gọi web hook:
 
-1. **Simple URL**: Specify a URL directly in `config.json`, and xyOps posts the activity payload as JSON.
-2. **Configured web hook**: Reference a web hook ID that is managed inside xyOps for full control over method, headers, body, and templating.
+1. **URL đơn giản**: Chỉ định URL trực tiếp trong `config.json`, và PTOps sẽ POST payload activity dạng JSON.
+2. **Web hook đã cấu hình**: Tham chiếu một web hook ID được quản lý bên trong PTOps để có toàn quyền kiểm soát method, header, body và templating.
 
-Simple URL example:
+Ví dụ URL đơn giản:
 
 ```json
 "hooks": {
@@ -93,7 +93,7 @@ Simple URL example:
 }
 ```
 
-Configured web hook example:
+Ví dụ web hook đã cấu hình:
 
 ```json
 "hooks": {
@@ -106,13 +106,13 @@ Configured web hook example:
 }
 ```
 
-For configured web hooks, see [Web Hooks](webhooks.md). Payloads are based on the [Activity](data.md#activity) format.
+Với web hook đã cấu hình, xem [Web Hooks](webhooks.md). Payload dựa trên định dạng [Activity](data.md#activity).
 
 ### Shell Exec
 
-The `shell_exec` action spawns a process and sends the activity payload to the command's STDIN. The payload is JSON on a single line (i.e. [xyOps Wire Protocol](xywp.md)).
+Action `shell_exec` khởi tạo một process và gửi payload activity vào STDIN của lệnh đó. Payload là JSON trên một dòng duy nhất (tức là [PTOps Wire Protocol](xywp.md)).
 
-Example:
+Ví dụ:
 
 ```json
 "hooks": {
@@ -122,13 +122,13 @@ Example:
 }
 ```
 
-The command always runs on the primary conductor server, so please use with extreme caution.  To debug these, grep for `System Shell Hook` in the the `/opt/xyops/logs/Action.log` log.  Increase your global [debug_level](config.md#debug_level) to `9` for more verbose logging.
+Lệnh luôn chạy trên server conductor chính, nên hãy sử dụng thật cẩn thận. Để debug, grep từ khoá `System Shell Hook` trong log `/opt/xyops/logs/Action.log`. Tăng [debug_level](config.md#debug_level) toàn cục lên `9` để log chi tiết hơn.
 
-### Send Email
+### Gửi Email
 
-The `email` action sends a generic activity summary email. It includes the activity summary, full payload (JSON), and any details if provided (common for `notice`, `warning`, `error`, `critical`). Multiple recipients may be specified as a comma-separated list.
+Action `email` gửi một email tóm tắt activity chung. Nó bao gồm tóm tắt activity, toàn bộ payload (JSON), và bất kỳ chi tiết nào nếu có (phổ biến với `notice`, `warning`, `error`, `critical`). Nhiều người nhận có thể được chỉ định dưới dạng danh sách phân tách bằng dấu phẩy.
 
-Example:
+Ví dụ:
 
 ```json
 "hooks": {
@@ -138,7 +138,7 @@ Example:
 }
 ```
 
-Note that to send emails for server alerts (a very common configuration) it is **much** better to use the [alert_universal_actions](config.md#alert_universal_actions) feature, which generates a proper alert-centric email (emails generated from system hooks are more generic).  Recommended configuration for global alert emails:
+Lưu ý rằng để gửi email cho alert server (một cấu hình rất phổ biến) thì tốt hơn **nhiều** khi dùng tính năng [alert_universal_actions](config.md#alert_universal_actions), tính năng này tạo ra một email tập trung vào alert đúng chuẩn (email tạo từ system hook chung hơn). Cấu hình khuyến nghị cho email alert toàn cục:
 
 ```json
 "alert_universal_actions": [
@@ -157,25 +157,11 @@ Note that to send emails for server alerts (a very common configuration) it is *
 ]
 ```
 
-The same goes for job failures.  If you want an email for all job failures, use the [job_universal_actions](config.md#job_universal_actions) feature instead, as it generates a more proper email for the specific action:
+Điều này cũng áp dụng cho job thất bại. Nếu bạn muốn gửi email cho tất cả job thất bại, dùng tính năng [job_universal_actions](config.md#job_universal_actions) thay thế, vì nó tạo ra email đúng chuẩn hơn cho job:
 
 ```json
 "job_universal_actions": {
 	"default": [
-		{
-			"enabled": true,
-			"hidden": false,
-			"condition": "error",
-			"type": "snapshot"
-		},
-		{
-			"enabled": true,
-			"condition": "error",
-			"type": "email",
-			"email": "oncall-pager@mycompany.com"
-		}
-	],
-	"workflow": [
 		{
 			"enabled": true,
 			"condition": "error",
@@ -186,11 +172,11 @@ The same goes for job failures.  If you want an email for all job failures, use 
 }
 ```
 
-### Create Ticket
+### Tạo Ticket
 
-The `ticket` action creates a ticket for the activity. Any ticket fields may be included here. See [Tickets](tickets.md) and the [Ticket](data.md#ticket) definition for field details.
+Action `ticket` tạo một ticket cho activity. Bất kỳ trường ticket nào cũng có thể được bao gồm ở đây. Xem [Tickets](tickets.md) và định nghĩa [Ticket](data.md#ticket) để biết chi tiết trường.
 
-Example:
+Ví dụ:
 
 ```json
 "hooks": {
@@ -203,9 +189,9 @@ Example:
 }
 ```
 
-Note that assigned tickets automatically send out an email to all assignees (assuming [tickets.email_enabled](config.md#tickets-email_enabled) is enabled), so this is yet another way to receive an email for specific activity reports.
+Lưu ý rằng ticket được gán tự động gửi email đến tất cả assignee (giả sử [tickets.email_enabled](config.md#tickets-email_enabled) được bật), vậy đây cũng là một cách khác để nhận email cho các báo cáo activity cụ thể.
 
-If you want to create an extremely loud and annoying ticket, set the `due` property to `today`, which will start sending out daily overdue reminders to all assignees:
+Nếu bạn muốn tạo một ticket cực kỳ ồn ào và khó chịu, đặt thuộc tính `due` thành `today`, việc này sẽ bắt đầu gửi nhắc nhở quá hạn hàng ngày đến tất cả assignee:
 
 ```json
 "hooks": {
@@ -219,11 +205,11 @@ If you want to create an extremely loud and annoying ticket, set the `due` prope
 }
 ```
 
-## Example Payloads
+## Ví Dụ Payload
 
-These are sample activity JSON payloads sent to shell exec and simple web hooks.  Note that in practice they are all compacted onto a single line.
+Đây là các payload JSON activity mẫu được gửi đến shell exec và web hook đơn giản. Lưu ý trong thực tế chúng đều được rút gọn thành một dòng duy nhất.
 
-Alert Fired (`alert_new`):
+Alert Đã Kích Hoạt (`alert_new`):
 
 ```json
 {
@@ -255,7 +241,7 @@ Alert Fired (`alert_new`):
 }
 ```
 
-Critical Error (`critical`):
+Lỗi Nghiêm Trọng (`critical`):
 
 ```json
 {
@@ -273,7 +259,7 @@ Critical Error (`critical`):
 }
 ```
 
-Secret Access (`secret_access`), meaning a user or API key decrypted a secret vault:
+Truy Cập Secret (`secret_access`), tức là một người dùng hoặc API key đã giải mã một secret vault:
 
 ```json
 {
@@ -312,7 +298,7 @@ Secret Access (`secret_access`), meaning a user or API key decrypted a secret va
 	"headers": {
 		"content-type": "application/json",
 		"accept-encoding": "gzip, deflate, br",
-		"user-agent": "xyOps Unit Tester",
+		"user-agent": "PTOps Unit Tester",
 		"content-length": "26",
 		"host": "localhost:6622",
 		"connection": "keep-alive"
@@ -328,7 +314,7 @@ Secret Access (`secret_access`), meaning a user or API key decrypted a secret va
 }
 ```
 
-State Update (`state_update`), meaning a user or API key toggled the main scheduler master switch:
+Cập Nhật Trạng Thái (`state_update`), tức là một người dùng hoặc API key đã chuyển đổi công tắc chính của scheduler:
 
 ```json
 {
@@ -342,7 +328,7 @@ State Update (`state_update`), meaning a user or API key toggled the main schedu
 	"headers": {
 		"content-type": "application/json",
 		"accept-encoding": "gzip, deflate, br",
-		"user-agent": "xyOps Unit Tester",
+		"user-agent": "PTOps Unit Tester",
 		"content-length": "48",
 		"host": "localhost:6622",
 		"connection": "keep-alive"
@@ -362,7 +348,7 @@ State Update (`state_update`), meaning a user or API key toggled the main schedu
 }
 ```
 
-Master Primary (`master_primary`), meaning a conductor server has taken over operations as primary:
+Conductor Chính (`master_primary`), tức là một server conductor đã tiếp nhận vai trò vận hành chính:
 
 ```json
 {
@@ -379,8 +365,8 @@ Master Primary (`master_primary`), meaning a conductor server has taken over ope
 }
 ```
 
-## Tips
+## Gợi Ý
 
-- Send email on `critical` to page on-call and include the activity details.
-- Use a configured web hook to notify incident systems like OpsGenie on `error` or `critical`.
-- Use a firehose hook to stream all activity into a log pipeline via `shell_exec`.
+- Gửi email khi có `critical` để page on-call và bao gồm chi tiết activity.
+- Dùng web hook đã cấu hình để thông báo cho hệ thống xử lý sự cố như OpsGenie khi có `error` hoặc `critical`.
+- Dùng hook firehose để đưa toàn bộ activity vào một pipeline log qua `shell_exec`.

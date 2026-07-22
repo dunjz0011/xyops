@@ -1,157 +1,157 @@
-# xyOps Privacy Policy
+# Chính Sách Bảo Mật PTOps
 
-**Last Updated:** March 22, 2026
+**Cập nhật lần cuối:** 22 Tháng 3, 2026
 
-PixlCore LLC ("PixlCore", "we", "us", or "our") respects your privacy. This Privacy Policy explains what information we collect, how we use it, and how we handle data in connection with the xyOps software and our website.
+PixlCore LLC ("PixlCore", "chúng tôi", hoặc "của chúng tôi") tôn trọng quyền riêng tư của bạn. Chính Sách Bảo Mật này giải thích thông tin nào chúng tôi thu thập, cách chúng tôi sử dụng nó, và cách chúng tôi xử lý dữ liệu liên quan đến phần mềm PTOps và website của chúng tôi.
 
-## 1. Overview
+## 1. Tổng Quan
 
-xyOps is self-hosted software.
+PTOps là phần mềm tự triển khai (self-hosted).
 
-PixlCore does not operate, host, or control Customer deployments of xyOps. By design, xyOps does not transmit data to PixlCore or any third party operated by PixlCore.
+PixlCore không vận hành, host, hoặc kiểm soát các triển khai PTOps của Khách hàng. Theo thiết kế, PTOps không truyền dữ liệu đến PixlCore hoặc bất kỳ bên thứ ba nào do PixlCore vận hành.
 
-## 2. Data Collected by xyOps Software
+## 2. Dữ Liệu Được Thu Thập Bởi Phần Mềm PTOps
 
-PixlCore does **not** collect, receive, store, or process any data from Customer installations of xyOps.
+PixlCore **không** thu thập, nhận, lưu trữ, hoặc xử lý bất kỳ dữ liệu nào từ các bản triển khai PTOps của Khách hàng.
 
-Specifically:
+Cụ thể:
 
-- xyOps does not include telemetry, analytics, or tracking
-- xyOps does not "call home" to PixlCore servers
-- xyOps does not transmit usage data, logs, or metrics to PixlCore
+- PTOps không bao gồm telemetry, phân tích (analytics), hoặc theo dõi (tracking)
+- PTOps không "gọi về" máy chủ của PixlCore
+- PTOps không truyền dữ liệu sử dụng, log, hoặc metric đến PixlCore
 
-All data processed by xyOps remains entirely within the Customer's own infrastructure.
+Tất cả dữ liệu được xử lý bởi PTOps vẫn hoàn toàn nằm trong hạ tầng riêng của Khách hàng.
 
-Customer is solely responsible for all data stored or processed within their deployment.
+Khách hàng hoàn toàn chịu trách nhiệm về tất cả dữ liệu được lưu trữ hoặc xử lý trong bản triển khai của họ.
 
-## 3. External Network Requests
+## 3. Các Yêu Cầu Mạng Bên Ngoài
 
-### 3.1 Software Updates
+### 3.1 Cập Nhật Phần Mềm
 
-xyOps may make outbound requests to third-party services (such as GitHub) to check for or download updates.
+PTOps có thể thực hiện các yêu cầu ra ngoài đến dịch vụ bên thứ ba (như GitHub) để kiểm tra hoặc tải xuống các bản cập nhật.
 
-- These requests are initiated by the Customer or system administrator
-- PixlCore does not receive or collect data from these requests
+- Các yêu cầu này được khởi xướng bởi Khách hàng hoặc quản trị viên hệ thống
+- PixlCore không nhận hoặc thu thập dữ liệu từ các yêu cầu này
 
-### 3.2 Marketplace Plugins
+### 3.2 Plugin Marketplace
 
-xyOps may support third-party or community-developed plugins ("Marketplace Plugins").
+PTOps có thể hỗ trợ các plugin do bên thứ ba hoặc cộng đồng phát triển ("Plugin Marketplace").
 
-- No Marketplace Plugins are installed by default
-- The Marketplace Plugin index is hosted entirely on GitHub, and only requested on-demand
-- Plugins, once installed, may make their own outbound network requests to external services
-- Such behavior is determined by the plugin itself, not PixlCore
-- Each plugin's documentation should describe its behavior
+- Không có Plugin Marketplace nào được cài đặt theo mặc định
+- Chỉ mục Plugin Marketplace được host hoàn toàn trên GitHub, và chỉ được yêu cầu theo nhu cầu
+- Plugin, sau khi được cài đặt, có thể thực hiện các yêu cầu mạng ra ngoài của riêng chúng đến các dịch vụ bên ngoài
+- Hành vi như vậy được xác định bởi plugin đó, không phải PixlCore
+- Tài liệu của mỗi plugin nên mô tả hành vi của nó
 
-PixlCore is not responsible for the data practices of third-party plugins.
+PixlCore không chịu trách nhiệm về các thực hành dữ liệu của plugin bên thứ ba.
 
-Customers should review plugin documentation before installing or using plugins.
+Khách hàng nên xem lại tài liệu của plugin trước khi cài đặt hoặc sử dụng plugin.
 
-## 4. Information Collected by PixlCore
+## 4. Thông Tin Được Thu Thập Bởi PixlCore
 
-PixlCore may collect limited information in the following contexts:
+PixlCore có thể thu thập thông tin hạn chế trong các trường hợp sau:
 
-### 4.1 Website Usage
+### 4.1 Sử Dụng Website
 
-When you visit our website, we may collect basic information such as:
+Khi bạn truy cập website của chúng tôi, chúng tôi có thể thu thập thông tin cơ bản như:
 
-- IP address
-- Browser type
-- Pages visited
+- Địa chỉ IP
+- Loại trình duyệt
+- Các trang đã truy cập
 
-This information is used for standard website operation, security, and analytics.
+Thông tin này được sử dụng cho việc vận hành website, an ninh, và phân tích tiêu chuẩn.
 
-### 4.2 Support and Communications
+### 4.2 Hỗ Trợ Và Liên Lạc
 
-If you contact us (e.g., via email):
+Nếu bạn liên hệ với chúng tôi (ví dụ: qua email):
 
-- We collect the information you provide
-- This may include your name, email address, company name, and message content
+- Chúng tôi thu thập thông tin bạn cung cấp
+- Điều này có thể bao gồm tên, địa chỉ email, tên công ty, và nội dung tin nhắn của bạn
 
-This information is used solely to respond to your request and provide support.
+Thông tin này chỉ được sử dụng để phản hồi yêu cầu của bạn và cung cấp hỗ trợ.
 
-### 4.3 Billing and Payments
+### 4.3 Thanh Toán Và Hoá Đơn
 
-When you purchase Support:
+Khi bạn mua Support:
 
-- Payment processing is handled by third-party providers (e.g. Polar.sh, Stripe)
-- PixlCore may receive billing-related information such as:
-  - Name
-  - Email address
-  - Company name
-  - Transaction details
+- Việc xử lý thanh toán được thực hiện bởi các nhà cung cấp bên thứ ba (ví dụ: Polar.sh, Stripe)
+- PixlCore có thể nhận thông tin liên quan đến thanh toán như:
+  - Tên
+  - Địa chỉ email
+  - Tên công ty
+  - Chi tiết giao dịch
 
-PixlCore does not store full payment card or bank details.
+PixlCore không lưu trữ thông tin đầy đủ về thẻ thanh toán hoặc thông tin ngân hàng.
 
-## 5. How We Use Information
+## 5. Cách Chúng Tôi Sử Dụng Thông Tin
 
-PixlCore uses collected information to:
+PixlCore sử dụng thông tin đã thu thập để:
 
-- Provide Support services
-- Process billing and manage subscriptions
-- Respond to inquiries
-- Improve our website and services
+- Cung cấp dịch vụ Support
+- Xử lý thanh toán và quản lý đăng ký
+- Phản hồi các yêu cầu
+- Cải thiện website và dịch vụ của chúng tôi
 
-We do not sell personal data.
+Chúng tôi không bán dữ liệu cá nhân.
 
-## 6. Data Sharing
+## 6. Chia Sẻ Dữ Liệu
 
-PixlCore does not share Customer data from xyOps installations (because we do not receive any).
+PixlCore không chia sẻ dữ liệu của Khách hàng từ các bản triển khai PTOps (vì chúng tôi không nhận bất kỳ dữ liệu nào).
 
-We may share limited information with:
+Chúng tôi có thể chia sẻ thông tin hạn chế với:
 
-- Payment processors (e.g., Stripe, Polar.sh)
-- Service providers necessary to operate our business
+- Các nhà xử lý thanh toán (ví dụ: Stripe, Polar.sh)
+- Các nhà cung cấp dịch vụ cần thiết để vận hành doanh nghiệp của chúng tôi
 
-These providers are only given the information necessary to perform their services.
+Các nhà cung cấp này chỉ được cung cấp thông tin cần thiết để thực hiện dịch vụ của họ.
 
-## 7. Data Retention
+## 7. Lưu Giữ Dữ Liệu
 
-We retain personal information only as long as necessary to:
+Chúng tôi chỉ lưu giữ thông tin cá nhân trong thời gian cần thiết để:
 
-- Provide services
-- Comply with legal obligations
-- Resolve disputes
+- Cung cấp dịch vụ
+- Tuân thủ các nghĩa vụ pháp lý
+- Giải quyết tranh chấp
 
-## 8. Data Security
+## 8. An Ninh Dữ Liệu
 
-We take reasonable measures to protect the information we collect.
+Chúng tôi thực hiện các biện pháp hợp lý để bảo vệ thông tin mà chúng tôi thu thập.
 
-However, Customers are responsible for securing their own infrastructure and data within their xyOps deployments.
+Tuy nhiên, Khách hàng chịu trách nhiệm bảo mật hạ tầng và dữ liệu riêng của họ trong các bản triển khai PTOps của họ.
 
-## 9. Your Rights
+## 9. Quyền Của Bạn
 
-Depending on your location, you may have rights to:
+Tùy thuộc vào vị trí của bạn, bạn có thể có quyền:
 
-- Access your personal data
-- Request correction or deletion
-- Object to certain processing
+- Truy cập dữ liệu cá nhân của bạn
+- Yêu cầu chỉnh sửa hoặc xoá
+- Phản đối một số hoạt động xử lý nhất định
 
-To exercise these rights, contact us at support@pixlcore.com.
+Để thực hiện các quyền này, liên hệ với chúng tôi tại support@pixlcore.com.
 
-## 10. Third-Party Services
+## 10. Dịch Vụ Bên Thứ Ba
 
-This Privacy Policy does not apply to third-party services, including:
+Chính Sách Bảo Mật này không áp dụng cho các dịch vụ bên thứ ba, bao gồm:
 
-- Marketplace Plugins
-- External APIs or services used by Customers
-- Payment processors
+- Plugin Marketplace
+- API hoặc dịch vụ bên ngoài được Khách hàng sử dụng
+- Nhà xử lý thanh toán
 
-Customers should review the privacy policies of those services.
+Khách hàng nên xem lại chính sách bảo mật của các dịch vụ đó.
 
-## 11. Children's Privacy
+## 11. Quyền Riêng Tư Của Trẻ Em
 
-xyOps is not intended for use by children under the age of 13, and we do not knowingly collect personal data from children.
+PTOps không nhằm mục đích sử dụng bởi trẻ em dưới 13 tuổi, và chúng tôi không cố ý thu thập dữ liệu cá nhân từ trẻ em.
 
-## 12. Changes to This Policy
+## 12. Thay Đổi Chính Sách Này
 
-We may update this Privacy Policy from time to time.
+Chúng tôi có thể cập nhật Chính Sách Bảo Mật này theo thời gian.
 
-All historical versions of this document are available online: https://github.com/pixlcore/xyops/blob/main/docs/privacy.md
+Tất cả các phiên bản trước đây của tài liệu này có sẵn trực tuyến: https://github.com/pixlcore/xyops/blob/main/docs/privacy.md
 
-Continued use of our website or services after changes constitutes acceptance of the updated policy.
+Việc tiếp tục sử dụng website hoặc dịch vụ của chúng tôi sau khi có thay đổi đồng nghĩa với việc chấp nhận chính sách đã cập nhật.
 
-## 13. Contact
+## 13. Liên Hệ
 
 ```
 PixlCore LLC

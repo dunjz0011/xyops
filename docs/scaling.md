@@ -1,76 +1,73 @@
 # Scaling
 
-## Overview
+## Tổng Quan
 
-Running xyOps in live production with lots of servers and/or lots of running jobs? Please read these best practices for scaling your deployment. This guide complements Self-Hosting -- start there first: see [Self-Hosting](hosting.md).
+Đang chạy PTOps trong production thực tế với nhiều server và/hoặc nhiều job đang chạy? Hãy đọc các phương pháp tốt nhất sau đây để mở rộng quy mô triển khai của bạn. Hướng dẫn này bổ sung cho Self-Hosting -- hãy bắt đầu từ đó trước: xem [Tự Triển Khai (Self-Hosting)](hosting.md).
 
-## Upgrade Hardware
+## Nâng Cấp Phần Cứng
 
-- CPU cores: xyOps is multi-process and highly concurrent. More cores help the scheduler, web server, storage I/O, and log compression run smoothly under load.
-- RAM: Add headroom for the Node.js heap, in-process caches, storage engine caches, and OS page cache. RAM directly improves cache hit rates and reduces disk/remote I/O.
-- Storage: Prefer fast SSD/NVMe for local Filesystem/SQLite and log archives. Ensure enough IOPS for parallel job logs, snapshots, and uploads.
-- Network: For large fleets, ensure good NIC throughput and low latency between conductors, workers, and shared storage. For multi-conductor production, place conductors close to both the JSON data store (Redis or Postgres) and the file store (S3 or S3-compatible).
-- OS limits: Increase file descriptor and process limits for busy nodes (e.g. `ulimit -n`, systemd Limits). Ensure swap is configured conservatively to avoid heap thrash.
+- CPU core: PTOps là đa tiến trình (multi-process) và có độ song song cao. Nhiều core hơn giúp scheduler, web server, storage I/O, và nén log chạy trơn tru dưới tải cao.
+- RAM: Thêm dư địa cho heap Node.js, cache trong tiến trình, cache của storage engine, và page cache của OS. RAM ảnh hưởng trực tiếp đến tỷ lệ cache hit và giảm I/O đĩa/remote.
+- Storage: Ưu tiên SSD/NVMe nhanh cho Filesystem/SQLite cục bộ và log archive. Đảm bảo đủ IOPS cho log job song song, snapshot, và upload.
+- Network: Với fleet lớn, đảm bảo throughput NIC tốt và độ trễ thấp giữa conductor, worker, và storage chia sẻ. Với production multi-conductor, đặt conductor gần cả JSON data store (Redis hoặc Postgres) và file store (S3 hoặc tương thích S3).
+- Giới hạn OS: Tăng giới hạn file descriptor và process cho các node bận rộn (ví dụ `ulimit -n`, systemd Limits). Đảm bảo swap được cấu hình cẩn trọng để tránh heap thrash.
 
-## Increase Node.js Memory
+## Tăng Bộ Nhớ Node.js
 
-xyOps honors the `NODE_MAX_MEMORY` environment variable to set Node's old-space heap size (default 4096 MB).
+PTOps tuân theo biến môi trường `NODE_MAX_MEMORY` để đặt kích thước heap old-space của Node (mặc định 4096 MB).
 
-- Example: `export NODE_MAX_MEMORY=8192` before starting xyOps (or `-e NODE_MAX_MEMORY=8192` for Docker).
-- Leave headroom for the OS, filesystem cache, and any external daemons. On an instance with 16 GB RAM, an 8-12 GB heap is typical depending on other workloads.
-- Monitor RSS vs. heap usage over time and adjust conservatively to avoid swapping.
+- Ví dụ: `export NODE_MAX_MEMORY=8192` trước khi khởi động PTOps (hoặc `-e NODE_MAX_MEMORY=8192` cho Docker).
+- Để lại dư địa cho OS, filesystem cache, và bất kỳ daemon ngoài nào. Trên instance có 16 GB RAM, heap 8-12 GB là điển hình tuỳ theo workload khác.
+- Theo dõi RSS so với heap usage theo thời gian và điều chỉnh cẩn trọng để tránh swap.
 
-## Increase Storage RAM Cache
+## Tăng RAM Cache Cho Storage
 
-xyOps uses [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage) and most engines support an in-memory cache for JSON records. Larger caches reduce round-trips to disk or network backends.
+PTOps dùng [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage) và hầu hết engine hỗ trợ cache trong bộ nhớ cho JSON record. Cache lớn hơn giảm số lần round-trip đến disk hoặc backend network.
 
-- Defaults: The sample config enables caches with `maxBytes` ≈ 100 MB and `maxItems` ≈ 100k for Filesystem and SQLite.
-- Recommendation: For large production installs, consider increasing 5-10× if you have RAM available, and then tune based on hit ratio and latency.
-- Where to set:
+- Mặc định: Config mẫu bật cache với `maxBytes` ≈ 100 MB và `maxItems` ≈ 100k cho Filesystem và SQLite.
+- Đề xuất: Với các cài đặt production lớn, xem xét tăng 5-10× nếu có RAM dư, sau đó tinh chỉnh dựa trên tỷ lệ hit và độ trễ.
+- Nơi cấu hình:
   - SQLite: `Storage.SQLite.cache.enabled`, `Storage.SQLite.cache.maxBytes`, `Storage.SQLite.cache.maxItems`.
   - Filesystem: `Storage.Filesystem.cache.enabled`, `...maxBytes`, `...maxItems`.
-  - S3: `Storage.S3.cache.enabled`, `...maxBytes`, `...maxItems` (useful to reduce S3 GETs).
-- See [Storage Engines](https://github.com/jhuckaby/pixl-server-storage#engines) for engine-specific details and considerations (e.g., what is cached, eviction policy, binary vs JSON behavior).
+  - S3: `Storage.S3.cache.enabled`, `...maxBytes`, `...maxItems` (hữu ích để giảm số lần GET S3).
+- Xem [Storage Engines](https://github.com/jhuckaby/pixl-server-storage#engines) để biết chi tiết và các lưu ý riêng theo engine (ví dụ cái gì được cache, chính sách eviction, hành vi binary vs JSON).
 
-## Disable QuickMon
+## Tắt QuickMon
 
-QuickMon sends lightweight metrics every second from all satellites. At large scale, per-second telemetry can add up. To reduce ingestion and WebSocket traffic, disable it:
+QuickMon gửi số liệu nhẹ mỗi giây từ tất cả satellite. Ở quy mô lớn, telemetry theo giây có thể tích tụ đáng kể. Để giảm tải ingest và traffic WebSocket, hãy tắt nó:
 
-- Set `satellite.config.quickmon_enabled` to `false` in your config. The setting is distributed to all servers automatically when they connect.
-- Minute-level monitoring remains enabled via `satellite.config.monitoring_enabled`.
+- Đặt `satellite.config.quickmon_enabled` thành `false` trong config của bạn. Cài đặt này được phân phối tự động đến tất cả server khi chúng kết nối.
+- Việc giám sát theo phút vẫn được bật thông qua `satellite.config.monitoring_enabled`.
 
-## Disable Job Network Monitoring
+## Tắt Giám Sát Network Trong Job
 
-For Linux servers with a large amount of open network connections, you may want to disable real-time network monitoring while jobs are running.  By default, xyOps Satellite will continuously monitor server resources including processes and network connections, while active jobs are running on the server.  This may add extra load on servers with tens of thousands of network connections.
+Với server Linux có số lượng lớn kết nối network đang mở, bạn có thể muốn tắt giám sát network thời gian thực trong khi job đang chạy. Theo mặc định, PTOps Satellite liên tục giám sát tài nguyên server bao gồm process và kết nối network, trong khi có job đang hoạt động trên server. Điều này có thể tạo thêm tải trên các server có hàng chục nghìn kết nối network.
 
-To disable network monitoring while jobs are running, set the `disable_job_network_io` property to `true` in the `/opt/xyops/satellite/config.json` file on your large servers:
+Để tắt giám sát network trong khi job đang chạy, đặt property `disable_job_network_io` thành `true` trong file `/opt/xyops/satellite/config.json` trên các server lớn của bạn:
 
 ```json
 "disable_job_network_io": true
 ```
 
-Or, you can set it globally in the main [satellite.config](config.md#satellite-config) object on your xyOps primary conductor server, which will automatically propagate out to all servers the next time they connect.
+Hoặc, bạn có thể đặt nó toàn cục trong object [satellite.config](config.md#satellite-config) trên server conductor chính của PTOps, và nó sẽ tự động lan truyền ra tất cả server vào lần kết nối tiếp theo của chúng.
 
-## Multi-Conductor Setups
+## Cài Đặt Multi-Conductor
 
-Multi-conductor requires shared external storage so all conductors see the same state. For live production, use a Hybrid storage setup with Redis or Postgres for JSON data, plus S3 or an S3-compatible service for files. Redis and Postgres support native storage transactions, so the database owns the commit or rollback decision if a conductor fails during a transaction.
+Multi-conductor yêu cầu storage ngoài dùng chung sao cho tất cả conductor thấy cùng trạng thái. Với production thực tế, dùng cài đặt Hybrid với Redis hoặc Postgres cho dữ liệu JSON, cùng S3 hoặc dịch vụ tương thích S3 cho file. Redis và Postgres hỗ trợ transaction storage gốc, nên database sẽ quyết định commit hoặc rollback nếu một conductor gặp lỗi giữa transaction.
 
-For details, see the [Storage Setup Guide](storage.md).
+Để biết chi tiết, xem [Hướng Dẫn Cài Đặt Storage](storage.md).
 
-### NFS Warning
+### Cảnh Báo NFS
 
-While it is possible to use the [Filesystem](https://github.com/jhuckaby/pixl-server-storage#local-filesystem) engine with an NFS mount, this is **only** recommended if used in conjunction with the [Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid) engine, where the Filesystem is set as the `binaryEngine` to store only files, and the `docEngine` is set to Redis or Postgres for JSON data.
+Mặc dù có thể dùng engine [Filesystem](https://github.com/jhuckaby/pixl-server-storage#local-filesystem) qua mount NFS chia sẻ cho nhiều conductor, chúng tôi **không khuyến nghị** điều này cho production.  NFS không đảm bảo tính nguyên tử (atomicity) hoặc khoá (locking) đủ mạnh cho các pattern ghi đồng thời của PTOps, và có thể dẫn đến race condition hoặc dữ liệu hỏng dưới tải cao.  Hãy dùng Redis/Postgres cho dữ liệu JSON và S3 cho file thay vì dựa vào NFS.
 
-The reason is, xyOps reads and writes thousands upon thousands of tiny key/value records as part of its [database system](https://github.com/jhuckaby/pixl-server-unbase), and this is *extremely* difficult for NFS to deal with at scale. Also, NFS does not provide native pixl-server-storage transactions, so it should not be the document store for multi-conductor production.
+## Sao Lưu Cơ Sở Dữ Liệu
 
-## Automated Backups
+Nếu bạn dùng engine SQLite, PTOps có thể tự động sao lưu file cơ sở dữ liệu theo định kỳ, giúp bạn phục hồi nhanh nếu có sự cố. Cấu hình trong `Storage.SQLite.backups` (mặc định giữ lại 7 bản gần nhất). Lưu ý các bản sao lưu sẽ khoá DB trong thời gian ngắn khi đang sao chép.
 
-- Use the nightly API export for critical data as described in [Self-Hosting: Daily Backups](hosting.md#daily-backups). Schedule via cron and store off-host.
-- SQLite engine: It can perform its own daily DB file backups during maintenance. Configure in `Storage.SQLite.backups` (defaults keep the most recent 7). Note backups lock the DB briefly while copying.
+## Lỗi Nghiêm Trọng (Critical Errors)
 
-## Critical Errors
-
-For critical errors (i.e. crashes and failed upgrades) you can configure a global [System Hook](syshooks.md) to send out an automated email for each one.  Set this in your `config.json` file, in the [hooks](config.md#hooks) object:
+Với các lỗi nghiêm trọng (ví dụ crash và nâng cấp thất bại) bạn có thể cấu hình một [System Hook](syshooks.md) toàn cục để tự động gửi email cho từng lỗi. Đặt cái này trong file `config.json` của bạn, trong object [hooks](config.md#hooks):
 
 ```json
 "hooks": {
@@ -80,7 +77,7 @@ For critical errors (i.e. crashes and failed upgrades) you can configure a globa
 }
 ```
 
-Or you can configure the hook to create a ticket (which in turn will email all the assignees):
+Hoặc bạn có thể cấu hình hook để tạo ticket (khi đó sẽ tự động email cho tất cả assignee):
 
 ```json
 "hooks": {
@@ -93,17 +90,17 @@ Or you can configure the hook to create a ticket (which in turn will email all t
 }
 ```
 
-See [System Hooks](syshooks.md) for more details.
+Xem [System Hooks](syshooks.md) để biết thêm chi tiết.
 
-## Monitoring Alert Emails
+## Email Alert Giám Sát
 
-For server monitor alerts, you may want to send out emails.  This can be set up at three different levels:
+Với alert giám sát server, bạn có thể muốn gửi email. Việc này có thể thiết lập ở ba cấp độ khác nhau:
 
-- At the alert level: You can edit individual alert definitions, and configure an email action for the important ones (e.g. "Low Memory" is a good one).
-- At the server group level: You can set default alert actions for all alerts in specific server groups (e.g. "Production Databases").
-- At the global configuration level.  See below...
+- Ở cấp độ alert: Bạn có thể sửa từng định nghĩa alert, và cấu hình action email cho những alert quan trọng (ví dụ "Low Memory" là một lựa chọn tốt).
+- Ở cấp độ server group: Bạn có thể đặt action alert mặc định cho tất cả alert trong các server group cụ thể (ví dụ "Production Databases").
+- Ở cấp độ cấu hình toàn cục. Xem bên dưới...
 
-You can add global "universal" alert actions in the [alert_universal_actions](config.md#alert_universal_actions) configuration object.  These will fire for **all** alerts.  Example:
+Bạn có thể thêm các action alert "universal" toàn cục trong object cấu hình [alert_universal_actions](config.md#alert_universal_actions). Các action này sẽ chạy cho **tất cả** alert. Ví dụ:
 
 ```json
 "alert_universal_actions": [
@@ -122,25 +119,25 @@ You can add global "universal" alert actions in the [alert_universal_actions](co
 ]
 ```
 
-## Security Checklist
+## Danh Sách Kiểm Tra Bảo Mật
 
-Harden your web entry point and xyOps config before going live:
+Củng cố điểm truy cập web và config PTOps của bạn trước khi go-live:
 
-- Configure Plugins to run as underprivileged users and/or groups (see [Plugin Credentials](#plugin-credentials)).
-- Restrict inbound IPs using [WebServer.whitelist](https://github.com/jhuckaby/pixl-server-web#whitelist) (supports CIDR). Only allow your corporate ranges and load balancers.
-- Limit valid Host headers/SNI via [WebServer.allow_hosts](https://github.com/jhuckaby/pixl-server-web#allow_hosts) to your production domains (e.g. `xyops.yourcompany.com`).
-- HTTPS: Enable [WebServer.https](https://github.com/jhuckaby/pixl-server-web#https), set cert/key paths, and consider [WebServer.https_force](https://github.com/jhuckaby/pixl-server-web#https_force) so HTTP redirects to HTTPS. If terminating TLS upstream, configure [WebServer.https_header_detect](https://github.com/jhuckaby/pixl-server-web#https_header_detect).
-- Upload limits: Reduce [WebServer.max_upload_size](https://github.com/jhuckaby/pixl-server-web#max_upload_size) from the default 1 GB to your expected maximums (also adjust per-feature limits in `client.*_upload_settings`).
-- Connection limits: Tune [WebServer.max_connections](https://github.com/jhuckaby/pixl-server-web#max_connections) and [WebServer.max_concurrent_requests](https://github.com/jhuckaby/pixl-server-web#max_concurrent_requests) to match instance capacity. Optionally set [WebServer.max_queue_length](https://github.com/jhuckaby/pixl-server-web#max_queue_length) and [WebServer.max_queue_active](https://github.com/jhuckaby/pixl-server-web#max_queue_active) to cap overload.
-- Timeouts: Consider [WebServer.socket_prelim_timeout](https://github.com/jhuckaby/pixl-server-web#socket_prelim_timeout), [WebServer.timeout](https://github.com/jhuckaby/pixl-server-web#timeout), [WebServer.request_timeout](https://github.com/jhuckaby/pixl-server-web#request_timeout), and [WebServer.keep_alive_timeout](https://github.com/jhuckaby/pixl-server-web#keep_alive_timeout) to mitigate slow-loris patterns and bound request durations.
-- Bind address: If running behind a proxy, set [WebServer.bind_address](https://github.com/jhuckaby/pixl-server-web#bind_address) appropriately and configure [WebServer.public_ip_offset](https://github.com/jhuckaby/pixl-server-web#public_ip_offset) to select the correct client IP from proxy headers.
-- Headers/CSP: Use [WebServer.uri_response_headers](https://github.com/jhuckaby/pixl-server-web#uri_response_headers) to enforce CSP, HSTS, and other security headers for HTML routes. 
-- Access control: Use [WebServer.default_acl](https://github.com/jhuckaby/pixl-server-web#default_acl) for private handlers and verify API keys/SSO policies. Lock down admin endpoints behind SSO where applicable.
-- Rotate your secret key every few months.  See [Secret Key Rotation](hosting.md#secret-key-rotation) for details.
+- Cấu hình Plugin chạy dưới các user và/hoặc group hạn chế quyền (xem [Plugin Credentials](#plugin-credentials)).
+- Giới hạn IP đầu vào bằng [WebServer.whitelist](https://github.com/jhuckaby/pixl-server-web#whitelist) (hỗ trợ CIDR). Chỉ cho phép các dải IP công ty và load balancer của bạn.
+- Giới hạn Host header/SNI hợp lệ qua [WebServer.allow_hosts](https://github.com/jhuckaby/pixl-server-web#allow_hosts) chỉ cho các domain production của bạn (ví dụ `xyops.yourcompany.com`).
+- HTTPS: Bật [WebServer.https](https://github.com/jhuckaby/pixl-server-web#https), đặt đường dẫn cert/key, và xem xét [WebServer.https_force](https://github.com/jhuckaby/pixl-server-web#https_force) để HTTP redirect sang HTTPS. Nếu terminate TLS ở phía trước, cấu hình [WebServer.https_header_detect](https://github.com/jhuckaby/pixl-server-web#https_header_detect).
+- Giới hạn upload: Giảm [WebServer.max_upload_size](https://github.com/jhuckaby/pixl-server-web#max_upload_size) từ mặc định 1 GB xuống mức tối đa dự kiến của bạn (cũng điều chỉnh giới hạn theo từng tính năng trong `client.*_upload_settings`).
+- Giới hạn kết nối: Tinh chỉnh [WebServer.max_connections](https://github.com/jhuckaby/pixl-server-web#max_connections) và [WebServer.max_concurrent_requests](https://github.com/jhuckaby/pixl-server-web#max_concurrent_requests) khớp với năng lực instance. Tuỳ chọn đặt [WebServer.max_queue_length](https://github.com/jhuckaby/pixl-server-web#max_queue_length) và [WebServer.max_queue_active](https://github.com/jhuckaby/pixl-server-web#max_queue_active) để chặn quá tải.
+- Timeout: Xem xét [WebServer.socket_prelim_timeout](https://github.com/jhuckaby/pixl-server-web#socket_prelim_timeout), [WebServer.timeout](https://github.com/jhuckaby/pixl-server-web#timeout), [WebServer.request_timeout](https://github.com/jhuckaby/pixl-server-web#request_timeout), và [WebServer.keep_alive_timeout](https://github.com/jhuckaby/pixl-server-web#keep_alive_timeout) để giảm thiểu pattern slow-loris và giới hạn thời gian request.
+- Bind address: Nếu chạy sau proxy, đặt [WebServer.bind_address](https://github.com/jhuckaby/pixl-server-web#bind_address) phù hợp và cấu hình [WebServer.public_ip_offset](https://github.com/jhuckaby/pixl-server-web#public_ip_offset) để chọn đúng IP client từ header proxy.
+- Header/CSP: Dùng [WebServer.uri_response_headers](https://github.com/jhuckaby/pixl-server-web#uri_response_headers) để áp CSP, HSTS, và các header bảo mật khác cho route HTML.
+- Kiểm soát truy cập: Dùng [WebServer.default_acl](https://github.com/jhuckaby/pixl-server-web#default_acl) cho handler riêng tư và xác minh chính sách API key/SSO. Khoá các endpoint admin sau SSO khi phù hợp.
+- Xoay secret key mỗi vài tháng. Xem [Xoay Secret Key](hosting.md#secret-key-rotation) để biết chi tiết.
 
-## Plugin Credentials
+## Thông Tin Xác Thực Plugin
 
-[xyOps Plugins](plugins.md) can be configured to run as any user and/or group, by specifying a UID / GID for each one.  However, you may also want to specify a set of default users / groups via the [default_plugin_credentials](config.md#default_plugin_credentials) configuration object.  Using this you can set defaults per each plugin type:
+[Plugin PTOps](plugins.md) có thể được cấu hình chạy dưới bất kỳ user và/hoặc group nào, bằng cách chỉ định UID / GID cho từng plugin. Tuy nhiên, bạn cũng có thể muốn chỉ định một bộ user/group mặc định qua object cấu hình [default_plugin_credentials](config.md#default_plugin_credentials). Dùng cái này bạn có thể đặt mặc định cho từng loại plugin:
 
 ```json
 "default_plugin_credentials": {
@@ -151,24 +148,24 @@ Harden your web entry point and xyOps config before going live:
 }
 ```
 
-Note that individual plugins can still specify their own UID/GID, which will override the defaults.  An exception is [Marketplace Plugins](marketplace.md), which explicitly **cannot** specify their own UID or GID, and will **always** use the default credentials you set in `default_plugin_credentials`.
+Lưu ý các plugin riêng lẻ vẫn có thể chỉ định UID/GID của riêng chúng, và sẽ ghi đè lên mặc định. Ngoại lệ là [Marketplace Plugin](marketplace.md), mà rõ ràng **không thể** chỉ định UID hoặc GID riêng, và sẽ **luôn luôn** dùng thông tin xác thực mặc định bạn đặt trong `default_plugin_credentials`.
 
-It should be noted that Docker-based Plugins, including the built-in [Docker Shell Plugin](plugins.md#docker-plugin), require elevated privileges in order to launch their containers.  If you plan on using Docker features in xyOps, please make sure your underprivileged user has read/write access to the Docker socket, or set those specific plugins to run as root.
+Cần lưu ý rằng Plugin dựa trên Docker, bao gồm [Docker Shell Plugin](plugins.md#docker-plugin) tích hợp sẵn, yêu cầu quyền cao hơn để khởi chạy container của chúng. Nếu bạn định dùng tính năng Docker trong PTOps, hãy đảm bảo user hạn chế quyền của bạn có quyền đọc/ghi vào Docker socket, hoặc đặt các plugin cụ thể đó chạy dưới quyền root.
 
-Note that Microsoft Windows doesn't have the concept of UIDs or GIDs, so Plugins on that platform will always run as administrator unless you specifically script them not to.  For example, you can launch a Powershell script as a different user given their credentials (which should be stored in a [Secret Vault](secrets.md)):
+Lưu ý Microsoft Windows không có khái niệm UID hoặc GID, nên Plugin trên nền tảng đó sẽ luôn chạy với quyền administrator trừ khi bạn cụ thể script để không làm vậy. Ví dụ, bạn có thể khởi chạy script Powershell dưới quyền một user khác bằng thông tin xác thực của họ (nên được lưu trong [Secret Vault](secrets.md)):
 
 ```powershell
-# Read credentials from environment variables (secret vault)
+# Đọc thông tin xác thực từ biến môi trường (secret vault)
 $username = $env:WIN_USERNAME
 $password = $env:WIN_PASSWORD
 
-# Convert password to SecureString
+# Chuyển password thành SecureString
 $secure = ConvertTo-SecureString $password -AsPlainText -Force
 
-# Build credential object
+# Xây dựng credential object
 $cred = New-Object System.Management.Automation.PSCredential ($username, $secure)
 
-# Launch child script as target user
+# Khởi chạy child script dưới user đích
 Start-Process powershell `
     -Credential $cred `
 	-LoadUserProfile `
@@ -177,32 +174,32 @@ Start-Process powershell `
     -Wait
 ```
 
-## Rate Limiting
+## Giới Hạn Tốc Độ (Rate Limiting)
 
-If you are using our [Multi-Conductor with Nginx](hosting.md#multi-conductor-with-nginx) or [Multi-Conductor with OAuth2-Proxy and TLS with Nginx](sso.md#multi-conductor-with-oauth2-proxy-and-tls-with-nginx) setups, consider adding on a rate limiting configuration.  To do this, add a new volume bind to the Nginx Docker container:
+Nếu bạn dùng cài đặt [Multi-Conductor với Nginx](hosting.md#multi-conductor-with-nginx) hoặc [Multi-Conductor với OAuth2-Proxy và TLS với Nginx](sso.md#multi-conductor-with-oauth2-proxy-and-tls-with-nginx), hãy xem xét thêm cấu hình giới hạn tốc độ. Để làm điều này, thêm một volume bind mới vào container Docker Nginx:
 
 ```
 -v ./limits.conf:/etc/nginx/conf.d/limits.conf:ro
 ```
 
-And in the `limits.conf` file on the host side, add a Nginx configuration like this:
+Và trong file `limits.conf` phía host, thêm cấu hình Nginx như sau:
 
 ```
 limit_req_zone $binary_remote_addr zone=req_per_ip:20m rate=100r/s;
 limit_req_status 429;
 ```
 
-This would limit traffic to 100 requests/sec per IP, utilizing up to 20MB of IP cache (around 300K IPs).  For more details see the [ngx_http_limit_req_module](https://nginx.org/en/docs/http/ngx_http_limit_req_module.html).
+Cái này sẽ giới hạn traffic ở 100 request/giây trên mỗi IP, dùng đến 20MB cache IP (khoảng 300K IP). Để biết thêm chi tiết xem [ngx_http_limit_req_module](https://nginx.org/en/docs/http/ngx_http_limit_req_module.html).
 
-## Additional Tuning Ideas
+## Ý Tưởng Tinh Chỉnh Thêm
 
-- Job throughput: Increase [max_jobs_per_min](config.md#max_jobs_per_min) prudently and monitor worker CPU/RAM. Align with your per-category limits and workflow constraints.
-- Data retention: Cap history sizes to prevent unbounded growth via the [db_maint](config.md#db_maint) `*.max_rows` properties (jobs, alerts, snapshots, activity, servers). Adjust to fit your storage budget.
-- Search concurrency: If you run frequent file searches, consider increasing [search_file_threads](config.md#search_file_threads) carefully (I/O bound; test first).
-- Logging: Disable verbose request or storage event logs in production unless actively debugging (`WebServer.log_requests`, `Storage.log_event_types`).
+- Throughput job: Tăng [max_jobs_per_min](config.md#max_jobs_per_min) một cách cẩn trọng và theo dõi CPU/RAM của worker. Đồng bộ với các limit theo category và ràng buộc workflow của bạn.
+- Lưu giữ dữ liệu: Giới hạn kích thước lịch sử để tránh tăng trưởng không kiểm soát qua các property `*.max_rows` trong [db_maint](config.md#db_maint) (job, alert, snapshot, activity, server). Điều chỉnh để phù hợp ngân sách storage của bạn.
+- Đồng thời khi search: Nếu bạn thực hiện search file thường xuyên, xem xét tăng [search_file_threads](config.md#search_file_threads) một cách cẩn trọng (bị ràng buộc bởi I/O; hãy test trước).
+- Logging: Tắt log request hoặc storage event chi tiết trong production trừ khi đang debug tích cực (`WebServer.log_requests`, `Storage.log_event_types`).
 
-## References
+## Tài Liệu Tham Khảo
 
-- [xyOps Self-Hosting Guide](hosting.md)
-- [xyOps Storage Setup Guide](storage.md)
-- [Web server documentation](https://github.com/jhuckaby/pixl-server-web)
+- [Hướng Dẫn Tự Triển Khai PTOps](hosting.md)
+- [Hướng Dẫn Cài Đặt Storage PTOps](storage.md)
+- [Tài liệu web server](https://github.com/jhuckaby/pixl-server-web)

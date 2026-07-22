@@ -1,57 +1,57 @@
-# Support Guide
+# Hướng Dẫn Hỗ Trợ
 
-## Premium Support
+## Hỗ Trợ Cao Cấp
 
-Sign up for a [xyOps Professional or Enterprise Plan](https://xyops.io/pricing) for premium support.
+Đăng ký [Gói PTOps Professional hoặc Enterprise](https://xyops.io/pricing) để nhận hỗ trợ cao cấp.
 
-## Video Tutorials
+## Video Hướng Dẫn
 
-Subscribe to our YouTube channel for video tutorials:
+Đăng ký kênh YouTube của chúng tôi để xem video hướng dẫn:
 
 https://www.youtube.com/@PixlCore-Media
 
 ## GitHub Discussions
 
-Have a question?  Post a topic on our GitHub Discussion Board:
+Có câu hỏi? Đăng chủ đề trên GitHub Discussion Board của chúng tôi:
 
 https://github.com/pixlcore/xyops/discussions
 
-## Reporting Bugs
+## Báo Cáo Lỗi
 
-To report a bug with xyOps, or request a new feature, please use GitHub Issues:
+Để báo cáo lỗi với PTOps, hoặc yêu cầu tính năng mới, vui lòng sử dụng GitHub Issues:
 
 https://github.com/pixlcore/xyops/issues
 
-Please search the existing issues first, to make sure your issue isn't already being worked on.
+Vui lòng tìm kiếm các issue hiện có trước, để đảm bảo vấn đề của bạn chưa được xử lý.
 
-## Security Issues
+## Vấn Đề Bảo Mật
 
-For reporting a security issue, please read our [Security Guide](security.md).
+Để báo cáo một vấn đề bảo mật, vui lòng đọc [Hướng dẫn Bảo mật](security.md) của chúng tôi.
 
-Please **do not** post security issues publicly -- contact us directly instead.
+Vui lòng **không** đăng công khai các vấn đề bảo mật -- hãy liên hệ trực tiếp với chúng tôi thay vào đó.
 
 ## Reddit
 
-Join our subreddit to get help from the xyOps community:
+Tham gia subreddit của chúng tôi để nhận hỗ trợ từ cộng đồng PTOps:
 
 https://reddit.com/r/xyOps/
 
 ## Discord
 
-Join our Discord server to chat with community members in real-time:
+Tham gia server Discord của chúng tôi để trò chuyện với các thành viên cộng đồng theo thời gian thực:
 
 https://discord.gg/FTzqmbGbdd
 
-## Social Media
+## Mạng Xã Hội
 
-Follow us on social media:
+Theo dõi chúng tôi trên mạng xã hội:
 
 - [Bluesky](https://pixlcore.bsky.social/)
 - [Mastodon](https://mastodon.social/@pixlcore)
 - [LinkedIn](https://linkedin.com/company/pixlcore)
 
-## RSS feed
+## Nguồn Cấp RSS
 
-Keep up with xyOps news via your favorite RSS reader:
+Cập nhật tin tức về PTOps qua trình đọc RSS ưa thích của bạn:
 
 https://pixlcore.com/feed.rss

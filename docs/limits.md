@@ -1,28 +1,28 @@
 # Limits
 
-## Overview
+## Tổng Quan
 
-Limits are self-imposed restrictions you can place on your events, to govern resource usage as the job runs, as well as specify options such as max number of retries, or max allowed jobs to queue up.  Limits can be defined at several different levels, including directly on events, attached as workflow nodes, inherited from categories, or inherited from your global configuration file (a.k.a "universal" limits).
+Limit là các hạn chế tự áp đặt mà bạn có thể đặt trên event của mình, để kiểm soát việc sử dụng tài nguyên trong khi job chạy, cũng như chỉ định các tuỳ chọn như số lần retry tối đa, hoặc số job tối đa được phép vào hàng đợi. Limit có thể được định nghĩa ở nhiều cấp độ khác nhau, bao gồm trực tiếp trên event, gắn vào workflow như node, kế thừa từ category, hoặc kế thừa từ file cấu hình toàn hệ thống của bạn (còn gọi là limit "universal").
 
-In some cases when multiple limits of the same type are present for a job, only one limit will apply.  This is true for [Max Concurrent Jobs](#max-concurrent-jobs), [Max Retry Limit](#max-retry-limit), [Max Queue Limit](#max-queue-limit), and [Max File Limit](#max-file-limit).  For these limits xyOps will pick the first enabled limit it finds of the selected type, with the limits presorted in this order:
+Trong một số trường hợp khi nhiều limit cùng loại xuất hiện cho một job, chỉ một limit sẽ được áp dụng. Điều này đúng với [Max Concurrent Jobs](#max-concurrent-jobs), [Max Retry Limit](#max-retry-limit), [Max Queue Limit](#max-queue-limit), và [Max File Limit](#max-file-limit). Đối với các limit này PTOps sẽ chọn limit đầu tiên được enable của loại được chọn, với các limit được sắp trước theo thứ tự này:
 
-- Event defined limits *(highest priority)*
-- Workflow limit nodes
-- Category inherited limits
-- Universal inherited limits *(lowest priority)*
+- Limit định nghĩa trên event *(ưu tiên cao nhất)*
+- Node limit của workflow
+- Limit kế thừa từ category
+- Limit kế thừa universal *(ưu tiên thấp nhất)*
 
-For other limit types, e.g. [Max Run Time](#max-run-time), [Max Output Size](#max-output-size), [Max CPU Limit](#max-cpu-limit) and [Max Memory Limit](#max-memory-limit), when multiple limits are present, all of them are applied.  For example, you may want to emit a warning when a job uses 500MB of memory, but abort the job if the memory usage reaches 1GB.  You can achieve this by adding two separate limits, and they will both be honored.
+Đối với các loại limit khác, ví dụ [Max Run Time](#max-run-time), [Max Output Size](#max-output-size), [Max CPU Limit](#max-cpu-limit) và [Max Memory Limit](#max-memory-limit), khi có nhiều limit cùng lúc, tất cả đều được áp dụng. Ví dụ, bạn có thể muốn phát cảnh báo khi job dùng 500MB memory, nhưng abort job nếu memory sử dụng đạt 1GB. Bạn có thể đạt được điều này bằng cách thêm hai limit riêng biệt, và cả hai sẽ được tuân theo.
 
-This document explains how limits work, where they are defined, precedence and inheritance, and details each limit type with parameters and examples.
+Tài liệu này giải thích cách limit hoạt động, nơi chúng được định nghĩa, thứ tự ưu tiên và kế thừa, và chi tiết từng loại limit với tham số và ví dụ.
 
-## Key Points
+## Điểm Chính
 
-- Limits apply to both events and workflows. Workflows are just events in this context and support all limit types.
-- Categories can define default limits that auto-inherit to all events in the category. Events can override category defaults.
-- Universal defaults can be set in the main config and auto-inherit to all jobs/workflows.
-- Resource limits for running jobs (time, log size, memory, CPU) can trigger additional actions such as applying tags, sending email, firing a web hook, taking a snapshot, and optionally aborting the job.
+- Limit áp dụng cho cả event và workflow. Workflow trong ngữ cảnh này chỉ là event và hỗ trợ tất cả loại limit.
+- Category có thể định nghĩa limit mặc định tự động kế thừa cho tất cả event trong category. Event có thể override giá trị mặc định của category.
+- Giá trị mặc định universal có thể được đặt trong config chính và tự động kế thừa cho tất cả job/workflow.
+- Limit tài nguyên cho job đang chạy (time, log size, memory, CPU) có thể kích hoạt các action bổ sung như gắn tag, gửi email, gọi web hook, chụp snapshot, và tuỳ chọn abort job.
 
-Minimal example (JSON):
+Ví dụ tối thiểu (JSON):
 
 ```json
 {
@@ -32,56 +32,56 @@ Minimal example (JSON):
 }
 ```
 
-## Where Limits Are Defined
+## Nơi Limit Được Định Nghĩa
 
-- **Event / Workflow** editor: Add limits directly to a specific job or workflow.
-- **Category** editor: Add default limits that all events in the category inherit.
-- **Configuration**: Add universal defaults in `job_universal_limits` for event jobs or only workflows.
+- **Trình chỉnh sửa Event / Workflow**: Thêm limit trực tiếp vào một job hoặc workflow cụ thể.
+- **Trình chỉnh sửa Category**: Thêm limit mặc định mà tất cả event trong category kế thừa.
+- **Configuration**: Thêm giá trị mặc định universal trong `job_universal_limits` cho event job hoặc chỉ workflow.
 
-## Scope, Inheritance, and Precedence
+## Phạm Vi, Kế Thừa, và Thứ Tự Ưu Tiên
 
-- All three sources can contribute limits: event/workflow, category, and universal.
-- Precedence is by source order when launching jobs:
-	- Event/workflow limits first (highest precedence)
-	- Category limits next
-	- Universal limits last
-- xyOps consults the first matching limit by `type` for start-time checks like Max Concurrent Jobs (`job`) and Max Queue (`queue`). 
-- For running resource checks (`time`, `log`, `mem`, `cpu`), multiple limits can exist, and they all apply, and can perform separate actions.
+- Cả ba nguồn đều có thể đóng góp limit: event/workflow, category, và universal.
+- Thứ tự ưu tiên theo nguồn khi khởi chạy job:
+	- Limit event/workflow trước (ưu tiên cao nhất)
+	- Limit category kế tiếp
+	- Limit universal cuối cùng
+- PTOps tham khảo limit khớp `type` đầu tiên cho các kiểm tra tại thời điểm khởi chạy như Max Concurrent Jobs (`job`) và Max Queue (`queue`).
+- Đối với kiểm tra tài nguyên khi đang chạy (`time`, `log`, `mem`, `cpu`), có thể có nhiều limit tồn tại, và tất cả đều áp dụng, và có thể thực hiện các action riêng.
 
-## Limit Object
+## Đối Tượng Limit
 
-All [Limit](data.md#limit) objects include these common properties:
+Tất cả object [Limit](data.md#limit) bao gồm các thuộc tính chung này:
 
-| Property | Type | Description |
+| Thuộc tính | Loại | Mô tả |
 |---------|------|-------------|
-| `enabled` | Boolean | Enable (`true`) or disable (`false`) the limit. |
-| `type` | String | Which limit to apply. See Limit Types below. |
+| `enabled` | Boolean | Bật (`true`) hoặc tắt (`false`) limit. |
+| `type` | String | Áp dụng loại limit nào. Xem Loại Limit dưới đây. |
 
-Additional properties are required based on the limit type.
+Các thuộc tính bổ sung được yêu cầu tuỳ theo loại limit.
 
-## Limit Types
+## Các Loại Limit
 
-The following limit types are available. Each section below describes behavior, parameters, and includes an example.
+Các loại limit sau đây có sẵn. Mỗi phần dưới đây mô tả hành vi, tham số, và có kèm ví dụ.
 
 ### Max Run Time
 
-Enforce a soft or hard cap on total job elapsed time. When exceeded, optional actions can be taken (tags, email, web hook, snapshot) and the job can be aborted.
+Áp đặt trần mềm hoặc cứng cho tổng thời gian chạy job. Khi vượt quá, các action tuỳ chọn có thể được thực hiện (tag, email, web hook, snapshot) và job có thể bị abort.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Loại | Bắt buộc | Mô tả |
 |------|------|----------|-------------|
-| `type` | String | Yes | Set to `time` for max run time. |
-| `duration` | Number | Yes | Maximum runtime in seconds. |
-| `tags` | Array(String) | Optional | Apply these [Tag.id](data.md#tag-id) values when exceeded. |
-| `users` | Array(String) | Optional | Email these [User.username](data.md#user-username) users. |
-| `email` | String | Optional | Additional comma-separated email addresses. |
-| `web_hook` | String | Optional | Fire this [WebHook.id](data.md#webhook-id) when exceeded. |
-| `text` | String | Optional | Custom text appended to the web hook message. |
-| `snapshot` | Boolean | Optional | Take a server snapshot when exceeded. |
-| `abort` | Boolean | Optional | Abort the job when exceeded. |
+| `type` | String | Có | Đặt là `time` cho max run time. |
+| `duration` | Number | Có | Thời gian chạy tối đa tính bằng giây. |
+| `tags` | Array(String) | Tuỳ chọn | Gắn các [Tag.id](data.md#tag-id) này khi vượt quá. |
+| `users` | Array(String) | Tuỳ chọn | Gửi email đến các [User.username](data.md#user-username) này. |
+| `email` | String | Tuỳ chọn | Danh sách địa chỉ email bổ sung, phân tách bằng dấu phẩy. |
+| `web_hook` | String | Tuỳ chọn | Gọi [WebHook.id](data.md#webhook-id) này khi vượt quá. |
+| `text` | String | Tuỳ chọn | Văn bản tuỳ chỉnh thêm vào message web hook. |
+| `snapshot` | Boolean | Tuỳ chọn | Chụp snapshot server khi vượt quá. |
+| `abort` | Boolean | Tuỳ chọn | Abort job khi vượt quá. |
 
-Example:
+Ví dụ:
 
 ```json
 {
@@ -100,23 +100,23 @@ Example:
 
 ### Max Concurrent Jobs
 
-Limit how many jobs of the same event/workflow may run at once. If the cap is reached, xyOps can queue the job if a `queue` limit allows it; otherwise the job is aborted.
+Giới hạn số job cùng loại event/workflow có thể chạy đồng thời. Nếu đạt trần, PTOps có thể vào hàng đợi job nếu limit `queue` cho phép; nếu không, job sẽ bị abort.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Loại | Bắt buộc | Mô tả |
 |------|------|----------|-------------|
-| `type` | String | Yes | Set to `job` for max concurrent jobs. |
-| `amount` | Number | Yes | Maximum number of concurrent active jobs for the event/workflow. |
-| `weight` | Number | No | Optional job weight, used in server targeting calculations. |
+| `type` | String | Có | Đặt là `job` cho max concurrent jobs. |
+| `amount` | Number | Có | Số job active đồng thời tối đa cho event/workflow. |
+| `weight` | Number | Không | Trọng số job tuỳ chọn, dùng trong tính toán target server. |
 
-Notes:
+Lưu ý:
 
-- Scope for workflows matches the workflow's event; for ad-hoc workflow node jobs, the queue scope includes the node ID.
-- Works in tandem with `queue`: without a queue, jobs are aborted when the limit is reached.
-- The optional `weight` is used to determine if a server can run the job.  See [Max Jobs Per Server](servers.md#max-jobs-per-server).
+- Phạm vi cho workflow khớp với event của workflow; đối với job node workflow ad-hoc, phạm vi hàng đợi bao gồm node ID.
+- Hoạt động cùng với `queue`: không có hàng đợi, job sẽ bị abort khi đạt limit.
+- `weight` tuỳ chọn được dùng để xác định server nào có thể chạy job. Xem [Max Jobs Per Server](servers.md#max-jobs-per-server).
 
-Example:
+Ví dụ:
 
 ```json
 {
@@ -128,23 +128,23 @@ Example:
 
 ### Max Output Size
 
-Cap the job's output/log size (bytes). When exceeded, optional actions can be taken and the job can be aborted.
+Giới hạn kích thước output/log của job (bytes). Khi vượt quá, các action tuỳ chọn có thể được thực hiện và job có thể bị abort.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Loại | Bắt buộc | Mô tả |
 |------|------|----------|-------------|
-| `type` | String | Yes | Set to `log` for max output size. |
-| `amount` | Number | Yes | Maximum bytes of output/log content. |
-| `tags` | Array(String) | Optional | Apply these tags when exceeded. |
-| `users` | Array(String) | Optional | Email these users. |
-| `email` | String | Optional | Additional comma-separated email addresses. |
-| `web_hook` | String | Optional | Fire this web hook. |
-| `text` | String | Optional | Custom text appended to the web hook message. |
-| `snapshot` | Boolean | Optional | Take a server snapshot when exceeded. |
-| `abort` | Boolean | Optional | Abort the job when exceeded. |
+| `type` | String | Có | Đặt là `log` cho max output size. |
+| `amount` | Number | Có | Số byte tối đa của nội dung output/log. |
+| `tags` | Array(String) | Tuỳ chọn | Gắn các tag này khi vượt quá. |
+| `users` | Array(String) | Tuỳ chọn | Gửi email đến các user này. |
+| `email` | String | Tuỳ chọn | Danh sách địa chỉ email bổ sung, phân tách bằng dấu phẩy. |
+| `web_hook` | String | Tuỳ chọn | Gọi web hook này. |
+| `text` | String | Tuỳ chọn | Văn bản tuỳ chỉnh thêm vào message web hook. |
+| `snapshot` | Boolean | Tuỳ chọn | Chụp snapshot server khi vượt quá. |
+| `abort` | Boolean | Tuỳ chọn | Abort job khi vượt quá. |
 
-Example:
+Ví dụ:
 
 ```json
 {
@@ -158,24 +158,24 @@ Example:
 
 ### Max Memory Limit
 
-Cap total memory usage for the job (including child processes). The limit triggers only if usage stays over the threshold continuously for the sustain duration. Optional actions can be taken and the job can be aborted.
+Giới hạn tổng lượng memory sử dụng cho job (bao gồm cả process con). Limit chỉ kích hoạt nếu mức sử dụng vượt ngưỡng liên tục trong khoảng thời gian duy trì (sustain). Các action tuỳ chọn có thể được thực hiện và job có thể bị abort.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Loại | Bắt buộc | Mô tả |
 |------|------|----------|-------------|
-| `type` | String | Yes | Set to `mem` for max memory limit. |
-| `amount` | Number | Yes | Maximum memory in bytes. |
-| `duration` | Number | Yes | Sustain time in seconds over the limit before triggering. |
-| `tags` | Array(String) | Optional | Apply these tags when exceeded. |
-| `users` | Array(String) | Optional | Email these users. |
-| `email` | String | Optional | Additional comma-separated email addresses. |
-| `web_hook` | String | Optional | Fire this web hook. |
-| `text` | String | Optional | Custom text appended to the web hook message. |
-| `snapshot` | Boolean | Optional | Take a server snapshot when exceeded. |
-| `abort` | Boolean | Optional | Abort the job when exceeded. |
+| `type` | String | Có | Đặt là `mem` cho max memory limit. |
+| `amount` | Number | Có | Memory tối đa tính bằng byte. |
+| `duration` | Number | Có | Thời gian duy trì (giây) vượt limit trước khi kích hoạt. |
+| `tags` | Array(String) | Tuỳ chọn | Gắn các tag này khi vượt quá. |
+| `users` | Array(String) | Tuỳ chọn | Gửi email đến các user này. |
+| `email` | String | Tuỳ chọn | Danh sách địa chỉ email bổ sung, phân tách bằng dấu phẩy. |
+| `web_hook` | String | Tuỳ chọn | Gọi web hook này. |
+| `text` | String | Tuỳ chọn | Văn bản tuỳ chỉnh thêm vào message web hook. |
+| `snapshot` | Boolean | Tuỳ chọn | Chụp snapshot server khi vượt quá. |
+| `abort` | Boolean | Tuỳ chọn | Abort job khi vượt quá. |
 
-Example:
+Ví dụ:
 
 ```json
 {
@@ -191,24 +191,24 @@ Example:
 
 ### Max CPU Limit
 
-Cap CPU usage for the job (including child processes). The limit triggers only if CPU stays over the threshold continuously for the sustain duration. Optional actions can be taken and the job can be aborted.
+Giới hạn mức sử dụng CPU cho job (bao gồm cả process con). Limit chỉ kích hoạt nếu CPU vượt ngưỡng liên tục trong khoảng thời gian duy trì. Các action tuỳ chọn có thể được thực hiện và job có thể bị abort.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Loại | Bắt buộc | Mô tả |
 |------|------|----------|-------------|
-| `type` | String | Yes | Set to `cpu` for max CPU limit. |
-| `amount` | Number | Yes | CPU percentage, where `100` equals one core fully utilized. |
-| `duration` | Number | Yes | Sustain time in seconds over the limit before triggering. |
-| `tags` | Array(String) | Optional | Apply these tags when exceeded. |
-| `users` | Array(String) | Optional | Email these users. |
-| `email` | String | Optional | Additional comma-separated email addresses. |
-| `web_hook` | String | Optional | Fire this web hook. |
-| `text` | String | Optional | Custom text appended to the web hook message. |
-| `snapshot` | Boolean | Optional | Take a server snapshot when exceeded. |
-| `abort` | Boolean | Optional | Abort the job when exceeded. |
+| `type` | String | Có | Đặt là `cpu` cho max CPU limit. |
+| `amount` | Number | Có | Phần trăm CPU, trong đó `100` bằng một core sử dụng hết công suất. |
+| `duration` | Number | Có | Thời gian duy trì (giây) vượt limit trước khi kích hoạt. |
+| `tags` | Array(String) | Tuỳ chọn | Gắn các tag này khi vượt quá. |
+| `users` | Array(String) | Tuỳ chọn | Gửi email đến các user này. |
+| `email` | String | Tuỳ chọn | Danh sách địa chỉ email bổ sung, phân tách bằng dấu phẩy. |
+| `web_hook` | String | Tuỳ chọn | Gọi web hook này. |
+| `text` | String | Tuỳ chọn | Văn bản tuỳ chỉnh thêm vào message web hook. |
+| `snapshot` | Boolean | Tuỳ chọn | Chụp snapshot server khi vượt quá. |
+| `abort` | Boolean | Tuỳ chọn | Abort job khi vượt quá. |
 
-Example:
+Ví dụ:
 
 ```json
 {
@@ -224,17 +224,17 @@ Example:
 
 ### Max Retry Limit
 
-Control how many retries are attempted for failed jobs, and optionally how long to wait between retries. On each retry, xyOps clones the job context, increments `retry_count`, and optionally delays before relaunch.
+Kiểm soát số lần retry được thử cho job thất bại, và tuỳ chọn thời gian chờ giữa các lần retry. Ở mỗi lần retry, PTOps sẽ nhân bản context của job, tăng `retry_count`, và tuỳ chọn trì hoãn trước khi chạy lại.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Loại | Bắt buộc | Mô tả |
 |------|------|----------|-------------|
-| `type` | String | Yes | Set to `retry` for max retry limit. |
-| `amount` | Number | Yes | Maximum number of retries to attempt. `0` disables retries. |
-| `duration` | Number | Optional | Delay in seconds between retries. |
+| `type` | String | Có | Đặt là `retry` cho max retry limit. |
+| `amount` | Number | Có | Số lần retry tối đa được thử. `0` tắt retry. |
+| `duration` | Number | Tuỳ chọn | Thời gian trì hoãn (giây) giữa các lần retry. |
 
-Example:
+Ví dụ:
 
 ```json
 {
@@ -247,16 +247,16 @@ Example:
 
 ### Max Queue Limit
 
-Cap how many jobs are allowed to wait in the queue when concurrency or server availability prevents immediate start. Without a queue limit, jobs are aborted when they cannot start due to `job` or server selection limits.
+Giới hạn số job được phép chờ trong hàng đợi khi concurrency hoặc khả năng đáp ứng của server ngăn việc bắt đầu ngay. Không có max queue limit, job sẽ bị abort khi không thể bắt đầu do limit `job` hoặc chọn server.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Loại | Bắt buộc | Mô tả |
 |------|------|----------|-------------|
-| `type` | String | Yes | Set to `queue` for max queue limit. |
-| `amount` | Number | Yes | Maximum number of queued jobs allowed. `0` disables queueing. |
+| `type` | String | Có | Đặt là `queue` cho max queue limit. |
+| `amount` | Number | Có | Số job trong hàng đợi tối đa được phép. `0` tắt hàng đợi. |
 
-Example:
+Ví dụ:
 
 ```json
 {
@@ -267,22 +267,22 @@ Example:
 ```
 
 > [!IMPORTANT]
-> If you include a max queue limit with a non-zero amount you must also include a [Max Concurrent Jobs](#max-concurrent-jobs) limit.
+> Nếu bạn thêm max queue limit với amount khác 0, bạn cũng phải thêm limit [Max Concurrent Jobs](#max-concurrent-jobs).
 
 ### Max File Limit
 
-Soft limit that prunes incoming files (from job input) before launch. It can cap the number of files, the total combined size, and restrict file types by extension. This limit never aborts the job; it prunes and logs what was removed.
+Limit mềm dùng để cắt bớt (prune) các file đến (từ input job) trước khi khởi chạy. Nó có thể giới hạn số lượng file, tổng kích thước kết hợp, và hạn chế loại file theo phần mở rộng. Limit này không bao giờ abort job; nó chỉ cắt bớt và ghi log những gì đã bị loại bỏ.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Loại | Bắt buộc | Mô tả |
 |------|------|----------|-------------|
-| `type` | String | Yes | Set to `file` for max file limit. |
-| `amount` | Number | Yes | Maximum number of input files allowed. `0` means **no** files permitted. |
-| `size` | Number | Optional | Maximum total combined size (bytes) for all files. |
-| `accept` | String | Optional | Comma-separated list of file extensions to allow (include the leading dot, case-insensitive), e.g. `.json,.csv`. |
+| `type` | String | Có | Đặt là `file` cho max file limit. |
+| `amount` | Number | Có | Số file input tối đa được phép. `0` nghĩa là **không** file nào được phép. |
+| `size` | Number | Tuỳ chọn | Tổng kích thước kết hợp tối đa (byte) cho tất cả file. |
+| `accept` | String | Tuỳ chọn | Danh sách phần mở rộng file được phép, phân tách bằng dấu phẩy (bao gồm dấu chấm đầu, không phân biệt hoa thường), ví dụ `.json,.csv`. |
 
-Example:
+Ví dụ:
 
 ```json
 {
@@ -296,17 +296,17 @@ Example:
 
 ### Max Daily Limit
 
-This limit will quietly prevent additional job launches if a specific daily condition count has been reached for the event.  For example, to cap the total number of jobs allowed per day for the event, set the condition to `complete` (fired for every job completion regardless of outcome).  To put an e-brake on critical errors, set the condition to `critical` and then set the amount accordingly.
+Limit này sẽ âm thầm ngăn việc khởi chạy job bổ sung nếu một số lượng điều kiện (condition count) cụ thể theo ngày đã đạt cho event. Ví dụ, để giới hạn tổng số job được phép mỗi ngày cho event, đặt condition là `complete` (kích hoạt cho mọi hoàn tất job bất kể kết quả). Để hãm phanh khẩn cấp cho lỗi nghiêm trọng (critical error), đặt condition là `critical` rồi đặt amount tương ứng.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Loại | Bắt buộc | Mô tả |
 |------|------|----------|-------------|
-| `type` | String | Yes | Set to `day` for max daily limit. |
-| `condition` | String | Yes | Which job [condition](data.md#action-condition) to track in the daily stats (e.g. `complete`). |
-| `amount` | Number | Yes | Maximum number of conditions allowed per day. |
+| `type` | String | Có | Đặt là `day` cho max daily limit. |
+| `condition` | String | Có | [Condition](data.md#action-condition) job nào cần theo dõi trong daily stats (ví dụ `complete`). |
+| `amount` | Number | Có | Số lượng condition tối đa được phép mỗi ngày. |
 
-Example:
+Ví dụ:
 
 ```json
 {
@@ -317,15 +317,15 @@ Example:
 }
 ```
 
-The daily metrics can be reset on the "System" tab in the UI.
+Các metrics theo ngày có thể được reset trên tab "System" trong UI.
 
-Note that manual job runs (i.e. by user or API key) skip over this check.
+Lưu ý rằng chạy job thủ công (tức là bởi user hoặc API key) sẽ bỏ qua kiểm tra này.
 
 ## Universal Limits
 
-Set universal defaults in the server config under [job_universal_limits](config.md#job_universal_limits). You can define separate arrays for `default` (regular events) and `workflow` limits. These are appended after category and event limits, so event/workflow settings take precedence.
+Đặt giá trị mặc định universal trong config server dưới [job_universal_limits](config.md#job_universal_limits). Bạn có thể định nghĩa các array riêng cho `default` (event thường) và `workflow` limit. Chúng được thêm vào sau limit category và event, nên cài đặt event/workflow sẽ được ưu tiên.
 
-Example:
+Ví dụ:
 
 ```json
 "job_universal_limits": {
@@ -337,12 +337,12 @@ Example:
 }
 ```
 
-## Notes and Behavior
+## Lưu Ý và Hành Vi
 
-- Start-time enforcement: `job`, `queue`, and `file` limits are evaluated before launch. `job`/`queue` determine whether a job runs now, queues, or aborts. `file` prunes input.
-- Runtime enforcement: `time`, `log`, `mem`, `cpu` are checked while the job runs. `mem` and `cpu` require sustained overages for their `duration` before triggering.
-- Triggered actions: For `time`, `log`, `mem`, `cpu`, when exceeded xyOps can apply tags, send emails, fire a web hook (with optional extra text), take a snapshot, and abort the job. All actions are recorded in the job's Activity log with details.
-- Multiple similar limits: If multiple sources define the same type, the event/workflow definition takes precedence for start-time checks.
-- Queues and scope: Queues are per event. For ad-hoc workflow node runs, the queue scope includes the node identifier to avoid cross-contending unrelated nodes. Queues are used both when `job` concurrency is saturated and when no matching servers are currently available.
+- Thực thi tại thời điểm khởi chạy: Limit `job`, `queue`, và `file` được đánh giá trước khi khởi chạy. `job`/`queue` xác định job chạy ngay, vào hàng đợi, hay abort. `file` cắt bớt input.
+- Thực thi khi đang chạy: `time`, `log`, `mem`, `cpu` được kiểm tra trong khi job chạy. `mem` và `cpu` yêu cầu vượt ngưỡng liên tục trong `duration` của chúng trước khi kích hoạt.
+- Action được kích hoạt: Đối với `time`, `log`, `mem`, `cpu`, khi vượt quá PTOps có thể gắn tag, gửi email, gọi web hook (kèm text bổ sung tuỳ chọn), chụp snapshot, và abort job. Tất cả action được ghi lại trong Activity log của job kèm chi tiết.
+- Nhiều limit tương tự: Nếu nhiều nguồn định nghĩa cùng loại, định nghĩa event/workflow được ưu tiên cho kiểm tra tại thời điểm khởi chạy.
+- Hàng đợi và phạm vi: Hàng đợi theo từng event. Đối với các lần chạy node workflow ad-hoc, phạm vi hàng đợi bao gồm định danh node để tránh tranh chấp lẫn nhau giữa các node không liên quan. Hàng đợi được dùng cả khi concurrency `job` đã đầy và khi hiện không có server phù hợp nào khả dụng.
 
-See also: [Limit](data.md#limit) and [Limit Types](data.md#limit-type) for the canonical data structure definitions.
+Xem thêm: [Limit](data.md#limit) và [Limit Types](data.md#limit-type) để biết định nghĩa cấu trúc dữ liệu chuẩn.

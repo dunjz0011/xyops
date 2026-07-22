@@ -1,125 +1,125 @@
-# Configuration
+# Cấu hình
 
-## Overview
+## Tổng quan
 
-xyOps is configured primarily by a single JSON file located here: `/opt/xyops/conf/config.json` (the location may vary for custom installs).
+PTOps được cấu hình chủ yếu thông qua một file JSON duy nhất nằm ở: `/opt/xyops/conf/config.json` (vị trí có thể thay đổi đối với các bản cài đặt tùy chỉnh).
 
-However, if the configuration is modified using the UI, overrides are saved in a separate file: `/opt/xyops/conf/overrides.json`
+Tuy nhiên, nếu cấu hình được sửa đổi bằng UI, các giá trị ghi đè sẽ được lưu trong một file riêng biệt: `/opt/xyops/conf/overrides.json`
 
-This document describes all the editable properties in the `config.json` file.
+Tài liệu này mô tả tất cả các thuộc tính có thể chỉnh sửa trong file `config.json`.
 
 <!-- Group: Global Settings -->
 
 ## base_app_url
-<!-- Title: Base App URL -->
+<!-- Title: URL ứng dụng cơ sở -->
 
-This string is the base URL of your xyOps instance (default: `http://localhost:5522`), and is used to build fully-qualified links in emails, alerts, tickets, and web hooks (e.g., job/ticket URLs and the logo URL in emails).
+Chuỗi này là URL cơ sở của instance PTOps của bạn (mặc định: `http://localhost:5522`), và được sử dụng để xây dựng các liên kết đầy đủ trong email, alert, ticket và webhook (ví dụ: URL của job/ticket và URL logo trong email).
 
 ## secret_key
 
-This string is a shared secret used to sign tokens (e.g., download links), authenticate multi-conductor messages, and encrypt/decrypt stored secrets -- set this to a long random value in production.
+Chuỗi này là một secret chung được sử dụng để ký các token (ví dụ: liên kết tải xuống), xác thực các thông điệp đa conductor, và mã hóa/giải mã các secret được lưu trữ -- hãy đặt giá trị này thành một chuỗi ngẫu nhiên dài trong môi trường production.
 
 ## temp_dir
-<!-- Title: Temp Dir Path -->
+<!-- Title: Đường dẫn thư mục tạm -->
 
-This string is the scratch directory for temporary files such as plugin bundles and staging uploads (default: `temp`).
+Chuỗi này là thư mục nháp cho các file tạm thời như các plugin bundle và các file upload đang chuẩn bị (mặc định: `temp`).
 
-If this is a relative path, it is computed from the xyOps base directory, which is typically `/opt/xyops`.
+Nếu đây là một đường dẫn tương đối, nó sẽ được tính từ thư mục gốc của PTOps, thông thường là `/opt/xyops`.
 
 ## pid_file
-<!-- Title: PID File Path -->
+<!-- Title: Đường dẫn file PID -->
 
-This string sets the path to the main process PID file for start/stop tooling (default: `logs/xyops.pid`).
+Chuỗi này thiết lập đường dẫn đến file PID của tiến trình chính để phục vụ các công cụ start/stop (mặc định: `logs/xyops.pid`).
 
-If this is a relative path, it is computed from the xyOps base directory, which is typically `/opt/xyops`.
+Nếu đây là một đường dẫn tương đối, nó sẽ được tính từ thư mục gốc của PTOps, thông thường là `/opt/xyops`.
 
 ## debug_level
-<!-- Title: Debug Log Level -->
+<!-- Title: Cấp độ log debug -->
 
-This number sets the verbosity level for the logger (default: `5`; 1 = quiet, 10 = very verbose).
+Số này thiết lập mức độ chi tiết cho logger (mặc định: `5`; 1 = im lặng, 10 = rất chi tiết).
 
 ## tick_precision_ms
-<!-- Title: Tick Precision (ms) -->
+<!-- Title: Độ chính xác Tick (ms) -->
 
-This number sets the internal timer precision in milliseconds used by the server framework for scheduling ticks (default: `50`).
+Số này thiết lập độ chính xác của bộ hẹn giờ nội bộ tính bằng mili giây được sử dụng bởi server framework để lập lịch cho các tick (mặc định: `50`).
 
-This controls how precise xyOps is when executing actions targeted on a specific second.  Lower values mean xyOps is more precise, but will result in heavier idle CPU usage.
+Điều này kiểm soát độ chính xác của PTOps khi thực thi các action được nhắm mục tiêu vào một giây cụ thể. Giá trị thấp hơn có nghĩa là PTOps chính xác hơn, nhưng sẽ dẫn đến việc sử dụng CPU lúc rảnh rỗi cao hơn.
 
 ## maintenance
-<!-- Title: Maintenance Schedule (HH:MM) -->
+<!-- Title: Lịch bảo trì (HH:MM) -->
 
-This string (in `HH:MM` format, server local time) schedules daily maintenance tasks such as DB trimming and log archival (default: `04:00`).
+Chuỗi này (ở định dạng `HH:MM`, theo giờ địa phương của server) lập lịch cho các tác vụ bảo trì hàng ngày như dọn dẹp DB và lưu trữ log (mặc định: `04:00`).
 
 ## ttl
-<!-- Title: API Time-to-Live (seconds) -->
+<!-- Title: API Time-to-Live (giây) -->
 
-This number (seconds) is the default HTTP cache TTL applied to selected API responses and static resources where applicable (default: `300`).
+Số này (tính bằng giây) là TTL bộ nhớ đệm HTTP mặc định được áp dụng cho các phản hồi API được chọn và các tài nguyên tĩnh nếu có (mặc định: `300`).
 
 ## file_expiration
-<!-- Title: File Expiration -->
+<!-- Title: Hết hạn file -->
 
-This duration string sets the default expiration for uploaded files (e.g., ticket attachments), used to compute per-file expiration timestamps (default: `5 years`).
+Chuỗi khoảng thời gian này thiết lập thời gian hết hạn mặc định cho các file được tải lên (ví dụ: file đính kèm ticket), được sử dụng để tính toán dấu thời gian hết hạn cho mỗi file (mặc định: `5 years`).
 
 ## timeline_expiration
-<!-- Title: Timeline Expiration -->
+<!-- Title: Hết hạn Timeline -->
 
-This duration string sets the retention for monitor timelines; older points are pruned during maintenance (default: `10 years`).
+Chuỗi khoảng thời gian này thiết lập thời gian lưu giữ cho các timeline monitor; các điểm dữ liệu cũ hơn sẽ bị cắt tỉa trong quá trình bảo trì (mặc định: `10 years`).
 
 ## ping_freq_sec
-<!-- Title: WebSocket Ping Frequency (seconds) -->
+<!-- Title: Tần suất Ping WebSocket (giây) -->
 
-This number (seconds) controls the interval for sending WebSocket pings to clients/workers (default: `5`).
+Số này (tính bằng giây) kiểm soát khoảng thời gian gửi ping WebSocket tới các client/worker (mặc định: `5`).
 
 ## ping_timeout_sec
-<!-- Title: WebSocket Timeout (seconds) -->
+<!-- Title: Timeout WebSocket (giây) -->
 
-This number (seconds) is the max allowed time without a pong before a socket is considered timed out (default: `30`).
+Số này (tính bằng giây) là thời gian tối đa cho phép mà không nhận được pong trước khi một socket bị coi là quá thời gian chờ (timeout) (mặc định: `30`).
 
 ## max_jobs_per_min
-<!-- Title: Max Jobs Per Minute -->
+<!-- Title: Số job tối đa mỗi phút -->
 
-This number sets a global rate limit on job starts per minute (default: `100`); additional jobs are prevented from launching.
+Số này thiết lập giới hạn tỷ lệ toàn cục đối với số job bắt đầu mỗi phút (mặc định: `100`); các job vượt quá giới hạn sẽ bị ngăn không cho khởi chạy.
 
-This is designed as a runaway e-brake mechanism, to prevent an erroneous workflow configuration from bringing down the entire system.
+Lớp này được thiết kế như một cơ chế phanh khẩn cấp để ngăn chặn cấu hình workflow bị lỗi làm sập toàn bộ hệ thống.
 
 ## max_jobs_per_workflow
-<!-- Title: Max Jobs Per Workflow -->
+<!-- Title: Số job tối đa mỗi workflow -->
 
-This number sets a global limit on the number of sub-jobs allowed per workflow run (default: `1000`).  Additional jobs are prevented from launching, and the workflow is aborted.
+Số này thiết lập giới hạn toàn cục cho số lượng sub-job tối đa được phép trên mỗi lượt chạy workflow (mặc định: `1000`). Các job bổ sung sẽ bị ngăn chặn khởi chạy, và workflow sẽ bị hủy bỏ (abort).
 
 ## dead_job_timeout
-<!-- Title: Dead Job TImeout (seconds) -->
+<!-- Title: Timeout job chết (giây) -->
 
-This number (in seconds) determines when a running job with no updates is considered dead and aborted (default: `120`).
+Số này (tính bằng giây) xác định thời điểm một job đang chạy không có cập nhật được coi là đã chết và bị hủy bỏ (mặc định: `120`).
 
 ## stale_alert_timeout
-<!-- Title: Stale Alert Timeout (seconds) -->
+<!-- Title: Timeout alert cũ (giây) -->
 
-This number (in seconds) determines when stale alerts are cleared.  Stale alerts occur when a server disconnects with active alerts attached.
+Số này (tính bằng giây) xác định thời điểm các alert cũ bị xóa sạch. Alert cũ xảy ra khi một server ngắt kết nối với các alert đang hoạt động được đính kèm.
 
 ## default_plugin_credentials
-<!-- Title: Default Plugin Credentials -->
+<!-- Title: Credential mặc định của Plugin -->
 
-This object allows you to set default UID and/or GID values for each type of Plugin.  The UID/GID may be either numerical IDs or username strings (`root`, `admin`, etc.).  Linux/macOS only.
+Object này cho phép bạn thiết lập các giá trị UID và/hoặc GID mặc định cho mỗi loại Plugin. UID/GID có thể là ID dạng số hoặc các chuỗi username (`root`, `admin`, v.v.). Chỉ hỗ trợ Linux/macOS.
 
 ## job_env
-<!-- Title: Job Environment Variables -->
+<!-- Title: Biến môi trường của Job -->
 
-This object contains environment variables merged into every job process.
+Object này chứa các biến môi trường được gộp vào mọi tiến trình job.
 
-Values can be overridden per job.
+Các giá trị có thể được ghi đè trên mỗi job.
 
 ## job_universal_limits
-<!-- Title: Job Universal Limits -->
+<!-- Title: Giới hạn phổ quát của Job -->
 
-This object defines global limit rules automatically applied to all jobs/workflows, such as concurrency, queue, or retry caps.
+Object này định nghĩa các quy tắc giới hạn toàn cục được áp dụng tự động cho tất cả các job/workflow, chẳng hạn như giới hạn độ đồng thời, hàng đợi hoặc số lần thử lại tối đa.
 
 ## job_universal_actions
-<!-- Title: Job Universal Actions -->
+<!-- Title: Action phổ quát của Job -->
 
-This object defines global actions executed when conditions are met (default includes a system snapshot on error).  Actions can be assigned by job type (workflow or event).  
+Object này định nghĩa các action toàn cục được thực thi khi đáp ứng các điều kiện (mặc định bao gồm việc chụp snapshot hệ thống khi có lỗi). Các action có thể được chỉ định theo loại job (workflow hoặc event).
 
-Example:
+Ví dụ:
 
 ```json
 "job_universal_actions": {
@@ -136,11 +136,11 @@ Example:
 ```
 
 ## alert_universal_actions
-<!-- Title: Alert Universal Actions -->
+<!-- Title: Action phổ quát của Alert -->
 
-This array lists actions automatically applied to all alerts for standardized behavior (default includes a hidden snapshot on new alert).
+Mảng này liệt kê các action tự động áp dụng cho tất cả các alert để có hành vi chuẩn hóa (mặc định bao gồm một snapshot ẩn khi có alert mới).
 
-Example:
+Ví dụ:
 
 ```json
 "alert_universal_actions": [
@@ -154,43 +154,43 @@ Example:
 ```
 
 ## hostname_display_strip
-<!-- Title: Server Hostname Display Strip -->
+<!-- Title: Lọc hiển thị hostname của Server -->
 
-This regex string is removed from the end of hostnames for display and notifications (default: `\\.[\\w\\-]+\\.\\w+$`), e.g., to strip the domain suffix.
+Chuỗi regex này được loại bỏ khỏi phần cuối của các hostname để hiển thị và thông báo (mặc định: `\\.[\\w\\-]+\\.\\w+$`), ví dụ: để cắt bỏ hậu tố domain.
 
 ## ip_display_strip
-<!-- Title: IP Address Display Strip -->
+<!-- Title: Lọc hiển thị địa chỉ IP -->
 
-This regex string is removed from IP addresses for display (default: `^::ffff:`), e.g., to strip the IPv6 IPv4-mapped prefix.
+Chuỗi regex này được loại bỏ khỏi các địa chỉ IP để hiển thị (mặc định: `^::ffff:`), ví dụ: để cắt bỏ tiền tố IPv6 được ánh xạ từ IPv4.
 
 ## search_file_threads
-<!-- Title: Search File Threads -->
+<!-- Title: Thread tìm kiếm file -->
 
-This number sets how many worker threads are used when searching files on disk (default: `1`).
+Số này thiết lập số lượng worker thread được sử dụng khi tìm kiếm các file trên đĩa (mặc định: `1`).
 
 ## search_file_regex
-<!-- Title: Search File Regex -->
+<!-- Title: Regex tìm kiếm file -->
 
-This regex string limits which filenames are scanned by the file search APIs (default: `\\.(txt|log|csv|tsv|xml|json)(\\.gz)?$`).
+Chuỗi regex này giới hạn tên file nào được quét bởi các API tìm kiếm file (mặc định: `\\.(txt|log|csv|tsv|xml|json)(\\.gz)?$`).
 
 ## quick_monitors
-<!-- Title: Quick Monitors -->
+<!-- Title: Quick Monitor -->
 
-This array defines built-in metrics to collect (defaults include CPU, memory, disk, and network presets).  These are displayed on server detail pages for real-time monitoring.
+Mảng này xác định các metric tích hợp sẵn cần thu thập (mặc định bao gồm cấu hình sẵn cho CPU, bộ nhớ, đĩa và mạng). Các thông số này được hiển thị trên các trang chi tiết server để giám sát thời gian thực.
 
 <!-- Group: Email Settings -->
 
 ## email_from
-<!-- Title: Email From -->
+<!-- Title: Email gửi từ -->
 
-This string is the sender email address for all outbound messages (default: `admin@localhost`); many SMTP servers require this to be a valid address.
+Chuỗi này là địa chỉ email người gửi cho tất cả các thông điệp gửi đi (mặc định: `admin@localhost`); nhiều server SMTP yêu cầu đây phải là một địa chỉ hợp lệ.
 
 ## mail_settings
-<!-- Title: Mailer Settings -->
+<!-- Title: Cấu hình bộ gửi mail -->
 
-This object configures the email transport and is passed verbatim to [Nodemailer](https://nodemailer.com/). 
+Object này cấu hình trình vận chuyển email và được truyền nguyên bản tới [Nodemailer](https://nodemailer.com/).
 
-The default configuration is:
+Cấu hình mặc định là:
 
 ```json
 {
@@ -200,9 +200,9 @@ The default configuration is:
 }
 ```
 
-See [Nodemailer - SMTP](https://nodemailer.com/smtp/) and [Nodemailer - Sendmail](https://nodemailer.com/transports/sendmail/) for full options.
+Xem [Nodemailer - SMTP](https://nodemailer.com/smtp/) và [Nodemailer - Sendmail](https://nodemailer.com/transports/sendmail/) để biết đầy đủ các tùy chọn.
 
-Example (basic SMTP on localhost):
+Ví dụ (SMTP cơ bản trên localhost):
 
 ```json
 "mail_settings": {
@@ -211,7 +211,7 @@ Example (basic SMTP on localhost):
 }
 ```
 
-Example (local sendmail):
+Ví dụ (sendmail cục bộ):
 
 ```json
 "mail_settings": {
@@ -221,7 +221,7 @@ Example (local sendmail):
 }
 ```
 
-Example (Fastmail):
+Ví dụ (Fastmail):
 
 ```json
 "mail_settings": {
@@ -233,75 +233,75 @@ Example (Fastmail):
 ```
 
 ## email_format
-<!-- Title: Email Format -->
+<!-- Title: Định dạng Email -->
 <!-- Type: Menu -->
 <!-- Items: ["html", "text"] -->
 
-This string controls the email body format (default: `html`).  Use `html` for styled emails or `text` for plain text.
+Chuỗi này kiểm soát định dạng nội dung email (mặc định: `html`). Sử dụng `html` cho email có kiểu dáng hoặc `text` cho văn bản thuần túy.
 
 ## email_logo
-<!-- Title: Email Logo -->
+<!-- Title: Logo Email -->
 <!-- Type: Menu -->
 <!-- Items: ["link", "inline", "none"] -->
 
-This controls the email logo image (default: `inline`).  Use `inline` to include the logo as an inline attachment, `link` to link to the logo image URL directly, or `none` to hide the logo image entirely.
+Cấu hình này kiểm soát hình ảnh logo email (mặc định: `inline`). Sử dụng `inline` để chèn logo dưới dạng file đính kèm nội tuyến, `link` để liên kết trực tiếp đến URL hình ảnh logo, hoặc `none` để ẩn hoàn toàn hình ảnh logo.
 
-When this is set to `inline`, [client.logo_url](#client-logo_url) must be a local web root path under the xyOps `htdocs` directory, because xyOps loads the image from disk before attaching it to outgoing emails.  When this is set to `link`, `client.logo_url` may be a normal linked image URL instead.
+Khi tùy chọn này được đặt thành `inline`, [client.logo_url](#client-logo_url) phải là một đường dẫn web root cục bộ dưới thư mục `htdocs` của PTOps, vì PTOps tải hình ảnh từ đĩa trước khi đính kèm vào email gửi đi. Khi đặt thành `link`, `client.logo_url` có thể là một URL hình ảnh liên kết thông thường.
 
 ## max_emails_per_day
-<!-- Title: Maximum Emails Per Day -->
+<!-- Title: Số email tối đa mỗi ngày -->
 
-This number caps total emails sent per day across the app (default: 0, meaning no limit); excess sends are rejected with an error.
+Số này giới hạn tổng số email được gửi mỗi ngày trên toàn bộ ứng dụng (mặc định: 0, nghĩa là không giới hạn); các lượt gửi vượt quá sẽ bị từ chối với một lỗi.
 
 <!-- Group: Logging Settings -->
 
 ## log_dir
-<!-- Title: Log Directory Path -->
+<!-- Title: Đường dẫn thư mục Log -->
 
-This string sets the base directory for server logs and job logs (default: `logs`), e.g., `logs/Error.log` and `logs/jobs/ID.log`.
+Chuỗi này thiết lập thư mục cơ sở cho các log server và log job (mặc định: `logs`), ví dụ: `logs/Error.log` và `logs/jobs/ID.log`.
 
-If this is a relative path, it is computed from the xyOps base directory, which is typically `/opt/xyops`.
+Nếu đây là một đường dẫn tương đối, nó sẽ được tính từ thư mục gốc của PTOps, thông thường là `/opt/xyops`.
 
 ## log_filename
-<!-- Title: Log Filename Template -->
+<!-- Title: Template tên file Log -->
 
-This string is the filename pattern used by the core logger (default: `[component].log`); supports log column placeholders like `[component]`.
+Chuỗi này là pattern tên file được sử dụng bởi core logger (mặc định: `[component].log`); hỗ trợ các placeholder cột log như `[component]`.
 
 ## log_columns
-<!-- Title: Log Column List -->
+<!-- Title: Danh sách cột Log -->
 
-This array of strings controls which log columns are written and their order. 
+Mảng các chuỗi này kiểm soát cột log nào được ghi và thứ tự của chúng.
 
-Default:
+Mặc định:
 
 ```json
 ["hires_epoch", "date", "hostname", "pid", "component", "category", "code", "msg", "data"]
 ```
 
-See [pixl-logger](https://github.com/jhuckaby/pixl-logger) for more details.
+Xem [pixl-logger](https://github.com/jhuckaby/pixl-logger) để biết thêm chi tiết.
 
 ## log_archive_path
-<!-- Title: Log Archive Path -->
+<!-- Title: Đường dẫn lưu trữ Log -->
 
-This string sets the nightly log archive path pattern (default: `logs/archives/[yyyy]/[mm]/[dd]/[filename]-[yyyy]-[mm]-[dd].log.gz`); maintenance gzips and writes logs here.
+Chuỗi này thiết lập pattern đường dẫn lưu trữ log hàng đêm (mặc định: `logs/archives/[yyyy]/[mm]/[dd]/[filename]-[yyyy]-[mm]-[dd].log.gz`); quá trình bảo trì sẽ gzip và ghi log tại đây.
 
-Accepts [date/time placeholders](https://github.com/jhuckaby/pixl-tools#getdateargs) to dynamically generate the log archive filenames.
+Chấp nhận các [placeholder ngày/giờ](https://github.com/jhuckaby/pixl-tools#getdateargs) để tạo động các tên file lưu trữ log.
 
 ## log_archive_keep
-<!-- Title: Log Archive Keep -->
+<!-- Title: Thời gian giữ lưu trữ Log -->
 
-This string specifies how long to keep log archives for, e.g. `30 days`.
+Chuỗi này chỉ định thời gian giữ các bản lưu trữ log, ví dụ: `30 days`.
 
-Older log archives found in [log_archive_path](#log_archive_path) are automatically deleted after the nightly logs are rotated.
+Các bản lưu trữ log cũ hơn được tìm thấy trong [log_archive_path](#log_archive_path) sẽ tự động bị xóa sau khi log hàng đêm được xoay vòng.
 
-Set this to an empty string to disable the feature and keep log archives indefinitely.
+Đặt giá trị này thành chuỗi trống để tắt tính năng và giữ các bản lưu trữ log vô thời hạn.
 
 ## log_archive_storage
-<!-- Title: Log Archive Storage -->
+<!-- Title: Lưu trữ Log vào bộ lưu trữ -->
 
-Optionally archive logs to storage instead of local disk.  This is primarily designed for 3rd party storage engines like S3.  To use this feature, first *disable* [log_archive_path](#log_archive_path) (set to empty string), and then set this property accordingly.
+Tùy chọn lưu trữ log vào bộ lưu trữ thay vì đĩa cục bộ. Tính năng này chủ yếu được thiết kế cho các engine lưu trữ của bên thứ 3 như S3. Để sử dụng tính năng này, trước tiên hãy *tắt* [log_archive_path](#log_archive_path) (đặt thành chuỗi trống), sau đó thiết lập thuộc tính này tương ứng.
 
-Example:
+Ví dụ:
 
 ```json
 "log_archive_storage": {
@@ -312,75 +312,71 @@ Example:
 ```
 
 ## log_crashes
-<!-- Title: Log Crashes -->
+<!-- Title: Ghi log Crash -->
 
-This boolean enables capturing uncaught exceptions and crashes in the logger subsystem (default: `true`).
+Giá trị boolean này cho phép ghi lại các ngoại lệ không được bắt và các lỗi crash trong hệ thống con logger (mặc định: `true`).
 
-The crash log location will be: `/opt/xyops/logs/crash.log`
-
-
+Vị trí log crash sẽ là: `/opt/xyops/logs/crash.log`
 
 ## tickets
-<!-- Title: Ticket Settings -->
+<!-- Title: Cấu hình Ticket -->
 <!-- Type: Group -->
 
-This section configures the ticketing subsystem.
-
+Phần này cấu hình hệ thống con ticket.
 
 ### tickets.email_enabled
-<!-- Title: Email Enabled -->
+<!-- Title: Bật Email -->
 
-This boolean enables ticket-related outgoing emails such as new/overdue notifications (default: `true`).
+Giá trị boolean này bật các email gửi đi liên quan đến ticket như thông báo mới/quá hạn (mặc định: `true`).
 
 ### tickets.email_debounce_sec
-<!-- Title: Email Debounce (Seconds) -->
+<!-- Title: Debounce Email (Giây) -->
 
-This number (seconds) sets the minimum spacing between repeated ticket update emails to reduce noise (default: `30`).
+Số này (tính bằng giây) thiết lập khoảng cách tối thiểu giữa các email cập nhật ticket lặp lại để giảm nhiễu thông tin (mặc định: `30`).
 
-For example, if a user makes a series of sequential changes to a ticket, only one email will be sent in a 30-second window, containing a summary of all the accumulated changes.
+Ví dụ, nếu một user thực hiện một loạt các thay đổi liên tiếp đối với một ticket, chỉ một email sẽ được gửi trong khoảng thời gian 30 giây, chứa bản tóm tắt tất cả các thay đổi tích lũy.
 
 ### tickets.overdue_schedule
-<!-- Title: Overdue Schedule (HH:MM) -->
+<!-- Title: Lịch kiểm tra quá hạn (HH:MM) -->
 
-This string (`HH:MM`) sets the daily time when the system scans for overdue tickets and sends notices (default: `04:30`).
+Chuỗi này (`HH:MM`) thiết lập thời gian hàng ngày khi hệ thống quét các ticket quá hạn và gửi thông báo (mặc định: `04:30`).
 
 ### tickets.overdue_query
-<!-- Title: Overdue Query -->
+<!-- Title: Truy vấn quá hạn -->
 
-This string is the [Unbase-style search query](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries) used to select overdue tickets during the scheduled scan (default: `status:open due:<today`).
+Chuỗi này là [truy vấn tìm kiếm kiểu Unbase](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries) được sử dụng để chọn các ticket quá hạn trong quá trình quét theo lịch trình (mặc định: `status:open due:<today`).
 
 ### tickets.due_date_format
-<!-- Title: Due Date Format -->
+<!-- Title: Định dạng ngày hết hạn -->
 
-This date format string controls how ticket due dates are displayed (default: `[dddd], [mmmm] [mday], [yyyy]`).
+Chuỗi định dạng ngày này kiểm soát cách hiển thị ngày hết hạn của ticket (mặc định: `[dddd], [mmmm] [mday], [yyyy]`).
 
 ### tickets.date_time_format
-<!-- Title: Date/Time Format -->
+<!-- Title: Định dạng Ngày/Giờ -->
 
-This date/time format string controls how ticket timestamps are displayed (default: `[dddd], [mmmm] [mday], [yyyy] [hour12]:[mi] [ampm]`).
-
+Chuỗi định dạng ngày/giờ này kiểm soát cách hiển thị dấu thời gian của ticket (mặc định: `[dddd], [mmmm] [mday], [yyyy] [hour12]:[mi] [ampm]`).
 
 <!-- Group: Hook Settings -->
 
 ## hooks
-<!-- Title: System Hooks -->
+<!-- Title: Hook hệ thống -->
 
-This object defines system-wide hook triggers that can fire on any logged activity.  
+Object này định nghĩa các trigger hook trên toàn hệ thống có thể kích hoạt trên bất kỳ hoạt động nào được ghi lại.
 
-Example:
+Ví dụ:
 
 ```json
 { "job_complete": { "web_hook": "wmhv3s16ymk" } }
 ```
 
-See [System Hooks](syshooks.md) for more details.
+Xem [Hook hệ thống](syshooks.md) để biết thêm chi tiết.
 
 ## hook_text_templates
-<!-- Title: Hook Text Templates -->
+<!-- Title: Template văn bản của Hook -->
 
-This object provides message templates for jobs and alerts; Mustache-style placeholders populate human-readable text for emails and web hooks (default includes templates like `{{links.job_details}}`).  
+Object này cung cấp các template tin nhắn cho các job và alert; các placeholder kiểu Mustache sẽ điền văn bản dễ đọc cho email và webhook (mặc định bao gồm các template như `{{links.job_details}}`).
 
-Example set:
+Ví dụ:
 
 ```json
 {
@@ -395,49 +391,46 @@ Example set:
 }
 ```
 
-See [JobHookData](data.md#jobhookdata) and [AlertHookData](data.md#alerthookdata) for a list of the placeholder macros you can use here.
-
-
-
+Xem [JobHookData](data.md#jobhookdata) và [AlertHookData](data.md#alerthookdata) để biết danh sách các macro placeholder bạn có thể sử dụng ở đây.
 ## multi
-<!-- Title: Multi-Conductor Settings -->
+<!-- Title: Cấu hình đa Conductor -->
 <!-- Type: Group -->
 
-This section configures the multi-server subsystem.
+Phần này cấu hình hệ thống con đa server.
 
 ### multi.enable_version_checks
-<!-- Title: Enable Version Checks -->
+<!-- Title: Bật kiểm tra phiên bản -->
 
-When set to `true`, xyOps will check for version updates of the core app, which will make external web requests to the Release Metadata URL.
+Khi được đặt thành `true`, PTOps sẽ kiểm tra các bản cập nhật phiên bản của ứng dụng cốt lõi, việc này sẽ tạo ra các yêu cầu web bên ngoài tới URL Release Metadata.
 
 ### multi.list_url
-<!-- Title: Release Metadata URL -->
+<!-- Title: URL metadata bản phát hành -->
 
-This URL string points to the release metadata used by multi-conductor upgrade flows (default: `https://api.github.com/repos/pixlcore/xyops/releases`).
+Chuỗi URL này trỏ đến siêu dữ liệu (metadata) của bản phát hành được sử dụng bởi các luồng nâng cấp đa conductor (mặc định: `https://api.github.com/repos/pixlcore/xyops/releases`).
 
 ### multi.protocol
-<!-- Title: WebSocket Protocol -->
+<!-- Title: Giao thức WebSocket -->
 <!-- Type: Menu -->
 <!-- Items: ["ws:", "wss:"] -->
 
-This string selects the WebSocket protocol for peer communications (default: `ws:`); set to `wss:` to require TLS.
+Chuỗi này chọn giao thức WebSocket cho truyền thông giữa các peer (mặc định: `ws:`); đặt thành `wss:` để yêu cầu TLS.
 
 ### multi.connect_timeout_sec
-<!-- Title: Connect Timeout (seconds) -->
+<!-- Title: Timeout kết nối (giây) -->
 
-This number (seconds) sets the connection timeout for initial peer socket connections (default: `3`).
+Số này (tính bằng giây) thiết lập thời gian chờ kết nối cho các kết nối socket peer ban đầu (mặc định: `3`).
 
 ### multi.master_timeout_sec
-<!-- Title: Master Timeout (seconds) -->
+<!-- Title: Timeout Master (giây) -->
 
-This number (seconds) is used for the election timer and general control timeouts for conductor operations (default: `10`).
+Số này (tính bằng giây) được sử dụng cho bộ hẹn giờ bầu cử và thời gian chờ kiểm soát chung cho các hoạt động của conductor (mặc định: `10`).
 
 ### multi.socket_opts
-<!-- Title: WebSocket Options -->
+<!-- Title: Tùy chọn WebSocket -->
 
-This object holds options merged into the WebSocket client, e.g., TLS options for self-signed certs. 
+Object này giữ các tùy chọn được gộp vào WebSocket client, ví dụ: các tùy chọn TLS cho chứng chỉ tự ký.
 
-Default:
+Mặc định:
 
 ```json
 { "rejectUnauthorized": false }
@@ -446,253 +439,253 @@ Default:
 
 
 ## satellite
-<!-- Title: xyOps Satellite Settings -->
+<!-- Title: Cấu hình PTOps Satellite -->
 <!-- Type: Group -->
 
-This section configures xySat, our remote satellite agent.
+Phần này cấu hình xySat, agent satellite từ xa của chúng tôi.
 
 ### satellite.enable_version_checks
-<!-- Title: Enable Version Checks -->
+<!-- Title: Bật kiểm tra phiên bản -->
 
-When set to `true`, xyOps will check for version updates of the xySat app, which will make external web requests to the Release Metadata URL.
+Khi được đặt thành `true`, PTOps sẽ kiểm tra các bản cập nhật phiên bản của ứng dụng xySat, việc này sẽ thực hiện các yêu cầu web bên ngoài tới URL Release Metadata.
 
 ### satellite.list_url
-<!-- Title: Release Metadata URL -->
+<!-- Title: URL metadata bản phát hành -->
 
-This URL string points to the release metadata for the satellite agent (default: `https://api.github.com/repos/pixlcore/xysat/releases`).
+Chuỗi URL này trỏ đến siêu dữ liệu (metadata) của bản phát hành cho agent satellite (mặc định: `https://api.github.com/repos/pixlcore/xysat/releases`).
 
 ### satellite.base_url
-<!-- Title: Release Base URL -->
+<!-- Title: URL cơ sở bản phát hành -->
 
-This URL string is the base for satellite downloads/upgrades (default: `https://github.com/pixlcore/xysat/releases`).
+Chuỗi URL này là URL cơ sở để tải xuống/nâng cấp satellite (mặc định: `https://github.com/pixlcore/xysat/releases`).
 
 ### satellite.image
-<!-- Title: xySat Docker Image -->
+<!-- Title: Docker Image của xySat -->
 
-This is the Docker image to use when adding Docker-based satellite servers via the UI (default: `ghcr.io/pixlcore/xysat`).
+Đây là image Docker để sử dụng khi thêm các server satellite dựa trên Docker thông qua UI (mặc định: `ghcr.io/pixlcore/xysat`).
 
 ### satellite.version
-<!-- Title: xySat Version -->
+<!-- Title: Phiên bản xySat -->
 
-This string sets the desired satellite version to fetch; may be a semver or tag (default: `latest`).
+Chuỗi này thiết lập phiên bản satellite mong muốn cần lấy; có thể là một chuỗi semver hoặc một tag (mặc định: `latest`).
 
 ### satellite.cache_ttl
-<!-- Title: Cache Time-to-Live (seconds) -->
+<!-- Title: TTL cache (giây) -->
 
-This number (seconds) sets the cache TTL for satellite release metadata and tarballs to reduce network calls (default: `3600`).
+Số này (tính bằng giây) thiết lập TTL bộ nhớ cache cho siêu dữ liệu bản phát hành satellite và các file tarball để giảm số lượng cuộc gọi mạng (mặc định: `3600`).
 
 ### satellite.config
-<!-- Title: xySat Configuration -->
+<!-- Title: Cấu hình xySat -->
 
-This object contains web server and runtime settings for xySat; these options are passed along when managing or provisioning satellite nodes (defaults provided in the sample config).
+Object này chứa các cài đặt web server và runtime cho xySat; các tùy chọn này được truyền đi khi quản lý hoặc cấp phát các node satellite (các giá trị mặc định được cung cấp trong config mẫu).
 
 
 
 ## marketplace
-<!-- Title: xyOps Marketplace -->
+<!-- Title: PTOps Marketplace -->
 <!-- Type: Group -->
 
-This section configures the xyOps Marketplace.
+Phần này cấu hình PTOps Marketplace.
 
 ### marketplace.enabled
-<!-- Title: Marketplace Enabled -->
+<!-- Title: Bật Marketplace -->
 
-This boolean enables or disables the marketplace.  If disabled, users cannot search for or install plugins.  The default is `true` (enabled).
+Giá trị boolean này bật hoặc tắt marketplace. Nếu bị tắt, user không thể tìm kiếm hoặc cài đặt plugin. Mặc định là `true` (được bật).
 
 ### marketplace.metadata_url
-<!-- Title: Metadata URL -->
+<!-- Title: URL Metadata -->
 
-This string points to the central marketplace metadata location, which contains the full product catalog.  
+Chuỗi này trỏ đến vị trí siêu dữ liệu (metadata) của marketplace trung tâm, nơi chứa toàn bộ danh mục sản phẩm.
 
-Example:
+Ví dụ:
 
 ```
 https://raw.githubusercontent.com/pixlcore/xyops-marketplace/refs/heads/main/marketplace.json
 ```
 
 ### marketplace.repo_url_template
-<!-- Title: Plugin Repository URL Template -->
+<!-- Title: Template URL Repository của Plugin -->
 
-This string is a template used to generate plugin repository URLs to specific files.  It has placeholder macros for `id` (org and repo), `version` (git tag), and `filename`.  
+Chuỗi này là một template được sử dụng để tạo các URL repository của plugin trỏ đến các file cụ thể. Nó có các macro placeholder cho `id` (org và repo), `version` (git tag) và `filename`.
 
-Example:
+Ví dụ:
 
 ```
 https://raw.githubusercontent.com/[id]/refs/tags/[version]/[filename]
 ```
 
 ### marketplace.ttl
-<!-- Title: Time-to-Live (seconds) -->
+<!-- Title: Time-to-Live (giây) -->
 
-This is the number of seconds to cache the marketplace metadata locally before re-fetching from origin.  The default is `3600` (one hour).
+Đây là số giây để lưu trữ cục bộ siêu dữ liệu của marketplace trước khi tìm nạp lại từ nguồn. Mặc định là `3600` (một giờ).
 
 
 
 <!-- Group: Default User Settings -->
 
 ## default_user_privileges
-<!-- Title: Default User Privileges -->
+<!-- Title: Privilege mặc định của User -->
 
-This object sets default privileges for new users (defaults include create/edit events, run/tag/comment jobs, and ticket permissions) unless overridden by roles or SSO.
+Object này thiết lập các privilege mặc định cho user mới (mặc định bao gồm tạo/sửa event, chạy/tag/bình luận job, và các quyền đối với ticket) trừ khi bị ghi đè bởi role hoặc SSO.
 
-See [Privileges](privileges.md) for more details on privileges.
+Xem [Privilege](privileges.md) để biết thêm chi tiết về các đặc quyền.
 
 ## default_user_prefs
-<!-- Title: Default User Preferences -->
+<!-- Title: Tùy chọn mặc định của User -->
 
-This object sets default UI preferences for new users (locale, theme, motion/contrast, volume, saved searches, etc.), merged into profiles at creation/login.
+Object này thiết lập các tùy chọn UI mặc định cho user mới (locale, theme, chuyển động/độ tương phản, âm lượng, các tìm kiếm đã lưu, v.v.), được gộp vào profile khi tạo/đăng nhập.
 
-See [User](data.md#user) for details on what properties can be specified here.
+Xem [User](data.md#user) để biết chi tiết về các thuộc tính có thể được chỉ định ở đây.
 
 
 
 ## db_maint
-<!-- Title: Database Maintenance -->
+<!-- Title: Bảo trì cơ sở dữ liệu -->
 <!-- Type: Group -->
 
-These settings are used during nightly database maintenance.
+Các thiết lập này được sử dụng trong quá trình bảo trì cơ sở dữ liệu hàng đêm.
 
 ### db_maint.jobs.max_rows
-<!-- Title: Jobs Max Rows -->
+<!-- Title: Số dòng Job tối đa -->
 
-This number sets the maximum rows retained for the jobs database table (default: `1000000`); oldest are pruned during maintenance.
+Số này thiết lập số dòng tối đa được giữ lại cho bảng cơ sở dữ liệu jobs (mặc định: `1000000`); những dòng cũ nhất sẽ bị cắt tỉa trong quá trình bảo trì.
 
 ### db_maint.alerts.max_rows
-<!-- Title: Alerts Max Rows -->
+<!-- Title: Số dòng Alert tối đa -->
 
-This number sets the maximum rows retained for the alerts database table (default: `100000`); oldest are pruned during maintenance.
+Số này thiết lập số dòng tối đa được giữ lại cho bảng cơ sở dữ liệu alerts (mặc định: `100000`); những dòng cũ nhất sẽ bị cắt tỉa trong quá trình bảo trì.
 
 ### db_maint.snapshots.max_rows
-<!-- Title: Snapshots Max Rows -->
+<!-- Title: Số dòng Snapshot tối đa -->
 
-This number sets the maximum rows retained for the snapshots database table (default: `100000`); oldest are pruned during maintenance.
+Số này thiết lập số dòng tối đa được giữ lại cho bảng cơ sở dữ liệu snapshots (mặc định: `100000`); những dòng cũ nhất sẽ bị cắt tỉa trong quá trình bảo trì.
 
 ### db_maint.activity.max_rows
-<!-- Title: Activity Max Rows -->
+<!-- Title: Số dòng Hoạt động tối đa -->
 
-This number sets the maximum rows retained for the activity database table (default: `100000`); oldest are pruned during maintenance.
+Số này thiết lập số dòng tối đa được giữ lại cho bảng cơ sở dữ liệu hoạt động (activity) (mặc định: `100000`); những dòng cũ nhất sẽ bị cắt tỉa trong quá trình bảo trì.
 
 ### db_maint.servers.max_rows
-<!-- Title: Servers Max Rows -->
+<!-- Title: Số dòng Server tối đa -->
 
-This number sets the maximum rows retained for the servers database table (default: `10000`); oldest are pruned during maintenance.
+Số này thiết lập số dòng tối đa được giữ lại cho bảng cơ sở dữ liệu servers (mặc định: `10000`); những dòng cũ nhất sẽ bị cắt tỉa trong quá trình bảo trì.
 
 
 
 ## airgap
-<!-- Title: Air-Gap Settings -->
+<!-- Title: Cấu hình Air-Gap -->
 <!-- Type: Group -->
 
-This section is for airgap mode, which can prevent xyOps from making unauthorized outbound connections beyond a specified IP range.
+Phần này dành cho chế độ airgap, có thể ngăn PTOps thực hiện các kết nối gửi đi không được phép vượt quá một dải IP được chỉ định.
 
-See [Air-Gapped Mode](hosting.md#air-gapped-mode) for more details.
+Xem [Chế độ Air-Gapped](hosting.md#air-gapped-mode) để biết thêm chi tiết.
 
 ### airgap.enabled
-<!-- Title: Air-Gap Enabled -->
+<!-- Title: Bật Air-Gap -->
 
-This boolean enables outbound network egress controls for server-initiated HTTP(S) requests (default: `false`).
+Giá trị boolean này bật kiểm soát lưu lượng mạng gửi đi đối với các yêu cầu HTTP(S) do server khởi xướng (mặc định: `false`).
 
 ### airgap.whitelist
-<!-- Title: Outbound Whitelist -->
+<!-- Title: Whitelist gửi đi -->
 
-This array of CIDRs/hosts defines destinations explicitly allowed for outbound requests (default includes local/private networks); when enabled, only these are permitted.
+Mảng các CIDR/host này định nghĩa các điểm đến được cho phép rõ ràng đối với các yêu cầu gửi đi (mặc định bao gồm các mạng cục bộ/riêng tư); khi được bật, chỉ những địa chỉ này được cho phép.
 
 ### airgap.blacklist
-<!-- Title: Outbound Blacklist -->
+<!-- Title: Blacklist gửi đi -->
 
-This array of CIDRs/hosts defines destinations that are always blocked for outbound requests.
+Mảng các CIDR/host này định nghĩa các điểm đến luôn bị chặn đối với các yêu cầu gửi đi.
 
 
 
 ## client
-<!-- Title: Client UI Settings -->
+<!-- Title: Cấu hình UI Client -->
 <!-- Type: Group -->
 
-This section is for the client-side configuration, used in the xyOps web application.
+Phần này dành cho cấu hình phía client, được sử dụng trong ứng dụng web PTOps.
 
 ### client.name
-<!-- Title: App Name Display -->
+<!-- Title: Tên hiển thị ứng dụng -->
 
-This string is the product name displayed in the UI and included in email/version text (default: `xyOps`).
+Chuỗi này là tên sản phẩm được hiển thị trong UI và được đưa vào văn bản email/phiên bản (mặc định: `PTOps`).
 
 ### client.company
-<!-- Title: App Company Display -->
+<!-- Title: Tên công ty hiển thị -->
 
-This string is displayed as part of the copyright message at the bottom-left corner of the UI (default: `PixlCore LLC`).
+Chuỗi này được hiển thị như một phần của thông điệp bản quyền ở góc dưới bên trái của UI (mặc định: `PixlCore LLC`).
 
 ### client.logo_url
-<!-- Title: App Logo Image URL -->
+<!-- Title: URL hình ảnh Logo ứng dụng -->
 
-This points to the logo used in the UI header/sidebar and in emails (default: `/images/logotype.png`).
+Tùy chọn này trỏ đến logo được sử dụng trong header/sidebar của UI và trong email (mặc định: `/images/logotype.png`).
 
-For the default [email_logo](#email_logo) mode of `inline`, this must be a local web root path under the xyOps `htdocs` directory, because xyOps loads the image from disk before attaching it to outgoing emails.  If `email_logo` is set to `link`, this may be a normal image URL instead.
+Đối với chế độ [email_logo](#email_logo) mặc định là `inline`, đây phải là đường dẫn web root cục bộ dưới thư mục `htdocs` của PTOps, vì PTOps tải hình ảnh từ đĩa trước khi đính kèm vào email gửi đi. Nếu `email_logo` được đặt thành `link`, đây có thể là một URL hình ảnh thông thường.
 
 ### client.hide_sidebar_sections
-<!-- Title: Hide Sidebar Sections -->
+<!-- Title: Ẩn các mục thanh bên -->
 
-This array allows you to globally hide specific sidebar sections for all users, regardless of their preferences.
+Mảng này cho phép bạn ẩn toàn cục các phần thanh bên cụ thể cho tất cả các user, bất kể tùy chọn của họ là gì.
 
 ### client.tables
-<!-- Title: Default Table Sort -->
+<!-- Title: Sắp xếp bảng mặc định -->
 
-This object allows you to set default sort preferences for all the sortable tables in the UI.
+Object này cho phép bạn đặt các tùy chọn sắp xếp mặc định cho tất cả các bảng có thể sắp xếp trong UI.
 
 ### client.items_per_page
-<!-- Title: List Items Per Page -->
+<!-- Title: Số phần tử danh sách mỗi trang -->
 
-This number sets the default page size for list views and searches (default: `50`).
+Số này thiết lập kích thước trang mặc định cho các chế độ xem danh sách và tìm kiếm (mặc định: `50`).
 
 ### client.alt_items_per_page
-<!-- Title: Alternate Items Per Page -->
+<!-- Title: Số phần tử thay thế mỗi trang -->
 
-This number sets the secondary page size for inline widgets and dropdown lists (default: `25`).
+Số này thiết lập kích thước trang thứ cấp cho các widget nội tuyến và danh sách dropdown (mặc định: `25`).
 
 ### client.max_table_rows
-<!-- Title: Max Table Rows -->
+<!-- Title: Số dòng bảng tối đa -->
 
-This number caps the number of rendered table rows client-side to keep the UI responsive (default: `500`).
+Số này giới hạn số lượng hàng bảng được render phía client để giữ cho UI phản hồi nhanh (mặc định: `500`).
 
 ### client.max_menu_items
-<!-- Title: Max Menu Items -->
+<!-- Title: Số phần tử menu tối đa -->
 
-Upper bound for items shown in menus and dropdowns (default: `1000`).
+Giới hạn trên cho các phần tử hiển thị trong menu và dropdown (mặc định: `1000`).
 
 ### client.api_timeout_ms
-<!-- Title: API Timeout (milliseconds) -->
+<!-- Title: Timeout API (mili giây) -->
 
-This number sets the API timeout for client requests in milliseconds (default: `10000`).
+Số này thiết lập thời gian chờ API cho các yêu cầu từ client tính bằng mili giây (mặc định: `10000`).
 
 ### client.max_job_output
-<!-- Title: Max Job Output Display -->
+<!-- Title: Hiển thị output tối đa của Job -->
 
-Maximum size of job output to display inline on the details page (default: `5 MB`).
+Kích thước tối đa của output job để hiển thị nội tuyến trên trang chi tiết (mặc định: `5 MB`).
 
 ### client.alt_to_toggle
-<!-- Title: Hold Alt to Toggle -->
+<!-- Title: Giữ Alt để kích hoạt -->
 
-Requires the user to hold the Opt/Alt key to toggle the `enabled` property of certain entities in the UI (prevents accidental clicks).
+Yêu cầu user giữ phím Opt/Alt để chuyển đổi thuộc tính `enabled` của một số thực thể nhất định trong UI (ngăn chặn các cú nhấp chuột vô tình).
 
 ### client.outdated_badges
-<!-- Title: Show Outdated Version Badges -->
+<!-- Title: Hiển thị huy hiệu phiên bản cũ -->
 
-When set to `true`, will show a colored badge on sidebar sections for outdated software versions on the Conductors, Servers and Marketplace tabs.  Admin only.
+Khi được đặt thành `true`, sẽ hiển thị một huy hiệu màu trên các phần thanh bên cho các phiên bản phần mềm đã lỗi thời trên các tab Conductor, Server và Marketplace. Chỉ dành cho Admin.
 
 ### client.new_event_template
-<!-- Title: New Event Template -->
+<!-- Title: Template Event mới -->
 
-Provides sensible defaults for new events (triggers, limits, actions). Used to prefill the New Event form.
+Cung cấp các giá trị mặc định hợp lý cho các event mới (trigger, limit, action). Được sử dụng để điền trước vào form New Event.
 
 ### client.new_ticket_template
-<!-- Title: New Ticket Template -->
+<!-- Title: Template Ticket mới -->
 
-Provides defaults for creating new tickets. Used to prefill the New Ticket form.
+Cung cấp các giá trị mặc định để tạo các ticket mới. Được sử dụng để điền trước vào form New Ticket.
 
 ### client.chart_defaults
-<!-- Title: Graph Defaults -->
+<!-- Title: Giá trị mặc định của biểu đồ -->
 
-Default chart rendering options (line width, smoothing, ticks). Applied to [pixl-chart](https://github.com/jhuckaby/pixl-chart) monitor charts in the UI.  
+Các tùy chọn render biểu đồ mặc định (độ rộng đường, làm mịn, tick). Được áp dụng cho các biểu đồ monitor [pixl-chart](https://github.com/jhuckaby/pixl-chart) trong UI.
 
-The defaults are:
+Các giá trị mặc định là:
 
 ```json
 "chart_defaults": {
@@ -709,12 +702,12 @@ The defaults are:
 }
 ```
 
-See [pixl-chart](https://github.com/jhuckaby/pixl-chart) for more details.
+Xem [pixl-chart](https://github.com/jhuckaby/pixl-chart) để biết thêm chi tiết.
 
 ### client.editor_defaults
-<!-- Title: Code Editor Defaults -->
+<!-- Title: Trình biên tập code mặc định -->
 
-Default code editor preferences (tabs, indent, line wrapping) for [CodeMirror](https://codemirror.net/5/) fields in the UI.  The defaults are:
+Các tùy chọn trình biên tập code mặc định (tab, thụt lề, ngắt dòng) cho các trường [CodeMirror](https://codemirror.net/5/) trong UI. Các giá trị mặc định là:
 
 ```json
 "editor_defaults": {
@@ -728,12 +721,12 @@ Default code editor preferences (tabs, indent, line wrapping) for [CodeMirror](h
 }
 ```
 
-See [CodeMirror](https://codemirror.net/5/) for more details.
+Xem [CodeMirror](https://codemirror.net/5/) để biết thêm chi tiết.
 
 ### client.bucket_upload_settings
-<!-- Title: Bucket Upload Settings -->
+<!-- Title: Cấu hình tải lên Bucket -->
 
-Client-side limits for bucket uploads (max files/size/types). Enforced in the UI before upload, and enforced server-side.  The defaults are:
+Các giới hạn phía client đối với việc tải lên bucket (số lượng file tối đa/kích thước/loại file). Được thực thi trong UI trước khi tải lên, và được thực thi phía server. Các giá trị mặc định là:
 
 ```json
 "bucket_upload_settings": {
@@ -744,9 +737,9 @@ Client-side limits for bucket uploads (max files/size/types). Enforced in the UI
 ```
 
 ### client.ticket_upload_settings
-<!-- Title: Ticket Upload Settings -->
+<!-- Title: Cấu hình tải lên Ticket -->
 
-Client-side limits for ticket attachments (max files/size/types). Enforced in the UI before upload, and enforced server-side.  The defaults are:
+Các giới hạn phía client đối với các file đính kèm ticket (số lượng file tối đa/kích thước/loại file). Được thực thi trong UI trước khi tải lên, và được thực thi phía server. Các giá trị mặc định là:
 
 ```json
 "ticket_upload_settings": {
@@ -757,9 +750,9 @@ Client-side limits for ticket attachments (max files/size/types). Enforced in th
 ```
 
 ### client.job_upload_settings
-<!-- Title: Job Upload Settings -->
+<!-- Title: Cấu hình tải lên Job -->
 
-Client-side limits for job file uploads (max files/size/types) and default expiration for user/plugin files.  The defaults are:
+Các giới hạn phía client đối với việc tải lên file của job (số lượng file tối đa/kích thước/loại file) và thời gian hết hạn mặc định cho các file của user/plugin. Các giá trị mặc định là:
 
 ```json
 "job_upload_settings": {
@@ -774,378 +767,379 @@ Client-side limits for job file uploads (max files/size/types) and default expir
 
 
 ## Storage
-<!-- Title: Storage Settings -->
+<!-- Title: Cấu hình Storage -->
 <!-- Type: Group -->
 
-This section configures the backend storage subsystem used by xyOps.
+Phần này cấu hình hệ thống con bộ lưu trữ backend được sử dụng bởi PTOps.
 
-For full storage system documentation, see [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage).
+Để biết tài liệu đầy đủ về hệ thống lưu trữ, xem [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage).
 
 ### Storage.engine
 <!-- Title: Engine -->
 
-Selects the storage engine (e.g., Hybrid, Filesystem, SQLite, S3).  The default is `Hybrid`, which uses a combination of SQLite for JSON data records and the filesystem for binary file storage.
+Chọn engine lưu trữ (ví dụ: Hybrid, Filesystem, SQLite, S3). Mặc định là `Hybrid`, sử dụng kết hợp giữa SQLite cho các bản ghi dữ liệu JSON và filesystem cho việc lưu trữ file nhị phân.
 
-See [Engines](https://github.com/jhuckaby/pixl-server-storage#engines) for more details.
+Xem [Engines](https://github.com/jhuckaby/pixl-server-storage#engines) để biết thêm chi tiết.
 
 ### Storage.list_page_size
-<!-- Title: List Page Size -->
+<!-- Title: Kích thước trang danh sách -->
 
-Default page size for storage lists (default: `100`).
+Kích thước trang mặc định cho các danh sách lưu trữ (mặc định: `100`).
 
 ### Storage.hash_page_size
-<!-- Title: Hash Page Size -->
+<!-- Title: Kích thước trang hash -->
 
-Default page size for storage hashes (default: `100`).
-
+Kích thước trang mặc định cho các hash lưu trữ (mặc định: `100`).
 ### Storage.concurrency
-<!-- Title: Concurrency -->
+<!-- Title: Độ đồng thời -->
 
-Maximum concurrent I/O operations (default: `32`).
+Số lượng hoạt động I/O đồng thời tối đa (mặc định: `32`).
 
 ### Storage.transactions
-<!-- Title: Transactions -->
+<!-- Title: Giao dịch (Transactions) -->
 
-Enables transactional writes (default: `true`).  Please leave this enabled!
+Bật ghi giao dịch (giao dịch) (mặc định: `true`). Hãy duy trì việc bật tính năng này!
 
 ### Storage.trans_auto_recover
-<!-- Title: Transaction Auto-Recover -->
+<!-- Title: Tự động khôi phục giao dịch -->
 
-Automatically recover incomplete transactions on startup (default: `true`).
+Tự động khôi phục các giao dịch chưa hoàn thành khi khởi động (mặc định: `true`).
 
 ### Storage.trans_dir
-<!-- Title: Transaction Directory Path -->
+<!-- Title: Đường dẫn thư mục giao dịch -->
 
-Local directory for transaction rollback logs and recovery bookkeeping (default: `data/_transactions`).  Engines with native transaction support, such as SQLite, Postgres, and Redis, do not write rollback logs for successful commits, but the directory is still used for transaction housekeeping.
+Thư mục cục bộ cho log rollback giao dịch và sổ sách khôi phục (mặc định: `data/_transactions`). Các engine hỗ trợ giao dịch native như SQLite, Postgres và Redis không ghi log rollback cho các commit thành công, nhưng thư mục này vẫn được sử dụng để quản lý các giao dịch.
 
 ### Storage.log_event_types
-<!-- Title: Log Event Types -->
+<!-- Title: Log loại Event -->
 
-Default enables logging for get/put/delete and other operations. Controls which storage events are logged.
+Theo mặc định, tính năng này bật ghi log cho các thao tác get/put/delete và các hoạt động khác. Kiểm soát sự kiện lưu trữ nào được ghi log.
 
 ### Storage.Hybrid
-<!-- Title: Hybrid Engine Settings -->
+<!-- Title: Cấu hình Engine Hybrid -->
 
-Configuration for the [Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid) storage backend.
+Cấu hình cho backend lưu trữ [Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid).
 
 ### Storage.Filesystem
-<!-- Title: Filesystem Engine Settings -->
+<!-- Title: Cấu hình Engine Filesystem -->
 
-Filesystem backend options (base directory, namespacing, raw paths, fsync, in-memory cache). See [Filesystem](https://github.com/jhuckaby/pixl-server-storage#local-filesystem) for details.
+Các tùy chọn cho backend Filesystem (thư mục cơ sở, namespacing, đường dẫn thô, fsync, bộ nhớ cache trong RAM). Xem [Filesystem](https://github.com/jhuckaby/pixl-server-storage#local-filesystem) để biết chi tiết.
 
 ### Storage.SQLite
-<!-- Title: SQLite Engine Settings -->
+<!-- Title: Cấu hình Engine SQLite -->
 
-SQLite backend options (base directory, filename, pragmas, cache, backups). See [SQLite](https://github.com/jhuckaby/pixl-server-storage#sqlite) for details.
+Các tùy chọn cho backend SQLite (thư mục cơ sở, tên file, pragmas, cache, backup). Xem [SQLite](https://github.com/jhuckaby/pixl-server-storage#sqlite) để biết chi tiết.
 
 ### Storage.AWS
-<!-- Title: AWS Settings -->
+<!-- Title: Cấu hình AWS -->
 
-AWS SDK options (region/credentials) used by S3 when applicable. See [Amazon S3](https://github.com/jhuckaby/pixl-server-storage#amazon-s3) for details.
+Các tùy chọn cho AWS SDK (region/credential) được S3 sử dụng khi khả dụng. Xem [Amazon S3](https://github.com/jhuckaby/pixl-server-storage#amazon-s3) để biết chi tiết.
 
 ### Storage.S3
-<!-- Title: S3 Engine Settings -->
+<!-- Title: Cấu hình Engine S3 -->
 
-S3 backend options (timeouts, retries, bucket params, caching). See [Amazon S3](https://github.com/jhuckaby/pixl-server-storage#amazon-s3) for details.
+Các tùy chọn cho backend S3 (timeout, số lần thử lại, tham số bucket, caching). Xem [Amazon S3](https://github.com/jhuckaby/pixl-server-storage#amazon-s3) để biết chi tiết.
+
 
 
 ## WebServer
-<!-- Title: Web Server Settings -->
+<!-- Title: Cấu hình Web Server -->
 <!-- Type: Group -->
 
-This section configures the web server used by xyOps.
+Phần này cấu hình web server được sử dụng bởi PTOps.
 
-For full web server configuration, see [pixl-server-web](https://github.com/jhuckaby/pixl-server-web).
+Để cấu hình đầy đủ cho web server, xem [pixl-server-web](https://github.com/jhuckaby/pixl-server-web).
 
 ### WebServer.port
-<!-- Title: Listen Port -->
+<!-- Title: Cổng lắng nghe -->
 
-HTTP port for the built-in web server (default: `5522`).
+Cổng HTTP cho web server tích hợp sẵn (mặc định: `5522`).
 
 ### WebServer.htdocs_dir
-<!-- Title: Web Root Directory Path -->
+<!-- Title: Đường dẫn thư mục Web Root -->
 
-Base directory for static assets and the web UI (default: `htdocs`).
+Thư mục cơ sở cho các tài sản tĩnh và UI web (mặc định: `htdocs`).
 
-If this is a relative path, it is computed from the xyOps base directory, which is typically `/opt/xyops`.
+Nếu đây là một đường dẫn tương đối, nó sẽ được tính từ thư mục gốc của PTOps, thông thường là `/opt/xyops`.
 
 ### WebServer.max_upload_size
-<!-- Title: Max Upload Size (bytes) -->
+<!-- Title: Kích thước tải lên tối đa (bytes) -->
 
-Maximum accepted upload size in bytes (default: `1073741824`).
+Kích thước tải lên tối đa được chấp nhận tính bằng byte (mặc định: `1073741824`).
 
 ### WebServer.static_ttl
-<!-- Title: Static Time-to-Live (seconds) -->
+<!-- Title: TTL tĩnh (giây) -->
 
-Cache TTL for serving static assets (default: `31536000`).
+TTL cache cho việc phục vụ các tài sản tĩnh (mặc định: `31536000`).
 
 ### WebServer.static_index
-<!-- Title: Default Index Filename -->
+<!-- Title: Tên file index mặc định -->
 
-Default index file for directory roots (default: `index.html`).
+File index mặc định cho các thư mục gốc (mặc định: `index.html`).
 
 ### WebServer.server_signature
-<!-- Title: Server Signature -->
+<!-- Title: Chữ ký Server -->
 
-Server signature string included in headers (default: `xyOps`).
+Chuỗi chữ ký server đi kèm trong các header (mặc định: `PTOps`).
 
 ### WebServer.compress_text
-<!-- Title: Auto-Compress Text -->
+<!-- Title: Tự động nén văn bản -->
 
-Enables automatic gzip/deflate compression for text responses (default: `true`).
+Bật nén gzip/deflate tự động cho các phản hồi văn bản (mặc định: `true`).
 
 ### WebServer.enable_brotli
-<!-- Title: Use Brotli Compression -->
+<!-- Title: Sử dụng nén Brotli -->
 
-Enables Brotli compression when supported (default: `true`).
+Bật nén Brotli khi được hỗ trợ (mặc định: `true`).
 
 ### WebServer.timeout
-<!-- Title: Idle Socket Timeout (seconds) -->
+<!-- Title: Timeout socket rảnh rỗi (giây) -->
 
-Per-request idle timeout for incoming connections in seconds (default: `30`);
+Thời gian chờ rảnh rỗi trên mỗi yêu cầu đối với các kết nối đến tính bằng giây (mặc định: `30`).
 
 ### WebServer.regex_json
-<!-- Title: JSON Content-Type Regex -->
+<!-- Title: Regex Content-Type JSON -->
 
-Content-type regex pattern treated as JSON for response handling (default: `(text|javascript|js|json)`).
+Regex cho Content-Type được xử lý như JSON trong việc phản hồi (mặc định: `(text|javascript|js|json)`).
 
 ### WebServer.clean_headers
-<!-- Title: Clean Response Headers -->
+<!-- Title: Dọn dẹp Response Header -->
 
-Strips unsafe HTTP header characters from responses (default: `true`).
+Loại bỏ các ký tự HTTP header không an toàn khỏi phản hồi (mặc định: `true`).
 
 ### WebServer.log_socket_errors
-<!-- Title: Log Socket Errors -->
+<!-- Title: Ghi log lỗi Socket -->
 
-Controls logging of low-level socket errors (default: `false`).
+Kiểm soát việc ghi log các lỗi socket cấp thấp (mặc định: `false`).
 
-**Note:** This is rather noisy, and logs a lot of benign errors.
+**Lưu ý:** Tùy chọn này tạo ra khá nhiều tiếng ồn và ghi nhiều lỗi vô hại.
 
 ### WebServer.response_headers
-<!-- Title: Custom Response Headers -->
+<!-- Title: Response Header tùy chỉnh -->
 
-Extra headers added to all responses.  The default is to add none.
+Các header bổ sung được thêm vào tất cả các phản hồi. Mặc định là không thêm gì.
 
 ### WebServer.keep_alives
-<!-- Title: Keep-Alive Mode -->
+<!-- Title: Chế độ Keep-Alive -->
 <!-- Type: Menu -->
 <!-- Items: ["default", "request", "close"] -->
 
-Controls HTTP keep-alive behavior (see [keep_alives](https://github.com/jhuckaby/pixl-server-web#keep_alives) for details).
+Kiểm soát hành vi keep-alive của HTTP (xem [keep_alives](https://github.com/jhuckaby/pixl-server-web#keep_alives) để biết chi tiết).
 
 ### WebServer.keep_alive_timeout
-<!-- Title: Keep-Alive Timeout (seconds) -->
+<!-- Title: Timeout Keep-Alive (giây) -->
 
-Idle timeout for keep-alive connections in seconds (default: `30`).
+Thời gian chờ rảnh rỗi cho các kết nối keep-alive tính bằng giây (mặc định: `30`).
 
 ### WebServer.max_connections
-<!-- Title: Maximum Connections -->
+<!-- Title: Số kết nối tối đa -->
 
-Maximum concurrent socket connections allowed (default: `2048`).
+Số lượng kết nối socket đồng thời tối đa được phép (mặc định: `2048`).
 
 ### WebServer.max_concurrent_requests
-<!-- Title: Max Concurrent Requests -->
+<!-- Title: Số yêu cầu đồng thời tối đa -->
 
-Maximum number of concurrent requests allowed (default: `256`).
+Số lượng yêu cầu đồng thời tối đa được phép (mặc định: `256`).
 
 ### WebServer.log_requests
-<!-- Title: Log All Requests -->
+<!-- Title: Ghi log tất cả các yêu cầu -->
 
-Enables per-request transaction logging (default: `false`).
+Bật ghi log giao dịch trên mỗi yêu cầu (mặc định: `false`).
 
-**Note:** This is quite noisy.
+**Lưu ý:** Việc này tạo ra khá nhiều log.
 
 ### WebServer.legacy_callback_support
-<!-- Title: Legacy Callback Support -->
+<!-- Title: Hỗ trợ Callback cũ -->
 
-Enables legacy JSONP/callback patterns for older clients (default: `false`).  Do not enable this on production.
+Bật các pattern JSONP/callback cũ cho các client cũ hơn (mặc định: `false`). Không bật tính năng này trên môi trường production.
 
 ### WebServer.startup_message
-<!-- Title: Startup Message -->
+<!-- Title: Thông báo khi khởi động -->
 
-Emits a startup message with server URL to the console (default: `false`).  Please leave this disabled, as xyOps emits its own startup message.
+Phát một thông báo khởi động với URL server ra console (mặc định: `false`). Vui lòng để tắt cài đặt này, vì PTOps tự phát ra thông báo khởi động của riêng mình.
 
 ### WebServer.debug_ttl
-<!-- Title: Debug Time-to-Live Override -->
+<!-- Title: Ghi đè TTL Debug -->
 
-Sets the default cache TTL to `0` when running in debug mode (default: `true`).
+Đặt TTL bộ nhớ đệm mặc định thành `0` khi chạy ở chế độ debug (mặc định: `true`).
 
 ### WebServer.debug_bind_local
-<!-- Title: Debug Bind to Local -->
+<!-- Title: Bind cục bộ khi Debug -->
 
-Binds to localhost only when running in debug mode (default: `true`).
+Chỉ bind vào localhost khi chạy ở chế độ debug (mặc định: `true`).
 
 ### WebServer.whitelist
-<!-- Title: IP Whitelist -->
+<!-- Title: Whitelist IP -->
 
-List of client IPs/CIDRs explicitly allowed to access the webserver (default: all).
+Danh sách IP/CIDR client được phép truy cập webserver một cách rõ ràng (mặc định: tất cả).
 
 ### WebServer.blacklist
-<!-- Title: IP Blacklist -->
+<!-- Title: Blacklist IP -->
 
-List of client IPs/CIDRs explicitly denied at the webserver level (default: none).
+Danh sách IP/CIDR client bị từ chối rõ ràng ở cấp webserver (mặc định: không có).
 
 ### WebServer.uri_response_headers
-<!-- Title: URI Response Headers -->
+<!-- Title: Response Header theo URI -->
 
-Allows mapping URI regex to custom response headers.  xyOps uses this to set CSP and security headers for HTML paths. 
+Cho phép map regex URI với các response header tùy chỉnh. PTOps sử dụng tính năng này để đặt CSP và các header bảo mật cho các đường dẫn HTML.
 
 ### WebServer.https
-<!-- Title: Enable HTTPS (TLS) -->
+<!-- Title: Kích hoạt HTTPS (TLS) -->
 
-Enables HTTPS support (default: `true`).
+Bật hỗ trợ HTTPS (mặc định: `true`).
 
 ### WebServer.https_port
-<!-- Title: HTTPS Listen Port -->
+<!-- Title: Cổng lắng nghe HTTPS -->
 
-HTTPS listener port (default: `5523`).
+Cổng lắng nghe HTTPS (mặc định: `5523`).
 
 ### WebServer.https_cert_file
-<!-- Title: Certificate File Path -->
+<!-- Title: Đường dẫn file chứng chỉ -->
 
-TLS certificate file path (default: `conf/tls.crt`).
+Đường dẫn file chứng chỉ TLS (mặc định: `conf/tls.crt`).
 
-If this is a relative path, it is computed from the xyOps base directory, which is typically `/opt/xyops`.
+Nếu đây là một đường dẫn tương đối, nó sẽ được tính từ thư mục gốc của PTOps, thông thường là `/opt/xyops`.
 
 ### WebServer.https_key_file
 <!-- Title: Private Key File Path -->
 
-TLS private key file path (default: `conf/tls.key`).
+Đường dẫn file khóa riêng tư TLS (mặc định: `conf/tls.key`).
 
-If this is a relative path, it is computed from the xyOps base directory, which is typically `/opt/xyops`.
+Nếu đây là một đường dẫn tương đối, nó sẽ được tính từ thư mục gốc của PTOps, thông thường là `/opt/xyops`.
 
 ### WebServer.https_force
-<!-- Title: HTTPS Force Redirect -->
+<!-- Title: Bắt buộc chuyển hướng HTTPS -->
 
-Forces HTTP to redirect to HTTPS (default: `false`).
+Bắt buộc chuyển hướng từ HTTP sang HTTPS (mặc định: `false`).
 
 ### WebServer.https_timeout
-<!-- Title: HTTPS Idle Socket Timeout (seconds) -->
+<!-- Title: Timeout socket rảnh rỗi HTTPS (giây) -->
 
-Per-request idle timeout for HTTPS in seconds (default: `30`).
+Thời gian chờ rảnh rỗi cho HTTPS trên mỗi yêu cầu tính bằng giây (mặc định: `30`).
 
 ### WebServer.https_header_detect
-<!-- Title: HTTPS Header Detect -->
+<!-- Title: Phát hiện Header HTTPS -->
 
-Includes common headers to detect HTTPS when behind a reverse proxy.
+Bao gồm các header phổ biến để phát hiện HTTPS khi đứng sau một reverse proxy.
+
 
 
 ## User
-<!-- Title: User Manager Settings -->
+<!-- Title: Cấu hình Quản lý User -->
 <!-- Type: Group -->
 
-This section configures the user management system used by xyOps.
+Phần này cấu hình hệ thống quản lý user được sử dụng bởi PTOps.
 
-For full user configuration, see [pixl-server-user](https://github.com/jhuckaby/pixl-server-user).
+Để cấu hình đầy đủ cho user, xem [pixl-server-user](https://github.com/jhuckaby/pixl-server-user).
 
 ### User.session_expire_days
-<!-- Title: Session Expiry (days) -->
+<!-- Title: Hết hạn phiên làm việc (ngày) -->
 
-Session lifetime in days before requiring login again (default: `365`).
+Thời gian sống của phiên làm việc tính bằng ngày trước khi yêu cầu đăng nhập lại (mặc định: `365`).
 
 ### User.max_failed_logins_per_hour
-<!-- Title: Max Login Failures Per Hour -->
+<!-- Title: Số lần đăng nhập sai tối đa mỗi giờ -->
 
-Rate limit for failed logins per user per hour (default: `5`).
+Giới hạn số lần đăng nhập không thành công cho mỗi user mỗi giờ (mặc định: `5`).
 
 ### User.max_forgot_passwords_per_hour
-<!-- Title: Max Forgotten Passwords Per Hour -->
+<!-- Title: Yêu cầu quên mật khẩu tối đa mỗi giờ -->
 
-Rate limit for password reset requests per user per hour (default: `3`).
+Giới hạn số lượng yêu cầu đặt lại mật khẩu cho mỗi user mỗi giờ (mặc định: `3`).
 
 ### User.free_accounts
-<!-- Title: Free Accounts -->
+<!-- Title: Tài khoản tự đăng ký -->
 
-Allow users to self-register without admin invitation (default: `false`).
+Cho phép user tự đăng ký mà không cần thư mời của admin (mặc định: `false`).
 
 ### User.sort_global_users
-<!-- Title: Sort Global User List -->
+<!-- Title: Sắp xếp danh sách User toàn cục -->
 
-Sort global user lists (affects admin UI ordering, default: `false`).  Experimental.
+Sắp xếp danh sách user toàn cục (ảnh hưởng đến thứ tự sắp xếp trong UI admin, mặc định: `false`). Đang thử nghiệm.
 
 ### User.use_bcrypt
-<!-- Title: Use Bcrypt -->
+<!-- Title: Sử dụng Bcrypt -->
 
-Use bcrypt for password hashing (default: `true`).  Please leave this enabled.
+Sử dụng bcrypt để băm mật khẩu (mặc định: `true`). Vui lòng để bật tính năng này.
 
 ### User.use_csrf
-<!-- Title: Use CSRF Tokens -->
+<!-- Title: Sử dụng Token CSRF -->
 
-Use CSRF Tokens for extra security (default: `true`).  Please leave this enabled.
+Sử dụng Token CSRF để tăng tính bảo mật (mặc định: `true`). Vui lòng để bật tính năng này.
 
 ### User.mail_logger
-<!-- Title: Mail Logger -->
+<!-- Title: Logger thư điện tử -->
 
-Attach logger output to sent mail logs for diagnostics (default: `true`).
+Đính kèm output logger vào nhật ký thư gửi đi để chẩn đoán (mặc định: `true`).
 
 ### User.valid_username_match
-<!-- Title: Valid Username Regex -->
+<!-- Title: Regex Username hợp lệ -->
 
-Allowed characters for usernames (default: `^[\\w\\-\\.]+$`).
+Các ký tự được phép cho username (mặc định: `^[\\w\\-\\.]+$`).
 
 ### User.block_username_match
-<!-- Title: Block Username Regex -->
+<!-- Title: Regex chặn Username -->
 
-A regex for reserved/blocked usernames (for security and namespace protection).
+Một regex cho các username được bảo lưu/bị chặn (để bảo mật và bảo vệ không gian tên).
 
 ### User.cookie_settings
-<!-- Title: Cookie Settings -->
+<!-- Title: Cấu hình Cookie -->
 
-Sets cookie path, secure policy, httpOnly, and sameSite. Controls session cookie attributes.
+Thiết lập đường dẫn cookie, chính sách bảo mật, httpOnly và sameSite. Kiểm soát các thuộc tính cookie phiên làm việc.
 
 
 
 ## SSO
 
-This section configures Single Sign-On using trusted headers. See the [SSO guide](sso.md) for setup details and examples.
+Phần này cấu hình Single Sign-On bằng cách sử dụng các header đáng tin cậy. Xem [hướng dẫn SSO](sso.md) để biết chi tiết thiết lập và các ví dụ.
 
 ### SSO.enabled
 
-This boolean enables SSO and disables local username/password login (default: `false`).
+Giá trị boolean này bật SSO và tắt tính năng đăng nhập bằng username/password cục bộ (mặc định: `false`).
 
 ### SSO.whitelist
 
-This array of IPs/CIDRs limits which client addresses may send trusted headers (default allows localhost, private and link-local ranges).
+Mảng các IP/CIDR này giới hạn địa chỉ client nào có thể gửi các header đáng tin cậy (mặc định cho phép localhost, dải mạng riêng tư và link-local).
 
 ### SSO.header_map
 
-This object maps incoming trusted headers to xyOps user fields (`username`, `full_name`, `email`, `groups`).
+Object này ánh xạ các header đáng tin cậy gửi đến với các trường user của PTOps (`username`, `full_name`, `email`, `groups`).
 
 ### SSO.cleanup_username
 
-This boolean cleans up the username when derived from an email (strip illegal chars, lowercase, use local-part) (default: `true`).
+Giá trị boolean này làm sạch username khi lấy từ một email (loại bỏ các ký tự không hợp lệ, viết thường, sử dụng phần local-part) (mặc định: `true`).
 
 ### SSO.cleanup_full_name
 
-This boolean derives a display name from an email (use local-part, replace dots with spaces, title-case) (default: `true`).
+Giá trị boolean này lấy tên hiển thị từ một email (sử dụng phần local-part, thay thế các dấu chấm bằng dấu cách, viết hoa chữ cái đầu) (mặc định: `true`).
 
 ### SSO.group_role_map
 
-This object maps IdP group names to xyOps role IDs to auto-assign roles on login (default: `{}`).
+Object này ánh xạ tên nhóm IdP với ID role của PTOps để tự động chỉ định các role khi đăng nhập (mặc định: `{}`).
 
 ### SSO.group_role_separator
 
-Optional character for splitting the external group list (default: `,`).
+Ký tự tùy chọn để phân tách danh sách nhóm bên ngoài (mặc định: `,`).
 
 ### SSO.group_privilege_map
 
-This object maps IdP group names to privilege keys to auto-assign privileges on login (default: `{}`).
+Object này ánh xạ tên nhóm IdP với các key privilege để tự động chỉ định các privilege khi đăng nhập (mặc định: `{}`).
 
 ### SSO.replace_roles
 
-This boolean replaces all existing user roles with those from `group_role_map` on each login (default: `false`).
+Giá trị boolean này thay thế tất cả các role hiện có của user bằng các role từ `group_role_map` trong mỗi lần đăng nhập (mặc định: `false`).
 
 ### SSO.replace_privileges
 
-This boolean replaces all existing user privileges with those from `group_privilege_map` on each login (default: `false`).
+Giá trị boolean này thay thế tất cả các privilege hiện có của user bằng các privilege từ `group_privilege_map` trong mỗi lần đăng nhập (mặc định: `false`).
 
 ### SSO.admin_bootstrap
 
-This string temporarily grants full admin to the exact matching username to bootstrap initial setup; remove after configuring groups (default: empty).
+Chuỗi này tạm thời cấp toàn bộ quyền admin cho đúng username khớp để thực hiện thiết lập ban đầu; xóa đi sau khi cấu hình các nhóm (mặc định: trống).
 
 ### SSO.logout_url
 
-This string is the URL to redirect to after xyOps clears its session, so your auth proxy/IdP can complete logout (e.g., `/oauth2/sign_out?rd=...`).
+Chuỗi này là URL để chuyển hướng đến sau khi PTOps xóa phiên của nó, để proxy xác thực/IdP của bạn có thể hoàn tất đăng xuất (ví dụ: `/oauth2/sign_out?rd=...`).
 
 
 
@@ -1153,10 +1147,10 @@ This string is the URL to redirect to after xyOps clears its session, so your au
 
 ### Debug.enabled
 
-Enables remote server debugging via Chrome Dev Tools (default: `false`).
+Bật gỡ lỗi server từ xa qua Chrome Dev Tools (mặc định: `false`).
 
 
 
 ## config_overrides_file
 
-When settings are changed via the UI, overrides are saved here and applied on top of `config.json`.
+Khi các cài đặt được thay đổi thông qua UI, các cấu hình ghi đè sẽ được lưu ở đây và được áp dụng đè lên trên `config.json`.

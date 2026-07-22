@@ -1,0 +1,47 @@
+name: ptops
+
+services:
+  ptops:
+    image: ptops:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_VERSION: "22"
+        XYSAT_VERSION: "v1.0.37"
+        UV_VERSION: "0.11.30"
+
+    container_name: ptops
+    hostname: "${PTOPS_HOSTNAME:-ptops01}"
+    restart: unless-stopped
+    stop_grace_period: 30s
+
+    environment:
+      TZ: "${TZ:-Asia/Ho_Chi_Minh}"
+      XYOPS_hostname: "${PTOPS_HOSTNAME:-ptops01}"
+      XYOPS_masters: "${PTOPS_MASTERS:-ptops01}"
+      XYOPS_base_app_url: "${PTOPS_BASE_APP_URL:-http://localhost:5522}"
+      XYOPS_xysat_local: "${PTOPS_XYSAT_LOCAL:-true}"
+      XYOPS_GOOGLE_CLIENT_SECRET: "${XYOPS_GOOGLE_CLIENT_SECRET:-}"
+
+    ports:
+      - "${PTOPS_HTTP_PORT:-5522}:5522"
+      - "${PTOPS_SATELLITE_PORT:-5523}:5523"
+
+    volumes:
+      - ptops-conf:/opt/xyops/conf
+      - ptops-data:/opt/xyops/data
+      - ptops-logs:/opt/xyops/logs
+      # Enable only when PTOps jobs or marketplace plugins must launch containers.
+      # - /var/run/docker.sock:/var/run/docker.sock
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  ptops-conf:
+  ptops-data:
+  ptops-logs:

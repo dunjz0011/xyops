@@ -1,157 +1,157 @@
-# xyOps Support Subscription Terms
+# Điều Khoản Hỗ Trợ PTOps
 
-**Last Updated:** March 22, 2026
+**Cập nhật lần cuối:** 22 Tháng 3, 2026
 
-These Support Subscription Terms ("Terms") govern the purchase and use of paid support services ("Support") provided by PixlCore LLC ("PixlCore", "we", "us", or "our") for the xyOps software.
+Các Điều Khoản Hỗ Trợ này ("Điều Khoản") điều chỉnh việc mua và sử dụng dịch vụ hỗ trợ có phí ("Support") được cung cấp bởi PixlCore LLC ("PixlCore", "chúng tôi", hoặc "của chúng tôi") cho phần mềm PTOps.
 
-By purchasing or using Support, you ("Customer", "you") agree to these Terms.
+Bằng việc mua hoặc sử dụng Support, bạn ("Khách hàng", "bạn") đồng ý với các Điều Khoản này.
 
-## 1. Overview
+## 1. Tổng Quan
 
-xyOps is self-hosted software. PixlCore does not host, operate, or control Customer infrastructure.
+PTOps là phần mềm tự triển khai (self-hosted). PixlCore không host, vận hành, hoặc kiểm soát hạ tầng của Khách hàng.
 
-Paid plans provide **Support services only**, which may include technical assistance, guidance, and updates as described on our website or in your order.
+Các gói có phí chỉ cung cấp **dịch vụ Support**, có thể bao gồm hỗ trợ kỹ thuật, hướng dẫn, và cập nhật như được mô tả trên website của chúng tôi hoặc trong đơn hàng của bạn.
 
-## 2. Support Subscriptions
+## 2. Đăng Ký Support
 
-PixlCore offers Support subscriptions (e.g., Professional, Enterprise) on a monthly or annual basis.
+PixlCore cung cấp đăng ký Support (ví dụ: Professional, Enterprise) theo hàng tháng hoặc hàng năm.
 
-Support is provided only during an active subscription term.
+Support chỉ được cung cấp trong thời hạn đăng ký còn hiệu lực.
 
-The scope of Support may vary by plan and is limited to what is explicitly described in the applicable plan.
+Phạm vi của Support có thể khác nhau theo từng gói và chỉ giới hạn trong những gì được mô tả rõ ràng trong gói áp dụng.
 
-## 3. Customer Responsibilities
+## 3. Trách Nhiệm Của Khách Hàng
 
-Customer is solely responsible for:
+Khách hàng hoàn toàn chịu trách nhiệm về:
 
-- Hosting, operating, and maintaining their infrastructure
-- System configuration, security, and backups
-- All data stored or processed using xyOps
+- Hosting, vận hành, và duy trì hạ tầng của họ
+- Cấu hình hệ thống, an ninh, và backup
+- Toàn bộ dữ liệu được lưu trữ hoặc xử lý bằng PTOps
 
-PixlCore is not responsible for outages, data loss, misconfiguration, or performance issues related to Customer systems.
+PixlCore không chịu trách nhiệm cho sự cố ngừng hoạt động, mất dữ liệu, cấu hình sai, hoặc vấn đề hiệu suất liên quan đến hệ thống của Khách hàng.
 
-## 4. Support Scope
+## 4. Phạm Vi Support
 
-Support may include:
+Support có thể bao gồm:
 
-- Technical guidance and troubleshooting
-- Assistance with installation, configuration, and usage
-- Best-practice recommendations
+- Hướng dẫn kỹ thuật và xử lý sự cố
+- Hỗ trợ cài đặt, cấu hình, và sử dụng
+- Khuyến nghị các thực hành tốt nhất
 
-Support does not include:
+Support không bao gồm:
 
-- Managing Customer infrastructure
-- Custom development or feature implementation
-- 24/7 on-call services (unless explicitly agreed in writing)
+- Quản lý hạ tầng của Khách hàng
+- Phát triển tuỳ chỉnh hoặc triển khai tính năng
+- Dịch vụ trực 24/7 (trừ khi được đồng ý rõ ràng bằng văn bản)
 
-Additional support features vary by tier:
+Các tính năng hỗ trợ bổ sung khác nhau theo từng cấp:
 
-- Professional Tier: Ticket support, 24 hour turnaround
-- Enterprise Tier: Priority ticket support, 1 hour turnaround, live chat access
+- Cấp Professional: Hỗ trợ ticket, phản hồi trong 24 giờ
+- Cấp Enterprise: Hỗ trợ ticket ưu tiên, phản hồi trong 1 giờ, truy cập live chat
 
-Response times are in normal business hours (US Pacific), and exclude weekends and US holidays.
+Thời gian phản hồi tính theo giờ làm việc thông thường (múi giờ US Pacific), không bao gồm cuối tuần và ngày lễ Hoa Kỳ.
 
-## 5. Fees and Billing
+## 5. Phí Và Thanh Toán
 
-### 5.1 General
+### 5.1 Tổng Quan
 
-Support subscriptions require payment of applicable fees.
+Đăng ký Support yêu cầu thanh toán các phí áp dụng.
 
-All fees are non-refundable unless otherwise stated.
+Tất cả các phí đều không được hoàn lại trừ khi có quy định khác.
 
-### 5.2 Credit Card Billing (Polar / Stripe)
+### 5.2 Thanh Toán Thẻ Tín Dụng (Polar / Stripe)
 
-For self-service purchases:
+Đối với các giao dịch mua tự phục vụ (self-service):
 
-- Subscriptions are billed automatically via credit card
-- Subscriptions renew automatically unless canceled
-- Failed payments may result in suspension or termination of Support
+- Đăng ký được thanh toán tự động qua thẻ tín dụng
+- Đăng ký tự động gia hạn trừ khi bị hủy
+- Thanh toán thất bại có thể dẫn đến việc đình chỉ hoặc chấm dứt Support
 
-### 5.3 Invoice-Based Billing
+### 5.3 Thanh Toán Dựa Trên Invoice
 
-PixlCore may, at its discretion, offer invoice-based billing.
+PixlCore có thể, theo quyết định riêng, cung cấp thanh toán dựa trên invoice.
 
-- Payment terms are typically Net 30 unless otherwise agreed
-- Invoices must be paid by the due date
-- Late payments may result in suspension of Support
+- Điều khoản thanh toán thường là Net 30 trừ khi có thỏa thuận khác
+- Invoice phải được thanh toán trước hạn
+- Thanh toán muộn có thể dẫn đến việc đình chỉ Support
 
-### 5.4 Purchase Orders
+### 5.4 Purchase Order
 
-PixlCore may accept Customer-issued purchase orders ("POs") for administrative convenience.
+PixlCore có thể chấp nhận purchase order ("PO") do Khách hàng phát hành để thuận tiện về hành chính.
 
-- Acceptance of a PO does not modify these Terms
-- Any additional or conflicting terms in a PO are rejected and shall have no effect
-- These Terms govern all purchases and supersede any PO terms
+- Việc chấp nhận một PO không sửa đổi các Điều Khoản này
+- Bất kỳ điều khoản bổ sung hoặc mâu thuẫn nào trong một PO đều bị bác bỏ và không có hiệu lực
+- Các Điều Khoản này chi phối tất cả các giao dịch mua và có ưu tiên cao hơn bất kỳ điều khoản PO nào
 
-### 5.5 Payment Methods
+### 5.5 Phương Thức Thanh Toán
 
-Accepted payment methods may include:
+Các phương thức thanh toán được chấp nhận có thể bao gồm:
 
-- Credit card
-- ACH / bank transfer
-- Other methods as agreed in writing
+- Thẻ tín dụng
+- Chuyển khoản ACH / ngân hàng
+- Các phương thức khác theo thỏa thuận bằng văn bản
 
-## 6. Term and Termination
+## 6. Thời Hạn Và Chấm Dứt
 
-Support subscriptions begin on the agreed start date and continue for the selected term.
+Đăng ký Support bắt đầu từ ngày đã thỏa thuận và tiếp tục trong thời hạn đã chọn.
 
-Customer may cancel renewal at any time, but fees already paid are non-refundable.
+Khách hàng có thể hủy việc gia hạn tại bất kỳ thời điểm nào, nhưng các phí đã thanh toán sẽ không được hoàn lại.
 
-PixlCore may suspend or terminate Support for:
+PixlCore có thể đình chỉ hoặc chấm dứt Support vì:
 
-- Non-payment
-- Violation of these Terms
-- Misuse of the software or Support services
+- Không thanh toán
+- Vi phạm các Điều Khoản này
+- Sử dụng sai phần mềm hoặc dịch vụ Support
 
-## 7. Intellectual Property
+## 7. Sở Hữu Trí Tuệ
 
-xyOps software is provided under its applicable open-source license.
+Phần mềm PTOps được cung cấp theo giấy phép mã nguồn mở áp dụng.
 
-These Terms govern **Support services only** and do not grant additional rights to the software beyond its license.
+Các Điều Khoản này chỉ chi phối **dịch vụ Support** và không cấp thêm quyền đối với phần mềm ngoài giấy phép của nó.
 
-## 8. Disclaimer of Warranties
+## 8. Từ Chối Bảo Đảm
 
-Support is provided "as is" and "as available."
+Support được cung cấp "nguyên trạng" (as is) và "khi có sẵn" (as available).
 
-PixlCore disclaims all warranties, express or implied, including:
+PixlCore từ chối mọi bảo đảm, rõ ràng hoặc ngụ ý, bao gồm:
 
-- Merchantability
-- Fitness for a particular purpose
-- Non-infringement
+- Khả năng bán được (merchantability)
+- Sự phù hợp cho một mục đích cụ thể
+- Không vi phạm
 
-## 9. Limitation of Liability
+## 9. Giới Hạn Trách Nhiệm
 
-To the maximum extent permitted by law:
+Ở mức tối đa được pháp luật cho phép:
 
-PixlCore's total liability arising out of or related to these Terms shall not exceed the total fees paid by Customer in the twelve (12) months preceding the claim.
+Tổng trách nhiệm của PixlCore phát sinh từ hoặc liên quan đến các Điều Khoản này sẽ không vượt quá tổng phí mà Khách hàng đã thanh toán trong mười hai (12) tháng trước khi có khiếu nại.
 
-PixlCore shall not be liable for:
+PixlCore sẽ không chịu trách nhiệm cho:
 
-- Indirect, incidental, or consequential damages
-- Loss of data, revenue, or profits
-- System downtime or operational failures
+- Thiệt hại gián tiếp, ngẫu nhiên, hoặc hệ quả
+- Mất dữ liệu, doanh thu, hoặc lợi nhuận
+- Ngừng hoạt động hệ thống hoặc lỗi vận hành
 
-## 10. Indemnification
+## 10. Bồi Thường
 
-Customer agrees to indemnify and hold harmless PixlCore from any claims arising out of:
+Khách hàng đồng ý bồi thường và giữ cho PixlCore vô hại từ bất kỳ khiếu nại nào phát sinh từ:
 
-- Customer's use of xyOps
-- Customer's infrastructure or data
-- Violations of law or third-party rights
+- Việc Khách hàng sử dụng PTOps
+- Hạ tầng hoặc dữ liệu của Khách hàng
+- Vi phạm pháp luật hoặc quyền của bên thứ ba
 
-## 11. Governing Law
+## 11. Luật Áp Dụng
 
-These Terms are governed by the laws of the State of Delaware, without regard to conflict-of-law principles.
+Các Điều Khoản này được chi phối bởi luật của Tiểu bang Delaware, không tính đến các nguyên tắc xung đột pháp luật.
 
-## 12. Changes to Terms
+## 12. Thay Đổi Điều Khoản
 
-PixlCore may update these Terms from time to time.
+PixlCore có thể cập nhật các Điều Khoản này theo thời gian.
 
-All historical versions of this document are available online: https://github.com/pixlcore/xyops/blob/main/docs/terms.md
+Tất cả các phiên bản trước đây của tài liệu này có sẵn trực tuyến: https://github.com/pixlcore/xyops/blob/main/docs/terms.md
 
-Continued use of Support after changes constitutes acceptance of the updated Terms.
+Việc tiếp tục sử dụng Support sau khi có thay đổi đồng nghĩa với việc chấp nhận các Điều Khoản đã cập nhật.
 
-## 13. Contact
+## 13. Liên Hệ
 
 ```
 PixlCore LLC

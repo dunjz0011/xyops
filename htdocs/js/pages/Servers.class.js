@@ -1214,7 +1214,7 @@ Page.Servers = class Servers extends Page.ServerUtils {
 		}
 		
 		var html = '';
-		html += `<div class="dialog_intro">This allows you to set a "watch" on a server, which means that xyOps will take snapshots of it every minute until the watch duration elapses.</div>`;
+		html += `<div class="dialog_intro">This allows you to set a "watch" on a server, which means that PTOps will take snapshots of it every minute until the watch duration elapses.</div>`;
 		html += '<div class="dialog_box_content">';
 		
 		html += this.getFormRow({
@@ -1411,7 +1411,7 @@ Page.Servers = class Servers extends Page.ServerUtils {
 		
 		if (this.online) {
 			// server is online
-			html += `<div class="dialog_intro">Are you sure you want to permanently delete the server <b>${nice_server}</b>?  Note that this will <b>shut down</b> and <b>uninstall</b> xyOps Satellite from the server.</div>`;
+			html += `<div class="dialog_intro">Are you sure you want to permanently delete the server <b>${nice_server}</b>?  Note that this will <b>shut down</b> and <b>uninstall</b> PTOps Satellite from the server.</div>`;
 			html += '<div class="dialog_box_content">';
 			
 			html += this.getFormRow({

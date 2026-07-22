@@ -3587,7 +3587,7 @@
 					"group": "root",
 					"threads": 11,
 					"time": 2854,
-					"command": "xyOps Satellite",
+					"command": "PTOps Satellite",
 					"started": 1765330750
 				},
 				{

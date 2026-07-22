@@ -1,51 +1,51 @@
-# xyOps Wire Protocol
+# Wire Protocol của PTOps
 
-## Overview
+## Tổng Quan
 
-This document describes the **xyOps Wire Protocol** (XYWP) v1.0, which is a standard method of communication between two processes that may know nothing about each other.  The processes may be written in different languages, or be binary executables.  The wire protocol simply defines a means of exchanging structured data between them in a language-agnostic way.
+Tài liệu này mô tả **Wire Protocol của PTOps** (XYWP) v1.0, là phương thức chuẩn để giao tiếp giữa hai process có thể không biết gì về nhau. Các process có thể được viết bằng ngôn ngữ khác nhau, hoặc là file thực thi nhị phân. Wire protocol chỉ đơn giản định nghĩa một cách trao đổi dữ liệu có cấu trúc giữa chúng theo cách không phụ thuộc ngôn ngữ.
 
-xyOps uses the wire protocol to communicate with its Plugins, which may be written in any language.
+PTOps dùng wire protocol để giao tiếp với các Plugin của nó, có thể được viết bằng bất kỳ ngôn ngữ nào.
 
-- **Title**: xyOps Wire Protocol
+- **Tiêu đề**: Wire Protocol của PTOps
 - **ID**: XYWP
-- **Version**: 1.0
-- **Date**: November 16, 2025
-- **Authors**: Joseph Huckaby (PixlCore)
+- **Phiên bản**: 1.0
+- **Ngày**: 16 tháng 11, 2025
+- **Tác giả**: Joseph Huckaby (PixlCore)
 
-XYWP uses [JSON](https://en.wikipedia.org/wiki/JSON) over [STDIO](https://en.wikipedia.org/wiki/Standard_streams) pipes for the basis of communication.  Specifically, [NDJSON](https://github.com/ndjson/ndjson-spec) is utilized, meaning a full JSON message is compacted onto a single line.  The sender needs to delimit the JSON with a single EOL character (ASCII 10), and the receiver needs to line-read to delimit the incoming message.  XYWP builds on this base protocol by introducing a few key properties into the top-level JSON, which allow the receiver to learn more about the message (see below).
+XYWP sử dụng [JSON](https://en.wikipedia.org/wiki/JSON) qua các pipe [STDIO](https://en.wikipedia.org/wiki/Standard_streams) làm nền tảng giao tiếp. Cụ thể, [NDJSON](https://github.com/ndjson/ndjson-spec) được sử dụng, nghĩa là một message JSON đầy đủ được nén lại trên một dòng duy nhất. Bên gửi cần phân giới message JSON bằng một ký tự EOL duy nhất (ASCII 10), và bên nhận cần đọc theo dòng để phân giới message đến. XYWP xây dựng trên protocol nền này bằng cách thêm một vài thuộc tính quan trọng vào JSON cấp cao nhất, cho phép bên nhận biết thêm về message (xem bên dưới).
 
-In most cases the two parties communicating are xyOps / xySat, and a Plugin, which is spawned as a subprocess with STDIO pipes connected to the parent.  Meaning, xyOps can send serialized JSON messages directly into the child's STDIN stream, and likewise the child process can write serialized JSON to its STDOUT stream, which is captured back in the parent process.
+Trong hầu hết trường hợp, hai bên giao tiếp là PTOps / xySat, và một Plugin, được khởi tạo dưới dạng subprocess với pipe STDIO kết nối đến process cha. Nghĩa là, PTOps có thể gửi message JSON đã serialize trực tiếp vào luồng STDIN của process con, và tương tự process con có thể viết JSON đã serialize ra luồng STDOUT của nó, được bắt lại ở process cha.
 
-Only STDIN and STDOUT streams are used.  STDERR is **not** part of the protocol, and is usually captured by the parent process as raw text and displayed to the user, in the event of an error.
+Chỉ luồng STDIN và STDOUT được sử dụng. STDERR **không** phải là một phần của protocol, và thường được process cha bắt lại dưới dạng văn bản thô và hiển thị cho người dùng, trong trường hợp có lỗi.
 
-## Properties
+## Các Thuộc Tính
 
-The only property always present at the top-level of all XYWP messages is `xy`, which indicates the wire protocol version, and should always be set to `1`.
+Thuộc tính duy nhất luôn có mặt ở cấp cao nhất của mọi message XYWP là `xy`, cho biết phiên bản wire protocol, và luôn nên được đặt là `1`.
 
-### Requests
+### Request
 
-When xyOps is sending a "request" to a Plugin, the following properties will be included at the top-level of the JSON message:
+Khi PTOps gửi một "request" đến một Plugin, các thuộc tính sau sẽ được bao gồm ở cấp cao nhất của message JSON:
 
-| Property Name | Type | Description |
+| Tên Thuộc Tính | Kiểu | Mô Tả |
 |---------------|------|-------------|
-| `xy` | Number | **(Required)** The xyOps Wire Protocol version, which should be set to `1`. |
-| `type` | String | The type of message being sent, which varies based on the intent. |
+| `xy` | Number | **(Bắt buộc)** Phiên bản Wire Protocol của PTOps, nên đặt là `1`. |
+| `type` | String | Loại message được gửi, thay đổi tuỳ theo mục đích. |
 
-### Responses
+### Response
 
-When a Plugin is sending a "response" back to xyOps, the following properties will be included at the top-level of the JSON message:
+Khi một Plugin gửi "response" trở lại PTOps, các thuộc tính sau sẽ được bao gồm ở cấp cao nhất của message JSON:
 
-| Property Name | Type | Description |
+| Tên Thuộc Tính | Kiểu | Mô Tả |
 |---------------|------|-------------|
-| `xy` | Number | **(Required)** The xyOps Wire Protocol version, which should be set to `1`. |
-| `code` | Mixed | If the message is a response, the `code` property determines success or failure.  Any "falsey" value such as `0` or `false` indicates success.  Any "truthy" value indicates an error, and also provides the error code. |
-| `description` | String | In the event of an error, this property should contain a short human-readable description of the error.  It is optional for success. |
+| `xy` | Number | **(Bắt buộc)** Phiên bản Wire Protocol của PTOps, nên đặt là `1`. |
+| `code` | Mixed | Nếu message là một response, thuộc tính `code` xác định thành công hoặc thất bại. Bất kỳ giá trị "falsey" nào như `0` hoặc `false` cho biết thành công. Bất kỳ giá trị "truthy" nào cho biết lỗi, và cũng cung cấp mã lỗi. |
+| `description` | String | Trong trường hợp có lỗi, thuộc tính này nên chứa mô tả ngắn dễ đọc về lỗi. Tuỳ chọn đối với thành công. |
 
-When a `code` property is present in a response message, it indicates that the Plugin has completed and will exit.  If the `code` property is **not** present, it indicates that the Plugin is still in progress, and is providing an intermediate update.
+Khi một thuộc tính `code` có mặt trong message response, nó cho biết Plugin đã hoàn tất và sẽ exit. Nếu thuộc tính `code` **không** có mặt, nó cho biết Plugin vẫn đang chạy, và đang cung cấp một cập nhật trung gian.
 
-## Examples
+## Ví Dụ
 
-Here is an example request to launch a job (Event Plugin):
+Đây là một request ví dụ để khởi chạy một job (Event Plugin):
 
 ```json
 {
@@ -56,23 +56,23 @@ Here is an example request to launch a job (Event Plugin):
 	"plugin": "pmi11dqsxcy",
 	"server": "smf4j79snhe",
 	"now": 1763256572.024,
-	/* See Job data structure for more */
+	/* Xem cấu trúc dữ liệu Job để biết thêm */
 }
 ```
 
-Here is an example response which reports progress (i.e. no `code` property):
+Đây là một response ví dụ báo tiến độ (nghĩa là không có thuộc tính `code`):
 
 ```json
 { "xy": 1, "progress": 0.5 }
 ```
 
-Here is an example "final" response (with `code` property) indicating success, and that the Plugin will exit shortly:
+Đây là một response "cuối" ví dụ (có thuộc tính `code`) cho biết thành công, và Plugin sẽ exit ngay sau đó:
 
 ```json
 { "xy": 1, "code": 0 }
 ```
 
-Here is an example final response indicating an error:
+Đây là một response cuối ví dụ cho biết lỗi:
 
 ```json
 { "xy": 1, "code": 999, "description": "Failed to connect to database." }
@@ -80,11 +80,11 @@ Here is an example final response indicating an error:
 
 ## Passthrough
 
-XYWP is designed to support "passthrough" JSON, meaning if a child process emits JSON to STDOUT that **isn't** recognized as a XYWP message (it doesn't have a top-level `xy` property or it isn't set to `1`), the message will be completely ignored, and "passed through" as plain text.
+XYWP được thiết kế để hỗ trợ JSON "passthrough", nghĩa là nếu một process con phát ra JSON tới STDOUT mà **không** được nhận diện là message XYWP (không có thuộc tính `xy` ở cấp cao nhất hoặc nó không được đặt là `1`), message sẽ bị hoàn toàn bỏ qua, và "truyền qua" (passed through) như văn bản thuần.
 
-In the case of xyOps Event Plugins running jobs, "plain old JSON" can be emitted to STDOUT and will be largely ignored by xyOps, and simply logged as part of the job output.
+Trong trường hợp Event Plugin của PTOps chạy job, JSON thông thường có thể được phát ra tới STDOUT và sẽ chủ yếu bị PTOps bỏ qua, và chỉ đơn giản được log lại như một phần của output job.
 
-## References
+## Tham Khảo
 
 - [JSON](https://en.wikipedia.org/wiki/JSON)
 - [NDJSON](https://github.com/ndjson/ndjson-spec)

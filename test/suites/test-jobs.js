@@ -65,7 +65,7 @@ exports.tests = [
 			method: 'POST',
 			headers: [
 				{ name: 'Content-Type', value: 'application/json' },
-				{ name: 'User-Agent', value: 'xyOps/WebHook' }
+				{ name: 'User-Agent', value: 'PTOps/WebHook' }
 			],
 			body: '{\n  "text": "{{text}}",\n  "content": "{{text}}"\n}',
 			timeout: 10,

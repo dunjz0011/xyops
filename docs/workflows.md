@@ -1,102 +1,99 @@
 # Workflows
 
-## Overview
+## Tổng Quan
 
-Workflows in xyOps are visual graphs of nodes connected by wires that control job execution. Conceptually, a workflow is an event with an embedded graph and some special runtime behavior. When a workflow runs, it becomes a "workflow job" which may spawn any number of sub-jobs on connected nodes. The system manages their lifecycle, collects results, applies actions and limits, and tracks everything in the parent job record.
+Workflow trong PTOps là các đồ thị trực quan gồm các node được kết nối bằng dây dẫn để điều khiển việc thực thi job. Về khái niệm, một workflow là một event có kèm đồ thị và một số hành vi runtime đặc biệt. Khi workflow chạy, nó trở thành một "job workflow" có thể sinh ra bất kỳ số lượng sub-job trên các node được kết nối. Hệ thống quản lý toàn bộ lifecycle của chúng, thu thập kết quả, áp dụng action và limit, và theo dõi mọi thứ trong bản ghi job cha.
 
-How a workflow runs, at a glance:
+Cách một workflow chạy, tổng quan:
 
-- A trigger node fires (e.g. manual trigger, schedule trigger, etc.). That starts the workflow job and "lights" the trigger node.
-- All nodes wired from that trigger activate. Multiple outputs run in parallel unless constrained by limits.
-- Event or job nodes launch sub-jobs. Their completion result determines which outgoing wires fire next.
-- Controller nodes implement fan-out/fan-in, loops, conditionals, delays and multiplexing.
-- Action and limit nodes visually attach to event/job nodes and are merged into the launched sub-jobs.
-- The workflow completes when no nodes are active and all sub-jobs are finished or aborted. The parent job's result summarizes overall success/warnings/failures.
+- Một trigger node kích hoạt (ví dụ: trigger manual, trigger schedule, v.v.). Điều này khởi động job workflow và "sáng đèn" trigger node đó.
+- Tất cả node được nối dây từ trigger đó sẽ kích hoạt. Nhiều output chạy song song trừ khi bị hạn chế bởi limit.
+- Event node hoặc job node khởi chạy sub-job. Kết quả hoàn thành của chúng quyết định dây output nào sẽ kích hoạt tiếp theo.
+- Controller node thực hiện fan-out/fan-in, lặp, điều kiện và multiplex.
+- Action node và limit node gắn trực quan vào event/job node và được merge vào các sub-job đã khởi chạy.
+- Workflow hoàn thành khi không còn node nào active và tất cả sub-job đã hoàn tất hoặc bị huỷ. Kết quả của job cha tóm tắt tổng thể thành công/cảnh báo/thất bại.
 
-Workflows are powerful because they combine reusable events, ad-hoc jobs, resource limits, job actions, and flow control on one graph. They run everything in parallel by default, with concurrency governed by resource limits.
+Workflow mạnh mẽ vì chúng kết hợp event tái sử dụng, job tùy biến, resource limit, job action, và điều khiển luồng trên một đồ thị. Chúng chạy mọi thứ song song theo mặc định, với concurrency được kiểm soát bởi resource limit.
 
+## Khi Nào Nên Dùng Workflow
 
-## When To Use Workflows
+- **Điều phối (Orchestration)**: Điều phối nhiều job với logic điều kiện, join, và/hoặc delay.
+- **Xử lý fan-out**: Chia một dataset hoặc danh sách file và xử lý các item song song, sau đó gộp kết quả.
+- **Chạy đa target**: Chạy cùng một job trên nhiều server (multiplex) với tuỳ chọn giãn cách (stagger).
+- **Tái sử dụng**: Kết hợp các event đã định nghĩa sẵn thành các luồng lớn hơn, hoặc tạo job node tùy biến khi việc làm một lần dễ hơn.
+- **Xử lý hậu kỳ (Post-processing)**: Gắn action trực tiếp vào node với điều kiện, bao gồm thành công, thất bại, cảnh báo, và tag tuỳ chỉnh.
 
-- **Orchestration**: Coordinate multiple jobs with conditional logic, joins, and/or delays.
-- **Fan-out processing**: Split a dataset or file list and process items concurrently, then join results.
-- **Multi-target runs**: Run the same job on many servers (multiplex) with optional staggering.
-- **Reusability**: Compose pre-defined events into larger flows, or create ad-hoc job nodes when one-offs are easier.
-- **Post-processing**: Attach actions directly to nodes with conditions, including success, failure, warnings, and custom tags.
+## Trình Chỉnh Sửa Đồ Thị
 
+Trình chỉnh sửa workflow cung cấp:
 
-## Graph Editor
+- **Kết nối Node**: Nhấn nút cực (pole) để hàn kết nối. Các cặp không hợp lệ bị UI chặn. Điều kiện xuất hiện trực tiếp trên dây; nhấn để đổi.
+- **Thêm Node**: Nhấn "Add Node" hoặc hàn từ một cực và nhấn vào nền để chèn node mới tại vị trí đó.
+- **Nhân Bản**: Chọn một hoặc nhiều node (shift-click) và nhân bản; các kết nối giữa các node được chọn sẽ được giữ lại.
+- **Tách Rời**: Tách tất cả kết nối đến/từ node đã chọn.
+- **Xoá**: Xoá node đã chọn và bất kỳ dây kết nối nào. Xoá trigger node cũng xoá luôn trigger bên dưới.
+- **Undo/Redo**: Lên đến 100 cấp cho tất cả thao tác chỉnh sửa.
+- **Zoom/Cuộn**: Zoom vào/ra/đặt lại và kéo để di chuyển.
+- **Test Selection**: Chạy test bắt đầu từ node đã chọn hoặc chỉ node đơn đó. Tuỳ chọn: tắt action/limit, cung cấp JSON input tuỳ chỉnh và/hoặc upload file.
+- **Nút Chuẩn**: Cancel, Export, History, Save Changes.
 
-The workflow editor provides:
+## Các Loại Node
 
-- **Connect Nodes**: Click pole buttons to solder connections. Invalid pairs are suppressed by the UI. Conditions appear inline on wires; click to change.
-- **Add Node**: Click "Add Node" or solder from a pole and click the background to insert a new node in place.
-- **Duplicate**: Select one or more nodes (shift-click) and duplicate; connections between selected nodes are preserved.
-- **Detach**: Detach all connections to/from selected nodes.
-- **Delete**: Delete selected nodes and any connected wires. Deleting a trigger node also removes the underlying trigger.
-- **Undo/Redo**: Up to 100 levels for all editor operations.
-- **Zoom/Scroll**: Zoom in/out/reset and drag to pan.
-- **Test Selection**: Run a test starting from the selected node or only that single node. Optional: disable actions/limits, provide custom input JSON and/or upload files.
-- **Standard Buttons**: Cancel, Export, History, Save Changes.
+Node có các "cực" (pole) kết nối ở các cạnh: một cực input ở bên trái (luồng đến), một cực output ở bên phải (luồng đi), và với event/job node có một cực limit đặc biệt ở dưới dùng để gắn limit node. Các cực có thể kết nối với nhiều node trừ khi loại controller hạn chế output của nó như đã ghi chú dưới đây.
 
+### Trigger Node
 
-## Node Types
+Trigger node biểu diễn trực quan các event trigger bên trong đồ thị, như manual, schedule, interval, webhook hoặc plugin trigger (xem [Triggers](triggers.md)). Chúng có một output duy nhất và thường cấp luồng cho Event, Job, hoặc Controller node.
 
-Nodes have connection "poles" on their sides: an input pole on the left (incoming flow), an output pole on the right (outgoing flow), and for event/job nodes a special limit pole on the bottom used to attach limit nodes. Poles can connect to multiple nodes unless the controller type restricts its output as noted below.
+Các bong bóng tuỳ chọn trigger đặc biệt (Catch-Up, Range, Blackout, Delay, Precision) không có cực và chỉ là các bộ điều chỉnh (modifier) sẽ sáng lên khi trigger được lập lịch liên kết của chúng kích hoạt; chúng không kết nối với gì cả.
 
-### Trigger Nodes
+### Event Node
 
-Trigger nodes visually represent event triggers inside the graph, such as manual, schedule, interval, webhook or plugin triggers (see [Triggers](triggers.md)). They have a single output and typically feed Event, Job, or Controller nodes.
+Event node đặt một event đã tạo sẵn lên đồ thị. Bạn có thể override target, algo, tag và tham số người dùng cho lần dùng đó. Khi node chạy, sub-job kế thừa cấu hình của event cộng với override của node. Event node cũng có thể replay lại một job trước đó để test. Nếu event được tham chiếu là một workflow, nó phải bao gồm một trigger manual đã bật để engine biết bắt đầu sub-workflow ở đâu.
 
-Special trigger option bubbles (Catch-Up, Range, Blackout, Delay, Precision) have no poles and are purely modifiers that light up when their associated scheduled trigger fires; they do not connect to anything.
+Event node có cực input, output và limit và có thể nhận luồng từ trigger, event/job node khác hoặc controller, và có thể gửi luồng đến event/job node khác, action, hoặc controller.
 
-### Event Nodes
+### Job Node
 
-Event nodes place a pre-created event on the graph. You can override targets, algo, tags and user parameters for that use. When the node runs, the sub-job inherits the event's configuration plus the node's overrides. Event nodes can also replay a previous job for testing. If the referenced event is a workflow, it must include an enabled manual trigger so the engine knows where to start the sub-workflow.
+Job node là các job tùy biến không có event nền. Bạn chọn một plugin và cung cấp tham số bất kỳ, cộng với title/icon/category tuỳ chọn, target, algo và tag. Action và limit được gắn trên đồ thị sẽ được merge vào sub-job đã khởi chạy khi runtime. Job node cũng có thể replay lại một job trước đó để test. Job node cũng bao gồm cực input, output và limit, nhận luồng từ trigger/event/job/controller, và có thể gửi đến event/job/action/controller node.
 
-Event nodes present input, output and limit poles and can accept flow from triggers, other event/job nodes or controllers, and can send flow to other event/job nodes, actions, or controllers.
+Xem [Event Node vs Job Node](#event-node-vs-job-node) dưới đây.
 
-### Job Nodes
+### Action Node
 
-Job nodes are ad-hoc jobs without a backing event. You choose a plugin and provide any parameters, plus optional title/icon/category, targets, algo and tags. Actions and limits attached in the graph are merged into the launched sub-job at runtime. Job nodes can also replay a previous job for testing. Job nodes also include input, output and limit poles, accept flow from triggers/event/job/controllers, and can send to event/job/action/controller nodes.
+Action node gắn action hậu-job vào event/job node và được merge vào sub-job đã khởi chạy với điều kiện đã chọn. Cách dùng phổ biến bao gồm thông báo email, webhook, hoặc tắt/xoá các lần chạy tương lai (xem [Actions](actions.md)).
 
-See [Event vs Job Nodes](#event-vs-job-nodes) below.
+Action node có một input duy nhất và kết nối từ event/job node.
 
-### Action Nodes
+### Limit Node
 
-Action nodes attach post-job actions to event/job nodes and are merged into the launched sub-job with the selected condition. Typical uses include email notifications, webhooks, or disabling/deleting future runs (see [Actions](actions.md)).
+Limit node gắn kiểm soát resource vào event/job node và được merge vào limit của sub-job đã khởi chạy (xem [Limits](limits.md)). Ví dụ bao gồm Max Concurrent Jobs, Max Queue Size, CPU/Memory/Time và File input.
 
-Action nodes have a single input and connect from event/job nodes.
+Một limit node kết nối qua cực limit ở dưới trên một event/job node.
 
-### Limit Nodes
+### Controller Node
 
-Limit nodes attach resource controls to event/job nodes and are merged into the launched sub-job's limits (see [Limits](limits.md)). Examples include Max Concurrent Jobs, Max Queue Size, CPU/Memory/Time and File inputs. 
-
-A limit node connects via the bottom limit pole on an event/job node.
-
-### Controller Nodes
-
-Controllers implement flow control. They generally have input and output poles and connect in-line between other nodes. Some controllers require a single output connection; details are in the controller sections below.
+Controller thực hiện điều khiển luồng. Chúng thường có cực input và output và kết nối theo dòng giữa các node khác. Một số controller yêu cầu một kết nối output duy nhất; chi tiết ở các phần controller dưới đây.
 
 #### Split Controller
 
-The Split controller fans out work by taking an input list and launching one sub-job per item. Provide an [expression](xyexp.md) to the list in the previous job context, such as `data.rows`. The engine resolves the path and expects an array; if the value is a string it is trimmed and split by newline.   A special case is `files`, which splits the incoming files array so that each sub-job receives exactly one file. 
+Split controller phân tán công việc bằng cách lấy một danh sách input và khởi chạy một sub-job cho mỗi item. Cung cấp một [expression](xyexp.md) đến danh sách trong context job trước đó, ví dụ `data.rows`. Engine sẽ giải quyết đường dẫn và mong đợi một array; nếu giá trị là một string, nó sẽ được trim và tách theo dòng mới. Một trường hợp đặc biệt là `files`, dùng để chia array file đến sao cho mỗi sub-job nhận đúng một file.
 
-In the UI, the split controller configuration dialog provides an "Expression Builder" button, which allows you to explore output data from recently completed jobs, and pick out a specific JSON key path to use for the expression string.
+Trong UI, hộp thoại cấu hình split controller cung cấp nút "Expression Builder", cho phép bạn khám phá output data từ các job hoàn thành gần đây, và chọn ra một đường dẫn JSON key cụ thể để dùng cho chuỗi expression.
 
-Each individual sub-job will receive one item from the split data.  It will arrive in the job's [Job.input](data.md#job-input), either in `data` as a property named `item`, or as a [File](data.md#file) in the `files` array.
+Mỗi sub-job riêng lẻ sẽ nhận một item từ dữ liệu split. Nó sẽ đến trong [Job.input](data.md#job-input) của job, hoặc trong `data` dưới dạng thuộc tính tên `item`, hoặc dưới dạng [File](data.md#file) trong array `files`.
 
-Split requires exactly one output connection to the Event or Job node it will run per item. Concurrency and queuing are governed by the limits attached to that node. After all items complete, you can continue the flow using a `continue` wire from the controlled node. The controller includes a "continue percentage" setting so you can require that at least N% of the sub-jobs succeed before continuing.
+Split yêu cầu chính xác một kết nối output đến Event hoặc Job node mà nó sẽ chạy cho từng item. Concurrency và queue được kiểm soát bởi limit gắn vào node đó. Sau khi tất cả item hoàn thành, bạn có thể tiếp tục luồng bằng một dây `continue` từ node được điều khiển. Controller bao gồm cài đặt "continue percentage" để bạn có thể yêu cầu ít nhất N% sub-job phải thành công trước khi tiếp tục.
 
 ##### Split Item Filter
 
-You can optionally filter out items from your split array, by including a special item filter expression.  In this context use the special `item` keyword to refer to the item being filtered.  If your expression evaluates to true, the item will be included in the set.  Otherwise, it will be left out.  Here is an example using a property inside the item:
+Bạn có thể tuỳ chọn lọc bỏ item khỏi array split, bằng cách bao gồm một expression lọc item đặc biệt. Trong context này dùng từ khoá đặc biệt `item` để chỉ item đang được lọc. Nếu expression của bạn được đánh giá là true, item sẽ được bao gồm trong tập kết quả. Nếu không, nó sẽ bị loại bỏ. Đây là một ví dụ dùng thuộc tính bên trong item:
 
 ```js
 item.random < 0.5
 ```
 
-Also available in context here is `index` (the 0-based index of the current item in the set), `workflow.params` (all workflow-level user fields), and `workflowData` (shared workflow data object).  For example, here is how to filter out all odd items, and only keep the even ones, using the modulo operator:
+Cũng có sẵn trong context này là `index` (chỉ số 0-based của item hiện tại trong tập), `workflow.params` (tất cả trường người dùng cấp workflow), và `workflowData` (object dữ liệu chia sẻ của workflow). Ví dụ, đây là cách lọc bỏ tất cả item lẻ, và chỉ giữ item chẵn, dùng toán tử modulo:
 
 ```js
 index % 2 == 0
@@ -104,9 +101,9 @@ index % 2 == 0
 
 #### Join Controller
 
-The Join controller waits for multiple incoming flows to finish, then passes a combined result to the next step. You can wire multiple inputs into a Join; it initializes when the first input arrives and completes after all of its inputs have fired.
+Join controller chờ nhiều luồng đến hoàn tất, sau đó chuyển một kết quả kết hợp đến bước tiếp theo. Bạn có thể nối nhiều input vào một Join; nó khởi tạo khi input đầu tiên đến và hoàn thành sau khi tất cả input của nó đã kích hoạt.
 
-The joining process works as follows: all input job data is appended to an `items` array, and also separately all job data is shallow-merged into a `combined` object, which is passed to the next job (via continue condition).  For e.g. if 3 connected input jobs all output this data: `{"foo":1234}` then the final joined data that is passed along would look like this:
+Quy trình gộp hoạt động như sau: tất cả dữ liệu job input được thêm vào một array `items`, và cũng riêng biệt tất cả dữ liệu job được shallow-merge vào một object `combined`, được chuyển đến job tiếp theo (qua điều kiện continue). Ví dụ, nếu 3 job input được kết nối đều xuất ra dữ liệu này: `{"foo":1234}` thì dữ liệu đã join cuối cùng được chuyển đi sẽ trông như sau:
 
 ```json
 {
@@ -121,85 +118,83 @@ The joining process works as follows: all input job data is appended to an `item
 }
 ```
 
-Any files produced upstream are concatenated and passed along. Join requires exactly one output connection.
+Bất kỳ file được tạo ra ở upstream sẽ được nối lại và chuyển đi. Join yêu cầu chính xác một kết nối output.
 
 #### Repeat Controller
 
-The Repeat controller runs the same Event or Job node a fixed number of times. You configure the iteration count on the controller. All runs are launched immediately and will queue or run in parallel based on the limits attached to the target node. Repeat requires exactly one output connection (to the node being repeated). After all iterations complete, use a `continue` wire from the repeated node to define post-processing.
+Repeat controller chạy cùng một Event hoặc Job node một số lần cố định. Bạn cấu hình số lần lặp trên controller. Tất cả các lần chạy được khởi chạy ngay lập tức và sẽ xếp hàng hoặc chạy song song dựa trên limit gắn vào node đích. Repeat yêu cầu chính xác một kết nối output (đến node đang được lặp). Sau khi tất cả lần lặp hoàn thành, dùng một dây `continue` từ node được lặp để định nghĩa xử lý hậu kỳ.
 
-To control the series/parallel run of the repeat jobs, the user simply has to connect limit nodes to the event/job node, e.g. "Max Concurrent Jobs" and "Max Queue Size".
+Để kiểm soát chạy nối tiếp/song song của các job repeat, người dùng chỉ cần kết nối limit node vào event/job node, ví dụ "Max Concurrent Jobs" và "Max Queue Size".
 
-The repeat controller also offers a "continue percentage" text field, where the user can enter a number from 0-100.  This represents the number of sub-jobs that must complete successfully for the controller to fire the "continue" condition and allow flow to continue (otherwise the workflow will end, assuming no other nodes are active).
+Repeat controller cũng cung cấp trường văn bản "continue percentage", nơi người dùng có thể nhập một số từ 0-100. Đây đại diện cho số sub-job phải hoàn thành thành công để controller kích hoạt điều kiện "continue" và cho phép luồng tiếp tục (nếu không workflow sẽ kết thúc, giả sử không còn node khác đang active).
 
 #### Multiplex Controller
 
-The Multiplex controller runs a job across many servers. It expands the target selection from the destination Event/Job into concrete server IDs, filters to currently enabled servers, and applies server alert filters. It then launches one sub-job per server. An optional stagger setting delays starts by a fixed interval per job, which helps avoid thundering herds. Multiplex requires exactly one output connection (to the Event/Job to be run per server).
+Multiplex controller chạy một job trên nhiều server. Nó mở rộng việc chọn target từ Event/Job đích thành các server ID cụ thể, lọc theo server đang được bật, và áp dụng bộ lọc alert của server. Sau đó nó khởi chạy một sub-job cho mỗi server. Một cài đặt stagger tuỳ chọn sẽ trì hoãn các lần khởi chạy theo một khoảng cố định cho mỗi job, giúp tránh hiệu ứng "đàn trâu" (thundering herd). Multiplex yêu cầu chính xác một kết nối output (đến Event/Job sẽ chạy cho mỗi server).
 
-To control the series/parallel run of the multiplexed jobs, the user simply has to connect limit nodes to the event/job node, e.g. "Max Concurrent Jobs" and "Max Queue Size".
+Để kiểm soát chạy nối tiếp/song song của các job multiplex, người dùng chỉ cần kết nối limit node vào event/job node, ví dụ "Max Concurrent Jobs" và "Max Queue Size".
 
-The multiplex controller also offers a "continue percentage" text field, where the user can enter a number from 0-100.  This represents the number of sub-jobs that must complete successfully for the controller to fire the "continue" condition and allow flow to continue (otherwise the workflow will end, assuming no other nodes are active).
+Multiplex controller cũng cung cấp trường văn bản "continue percentage", nơi người dùng có thể nhập một số từ 0-100. Đây đại diện cho số sub-job phải hoàn thành thành công để controller kích hoạt điều kiện "continue" và cho phép luồng tiếp tục (nếu không workflow sẽ kết thúc, giả sử không còn node khác đang active).
 
 #### Decision Controller
 
-The Decision controller evaluates a JEXL expression (with [xyOps extensions](xyexp.md)) against the previous job context, for example `data.random > 0.5`. If the expression evaluates to true, the controller passes control to all of its connected outputs; when false, no outputs fire. There is no explicit "false" pole. For multi-branch logic, create multiple Decision nodes with different expressions and optional titles/icons to make branches visually clear.
+Decision controller đánh giá một expression JEXL (với [phần mở rộng PTOps](xyexp.md)) dựa trên context job trước đó, ví dụ `data.random > 0.5`. Nếu expression được đánh giá là true, controller sẽ chuyển điều khiển đến tất cả output đã kết nối; khi false, không output nào kích hoạt. Không có cực "false" rõ ràng. Với logic đa nhánh, tạo nhiều Decision node với expression khác nhau và title/icon tuỳ chọn để làm rõ các nhánh một cách trực quan.
 
-In the UI, the decision controller configuration dialog provides an "Expression Builder" button, which allows you to explore output data from recently completed jobs, and pick out a specific JSON key path to use for the expression string.
+Trong UI, hộp thoại cấu hình decision controller cung cấp nút "Expression Builder", cho phép bạn khám phá output data từ các job hoàn thành gần đây, và chọn ra một đường dẫn JSON key cụ thể để dùng cho chuỗi expression.
 
-Decision does not require a single output and can fan out to many.
+Decision không yêu cầu một output duy nhất và có thể phân tán đến nhiều node.
 
 #### Wait Controller
 
-The Wait controller pauses flow for a configured duration, then passes control to all connected outputs. It maintains active state while waiting and is aborted if the workflow is aborted.
+Wait controller tạm dừng luồng trong một khoảng thời gian đã cấu hình, sau đó chuyển điều khiển đến tất cả output đã kết nối. Nó duy trì trạng thái active khi đang chờ và bị huỷ nếu workflow bị huỷ.
 
-Wait does not require a single output and can feed multiple downstream steps.
+Wait không yêu cầu một output duy nhất và có thể cấp cho nhiều bước downstream.
 
-### Note Nodes
+### Note Node
 
-A Note node is simply a customizable text box you can use to annotate your workflows.  Enter your note's body content using [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/), and it will display on your workflow map.  You can drag notes around to position them wherever you like, and even make a double-wide note.
+Note node đơn giản là một hộp văn bản có thể tuỳ chỉnh mà bạn có thể dùng để ghi chú workflow của mình. Nhập nội dung ghi chú bằng [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/), và nó sẽ hiển thị trên bản đồ workflow của bạn. Bạn có thể kéo ghi chú xung quanh để định vị chúng ở bất cứ đâu bạn muốn, và thậm chí làm một ghi chú rộng gấp đôi.
 
-By default, notes are not shown during job runs -- they are more for providing instructions to users who are configuring the workflow.  However, a checkbox is provided to always show the note, even during job runs.
+Theo mặc định, ghi chú không được hiển thị khi job chạy -- chúng chủ yếu để cung cấp hướng dẫn cho người dùng đang cấu hình workflow. Tuy nhiên, có một checkbox để luôn hiển thị ghi chú, ngay cả khi job đang chạy.
 
-## Connections and Conditions
+## Kết Nối và Điều Kiện
 
-Here are the connection rules by node type: 
+Đây là các quy tắc kết nối theo loại node:
 
-- Triggers send flow to Event, Job, or Controller nodes.
-- Event and Job nodes accept flow from Triggers, Event/Job, or Controller nodes and can send to Event/Job, Action, or Controller nodes; their bottom limit pole accepts Limit nodes. 
-- Action nodes connect from Event/Job nodes only. 
-- Limit nodes attach to the bottom pole of Event/Job nodes. 
-- Controllers accept flow from Trigger/Event/Job nodes and send to Event/Job nodes.
+- Trigger gửi luồng đến Event, Job, hoặc Controller node.
+- Event và Job node nhận luồng từ Trigger, Event/Job, hoặc Controller node và có thể gửi đến Event/Job, Action, hoặc Controller node; cực limit dưới của chúng nhận Limit node.
+- Action node chỉ kết nối từ Event/Job node.
+- Limit node gắn vào cực dưới của Event/Job node.
+- Controller nhận luồng từ Trigger/Event/Job node và gửi đến Event/Job node.
 
-Controller output restrictions:
+Hạn chế output của controller:
 
-- Split, Join, Repeat, Multiplex: must have exactly one output connection (to the node being controlled or the post-join node).
-- Decision and Wait: may have multiple outputs.
+- Split, Join, Repeat, Multiplex: phải có chính xác một kết nối output (đến node đang được điều khiển hoặc node hậu-join).
+- Decision và Wait: có thể có nhiều output.
 
-Conditions on wires from Event/Job nodes determine which outputs fire when a sub-job completes. Supported values include complete (always), success (code 0), error (any failure), the specific codes warning, critical, or abort, tag:NAME (fires if the sub-job produced tag NAME), and continue (a special condition fired after Repeat/Multiplex/Split completes when the success threshold is met).
+Điều kiện trên dây từ Event/Job node quyết định output nào kích hoạt khi sub-job hoàn thành. Các giá trị được hỗ trợ bao gồm complete (luôn), success (mã 0), error (bất kỳ thất bại nào), các mã cụ thể warning, critical, hoặc abort, tag:NAME (kích hoạt nếu sub-job tạo ra tag NAME), và continue (một điều kiện đặc biệt kích hoạt sau khi Repeat/Multiplex/Split hoàn thành khi đạt ngưỡng thành công).
 
-The editor defaults new wires from Event/Job outputs to success, and you can change the condition inline on the wire (just click it). Note that Action and Limit nodes do not forward flow: they are attached to the launched sub-job; actions require a condition and limits attach via the bottom pole.
+Trình chỉnh sửa mặc định các dây mới từ output của Event/Job thành success, và bạn có thể đổi điều kiện trực tiếp trên dây (chỉ cần nhấn vào nó). Lưu ý rằng Action và Limit node không chuyển tiếp luồng: chúng được gắn vào sub-job đã khởi chạy; action yêu cầu một điều kiện và limit gắn qua cực dưới.
 
+## Luồng Resume Tuỳ Chỉnh
 
-## Custom Resume Flow
+Khi một sub-job workflow bị suspend bởi một action hoàn thành, hộp thoại resume cho phép người dùng chọn cách luồng workflow nên tiếp tục sau khi job được resume. Tuỳ chọn mặc định resume bình thường, nghĩa là PTOps đánh giá kết quả sub-job đã hoàn thành và theo bất kỳ dây output khớp nào từ Event hoặc Job node hiện tại.
 
-When a workflow sub-job is suspended by a completion action, the resume dialog lets the user choose how workflow flow should continue after the job is resumed.  The default option resumes normally, which means xyOps evaluates the completed sub-job result and follows any matching output wires from the current Event or Job node.
+Người dùng cũng có thể chọn một Event hoặc Job node workflow cụ thể để nhảy đến. Trong chế độ này, PTOps khởi chạy node đã chọn ngay sau khi sub-job bị suspend được resume, thay vì theo các dây output khớp bình thường từ node bị suspend.
 
-The user can also choose a specific workflow Event or Job node to jump to.  In this mode, xyOps launches that selected node directly after the suspended sub-job resumes, instead of following the normal matching output wires from the suspended node.
+Bộ chọn này chỉ hiển thị khi sub-job workflow bị suspend đã ở cuối lifecycle job của nó. Nói cách khác, nó xuất hiện cho một action Suspend Job được nối với điều kiện hoàn thành như `On Complete`, `On Success`, `On Any Error`, `On Warning`, `On Critical`, `On Abort`, hoặc một điều kiện tag. Nó không hiển thị khi action Suspend Job kích hoạt ở đầu job, như `On Start`.
 
-This selector is only shown when the suspended workflow sub-job is already at the end of its job lifecycle.  In other words, it appears for a Suspend Job action wired to a completion condition such as `On Complete`, `On Success`, `On Any Error`, `On Warning`, `On Critical`, `On Abort`, or a tag condition.  It is not shown when the Suspend Job action fires at the start of the job, such as `On Start`.
+Hành vi tương tự có sẵn qua API [resume_job](api.md#resume_job) bằng cách truyền thuộc tính `redirect` tuỳ chọn với ID node workflow đích.
 
-The same behavior is available through the [resume_job](api.md#resume_job) API by passing the optional `redirect` property with the target workflow node ID.
+## Continue Sau Controller
 
+[Repeat](#repeat-controller), [Multiplex](#multiplex-controller) và [Split](#split-controller) đặc biệt vì chúng khởi chạy cùng một Event hoặc Job node nhiều lần. Ví dụ, Repeat có thể chạy cùng một job 10 lần, Multiplex có thể chạy nó một lần cho mỗi server trong group đích, và Split có thể chạy nó một lần cho mỗi item hoặc file.
 
-## Continue After Controllers
+Điều này tạo ra một sự khác biệt quan trọng cho các dây đi ra từ event/job node được điều khiển:
 
-[Repeat](#repeat-controller), [Multiplex](#multiplex-controller) and [Split](#split-controller) are special because they launch the same Event or Job node multiple times.  For example, Repeat may run the same job 10 times, Multiplex may run it once per server in the target group, and Split may run it once per item or file.
+- "On Success", "On Complete", "On Any Error" và điều kiện tag được đánh giá cho *mỗi sub-job riêng lẻ*. Nếu bạn nối một node khác dùng "On Success" hoặc "On Complete", nó có thể chạy nhiều lần, một lần cho mỗi sub-job khớp.
+- "On Continue" chỉ được đánh giá *một lần duy nhất* cho toàn bộ controller. Nó chỉ kích hoạt sau khi tất cả job được khởi chạy bởi controller Repeat, Multiplex hoặc Split đó đã hoàn thành.
 
-This creates an important distinction for outgoing wires from the controlled event/job node:
-
-- "On Success", "On Complete", "On Any Error" and tag conditions are evaluated for *each individual sub-job*.  If you wire another node using "On Success" or "On Complete", it may run many times, once for each matching sub-job.
-- "On Continue" is evaluated *only once* for the controller as a whole.  It fires only after all the jobs launched by that Repeat, Multiplex or Split controller have finished.
-
-Use "On Continue" when you want a single next step after the whole controlled set is done.  For example:
+Dùng "On Continue" khi bạn muốn một bước tiếp theo duy nhất sau khi toàn bộ tập được điều khiển đã xong. Ví dụ:
 
 ```text
 +-----------+     +-------+      -------------      +-------+
@@ -207,109 +202,102 @@ Use "On Continue" when you want a single next step after the whole controlled se
 +-----------+     +-------+      -------------      +-------+
 ```
 
-The "On Continue" wire is soldered from the controlled Event or Job node, not from the controller itself.
+Dây "On Continue" được hàn từ Event hoặc Job node được điều khiển, không phải từ controller.
 
-In this example, `Job A` runs multiple times, once per selected server.  `Job B` runs only once, and only after every multiplexed `Job A` has completed.  If the wire condition was changed to `On Success` or `On Complete`, then `Job B` would run once for every matching `Job A` instead.
+Trong ví dụ này, `Job A` chạy nhiều lần, một lần cho mỗi server được chọn. `Job B` chỉ chạy một lần, và chỉ sau khi mọi `Job A` được multiplex đã hoàn thành. Nếu điều kiện dây được đổi thành `On Success` hoặc `On Complete`, thì `Job B` sẽ chạy một lần cho mỗi `Job A` khớp.
 
-The controller's "continue percentage" setting controls whether the "On Continue" wire is allowed to fire.  It is a number from 0 to 100, representing the minimum percentage of controlled sub-jobs that must succeed.  After the last sub-job finishes, xyOps checks the success percentage:
+Cài đặt "continue percentage" của controller kiểm soát liệu dây "On Continue" có được cho phép kích hoạt hay không. Đây là một số từ 0 đến 100, đại diện cho tỷ lệ tối thiểu các sub-job được điều khiển phải thành công. Sau khi sub-job cuối cùng hoàn tất, PTOps kiểm tra tỷ lệ thành công:
 
-- If the success percentage meets or exceeds the controller setting, all "On Continue" wires from the controlled Event or Job node fire.
-- If the success percentage is below the controller setting, the "On Continue" wires do not fire, and the workflow may finish if no other nodes are active.
+- Nếu tỷ lệ thành công đạt hoặc vượt cài đặt controller, tất cả dây "On Continue" từ Event hoặc Job node được điều khiển sẽ kích hoạt.
+- Nếu tỷ lệ thành công thấp hơn cài đặt controller, các dây "On Continue" không kích hoạt, và workflow có thể kết thúc nếu không còn node khác đang active.
 
-Each "On Continue" condition is scoped to the specific controller and Event/Job node pair it is attached to.  You can have multiple controller sections in the same workflow, and each one waits for its own controlled jobs before firing its own "On Continue" wires.
+Mỗi điều kiện "On Continue" được giới hạn phạm vi cho cặp controller và Event/Job node cụ thể mà nó được gắn vào. Bạn có thể có nhiều phần controller trong cùng một workflow, và mỗi phần chờ các job được điều khiển của riêng nó trước khi kích hoạt các dây "On Continue" riêng.
 
+## Replay Job Trước Đó
 
-## Replay Previous Jobs
+Event và Job node có thể được đặt để replay một job trước đó thay vì khởi chạy job mới. Điều này hữu ích khi test một workflow mà một bước đắt đỏ, chậm, bị giới hạn tốc độ, hoặc khó tái tạo. Ví dụ, bạn có thể chạy một truy vấn database hoặc yêu cầu AI một lần, sau đó replay kết quả đã lưu đó khi bạn tiếp tục làm việc trên các node downstream.
 
-Event and Job nodes can be set to replay a previous job instead of launching a new one.  This is useful while testing a workflow where one step is expensive, slow, rate-limited, or difficult to reproduce.  For example, you can run a database query or AI request once, then replay that saved result while you keep working on the downstream nodes.
+Để dùng tính năng này, sửa một Event hoặc Job node và chọn một job từ menu "Replay Previous Job". PTOps liệt kê các job workflow trước đó khớp với event hoặc plugin đã chọn. Sau khi bạn lưu node, đồ thị hiển thị một badge "Replay" trên header của node để bạn có thể nhanh chóng thấy node nào đang bị đóng băng.
 
-To use this, edit an Event or Job node and choose a job from the "Replay Previous Job" menu.  xyOps lists previous workflow jobs that match the selected event or plugin.  After you save the node, the graph shows a "Replay" badge in the node header so you can quickly see which nodes are frozen.
+Khi workflow đến một node được replay:
 
-When the workflow reaches a replayed node:
+- PTOps không khởi chạy sub-job mới.
+- Job trước đó đã chọn được nạp và xử lý như vừa hoàn thành cho node này.
+- `data` output, `files` output, tag và `workflowData` của job trước đó được chuyển đến các node downstream.
+- Kết quả của job trước đó cũng được giả lập, để `On Success`, `On Any Error`, `On Warning`, `On Critical`, `On Abort` và điều kiện tag theo cùng đường dẫn mà chúng đã theo ban đầu.
 
-- xyOps does not launch a new sub-job.
-- The selected previous job is loaded and treated as if it just completed for this node.
-- The previous job's output `data`, output `files`, tags and `workflowData` are passed to downstream nodes.
-- The previous job's result is simulated too, so `On Success`, `On Any Error`, `On Warning`, `On Critical`, `On Abort` and tag conditions follow the same path they would have followed originally.
+Action gắn trực tiếp vào node được replay, như email, web hook, action suspend, hoặc action tắt/xoá, sẽ không chạy lại. Chúng được coi là một phần của lifecycle job replay ban đầu, vậy chế độ replay chỉ đưa kết quả đã lưu trở lại luồng workflow.
 
-Actions attached directly to the replayed node, such as emails, web hooks, suspend actions, or disable/delete actions, are not run again.  They are considered part of the replayed job's original lifecycle, so replay mode only feeds the saved result back into workflow flow.
+## Chuyển Dữ Liệu Giữa Các Node
 
+Input và output được tự động chuyển đi:
 
-## Passing Data Between Nodes
+- Khi workflow bắt đầu, `input.data` và `input.files` đầu vào được chuyển đến trigger node. Trigger node chuyển tiếp chúng đến bất kỳ node được hàn nào.
+- Khi một Event/Job hoàn thành, `data` và `files` output của nó được chuyển đến các node downstream dưới dạng `input.data` và `input.files`.
+	- Lưu ý rằng script job của bạn phải chỉ định rõ đường dẫn dữ liệu và file cho output. Xem [Output Data](plugins.md#output-data) và [Output Files](plugins.md#output-files).
+- Nếu workflow tự nó có bất kỳ trường người dùng nào được định nghĩa, chúng được chuyển đến tất cả sub-job qua một object `workflow.params` bên trong dữ liệu job.
+- Tag: tag của người dùng từ sub-job trồi lên job workflow và có thể điều khiển điều kiện `tag:...`.
+- Nội dung HTML và table: nếu một sub-job phát ra `html` hoặc `table`, nó trồi lên job cha để hiển thị. Nếu nhiều job phát ra nội dung, job sau sẽ chiếm ưu thế.
+- Retry: nếu một sub-job đã bị retry, dữ liệu/file của nó không trồi lên và không tính vào việc kích hoạt tag/điều kiện.
 
-Inputs and outputs are automatically passed along:
+Chi tiết về Join:
 
-- At workflow start, the inbound `input.data` and `input.files` are passed to the trigger node.  The trigger nodes passes these on to any soldered nodes.
-- When an Event/Job finishes, its output `data` and `files` are passed to downstream nodes as `input.data` and `input.files`.
-	- Note that your job script has to explicitly specify data and file paths for output.  See [Output Data](plugins.md#output-data) and [Output Files](plugins.md#output-files).
-- If the workflow itself has any user fields defined, these are passed to all sub-jobs via a `workflow.params` object inside the job data.
-- Tags: user tags from sub-jobs bubble up to the workflow job and can drive `tag:...` conditions.
-- HTML and table content: if a sub-job emits `html` or `table`, it bubbles up to the parent for display.  If multiple jobs emit content The latter prevails.
-- Retries: if a sub-job was retried, its data/files are not bubbled and it doesn't count toward tag/condition firing.
+- Node tiếp theo sau một Join Controller nhận một `input.data` tuỳ chỉnh với hai thuộc tính: `items` (array dữ liệu của mỗi job upstream) và `combined` (shallow merge của tất cả dữ liệu).
+- Bất kỳ file nào được nối vào array `input.files`.
 
-Join specifics:
+Chi tiết về Split:
 
-- The next node after a Join Controller receives a custom `input.data` with two properties: `items` (array of each upstream job's data) and `combined` (shallow merge of all data).
-- Any files are concatenated onto the `input.files` array.
+- Split controller giải quyết đường dẫn dữ liệu của nó dựa trên context job trước đó (hoặc input đến).
+- Nếu đường dẫn là `files`, mỗi file đến được gửi đến một sub-job riêng biệt; nếu không, mỗi phần tử array trở thành `input.data = { item: ... }` cho sub-job được khởi chạy.
 
-Split specifics:
+## Chia Sẻ Dữ Liệu Giữa Tất Cả Node
 
-- The Split controller resolves its data path against the previous job context (or incoming input).
-- If the path is `files`, each incoming file is sent to a separate sub-job; otherwise, each array element becomes `input.data = { item: ... }` for the launched sub-job.
+PTOps duy trì một object `workflowData` được chia sẻ trong suốt lần chạy workflow. Bất kỳ node nào có thể đọc hoặc ghi vào object này, khiến nó trở thành một cách thuận tiện để chia sẻ trạng thái giữa các node không được kết nối trực tiếp.
 
-## Sharing Data Between All Nodes
+Để ghi vào `workflowData` từ trong job của bạn, xuất ra một object `workflowData` từ script Plugin của bạn (xem [Cập Nhật Server Data](plugins.md#server-data) để biết cú pháp tương tự). PTOps sẽ shallow-merge đối tượng đã xuất vào `workflowData` hiện có của workflow.
 
-xyOps offers another way to share data between nodes, including nodes that are not directly connected.  There is a special shared [workflowData](data.md#job-workflowdata) object which is passed to all sub-jobs when they launch.  This works similarly to [Server User Data](servers.md#user-data).  The idea is, each sub-job can read from this object, and also write back to it by including a `workflowData` object in its output.  Example:
+Bất kỳ node downstream nào sau đó có thể đọc từ object `workflowData` đã cập nhật.
 
-```json
-{ "xy": 1, "workflowData": { "foo": "bar" } }
-```
-
-The data is shallow-merged into the shared `workflowData` object when the sub-job completes (also, top-level arrays are concatenated together instead of replacing).  Then, any subsequent jobs that launch from the same workflow are passed the updated `workflowData` object.
-
-The `workflowData` object only lasts for the duration of the workflow run.  It is not persistent like [Server User Data](servers.md#user-data), but it works in the same way.
+Object `workflowData` chỉ tồn tại trong suốt thời gian chạy workflow. Nó không bền (persistent) như [Server User Data](servers.md#user-data), nhưng nó hoạt động theo cùng cách.
 
 > [!TIP]
-> If you launch your workflow via the [run_event](api.md#run_event) API, you can prepopulate the `workflowData` object by simply including it in the API call as a top-level JSON property.
+> Nếu bạn khởi chạy workflow qua API [run_event](api.md#run_event), bạn có thể điền sẵn object `workflowData` chỉ bằng cách bao gồm nó trong lệnh gọi API dưới dạng thuộc tính JSON cấp cao nhất.
 
-## Event vs Job Nodes
+## Event Node vs Job Node
 
-When should you use an Event vs a Job Node:
+Khi nào nên dùng Event Node so với Job Node:
 
-- **Event node**: References a pre-created event. Use this when you want reusable configuration: plugin params, targets, algo, actions, limits, and optional user fields. The node can override targets, algo, tags, and user params per use.
-- **Job node**: Ad-hoc job without an event. You pick the plugin and fill plugin parameters right in the workflow editor (e.g. write inline shell script with the Shell plugin). This is faster for one-offs or when you don't want a separate event.
+- **Event node**: Tham chiếu một event đã tạo sẵn. Dùng cái này khi bạn muốn cấu hình tái sử dụng: tham số plugin, target, algo, action, limit, và trường người dùng tuỳ chọn. Node có thể override target, algo, tag, và tham số người dùng cho mỗi lần dùng.
+- **Job node**: Job tùy biến không có event. Bạn chọn plugin và điền tham số plugin ngay trong trình chỉnh sửa workflow (ví dụ viết script shell nội tuyến với plugin Shell). Cách này nhanh hơn cho việc làm một lần hoặc khi bạn không muốn tạo event riêng.
 
+## Sub-Workflow
 
-## Sub-Workflows
+Event node có thể tham chiếu event loại `workflow`. Để chạy như một sub-workflow:
 
-Event nodes can reference events of type `workflow`. To run as a sub-workflow:
+- Sub-workflow phải có một trigger manual đã bật. Engine dùng cái này để xác định node bắt đầu.
+- Input của workflow cha (data/file) được chuyển vào trigger node của sub-workflow.
+- Limit và action trên workflow cha không tự động áp dụng cho sub-workflow trừ khi được gắn rõ vào node.
 
-- The sub-workflow must have an enabled manual trigger. The engine uses this to determine the start node.
-- Parent workflow input (data/files) is passed into the sub-workflow's trigger node.
-- Limits and actions on the parent workflow do not automatically apply to the sub-workflow unless explicitly attached to the node.
+## Gợi Ý
 
+- **Tái sử dụng vs. tùy biến**: Dùng Event node để đóng gói cấu hình ổn định và trường người dùng, và Job node cho việc làm một lần nhanh hoặc script nội tuyến.
+- **Kiểm soát concurrency**: Mọi thứ chạy song song theo mặc định; gắn limit [Max Concurrent Jobs](limits.md#max-concurrent-jobs) và [Max Queue Limit](limits.md#max-queue-limit) để hạn chế fan-out.
+- **Luồng hậu-controller**: Với Repeat/Multiplex/Split, dùng dây `continue` từ node được điều khiển để xử lý các bước "sau khi tất cả xong", tuỳ chọn với một ngưỡng thành công.
+- **Fan-in**: Dùng Join để gộp nhiều kết quả upstream; node tiếp theo sẽ thấy cả `items` và một object `combined`.
+- **Định tuyến điều kiện**: Ưu tiên dây `success`/`error` cho các đường chính và thêm `warning`, `critical`, `abort`, hoặc `tag:NAME` cho xử lý đặc biệt.
+- **Logic điều kiện**: Dùng Decision cho phân nhánh; nhân bản node cho luồng đa nhánh và đặt title/icon rõ ràng cho mỗi nhánh.
+- **Giãn cách (Staggering)**: Với job đa server quy mô lớn, thêm một Multiplex controller với stagger để tránh dồn tải.
+- **Xử lý file**: Split trên `files` để xử lý mỗi file trong một sub-job; gộp kết quả với Join.
+- **Replay khi test**: Dùng Replay trên Event/Job node đắt đỏ hoặc chậm để logic workflow downstream có thể được test lặp lại từ một kết quả đã lưu đã biết.
 
-## Tips
+## Tham Chiếu Mô Hình Dữ Liệu
 
-- **Reuse vs. ad-hoc**: Use Event nodes to encapsulate stable configuration and user fields, and Job nodes for quick one-offs or inline scripts.
-- **Concurrency control**: Everything runs in parallel by default; attach [Max Concurrent Jobs](limits.md#max-concurrent-jobs) and [Max Queue Limit](limits.md#max-queue-limit) limits to throttle fan-out.
-- **Post-controller flow**: For Repeat/Multiplex/Split, use `continue` wires from the controlled node to handle "after all done" steps, optionally with a success threshold.
-- **Fan-in**: Use Join to aggregate multiple upstream results; the next node sees both `items` and a `combined` object.
-- **Condition routing**: Prefer `success`/`error` wires for the main paths and add `warning`, `critical`, `abort`, or `tag:NAME` for special handling.
-- **Conditional logic**: Use Decision for branching; duplicate the node for multi-branch flows and give each a clear title/icon.
-- **Staggering**: For massive multi-server jobs, add a Multiplex controller with a stagger to avoid spikes.
-- **File workloads**: Split on `files` to process one file per sub-job; combine results with Join.
-- **Replay while testing**: Use Replay on expensive or slow Event/Job nodes so downstream workflow logic can be tested repeatedly from a known saved result.
-
-
-## Data Model Reference
-
-Workflows are stored inside events. See [Data Structures](data.md) for complete schemas. Highlights:
+Workflow được lưu bên trong event. Xem [Data Structures](data.md) để biết schema đầy đủ. Điểm nổi bật:
 
 - [Workflow](data.md#workflow): `{ start?, nodes: [], connections: [] }`.
-- [Nodes](data.md#workflownode): `{ id, type: 'trigger'|'event'|'job'|'limit'|'action'|'controller', x, y, data? }`.  Event and Job node data may include `replay`, containing the previous job ID to replay.
-- [Connections](data.md#workflowconnection): `{ id, source, dest, condition? }` where `condition` matches the wire condition list above.
-- Controller data:
+- [Nodes](data.md#workflownode): `{ id, type: 'trigger'|'event'|'job'|'limit'|'action'|'controller', x, y, data? }`. Dữ liệu Event và Job node có thể bao gồm `replay`, chứa job ID trước đó cần replay.
+- [Connections](data.md#workflowconnection): `{ id, source, dest, condition? }` trong đó `condition` khớp với danh sách điều kiện dây ở trên.
+- Dữ liệu controller:
   - Multiplex: `{ controller: 'multiplex', stagger?, continue? }`
   - Repeat: `{ controller: 'repeat', repeat, continue? }`
   - Split: `{ controller: 'split', split: 'data.path.or.files', continue? }`
@@ -317,17 +305,15 @@ Workflows are stored inside events. See [Data Structures](data.md) for complete 
   - Decision: `{ controller: 'decision', decision: '<expression>' , title?, icon? }`
   - Wait: `{ controller: 'wait', wait }`
 
+## Bảo Mật và Quyền
 
-## Security and Privileges
+Tạo hoặc sửa một workflow phải tuân theo cùng quyền như event. Khi một workflow chạy sub-job, quyền target và category vẫn áp dụng cho các job đã khởi chạy đó.
 
-Creating or editing a workflow is subject to the same privileges as events. When a workflow runs sub-jobs, target and category privileges still apply to those launched jobs. 
-
-See [Privileges](privileges.md) and [Events](events.md) for more details.
-
+Xem [Privileges](privileges.md) và [Events](events.md) để biết thêm chi tiết.
 
 ## API
 
-Workflows reuse the event APIs -- there are no separate workflow APIs. In particular:
+Workflow tái sử dụng API của event -- không có API workflow riêng. Cụ thể:
 
 - [get_events](api.md#get_events)
 - [get_event](api.md#get_event)
@@ -336,21 +322,20 @@ Workflows reuse the event APIs -- there are no separate workflow APIs. In partic
 - [run_event](api.md#run_event)
 - [delete_event](api.md#delete_event)
 
-See [API → Events](api.md#events) for details.
+Xem [API → Events](api.md#events) để biết chi tiết.
 
-## Notes and Caveats
+## Ghi Chú và Lưu Ý
 
-- Controller single-output requirement: Split, Join, Repeat, and Multiplex controllers must have exactly one output.
-- Sub-workflow manual trigger: A sub-workflow must have an enabled manual trigger or it cannot be launched from a workflow node.
-- Action/Limit nodes: These do not forward flow; they are merged into the launched sub-job and executed/checked there.
-- Modifier triggers: Catch-Up, Range, Blackout, Delay, Precision are visual modifiers only and are "lit" when their associated schedule fires; they do not connect to other nodes.
+- Yêu cầu output đơn của controller: controller Split, Join, Repeat, và Multiplex phải có chính xác một output.
+- Trigger manual của sub-workflow: một sub-workflow phải có một trigger manual đã bật, nếu không nó không thể được khởi chạy từ một workflow node.
+- Action/Limit node: chúng không chuyển tiếp luồng; chúng được merge vào sub-job đã khởi chạy và được thực thi/kiểm tra ở đó.
+- Trigger bộ điều chỉnh: Catch-Up, Range, Blackout, Delay, Precision chỉ là bộ điều chỉnh trực quan và "sáng lên" khi lịch liên kết của chúng kích hoạt; chúng không kết nối với node khác.
 
-
-## See Also
+## Xem Thêm
 
 - [Events](events.md)
 - [Actions](actions.md)
 - [Limits](limits.md)
 - [Triggers](triggers.md)
 - [Plugins → Event Plugins](plugins.md)
-- [xyOps Expression Format](xyexp.md)
+- [PTOps Expression Format](xyexp.md)

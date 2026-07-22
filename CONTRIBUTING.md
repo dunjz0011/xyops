@@ -1,6 +1,6 @@
-# Contributing to xyOps
+# Contributing to PTOps
 
-We love open source, and we're thrilled that you want to help make **xyOps** even better!  Please read this document carefully before contributing. It explains how to work effectively with the xyOps team and where your efforts can have the biggest impact.
+We love open source, and we're thrilled that you want to help make **PTOps** even better!  Please read this document carefully before contributing. It explains how to work effectively with the PTOps team and where your efforts can have the biggest impact.
 
 ## Before You Open a Pull Request
 
@@ -31,14 +31,14 @@ Please do **not** open GitHub issues for security vulnerabilities.  Instead, fol
 
 ### Localization
 
-We're preparing a formal localization process!  If you speak any languages other than English, we'd love your help translating xyOps once this is ready. Watch for updates in the GitHub Issues area.
+We're preparing a formal localization process!  If you speak any languages other than English, we'd love your help translating PTOps once this is ready. Watch for updates in the GitHub Issues area.
 
 ### Plugin Development
 
-Our biggest need right now is **Plugins**!  xyOps is built around an open plugin architecture, and we would love your contributions here.
+Our biggest need right now is **Plugins**!  PTOps is built around an open plugin architecture, and we would love your contributions here.
 
 - See the [Plugin Guide](https://github.com/pixlcore/xyops/blob/main/docs/plugins.md) for full development and publishing details.  
-- Publish your plugin on GitHub, then register it on the [xyOps Plugin Marketplace](https://xyops.io/marketplace).  
+- Publish your plugin on GitHub, then register it on the [PTOps Plugin Marketplace](https://xyops.io/marketplace).
 - Plugins should use an **OSI-approved license** and include clear documentation of any security considerations.
 
 ### Documentation Improvements
@@ -51,9 +51,9 @@ We happily accept PRs that improve our docs!
 
 ### Spread the Word
 
-If you enjoy xyOps, help us grow the community:
+If you enjoy PTOps, help us grow the community:
 
-- Mention xyOps on [Bluesky](https://pixlcore.bsky.social/) and [Mastodon](https://mastodon.social/@pixlcore), or boost our posts!  
+- Mention PTOps on [Bluesky](https://pixlcore.bsky.social/) and [Mastodon](https://mastodon.social/@pixlcore), or boost our posts!
 - Participate in [GitHub Discussions](https://github.com/pixlcore/xyops/discussions).  Particularly, help out new users!
 - Subscribe to our [YouTube Channel](https://www.youtube.com/@PixlCore-Media) and leave likes on our videos (if you like them).
 
@@ -67,12 +67,12 @@ If you enjoy xyOps, help us grow the community:
 
 ## Code of Conduct
 
-All participants are expected to follow our [Code of Conduct](https://github.com/pixlcore/xyops/blob/main/CODE_OF_CONDUCT.md).  By contributing to xyOps, you agree to foster a welcoming, respectful community.
+All participants are expected to follow our [Code of Conduct](https://github.com/pixlcore/xyops/blob/main/CODE_OF_CONDUCT.md).  By contributing to PTOps, you agree to foster a welcoming, respectful community.
 
 ## Thank You
 
-Your time and effort mean a lot to us.  Even if you're not writing code, every issue, translation, plugin, or mention helps make **xyOps** better for everyone.  
+Your time and effort mean a lot to us.  Even if you're not writing code, every issue, translation, plugin, or mention helps make **PTOps** better for everyone.
 
-**Together, we can make xyOps truly awesome.**  
+**Together, we can make PTOps truly awesome.**
 
 -- The PixlCore Team  

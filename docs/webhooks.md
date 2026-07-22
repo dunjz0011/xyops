@@ -1,56 +1,53 @@
 # Web Hooks
 
-## Overview
+## Tổng Quan
 
-Web hooks in xyOps are outbound HTTP requests that fire in response to job and alert activity. They integrate xyOps with external systems such as Slack, Discord, Pushover, incident and chat systems, or any custom HTTP endpoint you control.
+Web hook trong PTOps là các HTTP request gửi ra ngoài, được kích hoạt khi có hoạt động job và alert. Chúng tích hợp PTOps với các hệ thống bên ngoài như Slack, Discord, Pushover, hệ thống chat/incident, hoặc bất kỳ endpoint HTTP tuỳ chỉnh nào bạn kiểm soát.
 
-- **Fully customizable request**: URL, method, headers, and body are user-defined and support templating (macros).
-- **Action-driven**: Jobs and alerts trigger hooks based on conditions (start, outcomes, tags, suspensions, limits, alert fired/cleared, etc.).
-- **Observable**: Each execution records success/failure, timing, request/response, and a performance breakdown.
+- **Request tuỳ chỉnh hoàn toàn**: URL, method, header và body do người dùng định nghĩa và hỗ trợ templating (macro).
+- **Kích hoạt theo action**: Job và alert kích hoạt hook dựa trên điều kiện (bắt đầu, kết quả, tag, suspend, limit, alert fired/cleared, v.v.).
+- **Có thể quan sát**: Mỗi lần thực thi ghi lại thành công/thất bại, thời gian, request/response, và breakdown hiệu năng.
 
+## Khi Nào Hook Kích Hoạt
 
-## When Hooks Fire
+Gắn một action "Web Hook" vào job (event/workflow) hoặc alert. Hook có thể kích hoạt khi:
 
-Attach a "Web Hook" action to jobs (events/workflows) or alerts. Hooks can fire on:
+- **Job bắt đầu**: `start` (trước khi launch từ xa).
+- **Job hoàn thành**: `complete`, hoặc các kết quả cụ thể `success`, `error`, `warning`, `critical`, `abort`.
+- **Tag của job**: `tag:TAGID` (khi hoàn thành và có tag đó).
+- **Job bị suspend**: khi job bị suspend để chờ can thiệp của con người.
+- **Limit tài nguyên của job**: khi vượt limit (memory tối đa / CPU tối đa / thời gian tối đa / output tối đa).
+- **Alert**: `alert_new` khi alert được tạo, và `alert_cleared` khi alert được clear.
 
-- **Job start**: `start` (before remote launch).
-- **Job completion**: `complete`, or specific outcomes `success`, `error`, `warning`, `critical`, `abort`.
-- **Job tag**: `tag:TAGID` (on completion and tag present).
-- **Job suspensions**: when a job is suspended for human intervention.
-- **Job resource limits**: when limits are exceeded (max memory / max cpu / max elapsed / max output).
-- **Alerts**: `alert_new` when an alert is created, and `alert_cleared` when it clears.
+Lưu ý:
 
-Notes:
+- Action được loại bỏ trùng lặp theo type + target (ví dụ cùng hook ID) trên các nguồn event/category/universal.
+- Đối với job, action khi hoàn thành chỉ chạy nếu job không bị retry.
 
-- Actions are deduplicated by type + target (e.g., same hook ID) across event/category/universal sources.
-- For jobs, completion actions only fire if the job was not retried.
+## Định Nghĩa Một Web Hook
 
+Định nghĩa web hook có thể tái sử dụng và được action tham chiếu đến. Thuộc tính cốt lõi (xem schema đầy đủ tại [WebHook](docs/data.md#webhook)):
 
-## Defining a Web Hook
-
-A web hook definition is reusable and referenced by actions. Core properties (see full schema in [WebHook](docs/data.md#webhook)):
-
-- `id`: Unique alphanumeric ID (auto-generated).
-- `title`: Display title.
-- `enabled`: Enable/disable without deleting.
-- `icon`: Optional [Material Design Icons](https://pictogrammers.com/library/mdi/) id for display.
-- `url`: Fully-qualified `http://` or `https://` endpoint. Templating supported; placeholders are URL-encoded automatically.
+- `id`: ID alphanumeric duy nhất (tự sinh).
+- `title`: Tiêu đề hiển thị.
+- `enabled`: Bật/tắt mà không cần xoá.
+- `icon`: ID [Material Design Icons](https://pictogrammers.com/library/mdi/) tuỳ chọn để hiển thị.
+- `url`: Endpoint đầy đủ `http://` hoặc `https://`. Hỗ trợ templating; placeholder được URL-encode tự động.
 - `method`: HTTP verb (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`).
-- `headers`: Array of `{ name, value }`. Values support templating.
-- `body`: Optional request body as a string. Templating supported. Sent for non-GET/HEAD when non-empty.
-- `timeout`: Seconds to wait for first byte and idle socket (TTFB + idle).
-- `retries`: Number of automatic retries on transport errors.
-- `follow`: Auto-follow redirects (numeric cap internally; off when false).
-- `ssl_cert_bypass`: If true, disables TLS verification (`rejectUnauthorized: false`).
-- `max_per_day`: Daily cap on executions for anti-flooding (0 = unlimited).
-- `notes`: Free-form notes.
+- `headers`: Mảng `{ name, value }`. Value hỗ trợ templating.
+- `body`: Body request tuỳ chọn dạng string. Hỗ trợ templating. Được gửi cho các method khác GET/HEAD khi không rỗng.
+- `timeout`: Số giây chờ byte đầu tiên và socket idle (TTFB + idle).
+- `retries`: Số lần tự động retry khi lỗi transport.
+- `follow`: Tự động theo redirect (có giới hạn số lần nội bộ; tắt khi false).
+- `ssl_cert_bypass`: Nếu true, tắt xác thực TLS (`rejectUnauthorized: false`).
+- `max_per_day`: Giới hạn số lần thực thi mỗi ngày để chống flood (0 = không giới hạn).
+- `notes`: Ghi chú tự do.
 
-Create, update, list, delete and test are available via the UI and the [Web Hooks API](docs/api.md#web-hooks).
+Tạo, cập nhật, liệt kê, xoá và test đều có sẵn qua UI và [Web Hooks API](docs/api.md#web-hooks).
 
+## Templating Cho Request
 
-## Request Templating
-
-Web hook `url`, `headers[].value`, and `body` support templating using `{{ ... }}` expressions evaluated in [xyOps Expression Format](xyexp.md) with access to the current job/alert context. Examples:
+`url`, `headers[].value`, và `body` của web hook hỗ trợ templating dùng biểu thức `{{ ... }}` được đánh giá theo [PTOps Expression Format](xyexp.md) với quyền truy cập context job/alert hiện tại. Ví dụ:
 
 ```
 POST https://hooks.example.com/ingest/{{event.id}}?server={{nice_hostname}}
@@ -65,32 +62,31 @@ Content-Type: application/json
 }
 ```
 
-Key behavior:
+Hành vi chính:
 
-- URL placeholders are URL-encoded automatically.
-- Secrets are available as `{{ secrets.VAR_NAME }}` when the secret is assigned to the hook (see "Secrets" below).
-- Helpers include `float()`, `integer()`, `bytes()`, `number()`, `pct()`, `encode()`, `stringify()`, `count()`, `min()`, `max()`, `round()`, `ceil()`, `floor()`, `clamp()`. See [xyOps Expression Format](xyexp.md) for the full helper list.
-- To use a job parameter, including a user field value from the event, use `{{ job.params.PARAM_NAME }}`.
-- To use a workflow launch parameter from a child job in a workflow, use `{{ job.workflow.params.PARAM_NAME }}`.
-- To use the output data from a job, use `{{ job.data.PROP_NAME }}`.
-- Job context: [JobHookData](data.md#jobhookdata) including `text`, `event`, `job`, `server`, `display` (CPU/mem summaries), `links`, etc.
-- Alert context: [AlertHookData](data.md#alerthookdata) including `text`, `def`, `alert`, `server`, `links`, and other niceties.
+- Placeholder trong URL được URL-encode tự động.
+- Secret có sẵn dưới dạng `{{ secrets.VAR_NAME }}` khi secret đã được gán cho hook (xem "Secrets" bên dưới).
+- Các hàm hỗ trợ gồm `float()`, `integer()`, `bytes()`, `number()`, `pct()`, `encode()`, `stringify()`, `count()`, `min()`, `max()`, `round()`, `ceil()`, `floor()`, `clamp()`. Xem [PTOps Expression Format](xyexp.md) để có danh sách đầy đủ.
+- Để dùng một parameter của job, bao gồm giá trị user field từ event, dùng `{{ job.params.PARAM_NAME }}`.
+- Để dùng một parameter khởi chạy workflow từ job con trong workflow, dùng `{{ job.workflow.params.PARAM_NAME }}`.
+- Để dùng output data từ một job, dùng `{{ job.data.PROP_NAME }}`.
+- Context job: [JobHookData](data.md#jobhookdata) bao gồm `text`, `event`, `job`, `server`, `display` (tổng hợp CPU/mem), `links`, v.v.
+- Context alert: [AlertHookData](data.md#alerthookdata) bao gồm `text`, `def`, `alert`, `server`, `links`, và các thông tin tiện lợi khác.
 
-Tip: Prefer JSON for bodies where possible; for form-encoded APIs, set `Content-Type: application/x-www-form-urlencoded` and compose the body accordingly.
+Gợi ý: Nên dùng JSON cho body khi có thể; với API dạng form-encoded, set `Content-Type: application/x-www-form-urlencoded` và soạn body tương ứng.
 
+### Parameter Của Job và Workflow
 
-### Job and Workflow Parameters
+Khi web hook kích hoạt cho một job, macro của nó được đánh giá theo [JobHookData](data.md#jobhookdata). Toàn bộ object job có sẵn dưới dạng `job`, nên parameter của event và user field có thể đọc từ `job.params`.
 
-When a web hook fires for a job, its macros are evaluated against [JobHookData](data.md#jobhookdata).  The full job object is available as `job`, so event parameters and user fields can be read from `job.params`.
-
-For example, if your event has user fields named `TARGET` and `REGION`, you can use them in the hook URL, headers, body, or the action's "Custom Text" field:
+Ví dụ, nếu event của bạn có user field tên `TARGET` và `REGION`, bạn có thể dùng chúng trong URL, header, body của hook, hoặc trường "Custom Text" của action:
 
 ```
 {{ job.params.TARGET }}
 {{ job.params.REGION }}
 ```
 
-A JSON body might look like this:
+Một body JSON có thể trông như thế này:
 
 ```json
 {
@@ -101,37 +97,35 @@ A JSON body might look like this:
 }
 ```
 
-For jobs launched inside a workflow, there are two different parameter scopes:
+Đối với job chạy trong workflow, có hai scope parameter khác nhau:
 
-- `job.params`: Parameters on the current job or event node.
-- `job.workflow.params`: Parameters supplied when the outer workflow was launched.
+- `job.params`: Parameter của job hoặc event node hiện tại.
+- `job.workflow.params`: Parameter được cung cấp khi khởi chạy workflow ngoài.
 
-For example, if the workflow launch form has a `TARGET` field, and a child event also has its own `TARGET` field, you can address them separately:
+Ví dụ, nếu form khởi chạy workflow có field `TARGET`, và event con cũng có field `TARGET` riêng, bạn có thể truy cập riêng biệt:
 
 ```
 Current job target: {{ job.params.TARGET }}
 Workflow target: {{ job.workflow.params.TARGET }}
 ```
 
-This is different from shell plugin environment variables, where workflow parameters are exposed with a `workflow_` prefix such as `${workflow_TARGET}`.  In web hook templates, use object paths instead: `{{ job.workflow.params.TARGET }}`.
-
+Điều này khác với biến môi trường của shell plugin, nơi parameter của workflow được hiển thị với tiền tố `workflow_` như `${workflow_TARGET}`. Trong template web hook, dùng object path thay thế: `{{ job.workflow.params.TARGET }}`.
 
 ## Secrets
 
-Web hooks can use encrypted secrets via templating:
+Web hook có thể dùng secret được mã hoá thông qua templating:
 
-- Syntax: `{{ secrets.VAR_NAME }}` anywhere in `url`, `headers`, or `body`.
-- Assignment: Administrators must grant a secret to the hook in the secret editor. Without assignment, `secrets.*` resolves empty.
-- Security: Avoid placing secrets in the URL (they may end up in logs at the destination and xyOps records the composed request). Prefer headers or body.
+- Cú pháp: `{{ secrets.VAR_NAME }}` ở bất kỳ đâu trong `url`, `headers`, hoặc `body`.
+- Gán quyền: Quản trị viên phải cấp secret cho hook trong trình chỉnh sửa secret. Nếu chưa gán, `secrets.*` sẽ trả về rỗng.
+- Bảo mật: Tránh đặt secret trong URL (chúng có thể lưu lại trong log ở đích và PTOps ghi lại request đã soạn). Nên dùng header hoặc body.
 
-See [Secrets](secrets.md) for model, assignment and auditing details.
+Xem [Secrets](secrets.md) để biết mô hình, cách gán quyền và audit.
 
+## Template Text Mặc Định
 
-## Default Text Templates
+Khi một hook được action sử dụng, PTOps tự sinh giá trị `{{text}}` phù hợp với context từ các template có thể cấu hình ([hook_text_templates](config.md#hook_text_templates)). Bạn có thể thêm text riêng vào trường "Custom Text" của action.
 
-When a hook is used by an action, xyOps generates a context-aware `{{text}}` value from configurable templates ([hook_text_templates](config.md#hook_text_templates)). You can append your own text in the action's "Custom Text" field.
-
-Default templates include:
+Các template mặc định bao gồm:
 
 ```json
 {
@@ -146,29 +140,27 @@ Default templates include:
 }
 ```
 
-These provide broad compatibility with common services (Slack uses `text`; Discord maps `content`; Pushover uses `message`). You can also map `content`/`message` in your body to the same value as `text` if needed.
+Các template này cung cấp khả năng tương thích rộng với các dịch vụ phổ biến (Slack dùng `text`; Discord map sang `content`; Pushover dùng `message`). Bạn cũng có thể map `content`/`message` trong body về cùng giá trị với `text` nếu cần.
 
+## Thực Thi và Khả Năng Quan Sát
 
-## Execution and Observability
+Mỗi lần thực thi web hook ghi lại chẩn đoán chi tiết và hiển thị trong UI (Activity của job hoặc log action của alert):
 
-Every web hook execution records rich diagnostics and surfaces them in the UI (job Activity or alert action log):
+- **Trạng thái**: Thành công với dòng trạng thái HTTP hoặc mã lỗi.
+- **Thời gian**: Tổng thời gian và breakdown hiệu năng theo các giai đoạn network (dns, connect, send, wait, receive, compress, decompress).
+- **Request**: Method cuối cùng, URL (đã mở rộng template và URL-encode), header, và body.
+- **Response**: Header và body thô trả về từ endpoint.
 
-- **Status**: Success with HTTP status line or an error code.
-- **Timing**: Total elapsed and a performance breakdown of network lifecycle phases (dns, connect, send, wait, receive, compress, decompress).
-- **Request**: Final method, URL (with templates expanded and URL-encoded), headers, and body.
-- **Response**: Raw headers and body returned by the endpoint.
+Các chi tiết này cũng được trả về bởi API test để kiểm tra ad-hoc.
 
-These details are also returned by the test API for ad-hoc verification.
+## Gợi Ý và Ví Dụ
 
-
-## Tips and Examples
-
-These recipes show common integrations. Replace IDs and secrets with your own.
+Các mẫu này minh hoạ các tích hợp phổ biến. Thay ID và secret bằng của riêng bạn.
 
 ### Slack Incoming Webhook
 
-- Create a Slack Incoming Webhook URL.
-- Hook settings:
+- Tạo một Slack Incoming Webhook URL.
+- Cấu hình hook:
   - method: `POST`
   - url: `https://hooks.slack.com/services/XXX/YYY/ZZZ`
   - headers: `Content-Type: application/json`
@@ -180,11 +172,11 @@ These recipes show common integrations. Replace IDs and secrets with your own.
 }
 ```
 
-If you use Slack's newer Bot Token + chat.postMessage, set `Authorization: Bearer {{ secrets.SLACK_TOKEN }}` and include `channel` in the body.
+Nếu bạn dùng Bot Token + chat.postMessage mới hơn của Slack, set `Authorization: Bearer {{ secrets.SLACK_TOKEN }}` và thêm `channel` vào body.
 
 ### Discord Webhook
 
-- Hook settings:
+- Cấu hình hook:
   - method: `POST`
   - url: `https://discord.com/api/webhooks/ID/TOKEN`
   - headers: `Content-Type: application/json`
@@ -198,9 +190,9 @@ If you use Slack's newer Bot Token + chat.postMessage, set `Authorization: Beare
 
 ### Pushover
 
-- Create a Pushover application and collect `PUSHOVER_API_KEY` and `PUSHOVER_APP_KEY`.
-- Use `encode` macro function to URI-encode the values for x-www-form-urlencoded.
-- Hook settings:
+- Tạo một ứng dụng Pushover và lấy `PUSHOVER_API_KEY` và `PUSHOVER_APP_KEY`.
+- Dùng hàm macro `encode` để URI-encode các giá trị cho x-www-form-urlencoded.
+- Cấu hình hook:
   - method: `POST`
   - url: `https://api.pushover.net/1/messages.json`
   - headers: `Content-Type: application/x-www-form-urlencoded`
@@ -212,14 +204,14 @@ token={{ encode(secrets.PUSHOVER_APP_KEY) }}&user={{ encode(secrets.PUSHOVER_API
 
 ### ntfy.sh
 
-- Choose a private topic name. On `ntfy.sh`, topic names are public and guessable topic names may be discovered by others.
-- Optional but recommended for protected topics: create an access token and store it as a secret like `NTFY_TOKEN`.
-- Hook settings:
+- Chọn một tên topic riêng tư. Trên `ntfy.sh`, tên topic là công khai và tên dễ đoán có thể bị người khác phát hiện.
+- Tuỳ chọn nhưng nên làm với topic được bảo vệ: tạo access token và lưu làm secret như `NTFY_TOKEN`.
+- Cấu hình hook:
   - method: `POST`
   - url: `https://ntfy.sh/YOUR_TOPIC`
   - headers: 
   	- `Content-Type: text/plain; charset=utf-8`, 
-	- `Title: xyOps: {{event.title}}`, 
+	- `Title: PTOps: {{event.title}}`,
 	- `Priority: high`, 
 	- `Tags: warning`, 
 	- `Authorization: Bearer {{ secrets.NTFY_TOKEN }}`
@@ -229,11 +221,11 @@ token={{ encode(secrets.PUSHOVER_APP_KEY) }}&user={{ encode(secrets.PUSHOVER_API
 {{text}}
 ```
 
-If your topic allows anonymous writes, omit the `Authorization` header. For self-hosted ntfy, replace `https://ntfy.sh` with your server URL.
+Nếu topic của bạn cho phép ghi ẩn danh, bỏ header `Authorization`. Với ntfy tự host, thay `https://ntfy.sh` bằng URL server của bạn.
 
-### Generic Bearer API
+### API Bearer Chung
 
-- Hook settings:
+- Cấu hình hook:
   - method: `POST`
   - url: `https://api.example.com/v1/event`
   - headers: `Authorization: Bearer {{ secrets.API_TOKEN }}`, `Content-Type: application/json`
@@ -248,31 +240,28 @@ If your topic allows anonymous writes, omit the `Authorization` header. For self
 }
 ```
 
+## Xử Lý Sự Cố
 
-## Troubleshooting
+- Hook không kích hoạt: Xác nhận điều kiện action khớp và hook đang bật. Với job, đảm bảo lần chạy không bị retry; action khi hoàn thành bỏ qua các lần retry.
+- Giới hạn hàng ngày: Nếu `max_per_day` được set và đã đạt, PTOps bỏ qua thực thi và ghi lại một lỗi (hiển thị trên trang chi tiết job).
+- Lỗi templating: Biểu thức `{{ ... }}` không hợp lệ trong body bị từ chối khi lưu/cập nhật. Với URL/header/body, dùng chức năng Test để kiểm tra kết quả mở rộng.
+- Vấn đề TLS: Với endpoint dev dùng chứng chỉ tự ký, bật "SSL Cert Bypass". Nên dùng chứng chỉ hợp lệ ở production.
+- Secret không mở rộng: Đảm bảo secret đã gán cho hook và tên biến khớp. Tránh dùng secret trong URL khi có thể.
 
-- Hook not firing: Confirm the action condition matches and the hook is enabled. For jobs, ensure the run wasn't retried; completion actions skip retried runs.
-- Daily cap: If `max_per_day` is set and reached, xyOps skips execution and records a failure (visible on job details page).
-- Templating errors: Invalid `{{ ... }}` expressions in the body are rejected on save/update. For URL/headers/body, use the Test feature to validate expansions.
-- TLS issues: For development endpoints with self-signed certificates, enable "SSL Cert Bypass". Prefer valid certificates in production.
-- Secrets not expanding: Ensure the secret is assigned to the hook and variable names match. Avoid using secrets in the URL when possible.
+## Tham Chiếu API
 
+Quản lý bằng code và test trực tiếp:
 
-## API Reference
+- [get_web_hooks](api.md#get_web_hooks) -- liệt kê hook
+- [get_web_hook](api.md#get_web_hook) -- lấy một hook
+- [create_web_hook](api.md#create_web_hook) -- tạo hook
+- [update_web_hook](api.md#update_web_hook) -- cập nhật, shallow merge
+- [delete_web_hook](api.md#delete_web_hook) -- xoá hook
+- [test_web_hook](api.md#test_web_hook) -- test trực tiếp, trả về báo cáo markdown
 
-Programmatic management and live testing:
+Xem [Web Hook APIs](api.md#web-hooks) để có ví dụ request/response đầy đủ.
 
-- [get_web_hooks](api.md#get_web_hooks) -- list hooks
-- [get_web_hook](api.md#get_web_hook) -- fetch one
-- [create_web_hook](api.md#create_web_hook) -- create hook
-- [update_web_hook](api.md#update_web_hook) -- update, shallow merge
-- [delete_web_hook](api.md#delete_web_hook) -- delete hook
-- [test_web_hook](api.md#test_web_hook) -- live test, returns markdown report
-
-See [Web Hook APIs](api.md#web-hooks) for full request/response examples.
-
-
-## See Also
+## Xem Thêm
 
 - [Actions](actions.md)
 - [WebHook Object](data.md#webhook)

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Build xyOps CHANGELOG.md file
+// Build PTOps CHANGELOG.md file
 
 var fs = require('fs');
 var Path = require('path');
@@ -23,7 +23,7 @@ if (!debug && porcelain.length) {
 var tags = cp.execSync('git tag --list --sort=version:refname', { encoding: 'utf8' }).trim().split(/\n/).reverse();
 
 var md = '';
-md += "# xyOps Changelog\n";
+md += "# PTOps Changelog\n";
 
 var last_tag = tags.pop();
 if (!tags.length) {

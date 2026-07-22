@@ -1,93 +1,93 @@
 # Snapshots
 
-## Overview
+## Tổng Quan
 
-Snapshots capture a point-in-time view of everything happening on one server (or across a server group). They're designed for fast forensics, side-by-side comparisons (before/after a deploy, during an incident), and long-term audit trails.
+Snapshot chụp lại một cái nhìn tại một thời điểm về mọi thứ đang diễn ra trên một server (hoặc trên toàn bộ một server group). Chúng được thiết kế để điều tra nhanh (forensics), so sánh song song (trước/sau một lần deploy, trong lúc xảy ra sự cố), và lưu vết audit lâu dài.
 
-This page explains what snapshots are, what they contain, how to create them (manually or automatically), how watches work, and a few tips for using them effectively.
+Trang này giải thích snapshot là gì, chúng chứa gì, cách tạo chúng (thủ công hoặc tự động), watch hoạt động thế nào, và một số mẹo để sử dụng chúng hiệu quả.
 
-## Key Points
+## Điểm Chính
 
-- A snapshot records the current state of a server (processes, connections, mounts, devices, metrics, jobs, alerts, and more).
-- Group snapshots record a whole group at once (all current members, plus recently offline servers), enabling fleet-level forensics.
-- Snapshots can be created manually in the UI, by API, or automatically via Actions (on jobs/alerts) and Watches (every minute for a duration).
-- Snapshots are visible on the Snapshots page and are linked from servers, groups, jobs and alerts.
-- Snapshots are retained up to a global cap (default 100,000) and are pruned nightly. See [Servers → Snapshots and Watches](servers.md#snapshots-and-watches).
+- Một snapshot ghi lại trạng thái hiện tại của một server (process, connection, mount, device, metric, job, alert, và nhiều hơn nữa).
+- Group snapshot ghi lại toàn bộ một group cùng lúc (tất cả member hiện tại, cộng với server mới offline gần đây), cho phép điều tra ở cấp độ toàn fleet.
+- Snapshot có thể được tạo thủ công trong UI, qua API, hoặc tự động qua Action (trên job/alert) và Watch (mỗi phút trong một khoảng thời gian).
+- Snapshot hiển thị trên trang Snapshots và được liên kết từ server, group, job và alert.
+- Snapshot được giữ lại đến một giới hạn toàn cục (mặc định 100,000) và được dọn dẹp mỗi đêm. Xem [Servers → Snapshots and Watches](servers.md#snapshots-and-watches).
 
-## What a Snapshot Contains
+## Snapshot Chứa Gì
 
-All server snapshots include a record with the following:
+Tất cả server snapshot bao gồm một record với các nội dung sau:
 
-- Minute sample: A full copy of the current [ServerMonitorData](data.md#servermonitordata), which includes:
+- Minute sample: Một bản copy đầy đủ của [ServerMonitorData](data.md#servermonitordata) hiện tại, bao gồm:
   - CPU, memory, load, OS/platform/release/arch, uptime.
-  - Full process list and process stats.
-  - Active network connections (including listeners).
-  - Network interfaces and stats; disk mounts and filesystem stats.
-  - Monitors (computed values) and deltas; raw plugin command output.
-- Quick metrics: The last 60 seconds of per-second "quick" samples (`quickmon`) for CPU/mem/disk/net ([QuickmonData](data.md#quickmondata)).
-- Context: IDs of active jobs and active alerts at capture time. For workflow sub-jobs, parents may be included for context.
+  - Danh sách process đầy đủ và số liệu thống kê process.
+  - Kết nối mạng đang hoạt động (bao gồm listener).
+  - Network interface và thống kê; disk mount và thống kê filesystem.
+  - Monitor (giá trị đã tính toán) và delta; output plugin thô.
+- Quick metrics: 60 giây gần nhất của các mẫu "quick" theo giây (`quickmon`) cho CPU/mem/disk/net ([QuickmonData](data.md#quickmondata)).
+- Context: ID của job và alert đang hoạt động tại thời điểm chụp. Đối với workflow sub-job, parent có thể được bao gồm để làm context.
 
-Group snapshots add fleet context:
+Group snapshot thêm context toàn fleet:
 
-- All current members (online) plus recently offline servers (within the last hour), labeled with online/offline state.
-- Per-server [ServerMonitorData](data.md#servermonitordata) objects aligned 1:1 with `servers`.
-- Per-server 60-second quick samples aligned 1:1 with `servers`.
-- Active alerts and jobs relevant to any member server at capture time.
+- Tất cả member hiện tại (online) cộng với server mới offline gần đây (trong vòng 1 giờ qua), được đánh dấu trạng thái online/offline.
+- Object [ServerMonitorData](data.md#servermonitordata) cho mỗi server, khớp 1:1 với `servers`.
+- Mẫu quick 60 giây cho mỗi server, khớp 1:1 với `servers`.
+- Alert và job đang hoạt động liên quan đến bất kỳ server member nào tại thời điểm chụp.
 
-See the full object shapes in [Data → Snapshot](data.md#snapshot) and [Data → GroupSnapshot](data.md#groupsnapshot).
+Xem đầy đủ hình dạng object trong [Data → Snapshot](data.md#snapshot) và [Data → GroupSnapshot](data.md#groupsnapshot).
 
-## Creating Snapshots
+## Tạo Snapshot
 
-You can create snapshots in several ways:
+Bạn có thể tạo snapshot theo nhiều cách:
 
-- **Manually (UI)**
-  - Server: Open a server page and click Snapshot".
-  - Group: Open a group page and click "Snapshot".
-- **Automatically via Actions**
-  - Add a Snapshot action to a job or alert (see [Actions](actions.md)).
-  - Jobs: The job must target a specific server; the snapshot is taken on that server.
-  - Alerts: The snapshot is taken on the alert's server when the action triggers.
-- **By API**
-  - Server: `create_snapshot` -- see [API → create_snapshot](api.md#create_snapshot).
-  - Group: `create_group_snapshot` -- see [API → create_group_snapshot](api.md#create_group_snapshot).
+- **Thủ Công (UI)**
+  - Server: Mở trang server và nhấn "Snapshot".
+  - Group: Mở trang group và nhấn "Snapshot".
+- **Tự Động Qua Action**
+  - Thêm một Snapshot action vào job hoặc alert (xem [Actions](actions.md)).
+  - Job: Job phải nhắm mục tiêu một server cụ thể; snapshot được chụp trên server đó.
+  - Alert: Snapshot được chụp trên server của alert khi action được kích hoạt.
+- **Qua API**
+  - Server: `create_snapshot` -- xem [API → create_snapshot](api.md#create_snapshot).
+  - Group: `create_group_snapshot` -- xem [API → create_group_snapshot](api.md#create_group_snapshot).
 
-Permissions: Creating snapshots (UI or API) requires the [create_snapshots](privileges.md#create_snapshots) privilege.
+Quyền: Tạo snapshot (UI hoặc API) yêu cầu privilege [create_snapshots](privileges.md#create_snapshots).
 
 ## Watches
 
-Watches instruct xyOps to take snapshots every minute for a specified duration. Use these to capture short-lived issues or observe changes during a rollout.
+Watch chỉ đạo PTOps chụp snapshot mỗi phút trong một khoảng thời gian cụ thể. Dùng chúng để chụp các vấn đề ngắn hạn hoặc quan sát thay đổi trong lúc triển khai (rollout).
 
 - **Server Watch**
-  - Set from a server page (UI) or API: [watch_server](api.md#watch_server).
-  - Snapshots are taken when that server's minute data arrives (each server's minute offset is deterministically staggered across the fleet).
-  - Cancel by setting duration to `0` (UI or API). The UI defaults to 5 minutes.
+  - Đặt từ trang server (UI) hoặc API: [watch_server](api.md#watch_server).
+  - Snapshot được chụp khi dữ liệu phút của server đó đến (mỗi offset phút của server được lệch giờ có chủ đích trên toàn fleet).
+  - Hủy bằng cách đặt thời gian là `0` (UI hoặc API). UI mặc định 5 phút.
 - **Group Watch**
-  - Set from a group page (UI) or API: [watch_group](api.md#watch_group).
-  - Snapshots run once per minute on the :30 second mark, capturing all matching servers using their most recent minute samples.
-  - Recently offline servers (within the last hour) are included and marked offline.
+  - Đặt từ trang group (UI) hoặc API: [watch_group](api.md#watch_group).
+  - Snapshot chạy một lần mỗi phút ở mốc giây :30, chụp tất cả server khớp bằng mẫu phút gần nhất của chúng.
+  - Server mới offline gần đây (trong vòng 1 giờ qua) được bao gồm và đánh dấu offline.
 
-Notes:
+Ghi chú:
 
-- Staggering: Minute collections are staggered across servers to spread load; server watch snapshot times will reflect each server's offset.
-- Provenance: Automatically created snapshots record `source` as `watch`; manually created ones record `source` as `user` and include `username`.
+- Lệch giờ (staggering): Việc thu thập theo phút được lệch giờ trên các server để trải đều tải; thời gian chụp snapshot của server watch sẽ phản ánh offset của từng server.
+- Nguồn gốc (provenance): Snapshot được tạo tự động ghi `source` là `watch`; snapshot tạo thủ công ghi `source` là `user` và bao gồm `username`.
 
-## Viewing and Searching
+## Xem và Tìm Kiếm
 
-- UI: Click on "Snapshots" in the sidebar; snapshots also link from server and group pages, and from job/alert activity when actions create them.
-- API search: Use [search_snapshots](api.md#search_snapshots) to filter and paginate snapshot history.
+- UI: Nhấn "Snapshots" ở sidebar; snapshot cũng được liên kết từ trang server và group, và từ activity của job/alert khi action tạo ra chúng.
+- Tìm kiếm API: Dùng [search_snapshots](api.md#search_snapshots) để lọc và phân trang lịch sử snapshot.
 
-## Troubleshooting and Tips
+## Xử Lý Sự Cố và Mẹo
 
-- Prefer watches for transient issues: If a problem is bursty or short-lived, start a short watch (e.g., 5-10 minutes) rather than taking a single manual snapshot.
-- Align timing with events: For pre/post comparisons, take one before and one after your change; record links in the related ticket or job notes.
-- Troublesome job?  Assign snapshot actions on both job start *and* job complete, to compare the server differences.
-- Understand minute vs. second data: The core state is minute-granularity [ServerMonitorData]; the `quickmon` buffer adds the previous 60 seconds of per-second context.
-- Group snapshots timing: Group watch runs on :30; servers submit minute samples on staggered offsets. Group snapshots use the latest saved minute for each server.
-- Recently offline hosts: Group snapshots include recently offline hosts (last hour) and mark them offline so you still see their last known state.
-- Permissions: If you don't see snapshot controls or API calls fail, ensure your user or API Key has [create_snapshots](privileges.md#create_snapshots).
+- Ưu tiên watch cho vấn đề tạm thời: Nếu vấn đề diễn ra theo cụm (bursty) hoặc ngắn hạn, bắt đầu một watch ngắn (ví dụ 5-10 phút) thay vì chụp một snapshot thủ công đơn lẻ.
+- Đồng bộ thời gian với event: Đối với so sánh trước/sau, chụp một cái trước và một cái sau thay đổi của bạn; ghi lại liên kết trong ticket hoặc ghi chú job liên quan.
+- Job gây rắc rối? Gán snapshot action cả lúc job start *và* job complete, để so sánh sự khác biệt của server.
+- Hiểu dữ liệu theo phút vs. theo giây: Trạng thái cốt lõi là [ServerMonitorData] ở độ chi tiết theo phút; buffer `quickmon` thêm 60 giây trước đó của context theo giây.
+- Thời điểm group snapshot: Group watch chạy ở giây :30; server gửi mẫu phút theo offset lệch giờ. Group snapshot dùng mẫu phút gần nhất được lưu cho mỗi server.
+- Host mới offline gần đây: Group snapshot bao gồm host mới offline gần đây (1 giờ qua) và đánh dấu offline để bạn vẫn thấy trạng thái được biết cuối cùng của chúng.
+- Quyền: Nếu bạn không thấy điều khiển snapshot hoặc lệnh API thất bại, đảm bảo user hoặc API Key của bạn có [create_snapshots](privileges.md#create_snapshots).
 
-## Learn More
+## Tìm Hiểu Thêm
 
-- Data Objects: [Snapshot](data.md#snapshot), [GroupSnapshot](data.md#groupsnapshot), [ServerMonitorData](data.md#servermonitordata), [QuickmonData](data.md#quickmondata)
-- API Calls: [create_snapshot](api.md#create_snapshot), [watch_server](api.md#watch_server), [create_group_snapshot](api.md#create_group_snapshot), [watch_group](api.md#watch_group), [search_snapshots](api.md#search_snapshots)
-- See Also: [Servers](servers.md), [Groups](groups.md), [Actions](actions.md)
+- Đối Tượng Dữ Liệu: [Snapshot](data.md#snapshot), [GroupSnapshot](data.md#groupsnapshot), [ServerMonitorData](data.md#servermonitordata), [QuickmonData](data.md#quickmondata)
+- Lệnh API: [create_snapshot](api.md#create_snapshot), [watch_server](api.md#watch_server), [create_group_snapshot](api.md#create_group_snapshot), [watch_group](api.md#watch_group), [search_snapshots](api.md#search_snapshots)
+- Xem Thêm: [Servers](servers.md), [Groups](groups.md), [Actions](actions.md)

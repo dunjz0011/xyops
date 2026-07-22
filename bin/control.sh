@@ -2,7 +2,7 @@
 #
 # Control script designed to allow an easy command line interface
 # to controlling any binary.  Written by Marc Slemko, 1997/08/23
-# Modified for xyOps, Joe Huckaby, 2020/02/19
+# Modified for PTOps, Joe Huckaby, 2020/02/19
 # 
 # The exit codes returned are:
 #	0 - operation completed successfully

@@ -1,18 +1,18 @@
-# xyOps Threat Model
+# PTOps Threat Model
 
 ## Purpose
 
-This document is not a vulnerability report, and it is not a claim that xyOps is free of security bugs. Its purpose is to prepare future auditors, whether human or AI, to review the xyOps codebase with the correct architectural context, so they can spend more time finding real vulnerabilities and less time reporting intended administrator-controlled features as bugs.
+This document is not a vulnerability report, and it is not a claim that PTOps is free of security bugs. Its purpose is to prepare future auditors, whether human or AI, to review the PTOps codebase with the correct architectural context, so they can spend more time finding real vulnerabilities and less time reporting intended administrator-controlled features as bugs.
 
-xyOps is not built on a conventional Node.js web stack. It does not use Express, Passport, React, TypeScript, or standard off-the-shelf session middleware. Instead, xyOps is built on the PixlCore software stack, with first-party modules handling HTTP, API routing, storage, user auth, and the SPA client framework. Auditors should assume that standard Node.js framework instincts will often be wrong here unless validated against the local code and module documentation.
+PTOps is not built on a conventional Node.js web stack. It does not use Express, Passport, React, TypeScript, or standard off-the-shelf session middleware. Instead, PTOps is built on the PixlCore software stack, with first-party modules handling HTTP, API routing, storage, user auth, and the SPA client framework. Auditors should assume that standard Node.js framework instincts will often be wrong here unless validated against the local code and module documentation.
 
 ## Auditor Preparation
 
-Before auditing xyOps, do the following:
+Before auditing PTOps, do the following:
 
 1. Run `npm install` in the repository root so all first-party framework modules are available locally in `node_modules/`.
 2. Read the top-level `README.md`.
-3. Read `docs/dev.md` to understand the PixlCore module stack used by xyOps.
+3. Read `docs/dev.md` to understand the PixlCore module stack used by PTOps.
 4. Read the local READMEs and source for the primary framework modules:
 
 | Module | Local README | Key local source |
@@ -27,7 +27,7 @@ Before auditing xyOps, do the following:
 | `pixl-xyapp` | `node_modules/pixl-xyapp/README.md` | `node_modules/pixl-xyapp/js/base.js` |
 | `pixl-tools` | `node_modules/pixl-tools/README.md` | `node_modules/pixl-tools/tools.js` |
 
-5. Read the xyOps docs that define expected behavior and security-sensitive features:
+5. Read the PTOps docs that define expected behavior and security-sensitive features:
    - `docs/api.md`
    - `docs/config.md`
    - `docs/dev.md`
@@ -45,7 +45,7 @@ If the audit includes the remote satellite agent itself, also inspect the separa
 
 ## Scope and Non-Goals
 
-This document focuses on the xyOps conductor application and the security model around:
+This document focuses on the PTOps conductor application and the security model around:
 
 - user authentication
 - session management
@@ -70,24 +70,24 @@ This document does not attempt to prove:
 
 ## Security Review Philosophy
 
-When auditing xyOps, separate these three classes of behavior:
+When auditing PTOps, separate these three classes of behavior:
 
 1. Real vulnerability
    - An untrusted or lower-privileged actor can cross a trust boundary they should not cross.
    - Examples: auth bypass, privilege escalation, secret disclosure, CSRF bypass, unsafe token forgery, broken isolation between tenants/users/servers, or remote code execution reachable by non-admins.
 
 2. Intended administrator capability
-   - xyOps intentionally allows administrators to define code, URLs, commands, templates, hooks, and container settings.
+   - PTOps intentionally allows administrators to define code, URLs, commands, templates, hooks, and container settings.
    - This is not a vulnerability by itself.
    - It becomes a vulnerability only if non-admins can reach it unexpectedly, if privilege checks are bypassable, or if secrets leak across those boundaries.
 
 3. Deployment hardening issue
-   - Some risks depend on how the app is deployed rather than a code defect in xyOps.
+   - Some risks depend on how the app is deployed rather than a code defect in PTOps.
    - Examples: running over plain HTTP in production, misconfigured SSO reverse proxy, permissive CORS added by an operator, plugins running as root, Docker socket exposure, or inadequate inbound IP filtering.
 
 ## High-Value Assets
 
-The most sensitive assets in xyOps are:
+The most sensitive assets in PTOps are:
 
 - the global `secret_key`
 - encrypted secret vault payloads and their runtime plaintext values
@@ -101,18 +101,18 @@ The most sensitive assets in xyOps are:
 
 ## System Overview
 
-At a high level, xyOps is:
+At a high level, PTOps is:
 
 - a Node.js backend
 - a custom HTTP/HTTPS server built on `pixl-server-web`
 - a REST API router built on `pixl-server-api`
-- a user/session system built on `pixl-server-user`, extended by xyOps hooks
+- a user/session system built on `pixl-server-user`, extended by PTOps hooks
 - a storage layer built on `pixl-server-storage`
 - a database-like query layer built on `pixl-server-unbase`
 - a single-page browser client built on `pixl-xyapp`
 - a WebSocket hub for browser clients, satellites, and conductor peers
 
-The initial browser application is a SPA. The frontend does not navigate away from the initial page under normal operation. Client-side API calls are made through the `pixl-xyapp` wrapper around `window.fetch`, and xyOps only uses HTTP `GET` and `POST` for its own REST APIs.
+The initial browser application is a SPA. The frontend does not navigate away from the initial page under normal operation. Client-side API calls are made through the `pixl-xyapp` wrapper around `window.fetch`, and PTOps only uses HTTP `GET` and `POST` for its own REST APIs.
 
 ## Core Framework Modules and Why They Matter
 
@@ -122,12 +122,12 @@ The initial browser application is a SPA. The frontend does not navigate away fr
 
 Security relevance:
 
-- config loading and overrides happen here and in xyOps helpers
+- config loading and overrides happen here and in PTOps helpers
 - the component model explains why auth, API routing, storage, and web serving are not implemented in the conventional Express style
 
 ### `pixl-server-api`
 
-`pixl-server-api` maps URIs to methods by namespace and prefix. xyOps registers its app APIs with:
+`pixl-server-api` maps URIs to methods by namespace and prefix. PTOps registers its app APIs with:
 
 - namespace: `app`
 - function prefix: `api_`
@@ -136,9 +136,9 @@ Security relevance:
 
 - names are normalized to lowercase alphanumeric, slash, dash, and dot
 - namespaced dispatch only invokes functions that actually exist on the target object
-- for xyOps app APIs, only methods prefixed with `api_` are routable
+- for PTOps app APIs, only methods prefixed with `api_` are routable
 
-This is the reason a generic claim like "malformed URI can invoke arbitrary server methods" is likely a false positive unless an auditor can show a real dispatch bypass in `node_modules/pixl-server-api/api.js` or xyOps registration logic in `lib/api.js`.
+This is the reason a generic claim like "malformed URI can invoke arbitrary server methods" is likely a false positive unless an auditor can show a real dispatch bypass in `node_modules/pixl-server-api/api.js` or PTOps registration logic in `lib/api.js`.
 
 ### `pixl-server-web`
 
@@ -155,7 +155,7 @@ Security relevance:
 
 This provides the base local auth system: user creation, login, password reset, sessions, cookies, CSRF, password hashing, and related APIs.
 
-xyOps extends it with hooks in `lib/engine.js` for roles, extra user data, login/logout behavior, and audit logging.
+PTOps extends it with hooks in `lib/engine.js` for roles, extra user data, login/logout behavior, and audit logging.
 
 Security relevance:
 
@@ -164,11 +164,11 @@ Security relevance:
 - session IDs and CSRF tokens are cryptographically generated
 - usernames are regex-restricted and blocked from unsafe/reserved JS object keys
 - failed login attempts and forgot-password attempts are rate limited per account
-- cookie mode is enabled by default in xyOps
+- cookie mode is enabled by default in PTOps
 
 ### `pixl-server-storage`
 
-This is the storage abstraction under nearly all persistent state in xyOps. It supports multiple backends, including Filesystem, SQLite, Redis, S3, and hybrids.
+This is the storage abstraction under nearly all persistent state in PTOps. It supports multiple backends, including Filesystem, SQLite, Redis, S3, and hybrids.
 
 Security relevance:
 
@@ -178,7 +178,7 @@ Security relevance:
 
 ### `pixl-server-unbase`
 
-This is the database-like query layer on top of storage indexes. xyOps uses it for searchable record sets such as jobs, alerts, tickets, and other entities.
+This is the database-like query layer on top of storage indexes. PTOps uses it for searchable record sets such as jobs, alerts, tickets, and other entities.
 
 Security relevance:
 
@@ -260,12 +260,12 @@ Important note:
 
 Capabilities:
 
-- send forged trusted headers to xyOps
+- send forged trusted headers to PTOps
 
 Important note:
 
-- xyOps trusted-header SSO assumes the upstream proxy is trusted and IP-restricted
-- direct reachability to xyOps from untrusted clients in an SSO deployment is a deployment flaw, not necessarily an application auth bypass
+- PTOps trusted-header SSO assumes the upstream proxy is trusted and IP-restricted
+- direct reachability to PTOps from untrusted clients in an SSO deployment is a deployment flaw, not necessarily an application auth bypass
 
 ### Compromised satellite or conductor peer
 
@@ -323,7 +323,7 @@ Key files:
 
 Behavior:
 
-- xyOps registers its app APIs through `this.api.addNamespace("app", "api_", this)` in `lib/api.js`.
+- PTOps registers its app APIs through `this.api.addNamespace("app", "api_", this)` in `lib/api.js`.
 - `pixl-server-api` normalizes API names and only dispatches to matching handler methods that actually exist on the target object.
 - Static files are served by `pixl-server-web`, which resolves the request path relative to the configured `htdocs_dir` and rejects paths that resolve outside the base directory.
 
@@ -348,9 +348,9 @@ Behavior:
 - Failed logins are tracked per user per hour, with account lockout after the configured threshold.
 - Forgot-password initiation is rate limited per user per hour.
 - Sessions are stored in storage as `sessions/SESSION_ID`.
-- xyOps config enables cookie mode, bcrypt, and CSRF by default.
+- PTOps config enables cookie mode, bcrypt, and CSRF by default.
 
-Security-relevant defaults in xyOps:
+Security-relevant defaults in PTOps:
 
 - `User.use_bcrypt: true`
 - `User.use_csrf: true`
@@ -387,7 +387,7 @@ Behavior:
 - CSRF tokens are also cryptographically generated and stored in the session.
 - For non-`GET` and non-`HEAD` requests, `loadSession()` enforces CSRF token validation when enabled.
 - The SPA client automatically sends `X-CSRF-Token` on `POST`.
-- xyOps scrubs session IDs and CSRF tokens from params, cookies, and headers after session load to reduce accidental logging and parameter bleed-through.
+- PTOps scrubs session IDs and CSRF tokens from params, cookies, and headers after session load to reduce accidental logging and parameter bleed-through.
 
 Auditor guidance:
 
@@ -406,7 +406,7 @@ Behavior:
 
 - Only administrators can create, update, or delete API keys.
 - The plaintext API key secret is generated server-side and returned once at creation time.
-- xyOps stores only a salted SHA-256 digest of the API key, using the key ID as the salt component: `sha256(plain_key + key_id)`.
+- PTOps stores only a salted SHA-256 digest of the API key, using the key ID as the salt component: `sha256(plain_key + key_id)`.
 - API keys carry their own privilege set and can also inherit roles.
 - API key sessions are simulated internally and rate-limited by `max_per_sec` when configured.
 - Incoming API key values are scrubbed from common request locations after authentication.
@@ -431,20 +431,20 @@ Key files:
 
 Behavior:
 
-- xyOps supports SSO by trusting headers from an upstream auth gateway.
+- PTOps supports SSO by trusting headers from an upstream auth gateway.
 - SSO can be IP-restricted with a whitelist.
-- xyOps maps configured headers into local user fields, optionally cleans up username/full name, synchronizes roles and privileges from group mappings, and then creates its own local session cookie.
-- SSO still uses the normal xyOps session model after successful login.
+- PTOps maps configured headers into local user fields, optionally cleans up username/full name, synchronizes roles and privileges from group mappings, and then creates its own local session cookie.
+- SSO still uses the normal PTOps session model after successful login.
 
 Threat model implications:
 
-- The critical trust boundary is between xyOps and the reverse proxy.
-- xyOps assumes the proxy strips user-controlled copies of the trusted headers and only forwards validated headers from the identity layer.
-- If xyOps is reachable directly by untrusted clients while SSO trusted headers are enabled, impersonation risk exists by design.
+- The critical trust boundary is between PTOps and the reverse proxy.
+- PTOps assumes the proxy strips user-controlled copies of the trusted headers and only forwards validated headers from the identity layer.
+- If PTOps is reachable directly by untrusted clients while SSO trusted headers are enabled, impersonation risk exists by design.
 
 Auditor guidance:
 
-- Do not report "header-based auth can be spoofed" as a product vulnerability unless you can show xyOps accepts those headers from untrusted network sources despite the documented IP-restriction model.
+- Do not report "header-based auth can be spoofed" as a product vulnerability unless you can show PTOps accepts those headers from untrusted network sources despite the documented IP-restriction model.
 - Real findings in this area would include whitelist bypass, header-map abuse despite whitelist, or privilege synchronization bugs that exceed mapped groups.
 
 ### Privileges, Roles, and Resource-Level Restrictions
@@ -460,7 +460,7 @@ Behavior:
 
 - Effective privileges are the union of direct privileges and role-derived privileges.
 - `admin` bypasses normal privilege checks.
-- xyOps also applies resource-level constraints for categories, server groups, and targets.
+- PTOps also applies resource-level constraints for categories, server groups, and targets.
 - New local or SSO-created users receive a limited default privilege set, not full plugin or web hook power.
 
 Default user privileges in sample config:
@@ -532,7 +532,7 @@ Key files:
 
 Behavior:
 
-- xyOps uses a single global `secret_key`.
+- PTOps uses a single global `secret_key`.
 - It is generated automatically on first install.
 - In normal installs it lives in `conf/overrides.json`, not hardcoded in source.
 - Config and override files are forced to owner read/write (`chmod 600`) on startup in the control scripts, and override writes also use mode `0600`.
@@ -601,7 +601,7 @@ Key files:
 - `lib/multi.js`
 - `htdocs/js/comm.js`
 
-xyOps uses three important WebSocket classes.
+PTOps uses three important WebSocket classes.
 
 #### Browser client to conductor
 
@@ -661,7 +661,7 @@ Key files:
 - `lib/api/events.js`
 - `lib/api/search.js`
 
-xyOps uses several different token types. Auditors should not conflate them.
+PTOps uses several different token types. Auditors should not conflate them.
 
 #### Transfer tokens
 
@@ -713,7 +713,7 @@ Behavior:
 - Web hooks are outbound HTTP requests triggered by jobs, alerts, or system events.
 - Only appropriately privileged users may create or edit them.
 - Default installs do not grant web hook privileges to basic users.
-- Web hook URL, headers, and body support `{{ ... }}` expression expansion using xyOps data context.
+- Web hook URL, headers, and body support `{{ ... }}` expression expansion using PTOps data context.
 - Optional features include redirects, retries, timeout control, and TLS verification bypass.
 - Hook execution records detailed request/response/timing diagnostics.
 - Notification channels may wrap web hooks as one delivery mechanism among others.
@@ -794,7 +794,7 @@ Auditor guidance:
 - Do not report classic `../` path traversal against storage-backed keys without showing a real escape from the storage abstraction.
 - Do not report "database injection" unless you can show query input writing, mutating, or executing code beyond the documented read-only search behavior.
 
-### Expression Language: xyOps Expression Format (XYEXP / JEXL)
+### Expression Language: PTOps Expression Format (XYEXP / JEXL)
 
 Key files:
 
@@ -805,8 +805,8 @@ Key files:
 
 Behavior:
 
-- xyOps uses JEXL, not JavaScript `eval`, for expressions and `{{ ... }}` template expansions.
-- xyOps adds a number of helper functions for formatting and utility logic.
+- PTOps uses JEXL, not JavaScript `eval`, for expressions and `{{ ... }}` template expansions.
+- PTOps adds a number of helper functions for formatting and utility logic.
 - Expressions are evaluated against explicit context objects.
 - Web hook bodies are syntax-checked on create and update.
 
@@ -865,7 +865,7 @@ Auditor guidance:
 
 ## Production Hardening Assumptions
 
-xyOps is designed to work out of the box, but secure production posture still depends on deployment choices. Auditors should review:
+PTOps is designed to work out of the box, but secure production posture still depends on deployment choices. Auditors should review:
 
 - whether TLS is enabled and, if applicable, forced
 - whether `https_header_detect` is correct behind reverse proxies
@@ -881,7 +881,7 @@ These are often policy or deployment findings, not application-code vulnerabilit
 
 ## Known Scanner Trapdoors
 
-The following classes of findings are especially likely to generate noise in xyOps if the auditor does not account for privilege boundaries and intended features.
+The following classes of findings are especially likely to generate noise in PTOps if the auditor does not account for privilege boundaries and intended features.
 
 ### "JEXL expression injection"
 
@@ -922,7 +922,7 @@ Usually deployment noise unless:
 
 - trusted headers are accepted from untrusted IPs
 - the SSO whitelist can be bypassed
-- xyOps itself mis-handles the trusted-header contract
+- PTOps itself mis-handles the trusted-header contract
 
 ### "Path traversal in storage paths"
 
@@ -1035,7 +1035,7 @@ Inspect:
 
 ## Final Notes for Auditors
 
-The fastest way to generate noise in xyOps is to mistake administrator-controlled automation features for attacker-controlled bugs. The fastest way to miss real issues is to trust that documentation and code are always perfectly aligned. A strong audit of xyOps should therefore do both of these things at once:
+The fastest way to generate noise in PTOps is to mistake administrator-controlled automation features for attacker-controlled bugs. The fastest way to miss real issues is to trust that documentation and code are always perfectly aligned. A strong audit of PTOps should therefore do both of these things at once:
 
 - respect the documented privilege model and intended power features
 - verify that the implementation actually enforces the documented trust boundaries

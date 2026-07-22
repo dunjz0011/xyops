@@ -2,11 +2,11 @@
 
 ## Overview
 
-This document details all of the internal data structures used in xyOps.
+Tài liệu này trình bày chi tiết tất cả các cấu trúc dữ liệu nội bộ được sử dụng trong PTOps.
 
 ## Alert
 
-An alert definition is a trigger that specifies conditions under which the alert should fire, and what actions should take place.  The alert expression can use any server data values to determine when to fire, for e.g. `cpu.currentLoad > 80`.  Here is an example alert in JSON format:
+Định nghĩa alert là một trigger chỉ định các điều kiện mà theo đó alert sẽ kích hoạt, và những actions nào sẽ diễn ra. Biểu thức alert có thể sử dụng bất kỳ giá trị dữ liệu server nào để xác định khi nào cần kích hoạt, ví dụ `cpu.currentLoad > 80`. Dưới đây là một ví dụ về alert ở định dạng JSON:
 
 ```json
 {
@@ -28,71 +28,71 @@ An alert definition is a trigger that specifies conditions under which the alert
 
 ### Alert.id
 
-A unique lowercase alphanumeric ID for the alert.
+Một ID gồm chữ và số viết thường duy nhất cho alert.
 
 ### Alert.title
 
-A visual title for the alert, displayed in the UI, and in notifications.
+Tiêu đề trực quan cho alert, được hiển thị trên giao diện người dùng và trong các thông báo.
 
 ### Alert.enabled
 
-A boolean flag indicating if the alert is enabled or not.
+Một cờ boolean cho biết alert đã được bật hay chưa.
 
 ### Alert.icon
 
-An optional icon ID for the alert, displayed in the UI.  Icons are sourced from [Material Design Icons](https://materialdesignicons.com/).
+Một ID biểu tượng tùy chọn cho alert, được hiển thị trên giao diện người dùng. Các biểu tượng được lấy từ [Material Design Icons](https://materialdesignicons.com/).
 
 ### Alert.expression
 
-The expression that defines the conditions under which the alert should fire.  This can use any server data values, for example: `cpu.currentLoad > 80`.  The format of the expression is JavaScript.
+Biểu thức định nghĩa các điều kiện mà theo đó alert sẽ kích hoạt. Biểu thức này có thể sử dụng bất kỳ giá trị dữ liệu server nào, ví dụ: `cpu.currentLoad > 80`. Định dạng của biểu thức là JavaScript.
 
 ### Alert.message
 
-The message to include in the alert notification. This can include mustache placeholders for inserting dynamic content.  Example: `CPU load average is too high: {{float(monitors.load_avg)}} ({{cpu.cores}} CPU cores)`.  See [Monitoring](monitors.md) for more on this syntax.
+Tin nhắn cần bao gồm trong thông báo alert. Có thể bao gồm các placeholder mustache để chèn nội dung động. Ví dụ: `CPU load average is too high: {{float(monitors.load_avg)}} ({{cpu.cores}} CPU cores)`. Xem [Monitoring](monitors.md) để biết thêm về cú pháp này.
 
 ### Alert.groups
 
-The server groups where the alert is active.  Leave blank to apply to all groups.
+Các group server nơi alert đang hoạt động. Để trống để áp dụng cho tất cả các group.
 
 ### Alert.actions
 
-A set of [Actions](#action) to perform when the alert fires and/or clears.  This list may be augmented by the server group as well.
+Một tập hợp các [Actions](#action) cần thực hiện khi alert kích hoạt và/hoặc xóa. Danh sách này cũng có thể được bổ sung bởi group server.
 
 ### Alert.monitor_id
 
-Optionally link the alert to a monitor given its [ID](#monitor-id).  This will show the alert tag on top of the specified monitor graph.
+Tùy chọn liên kết alert với một monitor thông qua [ID](#monitor-id) của nó. Việc này sẽ hiển thị tag alert trên đầu biểu đồ monitor được chỉ định.
 
 ### Alert.samples
 
-The number of consecutive times the expression must evaluate to `true` before the alert fires.  Similarly, this is also the alert "cooldown" (the expression must evaluate to `false` the same number of times before the alert is considered inactive).
+Số lần liên tiếp biểu thức phải đánh giá là `true` trước khi alert kích hoạt. Tương tự, đây cũng là thời gian "cooldown" của alert (biểu thức phải đánh giá là `false` với cùng số lần trước khi alert được coi là không hoạt động).
 
 ### Alert.exclusive_actions
 
-If set to `true` the alert will not inherit group or universal actions.
+Nếu được đặt thành `true`, alert sẽ không kế thừa các actions phổ quát hoặc của group.
 
 ### Alert.notes
 
-Optional notes or comments about the alert.
+Các ghi chú hoặc nhận xét tùy chọn về alert.
 
 ### Alert.username
 
-The user or API Key who created the alert.
+Người dùng hoặc API Key đã tạo alert.
 	
 ### Alert.modified
 
-The Unix timestamp when the alert was last modified.
+Dấu thời gian Unix khi alert được sửa đổi lần cuối.
 
 ### Alert.created
 
-The Unix timestamp when the alert was created.
+Dấu thời gian Unix khi alert được tạo.
 
 ### Alert.revision
 
-An internal revision number for the alert, incremented with each change.
+Số sửa đổi nội bộ cho alert, tăng lên với mỗi thay đổi.
 
 ## APIKey
 
-An API Key is a unique identifier used to authenticate requests.  Here is an API key in JSON format:
+API Key là một định danh duy nhất được sử dụng để xác thực các yêu cầu. Dưới đây là một API key ở định dạng JSON:
 
 ```json
 {
@@ -117,55 +117,55 @@ An API Key is a unique identifier used to authenticate requests.  Here is an API
 
 ### APIKey.id
 
-A unique lowercase alphanumeric ID for the API Key.
+Một ID gồm chữ và số viết thường duy nhất cho API Key.
 
 ### APIKey.key
 
-A salted SHA256 hash of the key used to authenticate requests.  The actual key is never stored in plaintext.
+Một mã băm SHA256 được thêm salt của key được sử dụng để xác thực các yêu cầu. Key thực tế không bao giờ được lưu trữ dưới dạng bản rõ.
 
 ### APIKey.title
 
-A visual title for the API Key, displayed in the UI.
+Tiêu đề trực quan cho API Key, được hiển thị trên giao diện người dùng.
 
 ### APIKey.description
 
-A brief description of the API Key and its purpose.
+Một mô tả ngắn gọn về API Key và mục đích của nó.
 
 ### APIKey.active
 
-A boolean flag indicating if the API Key is active or disabled.
+Một cờ boolean cho biết API Key đang hoạt động hay bị vô hiệu hóa.
 
 ### APIKey.expires
 
-An optional expiration date for the API Key, in Unix seconds.  After this date/time comes to pass the API Key can no longer be used.
+Ngày hết hạn tùy chọn cho API Key, tính bằng giây Unix. Sau khi ngày/giờ này trôi qua, API Key không còn có thể được sử dụng.
 
 ### APIKey.username
 
-The user or API Key who created the API Key.
+Người dùng hoặc API Key đã tạo API Key.
 
 ### APIKey.modified
 
-The Unix timestamp when the API Key was last modified.
+Dấu thời gian Unix khi API Key được sửa đổi lần cuối.
 
 ### APIKey.created
 
-The Unix timestamp when the API Key was created.
+Dấu thời gian Unix khi API Key được tạo.
 
 ### APIKey.revision
 
-An internal revision number for the API Key, incremented with each change.
+Số sửa đổi nội bộ cho API Key, tăng lên với mỗi thay đổi.
 
 ### APIKey.privileges
 
-The privileges assigned to the API Key, specified as object keys.  See [Privileges](#privileges) for details.
+Các đặc quyền được gán cho API Key, được chỉ định dưới dạng các khóa đối tượng. Xem [Privileges](#privileges) để biết thêm chi tiết.
 
 ### APIKey.roles
 
-The roles assigned to the API Key, specified as an array.  Roles can auto-assign privileges.  See [Role](#role) for details.
+Các vai trò được gán cho API Key, được chỉ định dưới dạng một mảng. Các vai trò có thể tự động gán các đặc quyền. Xem [Role](#role) để biết thêm chi tiết.
 
 ## Bucket
 
-A storage bucket is a logical container for storing files, for use in events and workflows. Buckets can hold an arbitrary number of files, and JSON data.  Here is a bucket in JSON format:
+Storage bucket là một bộ chứa logic để lưu trữ các tệp, sử dụng trong các events và workflows. Các buckets có thể chứa một số lượng tệp tùy ý và dữ liệu JSON. Dưới đây là một bucket ở định dạng JSON:
 
 ```json
 {
@@ -181,55 +181,55 @@ A storage bucket is a logical container for storing files, for use in events and
 }
 ```
 
-Note that the bucket user data and files are stored separately, outside of the bucket object.
+Lưu ý rằng dữ liệu người dùng bucket và các tệp được lưu trữ riêng biệt, bên ngoài đối tượng bucket.
 
 ### Bucket.id
 
-A unique lowercase alphanumeric ID for the bucket.
+Một ID gồm chữ và số viết thường duy nhất cho bucket.
 
 ### Bucket.title
 
-A visual title for the bucket, displayed in the UI.
+Tiêu đề trực quan cho bucket, được hiển thị trên giao diện người dùng.
 
 ### Bucket.enabled
 
-A boolean flag indicating if the bucket is enabled or not.
+Một cờ boolean cho biết bucket đã được bật hay chưa.
 
 ### Bucket.icon
 
-An optional icon ID for the bucket, displayed in the UI.  Icons are sourced from [Material Design Icons](https://materialdesignicons.com/).
+Một ID biểu tượng tùy chọn cho bucket, được hiển thị trên giao diện người dùng. Các biểu tượng được lấy từ [Material Design Icons](https://materialdesignicons.com/).
 
 ### Bucket.notes
 
-Optional notes or comments about the bucket.
+Các ghi chú hoặc nhận xét tùy chọn về bucket.
 
 ### Bucket.username
 
-The user or API Key who created the bucket.
+Người dùng hoặc API Key đã tạo bucket.
 
 ### Bucket.modified
 
-The Unix timestamp when the bucket was last modified.
+Dấu thời gian Unix khi bucket được sửa đổi lần cuối.
 
 ### Bucket.created
 
-The Unix timestamp when the bucket was created.
+Dấu thời gian Unix khi bucket được tạo.
 
 ### Bucket.revision
 
-An internal revision number for the bucket, incremented with each change.
+Số sửa đổi nội bộ cho bucket, tăng lên với mỗi thay đổi.
 
 ### Bucket.data
 
-The user data stored in the bucket.  This is stored separately from the bucket object.
+Dữ liệu người dùng được lưu trữ trong bucket. Dữ liệu này được lưu trữ riêng biệt với đối tượng bucket.
 
 ### Bucket.files
 
-An array of [File](#file) objects in the bucket.  This is stored separately from the bucket object.
+Một mảng các đối tượng [File](#file) trong bucket. Mảng này được lưu trữ riêng biệt với đối tượng bucket.
 
 ## Category
 
-A category is a way to group related events together.  Each event can belong to a single category.  Here is an example category in JSON format:
+Category là một cách để nhóm các events liên quan lại với nhau. Mỗi event có thể thuộc về một category duy nhất. Dưới đây là một ví dụ về category ở định dạng JSON:
 
 ```json
 {
@@ -251,59 +251,59 @@ A category is a way to group related events together.  Each event can belong to 
 
 ### Category.id
 
-A unique lowercase alphanumeric ID for the category.
+Một ID gồm chữ và số viết thường duy nhất cho category.
 
 ### Category.enabled
 
-A boolean flag indicating if the category is enabled or not.
+Một cờ boolean cho biết category đã được bật hay chưa.
 
 ### Category.title
 
-A visual title for the category, displayed in the UI.
+Tiêu đề trực quan cho category, được hiển thị trên giao diện người dùng.
 
 ### Category.icon
 
-An optional icon ID for the category, displayed in the UI.  Icons are sourced from [Material Design Icons](https://materialdesignicons.com/).
+Một ID biểu tượng tùy chọn cho category, được hiển thị trên giao diện người dùng. Các biểu tượng được lấy từ [Material Design Icons](https://materialdesignicons.com/).
 
 ### Category.color
 
-A visual color for the category, displayed in the UI for all events assigned to the category.  The available color values are: `plain`,  `red`, `green`, `blue`, `skyblue`, `yellow`, `purple`, and `orange`.
+Màu sắc trực quan cho category, được hiển thị trên giao diện người dùng cho tất cả các events được gán vào category. Các giá trị màu có sẵn là: `plain`,  `red`, `green`, `blue`, `skyblue`, `yellow`, `purple`, và `orange`.
 
 ### Category.notes
 
-Optional notes or comments about the category.
+Các ghi chú hoặc nhận xét tùy chọn về category.
 
 ### Category.username
 
-The user or API Key who created the category.
+Người dùng hoặc API Key đã tạo category.
 
 ### Category.modified
 
-The Unix timestamp when the category was last modified.
+Dấu thời gian Unix khi category được sửa đổi lần cuối.
 
 ### Category.created
 
-The Unix timestamp when the category was created.
+Dấu thời gian Unix khi category được tạo.
 
 ### Category.revision
 
-An internal revision number for the category, incremented with each change.
+Số sửa đổi nội bộ cho category, tăng lên với mỗi thay đổi.
 
 ### Category.sort_order
 
-An internal sort order for the category, used to determine its position in lists.
+Thứ tự sắp xếp nội bộ cho category, được sử dụng để xác định vị trí của nó trong các danh sách.
 
 ### Category.actions
 
-An array of [Action](#action) items to invoke at various points during job runs.  These are automatically applied to all events assigned to the category.  Events may define additional actions which are appended to this list at job run time.
+Một mảng các mục [Action](#action) để gọi tại nhiều thời điểm khác nhau trong quá trình chạy job. Các actions này tự động được áp dụng cho tất cả các events được gán vào category. Các events có thể định nghĩa các actions bổ sung, chúng được thêm vào cuối danh sách này vào thời gian chạy job.
 
 ### Category.limits
 
-An array of [Limit](#limit) items to apply to running jobs, e.g. CPU and memory limits.  In the UI these are referred to as "Resource Limits".  These are automatically applied to all events assigned to the category as defaults.  Events may define additional limits *or override category limits* (matched by type).
+Một mảng các mục [Limit](#limit) để áp dụng cho các jobs đang chạy, ví dụ: giới hạn CPU và bộ nhớ. Trong giao diện người dùng, chúng được gọi là "Resource Limits". Chúng tự động được áp dụng làm mặc định cho tất cả các events được gán vào category. Các events có thể định nghĩa các limits bổ sung *hoặc ghi đè limits của category* (được khớp theo type).
 
 ## Channel
 
-A notification channel is a way to send notifications to a group of users, and trigger other system actions such as web hooks, when certain event actions occur.  Here is an example channel in JSON format:
+Notification channel là một cách để gửi thông báo cho một nhóm người dùng, và kích hoạt các actions hệ thống khác như web hooks, khi các actions event nhất định xảy ra. Dưới đây là một ví dụ về channel ở định dạng JSON:
 
 ```json
 {
@@ -329,55 +329,55 @@ A notification channel is a way to send notifications to a group of users, and t
 
 ### Channel.id
 
-A unique lowercase alphanumeric ID for the channel.
+Một ID gồm chữ và số viết thường duy nhất cho channel.
 
 ### Channel.title
 
-A visual title for the channel, displayed in the UI.
+Tiêu đề trực quan cho channel, được hiển thị trên giao diện người dùng.
 
 ### Channel.enabled
 
-A boolean flag indicating if the channel is enabled or not.
+Một cờ boolean cho biết channel đã được bật hay chưa.
 
 ### Channel.icon
 
-An optional icon ID for the channel, displayed in the UI.  Icons are sourced from [Material Design Icons](https://materialdesignicons.com/).
+Một ID biểu tượng tùy chọn cho channel, được hiển thị trên giao diện người dùng. Các biểu tượng được lấy từ [Material Design Icons](https://materialdesignicons.com/).
 
 ### Channel.users
 
-An array of [User.username](#user-username)s who are subscribed to the channel, and will receive email and UI notifications for channel events.
+Một mảng [User.username](#user-username) đã đăng ký theo dõi channel, và sẽ nhận được email và thông báo UI cho các events của channel.
 
 ### Channel.email
 
-An optional email address (or a comma-separated list) to which notifications for channel events will be sent.
+Địa chỉ email tùy chọn (hoặc danh sách phân tách bằng dấu phẩy) để gửi thông báo cho các events của channel.
 
 ### Channel.web_hook
 
-An optional [WebHook.id](#webhook-id) to which notifications for channel events will be sent.
+Một [WebHook.id](#webhook-id) tùy chọn để gửi thông báo cho các events của channel.
 
 ### Channel.run_event
 
-An optional [Event.id](#event-id) to run when the channel is triggered.
+Một [Event.id](#event-id) tùy chọn để chạy khi channel được kích hoạt.
 
 ### Channel.sound
 
-An optional sound effect to play to all subscribed users when the channel is triggered.  This should be a filename with a `.mp3` file extension.  See [Sound Effects](https://github.com/pixlcore/xyops/htdocs/sounds/) for the list of available sound effects to choose from.
+Hiệu ứng âm thanh tùy chọn để phát cho tất cả người dùng đã đăng ký khi channel được kích hoạt. Đây phải là một tên tệp có phần mở rộng `.mp3`. Xem [Sound Effects](https://github.com/pixlcore/xyops/htdocs/sounds/) để biết danh sách các hiệu ứng âm thanh có sẵn để chọn.
 
 ### Channel.max_per_day
 
-An optional maximum number of times the channel can be triggered per day.
+Số lần tối đa tùy chọn mà channel có thể được kích hoạt mỗi ngày.
 
 ### Channel.notes
 
-Optional notes or comments about the channel.
+Các ghi chú hoặc nhận xét tùy chọn về channel.
 
 ### Channel.revision
 
-An internal revision number for the channel, incremented with each change.
+Số sửa đổi nội bộ cho channel, tăng lên với mỗi thay đổi.
 
 ## Event
 
-An event is an item on the schedule which launches [Jobs](#job).  It may or may not be scheduled to run at specific times (i.e. it may be on-demand only).  Here is an example event in JSON format:
+Event là một mục trên lịch trình khởi chạy các [Jobs](#job). Nó có thể được lên lịch để chạy vào những thời điểm cụ thể hoặc không (nghĩa là nó chỉ có thể được chạy theo yêu cầu). Dưới đây là một ví dụ về event ở định dạng JSON:
 
 ```json
 {
@@ -433,19 +433,19 @@ An event is an item on the schedule which launches [Jobs](#job).  It may or may 
 }
 ```
 
-Events have the following properties:
+Các events có các thuộc tính sau:
 
 ### Event.id
 
-A unique lowercase alphanumeric ID for the event.
+Một ID gồm chữ và số viết thường duy nhất cho event.
 
 ### Event.title
 
-A visual title for the event, displayed in the UI.
+Tiêu đề trực quan cho event, được hiển thị trên giao diện người dùng.
 
 ### Event.enabled
 
-A boolean flag indicating if the event is enabled (can run jobs) or disabled.
+Một cờ boolean cho biết event đã được bật (có thể chạy jobs) hay bị vô hiệu hóa.
 
 ### Event.icon
 
@@ -479,11 +479,11 @@ An array of server or group targets to run the event.  Each item of the array is
 
 ### Event.expression
 
-An optional expression in [xyOps Expression Format](xyexp.md), which can further reduce the set of candidate servers for targeting jobs.  Must use in conjunction with [Event.targets](#event-targets).  See [Target Expressions](events.md#target-expressions) for details.
+An optional expression in [PTOps Expression Format](xyexp.md), which can further reduce the set of candidate servers for targeting jobs.  Must use in conjunction with [Event.targets](#event-targets).  See [Target Expressions](events.md#target-expressions) for details.
 
 ### Event.algo
 
-When multiple servers are in the [Event.targets](#event-targets) array, xyOps uses an algorithm to select a server to run the job.  The available algorithms are:
+When multiple servers are in the [Event.targets](#event-targets) array, PTOps uses an algorithm to select a server to run the job.  The available algorithms are:
 
 | Algorithm | Notes |
 |-----------|-------|
@@ -676,7 +676,7 @@ The job's "now" time, as an Unix timestamp, which is the time at which the job w
 
 ### Job.code
 
-When a job completes, the `code` denotes the result.  Zero (`0`) means success, any other value means the job failed.  You can use this to specify your own internal error code, or just specify `1` for a generic error.  Any number or string is acceptable.  There are a few special values that xyOps recognizes:
+When a job completes, the `code` denotes the result.  Zero (`0`) means success, any other value means the job failed.  You can use this to specify your own internal error code, or just specify `1` for a generic error.  Any number or string is acceptable.  There are a few special values that PTOps recognizes:
 
 | Job Code | Meaning |
 |----------|---------|
@@ -884,7 +884,7 @@ If any secrets were assigned to the job, this object will *temporarily* hold the
 
 ### Job.base_url
 
-While the job is running, i.e. in the data passed to the Event Plugin, the job object will contain a `base_url` property.  This will be a fully-qualified URL pointing to the current primary conductor server, using the same protocol, hostname and port that xySat used to connect.  This is useful if your job needs to call any xyOps APIs directly.
+While the job is running, i.e. in the data passed to the Event Plugin, the job object will contain a `base_url` property.  This will be a fully-qualified URL pointing to the current primary conductor server, using the same protocol, hostname and port that xySat used to connect.  This is useful if your job needs to call any PTOps APIs directly.
 
 ### Job.workflow
 
@@ -897,28 +897,27 @@ An array of [Ticket.id](#ticket-id)s associated with the job.
 ### Job.position
 
 If the [Job.state](#job-state) is `queued`, this property will indicate what position the job is currently sitting in the queue.
-
 ### Job.serverData
 
-While the job is running, i.e. in the data passed to the Event Plugin on the remote server, the job object will contain a `serverData` property.  This will be a copy of the [Server.userData](#server-userdata) object, if applicable for the current server.
+Trong khi job đang chạy, nghĩa là trong dữ liệu được truyền đến Event Plugin trên server từ xa, đối tượng job sẽ chứa thuộc tính `serverData`.  Đây sẽ là một bản sao của đối tượng [Server.userData](#server-userdata), nếu có thể áp dụng cho server hiện tại.
 
 ### Job.workflowData
 
-While the job is running, i.e. in the data passed to the Event Plugin on the remote server, the job object may contain a `workflowData` property, if the job is a workflow sub-job.  This object will contain user-specified data that is shared across all sub-jobs in the workflow.
+Trong khi job đang chạy, nghĩa là trong dữ liệu được truyền đến Event Plugin trên server từ xa, đối tượng job có thể chứa thuộc tính `workflowData`, nếu job là một workflow sub-job.  Đối tượng này sẽ chứa dữ liệu do người dùng chỉ định được chia sẻ trên tất cả các sub-job trong workflow.
 
-Any workflow sub-job can also write to this data by specifying a populated `workflowData` object in their output.  The new data will be shallow-merged with the existing workflow data, upon the sub-job's completion.
+Bất kỳ workflow sub-job nào cũng có thể ghi vào dữ liệu này bằng cách chỉ định đối tượng `workflowData` được điền sẵn trong output của chúng.  Dữ liệu mới sẽ được shallow-merge với dữ liệu workflow hiện có, khi sub-job hoàn thành.
 
 ### Job.invisible
 
-If set to `true`, the job is running invisibly to the UI.  See [Quiet Trigger](triggers.md#quiet) for details.
+Nếu được đặt thành `true`, job đang chạy ẩn đối với UI.  Xem [Quiet Trigger](triggers.md#quiet) để biết chi tiết.
 
 ### Job.ephemeral
 
-If set to `true`, the job will self-delete upon completion.  See [Quiet Trigger](triggers.md#quiet) for details.
+Nếu được đặt thành `true`, job sẽ tự xóa sau khi hoàn thành.  Xem [Quiet Trigger](triggers.md#quiet) để biết chi tiết.
 
 ### Job.versions
 
-While the job is running, i.e. in the data passed to the Event Plugin on the remote server, the job object will contain a `versions` property.  This will be an object containing various version numbers the job can use to determine feature availability, etc.  Example:
+Trong khi job đang chạy, nghĩa là trong dữ liệu được truyền đến Event Plugin trên server từ xa, đối tượng job sẽ chứa thuộc tính `versions`.  Đây sẽ là một đối tượng chứa các số phiên bản khác nhau mà job có thể sử dụng để xác định tính khả dụng của tính năng, v.v.  Ví dụ:
 
 ```json
 "versions": {
@@ -929,11 +928,11 @@ While the job is running, i.e. in the data passed to the Event Plugin on the rem
 
 ### Job.priority
 
-If set to `true` and queuing is enabled on the event, new jobs with priority will jump to the head of the queue, before jobs without priority.
+Nếu được đặt thành `true` và việc xếp hàng được bật trên event, các job mới có độ ưu tiên sẽ nhảy lên đầu hàng đợi, trước các job không có độ ưu tiên.
 
 ## Monitor
 
-A monitor keeps track on a specific numeric server metric.  These are graphed in the UI so you can see trends over time, and you can also point alerts at them.  Here is an example monitor in JSON format:
+Monitor theo dõi một số liệu server bằng số cụ thể.  Chúng được vẽ biểu đồ trong UI để bạn có thể xem các xu hướng theo thời gian và bạn cũng có thể chỉ định các alert vào chúng.  Dưới đây là ví dụ về monitor ở định dạng JSON:
 
 ```json
 {
@@ -955,73 +954,73 @@ A monitor keeps track on a specific numeric server metric.  These are graphed in
 
 ### Monitor.id
 
-A unique lowercase alphanumeric ID for the monitor.
+Một ID chữ và số viết thường duy nhất cho monitor.
 
 ### Monitor.title
 
-A visual title for the monitor, displayed in the UI.
+Một tiêu đề trực quan cho monitor, được hiển thị trong UI.
 
 ### Monitor.display
 
-A boolean flag indicating if the monitor is displayed in the UI or not.
+Một cờ boolean cho biết liệu monitor có được hiển thị trong UI hay không.
 
 ### Monitor.icon
 
-An optional icon ID for the monitor, displayed in the UI.  Icons are sourced from [Material Design Icons](https://materialdesignicons.com/).
+Một ID biểu tượng tùy chọn cho monitor, được hiển thị trong UI.  Các biểu tượng có nguồn gốc từ [Material Design Icons](https://materialdesignicons.com/).
 
 ### Monitor.groups
 
-An array of server group IDs that the monitor will keep track of.
+Một mảng các ID server group mà monitor sẽ theo dõi.
 
 ### Monitor.source
 
-An expression that points to the data source for the monitor's value.  This can point to any server data value, for example: `cpu.currentLoad`.  The format of the expression is JavaScript.  See [ServerMonitorData](#servermonitordata) for the data structure this pulls from.
+Một biểu thức trỏ đến nguồn dữ liệu cho giá trị của monitor.  Điều này có thể trỏ đến bất kỳ giá trị dữ liệu server nào, ví dụ: `cpu.currentLoad`.  Định dạng của biểu thức là JavaScript.  Xem [ServerMonitorData](#servermonitordata) cho cấu trúc dữ liệu mà biểu thức này lấy từ đó.
 
 ### Monitor.data_match
 
-If the monitor source points at a text string, you can supply a regular expression in this field to pull out a single numerical data value from the text.  This is commonly used with custom commands (Monitor Plugins).
+Nếu nguồn monitor trỏ tới một chuỗi văn bản, bạn có thể cung cấp biểu thức chính quy trong trường này để lấy ra một giá trị dữ liệu số duy nhất từ văn bản.  Điều này thường được sử dụng với các lệnh tùy chỉnh (Monitor Plugin).
 
 ### Monitor.data_type
 
-The data type of the monitor's value.  This can be one of: `integer`, `float`, `bytes`, `seconds`, or `milliseconds`.
+Kiểu dữ liệu của giá trị monitor.  Điều này có thể là một trong số: `integer`, `float`, `bytes`, `seconds` hoặc `milliseconds`.
 
 ### Monitor.min_vert_scale
 
-This allows you to set the minimum vertical scale (range) in the visual charts for the monitor.  For example, monitors that show a percentage (i.e. CPU usage) might want a minimum vertical scale of `100`.
+Điều này cho phép bạn thiết lập thang tỷ lệ dọc tối thiểu (phạm vi) trong các biểu đồ trực quan cho monitor.  Ví dụ: các monitor hiển thị phần trăm (nghĩa là mức sử dụng CPU) có thể cần thang tỷ lệ dọc tối thiểu là `100`.
 
 ### Monitor.suffix
 
-Optionally show a suffix for the monitor's value.  This can be useful for indicating units (e.g. `%`, `MB`, `ms`, etc.).
+Tùy chọn hiển thị hậu tố cho giá trị của monitor.  Điều này có thể hữu ích để chỉ ra các đơn vị (ví dụ: `%`, `MB`, `ms`, v.v.).
 
 ### Monitor.delta
 
-When set to true, this will treat the monitor's value as a delta (i.e. the change in value over time) rather than an absolute value.  This is useful for server metrics that are measured as absolute counters, such as Linux network traffic or disk I/O.
+Khi được đặt thành true, điều này sẽ coi giá trị của monitor là delta (nghĩa là sự thay đổi giá trị theo thời gian) thay vì một giá trị tuyệt đối.  Điều này hữu ích cho các số liệu server được đo dưới dạng bộ đếm tuyệt đối, chẳng hạn như lưu lượng mạng Linux hoặc disk I/O.
 
 ### Monitor.divide_by_delta
 
-When set, this will divide the monitor's value by the time duration between samples before displaying it.  This is useful for converting absolute values into rates (e.g. bytes per second).
+Khi được thiết lập, điều này sẽ chia giá trị của monitor cho khoảng thời gian giữa các lần lấy mẫu trước khi hiển thị nó.  Điều này hữu ích cho việc chuyển đổi các giá trị tuyệt đối thành các tỷ lệ (ví dụ: byte trên giây).
 
 ### Monitor.delta_min_value
 
-When set, this will specify the minimum value for the monitor's computed delta. This is useful for preventing a delta monitor from showing a huge negative spike due to a brief drop in the absolute monitored value (such as when a server is rebooted, or resets its absolute counter).
+Khi được thiết lập, điều này sẽ chỉ định giá trị tối thiểu cho delta được tính toán của monitor. Điều này hữu ích để ngăn một delta monitor hiển thị một mức tăng đột biến âm khổng lồ do sự sụt giảm ngắn gọn trong giá trị được giám sát tuyệt đối (chẳng hạn như khi một server được khởi động lại hoặc reset bộ đếm tuyệt đối của nó).
 
-This should be set to `false` for disabled, or a any valid number to enable it, including `0`.
+Điều này nên được đặt thành `false` để vô hiệu hóa hoặc bất kỳ số hợp lệ nào để bật nó, bao gồm cả `0`.
 
 ### Monitor.notes
 
-Optional notes or comments about the monitor's purpose or configuration.
+Các ghi chú hoặc nhận xét tùy chọn về mục đích hoặc cấu hình của monitor.
 
 ### Monitor.revision
 
-An internal revision number for the monitor, incremented with each change.
+Số bản sửa đổi nội bộ cho monitor, được tăng lên với mỗi lần thay đổi.
 
 ### Monitor.sort_order
 
-An integer value representing the sort order of the monitor.  Lower values are sorted first.
+Một giá trị số nguyên đại diện cho thứ tự sắp xếp của monitor.  Các giá trị thấp hơn được sắp xếp đầu tiên.
 
 ## Plugin
 
-Plugins are used to extend xyOps in a variety of ways, including custom event actions, server monitors, and schedule extensions.  For more details see [Plugins](plugins.md).  Here is an example plugin in JSON format:
+Các plugin được sử dụng để mở rộng PTOps theo nhiều cách khác nhau, bao gồm các hành động event tùy chỉnh, server monitor và các tiện ích mở rộng lịch trình.  Để biết thêm chi tiết, hãy xem [Plugins](plugins.md).  Dưới đây là một ví dụ về plugin ở định dạng JSON:
 
 ```json
 {
@@ -1060,89 +1059,89 @@ Plugins are used to extend xyOps in a variety of ways, including custom event ac
 
 ### Plugin.id
 
-A unique lowercase alphanumeric ID for the plugin.
+Một ID chữ và số viết thường duy nhất cho plugin.
 
 ### Plugin.title
 
-A visual title for the plugin, displayed in the UI.
+Một tiêu đề trực quan cho plugin, được hiển thị trong UI.
 
 ### Plugin.enabled
 
-A boolean flag indicating if the plugin is enabled or not.
+Một cờ boolean cho biết liệu plugin có được bật hay không.
 
 ### Plugin.icon
 
-An optional icon ID for the plugin, displayed in the UI.  Icons are sourced from [Material Design Icons](https://materialdesignicons.com/).
+Một ID biểu tượng tùy chọn cho plugin, được hiển thị trong UI.  Các biểu tượng có nguồn gốc từ [Material Design Icons](https://materialdesignicons.com/).
 
 ### Plugin.type
 
-The type of the plugin, which determines its behavior and capabilities. Supported types include `event`, `monitor`, `action` and `scheduler`.
+Loại của plugin, xác định hành vi và khả năng của nó. Các loại được hỗ trợ bao gồm `event`, `monitor`, `action` và `scheduler`.
 
 ### Plugin.command
 
-Enter the filesystem path to your executable, including any command-line arguments you require.  This can be an interpreter like `/bin/sh` or `/usr/bin/python`, or your own custom binary.  Do not include any pipes or redirects here.
+Nhập đường dẫn filesystem đến tệp thực thi của bạn, bao gồm bất kỳ đối số dòng lệnh nào bạn yêu cầu.  Đây có thể là một trình thông dịch như `/bin/sh` hoặc `/usr/bin/python`, hoặc binary tùy chỉnh của riêng bạn.  Không bao gồm bất kỳ đường ống hoặc chuyển hướng nào ở đây.
 
 ### Plugin.script
 
-The script to execute for the plugin, which is optional and depends on the command. This can be a shell script, a Python script, or any other source code.  This is appended onto the [Plugin.command](#plugin-command) (via a temp file) when the Plugin is launched.
+Tập lệnh để thực thi cho plugin, là tùy chọn và phụ thuộc vào lệnh. Đây có thể là shell script, Python script hoặc bất kỳ mã nguồn nào khác.  Điều này được thêm vào [Plugin.command](#plugin-command) (thông qua một tệp tạm thời) khi Plugin được khởi chạy.
 
 ### Plugin.params
 
-A set of custom parameters to pass to the plugin when it is executed (for non-monitor Plugins only).  These are the parameter definitions, which users then populate in the UI when setting up events / workflows.  Each item in the `params` array should be an object with the following properties:
+Một tập hợp các tham số tùy chỉnh để truyền cho plugin khi nó được thực thi (chỉ dành cho các Plugin không phải monitor).  Đây là các định nghĩa tham số, sau đó người dùng sẽ điền vào trong UI khi thiết lập các event / workflow.  Mỗi mục trong mảng `params` phải là một đối tượng có các thuộc tính sau:
 
-| Property Name | Type | Description |
+| Property Name | Type | Mô tả |
 |---------------|------|-------------|
-| `id` | String | A lowercase alphanumeric ID for the parameter (can also contain underscores). |
-| `title` | String | A visual title for the parameter, displayed in the UI. |
-| `type` | String | The parameter type ID, which should be one of: `text`, `textarea`, `code`, `json`, `checkbox`, `select`, `bucket`, `system`, `hidden`, `toolset`, or `group`. |
-| `variant` | String | For `text` type controls, you can optionally set a UI input variant: `color`, `date`, `datetime-local`, `email`, `number`, `text`, `time`, `tel`, or `url`. |
-| `value` | Mixed | The default value for the parameter. |
-| `data` | Object | Specifically for the `toolset` type, this contains all the tool details. |
-| `caption` | String | Optionally display a caption under the UI control. |
-| `required` | Boolean | Set this to `true` to require a value to be entered for the parameter. |
-| `locked` | Boolean | Set this to `true` to lock editing to administrators only. |
+| `id` | String | ID chữ và số viết thường cho tham số (cũng có thể chứa dấu gạch dưới). |
+| `title` | String | Tiêu đề trực quan cho tham số, được hiển thị trong UI. |
+| `type` | String | ID loại tham số, phải là một trong các giá trị: `text`, `textarea`, `code`, `json`, `checkbox`, `select`, `bucket`, `system`, `hidden`, `toolset` hoặc `group`. |
+| `variant` | String | Đối với các điều khiển loại `text`, bạn có thể tùy chọn đặt một biến thể đầu vào UI: `color`, `date`, `datetime-local`, `email`, `number`, `text`, `time`, `tel` hoặc `url`. |
+| `value` | Mixed | Giá trị mặc định cho tham số. |
+| `data` | Object | Cụ thể cho loại `toolset`, thuộc tính này chứa tất cả các chi tiết công cụ. |
+| `caption` | String | Tùy chọn hiển thị chú thích dưới điều khiển UI. |
+| `required` | Boolean | Đặt giá trị này thành `true` để yêu cầu nhập một giá trị cho tham số. |
+| `locked` | Boolean | Đặt giá trị này thành `true` để khóa chỉnh sửa chỉ dành cho quản trị viên. |
 
 ### Plugin.groups
 
-For monitor plugins only, this defines the server groups that the plugin will run on every minute, to gather metrics.
+Chỉ dành cho các monitor plugin, điều này xác định các server group mà plugin sẽ chạy trên đó mỗi phút, để thu thập số liệu.
 
 ### Plugin.format
 
-For monitor plugins only, this defines the output format that the Plugin generates.  Supported formats are `text`, `json` and `xml`.
+Chỉ dành cho các monitor plugin, điều này xác định định dạng đầu ra mà Plugin tạo ra.  Các định dạng được hỗ trợ là `text`, `json` và `xml`.
 
 ### Plugin.uid
 
-This is the UID (user account) to run the plugin under.  The UID may be either numerical or a string ('root', 'www', etc.).
+Đây là UID (tài khoản người dùng) để chạy plugin bên dưới.  UID có thể là số hoặc chuỗi ('root', 'www', v.v.).
 
 ### Plugin.gid
 
-This is the GID (group account) to run the plugin under.  The GID may be either numerical or a string ('wheel', 'admin', etc.).
+Đây là GID (tài khoản nhóm) để chạy plugin bên dưới.  GID có thể là số hoặc chuỗi ('wheel', 'admin', v.v.).
 
 ### Plugin.kill
 
-This string specifies how xySat should terminate processes when a job is aborted.  This is only used for Event Plugins.  The accepted values are as follows:
+Chuỗi này chỉ định cách xySat sẽ chấm dứt các tiến trình khi một job bị hủy bỏ.  Điều này chỉ được sử dụng cho Event Plugin.  Các giá trị được chấp nhận như sau:
 
-- `none` means that **no** processes are killed on abort.  This is only used for very special cases.
-- `parent` means that only the **parent** process is killed on abort.  This is the default behavior for new Plugins.
-- `all` means that **all** processes are killed on abort.  Meaning, xySat will traverse the process tree from the parent process down, and kill everything.
+- `none` có nghĩa là **không có** tiến trình nào bị kill khi hủy bỏ.  Điều này chỉ được sử dụng cho các trường hợp rất đặc biệt.
+- `parent` có nghĩa là chỉ có tiến trình **cha** bị kill khi hủy bỏ.  Đây là hành vi mặc định cho các Plugin mới.
+- `all` có nghĩa là **tất cả** các tiến trình bị kill khi hủy bỏ.  Nghĩa là, xySat sẽ duyệt cây tiến trình từ tiến trình cha xuống và kill mọi thứ.
 
 ### Plugin.runner
 
-This boolean, when `true`, indicates that the job will be running remotely (i.e. not a direct child process of xySat).  This is only used for Event Plugins.
+Boolean này, khi là `true`, chỉ ra rằng job sẽ chạy từ xa (nghĩa là không phải là một tiến trình con trực tiếp của xySat).  Điều này chỉ được sử dụng cho Event Plugin.
 
-The idea is that when a job is running remotely, we cannot monitor system resources for it.  Also, input and output files simply do not work in these cases (because xySat expects them to be on the local filesystem where it is running).  The `runner` property tells xyOps (and ultimately xySat) that the job is running remotely out if its reach, and it should not perform the usual process and network monitoring, and file management.  Those duties get delegated to a tool such as [xyRun](https://github.com/pixlcore/xyrun).
+Ý tưởng là khi một job đang chạy từ xa, chúng ta không thể giám sát tài nguyên hệ thống cho nó.  Ngoài ra, các tệp đầu vào và đầu ra đơn giản là không hoạt động trong các trường hợp này (bởi vì xySat hy vọng chúng ở trên filesystem cục bộ nơi nó đang chạy).  Thuộc tính `runner` cho PTOps (và cuối cùng là xySat) biết rằng job đang chạy từ xa ngoài tầm với của nó và nó không nên thực hiện giám sát tiến trình và mạng thông thường, cũng như quản lý tệp.  Các nhiệm vụ đó được ủy quyền cho một công cụ như [xyRun](https://github.com/pixlcore/xyrun).
 
 ### Plugin.notes
 
-Optional notes or comments about the plugin's purpose or configuration.
+Các ghi chú hoặc nhận xét tùy chọn về mục đích hoặc cấu hình của plugin.
 
 ### Plugin.revision
 
-An internal revision number for the plugin, incremented with each change.
+Số bản sửa đổi nội bộ cho plugin, được tăng lên với mỗi lần thay đổi.
 
 ### Plugin.marketplace
 
-Will contain [Plugin Marketplace](marketplace.md) metadata if the Plugin originated from a marketplace install.  Example:
+Sẽ chứa siêu dữ liệu [Plugin Marketplace](marketplace.md) nếu Plugin có nguồn gốc từ một bản cài đặt trên marketplace.  Ví dụ:
 
 ```json
 "marketplace": {
@@ -1153,7 +1152,7 @@ Will contain [Plugin Marketplace](marketplace.md) metadata if the Plugin origina
 
 ## Role
 
-A user role is a set of privileges assigned to a user within the system.  A user may be assigned multiple roles, and all of the role privileges are merged and passed to the user.  A role may also include category and/or group restrictions, which are also applied to the assigned users.  Here is an example role in JSON format:
+Một role người dùng là một tập hợp các quyền được cấp cho người dùng trong hệ thống.  Một người dùng có thể được gán nhiều role và tất cả các quyền của role được hợp nhất và truyền cho người dùng.  Một role cũng có thể bao gồm các hạn chế về category và/hoặc group, các hạn chế này cũng được áp dụng cho những người dùng được gán.  Dưới đây là một ví dụ về role ở định dạng JSON:
 
 ```json
 {
@@ -1178,55 +1177,55 @@ A user role is a set of privileges assigned to a user within the system.  A user
 
 ### Role.id
 
-A unique lowercase alphanumeric ID for the role.
+Một ID chữ và số viết thường duy nhất cho role.
 
 ### Role.title
 
-A visual title for the role, displayed in the UI.
+Một tiêu đề trực quan cho role, được hiển thị trong UI.
 
 ### Role.enabled
 
-A boolean flag indicating if the role is enabled or not.
+Một cờ boolean cho biết liệu role có được bật hay không.
 
 ### Role.icon
 
-An optional icon ID for the role, displayed in the UI.  Icons are sourced from [Material Design Icons](https://materialdesignicons.com/).
+Một ID biểu tượng tùy chọn cho role, được hiển thị trong UI.  Các biểu tượng có nguồn gốc từ [Material Design Icons](https://materialdesignicons.com/).
 
 ### Role.privileges
 
-A list of privileges assigned to the role.  Each privilege is represented as a key-value pair, where the key is the privilege name and the value is unused.  See [Privileges](privileges.md) for more information.
+Danh sách các quyền được gán cho role.  Mỗi quyền được biểu diễn dưới dạng một cặp key-value, trong đó key là tên quyền và value không được sử dụng.  Xem [Privileges](privileges.md) để biết thêm thông tin.
 
 ### Role.categories
 
-A list of categories that the role is allowed to access.
+Danh sách các category mà role được phép truy cập.
 
 ### Role.groups
 
-A list of groups that the role is allowed to access.
+Danh sách các group mà role được phép truy cập.
 
 ### Role.notes
 
-Optional notes or comments about the role's purpose or configuration.
+Các ghi chú hoặc nhận xét tùy chọn về mục đích hoặc cấu hình của role.
 
 ### Role.username
 
-The user or API Key who created the role.
+Người dùng hoặc API Key đã tạo role.
 
 ### Role.modified
 
-The Unix timestamp when the role was last modified.
+Timestamp Unix khi role được sửa đổi lần cuối.
 
 ### Role.created
 
-The Unix timestamp when the role was created.
+Timestamp Unix khi role được tạo.
 
 ### Role.revision
 
-An internal revision number for the role, incremented with each change.
+Số bản sửa đổi nội bộ cho role, được tăng lên với mỗi lần thay đổi.
 
 ## Secret
 
-A secret is a collection of key/value pairs which are all stored using strong encryption.  See [Secrets](secrets.md) for more details.  Here is an example secret in JSON format:
+Một secret là một bộ sưu tập các cặp key/value tất cả đều được lưu trữ bằng cách sử dụng mã hóa mạnh.  Xem [Secrets](secrets.md) để biết thêm chi tiết.  Dưới đây là một ví dụ về secret ở định dạng JSON:
 
 ```json
 {
@@ -1257,74 +1256,74 @@ A secret is a collection of key/value pairs which are all stored using strong en
 
 ### Secret.id
 
-A unique lowercase alphanumeric ID for the secret.
+Một ID chữ và số viết thường duy nhất cho secret.
 
 ### Secret.title
 
-A visual title for the secret, displayed in the UI.
+Một tiêu đề trực quan cho secret, được hiển thị trong UI.
 
 ### Secret.enabled
 
-A boolean flag indicating if the secret is enabled or not.
+Một cờ boolean cho biết liệu secret có được bật hay không.
 
 ### Secret.icon
 
-An optional icon ID for the role, displayed in the UI.  Icons are sourced from [Material Design Icons](https://materialdesignicons.com/).
+Một ID biểu tượng tùy chọn cho role, được hiển thị trong UI.  Các biểu tượng có nguồn gốc từ [Material Design Icons](https://materialdesignicons.com/).
 
 ### Secret.fields
 
-An array of secret fields.  These are stored encrypted.  Each element of the array must be an object with the following properties:
+Một mảng các trường bí mật (secret fields).  Chúng được lưu trữ dưới dạng mã hóa.  Mỗi phần tử của mảng phải là một đối tượng có các thuộc tính sau:
 
-| Property Name | Type | Description |
+| Property Name | Type | Mô tả |
 |---------------|------|-------------|
-| `name` | String | The name of the variable, e.g. `DB_PASSWORD`.  Use standard POSIX environment variable naming rules. |
-| `value` | String | The value of the variable, e.g. `CorrectHorseBatteryStaple`. |
+| `name` | String | Tên của biến, ví dụ: `DB_PASSWORD`.  Sử dụng các quy tắc đặt tên biến môi trường POSIX tiêu chuẩn. |
+| `value` | String | Giá trị của biến, ví dụ: `CorrectHorseBatteryStaple`. |
 
-Secret values are always stored as strings (as they are delivered via environment variables).  If you need to store binary data in a secret, you can encode it with [Base64](https://en.wikipedia.org/wiki/Base64).
+Các giá trị secret luôn được lưu trữ dưới dạng chuỗi (vì chúng được phân phối thông qua các biến môi trường).  Nếu bạn cần lưu trữ dữ liệu nhị phân trong một secret, bạn có thể mã hóa nó bằng [Base64](https://en.wikipedia.org/wiki/Base64).
 
 ### Secret.names
 
-An auto-generated list of field names, stored in plaintext (for display purposes).
+Một danh sách được tạo tự động chứa các tên trường, được lưu trữ dưới dạng văn bản thuần túy (cho mục đích hiển thị).
 
 ### Secret.events
 
-An array of [Event.id](#event.id) strings, specifying which events' jobs will receive the secret as environment variables.
+Một mảng các chuỗi [Event.id](#event.id), chỉ định các job của event nào sẽ nhận secret dưới dạng các biến môi trường.
 
 ### Secret.categories
 
-An array of [Category.id](#category.id) strings, specifying which categories' events' jobs will receive the secret as environment variables.
+Một mảng các chuỗi [Category.id](#category.id), chỉ định các job của các event thuộc category nào sẽ nhận secret dưới dạng các biến môi trường.
 
 ### Secret.plugins
 
-An array of [Plugin.id](#plugin.id) strings, specifying which plugins' jobs will receive the secret as environment variables.
+Một mảng các chuỗi [Plugin.id](#plugin.id), chỉ định các job của plugin nào sẽ nhận secret dưới dạng các biến môi trường.
 
 ### Secret.web_hooks
 
-An array of [WebHook.id](#webhook-id) strings, specifying which web hooks will have access to the secret.
+Một mảng các chuỗi [WebHook.id](#webhook-id), chỉ định web hook nào sẽ có quyền truy cập vào secret.
 
 ### Secret.notes
 
-Optional notes or comments about the secret (stored in plaintext).
+Các ghi chú hoặc nhận xét tùy chọn về secret (được lưu trữ dưới dạng văn bản thuần túy).
 
 ### Secret.username
 
-The user or API Key who created the secret.
+Người dùng hoặc API Key đã tạo secret.
 
 ### Secret.modified
 
-The Unix timestamp when the secret was last modified.
+Timestamp Unix khi secret được sửa đổi lần cuối.
 
 ### Secret.created
 
-The Unix timestamp when the secret was created.
+Timestamp Unix khi secret được tạo.
 
 ### Secret.revision
 
-An internal revision number for the secret, incremented with each change.
+Số bản sửa đổi nội bộ cho secret, được tăng lên với mỗi lần thay đổi.
 
 ## Server
 
-A server is a physical or virtual machine that connects to the conductor xyOps server, provides metrics for monitoring, and can execute jobs.  The server object represents a server instance within the xyOps ecosystem.  Here is an example server in JSON format:
+Một server là một máy vật lý hoặc máy ảo kết nối với server conductor PTOps, cung cấp các số liệu để monitoring và có thể thực thi các job.  Đối tượng server đại diện cho một 인스턴스 (instance) server trong hệ sinh thái PTOps.  Dưới đây là một ví dụ về server ở định dạng JSON:
 
 ```json
 {
@@ -1418,67 +1417,67 @@ A server is a physical or virtual machine that connects to the conductor xyOps s
 
 ### Server.id
 
-A unique alphanumeric identifier for the server, automatically assigned at first join.
+Một định danh chữ và số duy nhất cho server, được tự động gán ở lần tham gia đầu tiên.
 
 ### Server.hostname
 
-The hostname of the server, used for displaying in the UI, and possibly for automatically assigning to groups.
+Hostname của server, được sử dụng để hiển thị trên UI và có thể dùng để tự động gán vào các group.
 
 ### Server.ip
 
-The IP address of the server (if the server has multiple network interfaces, this is the IP that was used to connect to the conductor server).
+Địa chỉ IP của server (nếu server có nhiều interface mạng, đây là IP được sử dụng để kết nối tới server conductor).
 
 ### Server.title
 
-An optional, user-defined title for the server, used for display purposes in the UI.
+Một tiêu đề tùy chọn do người dùng định nghĩa cho server, được sử dụng cho mục đích hiển thị trên UI.
 
 ### Server.icon
 
-An optional icon ID for the server, displayed in the UI. Icons are sourced from [Material Design Icons](https://materialdesignicons.com/).
+Một ID biểu tượng tùy chọn cho server, được hiển thị trên UI. Các biểu tượng được lấy từ [Material Design Icons](https://materialdesignicons.com/).
 
 ### Server.userData
 
-Optional user data for server (freeform), which is passed to all server jobs, and can be used for event targeting.
+Dữ liệu người dùng tùy chọn cho server (định dạng tự do), được truyền đến tất cả các job của server và có thể được sử dụng để nhắm mục tiêu event.
 
 ### Server.autoGroup
 
-A boolean flag indicating if the server should be automatically assigned to groups based on its hostname.
+Một cờ boolean cho biết server có nên tự động được gán vào các group dựa trên hostname của nó hay không.
 
 ### Server.created
 
-The Unix timestamp (in seconds) when the server first joined the cluster.
+Timestamp Unix (tính bằng giây) khi server tham gia cụm lần đầu.
 
 ### Server.modified
 
-The Unix timestamp (in seconds) when the server was last modified.
+Timestamp Unix (tính bằng giây) khi server được sửa đổi lần cuối.
 
 ### Server.groups
 
-A list of groups that the server is a member of.
+Một danh sách các group mà server là thành viên.
 
 ### Server.enabled
 
-A boolean flag indicating if the server is enabled or not.  Enabled servers will be chosen to run jobs, disabled servers will not.
+Một cờ boolean cho biết server có được bật hay không. Các server được bật sẽ được chọn để chạy job, các server bị vô hiệu hóa sẽ không.
 
 ### Server.maxJobs
 
-An optional limit to place on the server for maximum concurrent running jobs.  Note that jobs may have varying weights, specified in the [Max Concurrent Jobs](limits.md#max-concurrent-jobs) limit.
+Một giới hạn tùy chọn đặt trên server cho số job chạy đồng thời tối đa. Lưu ý rằng các job có thể có các trọng số khác nhau, được chỉ định trong giới hạn [Max Concurrent Jobs](limits.md#max-concurrent-jobs).
 
 ### Server.keywords
 
-A list of keywords associated with the server, used for search and filtering.
+Một danh sách các từ khóa liên kết với server, được sử dụng để tìm kiếm và lọc.
 
 ### Server.socket_id
 
-The internal identifier for the server's socket connection.
+Định danh nội bộ cho kết nối socket của server.
 
 ### Server.info
 
-Additional information about the server, such as its operating system, architecture, and other relevant details, used primarily in the UI.  See example JSON above.
+Thông tin bổ sung về server, chẳng hạn như hệ điều hành, kiến trúc và các chi tiết liên quan khác, được sử dụng chủ yếu trong UI. Xem ví dụ JSON ở trên.
 
 ## Tag
 
-A tag is a user-defined label that can be assigned to jobs for the purpose of organization, categorization, and searchability.  Here is an example tag in JSON format:
+Một tag là một nhãn do người dùng định nghĩa, có thể được gán cho các job nhằm mục đích tổ chức, phân loại và khả năng tìm kiếm. Dưới đây là một ví dụ tag theo định dạng JSON:
 
 ```json
 { 
@@ -1493,35 +1492,35 @@ A tag is a user-defined label that can be assigned to jobs for the purpose of or
 
 ### Tag.id
 
-A unique alphanumeric identifier for the tag.
+Một định danh chữ và số duy nhất cho tag.
 
 ### Tag.title
 
-The display title for the tag.
+Tiêu đề hiển thị cho tag.
 
 ### Tag.icon
 
-An optional icon ID for the tag, displayed in the UI. Icons are sourced from [Material Design Icons](https://materialdesignicons.com/).
+Một ID biểu tượng tùy chọn cho tag, được hiển thị trên UI. Các biểu tượng được lấy từ [Material Design Icons](https://materialdesignicons.com/).
 
 ### Tag.notes
 
-Optional notes or comments about the tag, for your own use.
+Các ghi chú hoặc bình luận tùy chọn về tag, dành cho nhu cầu sử dụng riêng của bạn.
 
 ### Tag.username
 
-The username of the user who created the tag.
+Tên đăng nhập của người dùng đã tạo tag.
 
 ### Tag.created
 
-The Unix timestamp (in seconds) when the tag was created.
+Timestamp Unix (tính bằng giây) khi tag được tạo.
 
 ### Tag.modified
 
-The Unix timestamp (in seconds) when the tag was last modified.
+Timestamp Unix (tính bằng giây) khi tag được sửa đổi lần cuối.
 
 ## Ticket
 
-A ticket can be an issue, feature, change, or other record for tracking changes or incidents.  See [Tickets](tickets.md) for more details.  Here is an example ticket in JSON format:
+Một ticket có thể là một vấn đề, tính năng, thay đổi hoặc bản ghi khác để theo dõi các thay đổi hoặc sự cố. Xem [Tickets](tickets.md) để biết thêm chi tiết. Dưới đây là một ví dụ ticket theo định dạng JSON:
 
 ```json
 {
@@ -1563,108 +1562,108 @@ A ticket can be an issue, feature, change, or other record for tracking changes 
 		}
 	],
 	"username": "admin",
-	"body": "The following xyOps job has failed with code: *1**\n\n- **Job ID:** `jmgn8f6ib7p`\n- **Error Code:** `1` -- Stripped remainder of body for brevity."
+	"body": "The following PTOps job has failed with code: *1**\n\n- **Job ID:** `jmgn8f6ib7p`\n- **Error Code:** `1` -- Stripped remainder of body for brevity."
 }
 ```
 
 ### Ticket.id
 
-A unique alphanumeric identifier for the ticket.
+Một định danh chữ và số duy nhất cho ticket.
 
 ### Ticket.num
 
-An auto-assigned ticket number.
+Một số ticket được tự động gán.
 
 ### Ticket.subject
 
-A short summary of the ticket.
+Một tóm tắt ngắn về ticket.
 
 ### Ticket.body
 
-The full body content of the ticket, in Markdown source format.
+Toàn bộ nội dung phần thân của ticket, ở định dạng nguồn Markdown.
 
 ### Ticket.type
 
-The ticket type identifier, which should be one of: `issue`, `feature`, `change`, `maintenance`, `question` or `other`.
+Định danh loại ticket, nên là một trong các giá trị: `issue`, `feature`, `change`, `maintenance`, `question` hoặc `other`.
 
 ### Ticket.status
 
-The ticket status identifier, which should be one of: `open`, `closed` or `draft`.
+Định danh trạng thái ticket, nên là một trong các giá trị: `open`, `closed` hoặc `draft`.
 
 ### Ticket.category
 
-An optional [Category.id](#category-id) to associate the ticket with.
+Một [Category.id](#category-id) tùy chọn để liên kết với ticket.
 
 ### Ticket.server
 
-An optional [Server.id](#server-id) to associate the ticket with.
+Một [Server.id](#server-id) tùy chọn để liên kết với ticket.
 
 ### Ticket.assignees
 
-An array of [User.username](#user-username)s which are responsible for the ticket (updates and overdue reminders are sent to them).
+Một mảng các [User.username](#user-username) chịu trách nhiệm về ticket (các bản cập nhật và nhắc nhở quá hạn được gửi cho họ).
 
 ### Ticket.cc
 
-An array of [User.username](#user-username)s which are Cc'ed for ticket updates via email.
+Một mảng các [User.username](#user-username) được Cc để nhận các bản cập nhật ticket qua email.
 
 ### Ticket.notify
 
-An array of email addresses to also receive ticket updates.
+Một mảng các địa chỉ email cũng sẽ nhận được các bản cập nhật ticket.
 
 ### Ticket.due
 
-An optional due date for the ticket, in Unix seconds.  Daily reminders will be sent out to all assignees after this date.
+Một ngày đến hạn tùy chọn cho ticket, tính bằng giây Unix. Các lời nhắc hàng ngày sẽ được gửi đến tất cả những người được giao sau ngày này.
 
 ### Ticket.tags
 
-An array of [Tag.id](#tag-id)s to associate with the ticket.
+Một mảng các [Tag.id](#tag-id) để liên kết với ticket.
 
 ### Ticket.events
 
-An array of objects representing [Event](#event)s attached to the ticket.  Each event can be customized to run jobs from the ticket, and contain the following properties:
+Một mảng các đối tượng đại diện cho các [Event](#event) được đính kèm với ticket. Mỗi event có thể được tùy chỉnh để chạy các job từ ticket và chứa các thuộc tính sau:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | The [Event.id](#event-id) of the event. |
-| `targets` | Array | An optional array of targets ([Group.id](#group-id)s or [Server.id](#server-id)s) overriding the event defaults. |
-| `algo` | String | An optional server selection algorithm, overriding the default [Event.algo](#event-algo) from the event. |
-| `tags` | Array | An optional array of [Tag.id](#tag-id)s to apply to jobs that run from the ticket event, overriding the event defaults. |
-| `params` | Object | If the event has [Event.fields](#event-fields) defined, this object will override the defaults and be merged into [Event.params](#event-params) when jobs run. |
+| `id` | String | [Event.id](#event-id) của event. |
+| `targets` | Array | Một mảng tùy chọn các mục tiêu (các [Group.id](#group-id) hoặc [Server.id](#server-id)) ghi đè các mặc định của event. |
+| `algo` | String | Một thuật toán chọn server tùy chọn, ghi đè [Event.algo](#event-algo) mặc định từ event. |
+| `tags` | Array | Một mảng tùy chọn các [Tag.id](#tag-id) để áp dụng cho các job chạy từ event của ticket, ghi đè các mặc định của event. |
+| `params` | Object | Nếu event có các [Event.fields](#event-fields) được định nghĩa, đối tượng này sẽ ghi đè các giá trị mặc định và được gộp vào [Event.params](#event-params) khi các job chạy. |
 
 ### Ticket.files
 
-An array of [File](#file) objects uploaded to the ticket.
+Một mảng các đối tượng [File](#file) được tải lên cho ticket.
 
 ### Ticket.changes
 
-This array contains a list of all the changes made to the ticket, including things like changing status, assignees, and also comments added.  Each element in the array should be an object with the following properties:
+Mảng này chứa danh sách tất cả các thay đổi được thực hiện đối với ticket, bao gồm những thứ như thay đổi trạng thái, người được giao và cả các bình luận được thêm vào. Mỗi phần tử trong mảng nên là một đối tượng với các thuộc tính sau:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | A unique lowercase alphanumeric ID for the change. |
-| `type` | String | The change type, which should be one of: `change` or `comment`. |
-| `username` | String | The username of the user who made the change. |
-| `date` | Number | The Unix timestamp of the change. |
-| `key` | String | This identifies which ticket property was changed, or one of two special values: `created` (ticket created) or `delete` (comment deleted). |
-| `value` | Mixed | When `key` is present, this is the new value that the property was changed to. |
-| `body` | String | For `comment` types, this is the comment body in Markdown source format. |
-| `edited` | Number | When comments are edited, this is present and set to the last modified date, in Unix seconds. |
+| `id` | String | Một ID chữ và số viết thường duy nhất cho thay đổi. |
+| `type` | String | Loại thay đổi, nên là một trong các giá trị: `change` hoặc `comment`. |
+| `username` | String | Tên đăng nhập của người dùng đã thực hiện thay đổi. |
+| `date` | Number | Timestamp Unix của thay đổi. |
+| `key` | String | Xác định thuộc tính ticket nào đã bị thay đổi, hoặc một trong hai giá trị đặc biệt: `created` (ticket được tạo) hoặc `delete` (bình luận đã bị xóa). |
+| `value` | Mixed | Khi `key` xuất hiện, đây là giá trị mới mà thuộc tính đã được đổi thành. |
+| `body` | String | Đối với các loại `comment`, đây là nội dung bình luận ở định dạng nguồn Markdown. |
+| `edited` | Number | Khi các bình luận được chỉnh sửa, trường này xuất hiện và được đặt thành ngày sửa đổi lần cuối, tính bằng giây Unix. |
 
 ### Ticket.username
 
-The username of the user who created the ticket.
+Tên đăng nhập của người dùng đã tạo ticket.
 
 ### Ticket.created
 
-The Unix timestamp (in seconds) when the ticket was created.
+Timestamp Unix (tính bằng giây) khi ticket được tạo.
 
 ### Ticket.modified
 
-The Unix timestamp (in seconds) when the ticket was last modified.
+Timestamp Unix (tính bằng giây) khi ticket được sửa đổi lần cuối.
 
 ## User
 
-A user account is a representation of an individual user within the system.  The user object contains basic information about the user account, their roles & privileges, as well as their UI preferences.  Here is an example user in JSON format:
+Một tài khoản người dùng là đại diện cho một người dùng cá nhân trong hệ thống. Đối tượng người dùng chứa các thông tin cơ bản về tài khoản người dùng, các vai trò và đặc quyền của họ, cũng như các tùy chọn giao diện người dùng của họ. Dưới đây là một ví dụ người dùng theo định dạng JSON:
 
 ```json
 {
@@ -1734,103 +1733,102 @@ A user account is a representation of an individual user within the system.  The
 
 ### User.username
 
-The username of the user.  Allowed characters are alphanumerics, underscores, periods and dashes.  If the username was automatically generated from an email address (i.e. via SSO), characters outside the supported set are converted to underscores.
+Tên đăng nhập của người dùng. Các ký tự được phép là chữ và số, dấu gạch dưới, dấu chấm và dấu gạch ngang. Nếu tên đăng nhập được tạo tự động từ địa chỉ email (ví dụ: thông qua SSO), các ký tự nằm ngoài bộ hỗ trợ sẽ được chuyển đổi thành dấu gạch dưới.
 
 ### User.password
 
-The hashed password of the user, using salted [bcrypt](https://en.wikipedia.org/wiki/Bcrypt).  The user's plaintext password is **never** stored.
+Mật khẩu đã được băm của người dùng, sử dụng [bcrypt](https://en.wikipedia.org/wiki/Bcrypt) với muối (salt). Mật khẩu văn bản gốc của người dùng **không bao giờ** được lưu trữ.
 
 ### User.salt
 
-A unique salt value used for hashing the user's password.
+Một giá trị muối (salt) duy nhất được sử dụng để băm mật khẩu của người dùng.
 
 ### User.full_name
 
-The full name of the user, used for display purposes.
+Tên đầy đủ của người dùng, được sử dụng cho mục đích hiển thị.
 
 ### User.email
 
-The email address of the user.
+Địa chỉ email của người dùng.
 
 ### User.icon
 
-An optional icon ID for the user, displayed in the UI.  Icons are sourced from [Material Design Icons](https://materialdesignicons.com/).
+Một ID biểu tượng tùy chọn cho người dùng, được hiển thị trên UI. Các biểu tượng được lấy từ [Material Design Icons](https://materialdesignicons.com/).
 
 ### User.active
 
-A boolean flag indicating if the user account is active or disabled.
+Một cờ boolean cho biết tài khoản người dùng đang hoạt động hay bị vô hiệu hóa.
 
 ### User.created
 
-The Unix timestamp (in seconds) when the user was created.
+Timestamp Unix (tính bằng giây) khi người dùng được tạo.
 
 ### User.modified
 
-The Unix timestamp (in seconds) when the user was last modified.
+Timestamp Unix (tính bằng giây) khi người dùng được sửa đổi lần cuối.
 
 ### User.language
 
-The preferred language (locale) of the user, e.g. `en-US`.  If not set, will be auto-detected by the browser.
+Ngôn ngữ (locale) ưa thích của người dùng, ví dụ: `en-US`. Nếu không được đặt, sẽ được trình duyệt tự động phát hiện.
 
 ### User.region
 
-The geographical region of the user, e.g. `US`, `GB`, etc.  If not set, will be auto-detected by the browser.
+Khu vực địa lý của người dùng, ví dụ: `US`, `GB`, v.v. Nếu không được đặt, sẽ được trình duyệt tự động phát hiện.
 
 ### User.num_format
 
-The preferred numbering system of the user, e.g. `latn` (Latin digits), etc.  If not set, will be auto-detected by the browser.
+Hệ thống đánh số ưa thích của người dùng, ví dụ: `latn` (chữ số Latinh), v.v. Nếu không được đặt, sẽ được trình duyệt tự động phát hiện.
 
 ### User.hour_cycle
 
-The preferred hour cycle of the user, e.g. `h12` (12-hour clock) or `h24` (24-hour clock).  If not set, will be auto-detected by the browser.
+Chu kỳ giờ ưa thích của người dùng, ví dụ: `h12` (đồng hồ 12 giờ) hoặc `h24` (đồng hồ 24 giờ). Nếu không được đặt, sẽ được trình duyệt tự động phát hiện.
 
 ### User.timezone
 
-The preferred timezone of the user, e.g. `America/New_York`.  If not set, will be auto-detected by the browser.
+Múi giờ ưa thích của người dùng, ví dụ: `America/New_York`. Nếu không được đặt, sẽ được trình duyệt tự động phát hiện.
 
 ### User.color_acc
 
-A boolean, which indicates the user uses "color accessibility mode".  This adjusts the UI colors for better visibility.
+Một boolean, cho biết người dùng sử dụng "chế độ trợ năng màu sắc". Tính năng này điều chỉnh màu sắc UI để dễ nhìn hơn.
 
 ### User.privacy_mode
 
-A boolean, which indicates the user uses "privacy mode" (a.k.a "streamer mode").  This automatically blurs sensitive information in the UI, including usernames, full names, email addresses, server hostnames, IP Address, API keys, and more.
+Một boolean, cho biết người dùng sử dụng "chế độ riêng tư" (còn gọi là "chế độ streamer"). Tính năng này tự động làm mờ các thông tin nhạy cảm trên UI, bao gồm tên đăng nhập, tên đầy đủ, địa chỉ email, hostname của server, địa chỉ IP, API key và nhiều thông tin khác.
 
 ### User.effects
-
 A boolean, indicating the user has enabled animated visual effects in the UI.
 
 ### User.page_info
 
-A boolean, indicating the user has "page descriptions" enabled in the UI.  This shows an explanation of each page in the UI.
+Một boolean, cho biết user đã bật "mô tả trang" (page descriptions) trong UI. Điều này hiển thị một giải thích cho mỗi trang trong UI.
 
 ### User.contrast
 
-A string indicating the user's preferred contrast mode.  Possible values are `auto`, `high`, `normal`, and `low`.
+Một chuỗi cho biết chế độ độ tương phản ưa thích của user. Các giá trị có thể là `auto`, `high`, `normal`, và `low`.
 
 ### User.motion
 
-A string indicating the user's preferred motion setting.  Possible values are `auto`, `full` and `reduced`.
+Một chuỗi cho biết cài đặt chuyển động ưa thích của user. Các giá trị có thể là `auto`, `full` và `reduced`.
 
 ### User.volume
 
-A number indicating the user's preferred sound volume, from 0 (muted) to 10 (loudest).
+Một số cho biết âm lượng ưa thích của user, từ 0 (tắt tiếng) đến 10 (lớn nhất).
 
 ### User.privileges
 
-A list of privileges assigned to the user.  Each privilege is represented as a key-value pair, where the key is the privilege name and the value is unused.  See [Privileges](privileges.md) for more information.
+Một danh sách các đặc quyền được gán cho user. Mỗi đặc quyền được biểu diễn dưới dạng cặp key-value, trong đó key là tên đặc quyền và value không được sử dụng. Xem [Privileges](privileges.md) để biết thêm thông tin.
 
 ### User.roles
 
-A list of roles assigned to the user.  See [Role](#role).
+Một danh sách các vai trò được gán cho user. Xem [Role](#role).
 
 ### User.searches
 
-A list of search presets for the user.
+Một danh sách các preset tìm kiếm cho user.
 
 ### User.sidebar
 
-An array of all the sidebar sections to show in the UI for the user.  The default full set is:
+Một mảng gồm tất cả các phần sidebar để hiển thị trong UI cho user. Tập hợp đầy đủ mặc định là:
 
 ```json
 ["main", "job_searches", "ticket_searches", "shortcuts", "scheduler", "monitoring", "settings", "admin", "help"]
@@ -1838,7 +1836,7 @@ An array of all the sidebar sections to show in the UI for the user.  The defaul
 
 ## WebHook
 
-A web hook is a user-defined HTTP callback that is triggered by specific actions in xyOps. When the specified action occurs, the web hook sends a HTTP request to the specified URL with an optional payload containing information about the event. Web hooks are commonly used for real-time notifications, integrations with other services, and automating workflows.  Here is an example Web Hook in JSON format:
+Web hook là một HTTP callback do user định nghĩa, được trigger bởi các action cụ thể trong PTOps. Khi action được chỉ định xảy ra, web hook gửi một HTTP request đến URL được chỉ định với một payload tùy chọn chứa thông tin về event. Các web hook thường được sử dụng cho các thông báo thời gian thực, tích hợp với các service khác, và tự động hóa workflow. Dưới đây là một ví dụ Web Hook ở định dạng JSON:
 
 ```json
 {
@@ -1874,67 +1872,67 @@ A web hook is a user-defined HTTP callback that is triggered by specific actions
 
 ### WebHook.id
 
-The unique identifier for the web hook.
+Định danh duy nhất cho web hook.
 
 ### WebHook.title
 
-The title of the web hook.
+Tiêu đề của web hook.
 
 ### WebHook.enabled
 
-A boolean indicating whether the web hook is enabled or disabled.
+Một boolean cho biết web hook được bật hay tắt.
 
 ### WebHook.icon
 
-An optional icon ID for the web hook, displayed in the UI.  Icons are sourced from [Material Design Icons](https://materialdesignicons.com/).
+Một icon ID tùy chọn cho web hook, được hiển thị trong UI. Các icon có nguồn từ [Material Design Icons](https://materialdesignicons.com/).
 
 ### WebHook.url
 
-The URL to which the web hook will send its request.
+URL mà web hook sẽ gửi request đến.
 
 ### WebHook.method
 
-The HTTP method to use when sending the request. Common methods are `GET`, `POST`, `PUT`, and `DELETE`.
+Phương thức HTTP để sử dụng khi gửi request. Các phương thức phổ biến là `GET`, `POST`, `PUT`, và `DELETE`.
 
 ### WebHook.headers
 
-An optional list of HTTP headers to include in the request.  This is formatted as an array of objects, where each object has a `name` and `value` property.
+Một danh sách tùy chọn các HTTP header để bao gồm trong request. Cái này được định dạng như một mảng các object, trong đó mỗi object có thuộc tính `name` và `value`.
 
 ### WebHook.body
 
-The optional body of the request to send with the web hook.  This is typically a JSON string, and may include placeholders (e.g. `{{text}}`) that will be replaced with actual values when the web hook is triggered.
+Body tùy chọn của request để gửi cùng với web hook. Đây thường là một chuỗi JSON, và có thể bao gồm các placeholder (ví dụ: `{{text}}`) sẽ được thay thế bằng các giá trị thực tế khi web hook được trigger.
 
 ### WebHook.timeout
 
-The maximum time to wait for a response from the web hook before timing out. This is specified in seconds.
+Thời gian tối đa để chờ phản hồi từ web hook trước khi timeout. Cái này được chỉ định bằng giây.
 
 ### WebHook.retries
 
-The number of times to retry the web hook request if it fails. This is specified as an integer.
+Số lần retry web hook request nếu nó thất bại. Cái này được chỉ định dưới dạng số nguyên.
 
 ### WebHook.follow
 
-A boolean indicating whether to follow redirects for the web hook request.
+Một boolean cho biết có theo dõi các redirect cho web hook request hay không.
 
 ### WebHook.ssl_cert_bypass
 
-A boolean indicating whether to bypass SSL certificate verification for the web hook request.
+Một boolean cho biết có bỏ qua xác minh chứng chỉ SSL cho web hook request hay không.
 
 ### WebHook.max_per_day
 
-The maximum number of times the web hook can be triggered in a single day (i.e. anti-flood). This is specified as an integer.
+Số lần tối đa web hook có thể được trigger trong một ngày (tức là chống spam). Cái này được chỉ định dưới dạng số nguyên.
 
 ### WebHook.notes
 
-An optional field for adding notes or comments about the web hook.
+Một trường tùy chọn để thêm ghi chú hoặc comment về web hook.
 
 ### WebHook.revision
 
-An internal revision number for the web hook, used for tracking changes.
+Một số revision nội bộ cho web hook, được sử dụng để theo dõi các thay đổi.
 
 ## Activity
 
-When user or system actions are logged, an activity item is created and indexed in the DB for searchability.  Here is an example in JSON format:
+Khi các action của user hoặc hệ thống được log lại, một mục activity sẽ được tạo và đánh chỉ mục trong DB để có thể tìm kiếm. Dưới đây là một ví dụ ở định dạng JSON:
 
 ```json
 {
@@ -1978,140 +1976,140 @@ When user or system actions are logged, an activity item is created and indexed 
 }
 ```
 
-Each activity type (denoted by the `action` property) may have different custom properties.  However, see below for the common properties.
+Mỗi loại activity (được biểu thị bằng thuộc tính `action`) có thể có các thuộc tính tùy chỉnh khác nhau. Tuy nhiên, xem bên dưới để biết các thuộc tính chung.
 
 ### Activity.id
 
-A unique lowercase alphanumeric ID which is automatically assigned when the activity is logged.
+Một ID chữ và số viết thường duy nhất được tự động gán khi activity được log.
 
 ### Activity.action
 
-A string identifying the action which took place.  Here is the list of possible actions, along with a template string used to generate an action summary in the UI:
+Một chuỗi xác định action đã diễn ra. Dưới đây là danh sách các action có thể có, cùng với một chuỗi template được sử dụng để tạo tóm tắt action trong UI:
 
 | Action ID | Description / Template |
 |-----------|------------------|
-| `notice` | General notice, e.g. "Background server upgrade completed". |
-| `warning` | General warning, e.g. "Server connecting with duplicate hostname...". |
-| `error` | General error (not currently used: for future use). |
-| `critical` | General critical, e.g. "Crash log found at startup". |
-| `job_start` | Job started (before remote launch). |
-| `job_complete` | Job completed, regardless of outcome. |
-| `job_success` | Job completed successfully (`code` is `0` or `false`). |
-| `job_error` | Job completed with any error (`code` is non-zero/non-false). |
-| `job_warning` | Job completed with `code` set to `warning`. |
-| `job_critical` | Job completed with `code` set to `critical`. |
-| `job_abort` | Job was aborted (user or failure condition). |
-| `job_tag:TAGID` | Job completed and has the specified tag. |
-| `alert_new` | Alert fired on a server. |
-| `alert_cleared` | Alert cleared on a server. |
-| `alert_create` | `Alert definition created: [description] ([alert.id])` |
-| `alert_update` | `Alert definition updated: [description] ([alert.id])` |
-| `alert_delete` | `Alert definition deleted: [description] ([alert.id])` |
-| `alert_update_tickets` | `Alert invocation tickets updated: #[description]` |
-| `alert_delete_invocation` | `Alert invocation deleted: #[description]` |
-| `apikey_create` | `API Key created: [description]` |
-| `apikey_update` | `API Key updated: [description]` |
-| `apikey_delete` | `API Key deleted: [description]` |
-| `category_create` | `Category created: [description] ([category.id])` |
-| `category_update` | `Category updated: [description] ([category.id])` |
-| `category_delete` | `Category deleted: [description] ([category.id])` |
-| `category_multi_update` | `Multiple categories updated ([updated]).` |
-| `channel_create` | `Channel created: [description] ([channel.id])` |
-| `channel_update` | `Channel updated: [description] ([channel.id])` |
-| `channel_delete` | `Channel deleted: [description] ([channel.id])` |
-| `event_create` | `Event created: [description] ([event.id])` |
-| `event_update` | `Event updated: [description] ([event.id])` |
-| `event_delete` | `Event deleted: [description] ([event.id])` |
-| `job_update` | `Job updated: #[description]` |
-| `job_update_tags` | `Job tags updated: #[description]` |
-| `job_update_tickets` | `Job tickets updated: #[description]` |
-| `job_update_comments` | `Job comments updated: #[description]` |
-| `job_abort` | `Job aborted: #[description]: [reason]` |
-| `job_delete` | `Job deleted: #[description]` |
-| `job_delete_file` | `Job file deleted: #[description]: [path]` |
-| `job_resume` | `Job has been resumed: #[description]` |
-| `queue_flush` | `Flushed job queue for event: #[description]` |
-| `group_create` | `Server group created: [description] ([group.id])` |
-| `group_update` | `Server group updated: [description] ([group.id])` |
-| `group_delete` | `Server group deleted: [description] ([group.id])` |
-| `group_multi_update` | `Multiple server groups updated ([updated]).` |
-| `group_watch` | `A watch for [duration] was set on the group: [group.title] ([group.id])` |
-| `monitor_create` | `Monitor created: [description] ([monitor.id])` |
-| `monitor_update` | `Monitor updated: [description] ([monitor.id])` |
-| `monitor_delete` | `Monitor deleted: [description] ([monitor.id])` |
-| `monitor_multi_update` | `Multiple monitors updated ([updated]).` |
-| `plugin_create` | `Plugin created: [description] ([plugin.id])` |
-| `plugin_update` | `Plugin updated: [description] ([plugin.id])` |
-| `plugin_delete` | `Plugin deleted: [description] ([plugin.id])` |
-| `tag_create` | `Tag created: [description] ([tag.id])` |
-| `tag_update` | `Tag updated: [description] ([tag.id])` |
-| `tag_delete` | `Tag deleted: [description] ([tag.id])` |
-| `web_hook_create` | `Web Hook created: [description] ([web_hook.id])` |
-| `web_hook_update` | `Web Hook updated: [description] ([web_hook.id])` |
-| `web_hook_delete` | `Web Hook deleted: [description] ([web_hook.id])` |
-| `bucket_create` | `Bucket created: [description] ([bucket.id])` |
-| `bucket_update` | `Bucket updated: [description] ([bucket.id])` |
-| `bucket_delete` | `Bucket deleted: [description] ([bucket.id])` |
-| `secret_create` | `Secret created: [description] ([secret.id])` |
-| `secret_update` | `Secret updated: [description] ([secret.id])` |
-| `secret_delete` | `Secret deleted: [description] ([secret.id])` |
-| `secret_access` | `Secret was accessed: [description] ([secret.id])` |
-| `ticket_create` | `Ticket #[ticket.num] created: [ticket.subject] ([ticket.id])` |
-| `ticket_update` | `Ticket #[ticket.num] updated: [ticket.subject] ([ticket.id])` |
-| `ticket_delete` | `Ticket #[ticket.num] deleted: [ticket.subject] ([ticket.id])` |
-| `ticket_add_change` | `Ticket comment added: #[ticket.num]: [ticket.subject] ([ticket.id])` |
-| `ticket_update_change` | `Ticket comment updated: #[ticket.num]: [ticket.subject] ([ticket.id])` |
-| `user_create` | `User created: [user.full_name] ([user.username])` |
-| `user_update` | `User updated: [user.full_name] ([user.username])` |
-| `user_delete` | `User deleted: [user.full_name] ([user.username])` |
-| `user_login` | `User logged in: [user.full_name] ([user.username])` |
-| `user_password` | `User password was changed: [user.full_name] ([user.username])` |
-| `role_create` | `Role created: [description] ([role.id])` |
-| `role_update` | `Role updated: [description] ([role.id])` |
-| `role_delete` | `Role deleted: [description] ([role.id])` |
-| `server_add` | `Server connected to the network: [hostname]` |
-| `server_remove` | `Server disconnected from the network: [hostname]` |
-| `server_delete` | `Server deleted: [hostname]` |
-| `server_update` | `Server information was updated: [hostname]` |
-| `server_watch` | `A watch for [duration] was set on the server: [hostname]` |
-| `master_primary` | `Conductor server is now primary: [host]` |
-| `peer_add` | `Conductor server added to the network: [host]` |
-| `peer_disconnect` | `Conductor serfer disconnected from the network: [host]` |
-| `peer_command` | `Control command [commands] sent to conductor server: [host]` |
-| `state_update` | `Internal state updated: [description]` |
-| `internal_job` | `Internal job completed: [job.title]` |
+| `notice` | Thông báo chung, ví dụ: "Background server upgrade completed". |
+| `warning` | Cảnh báo chung, ví dụ: "Server connecting with duplicate hostname...". |
+| `error` | Lỗi chung (hiện không được sử dụng: dành cho tương lai). |
+| `critical` | Nghiêm trọng chung, ví dụ: "Crash log found at startup". |
+| `job_start` | Job đã bắt đầu (trước khi khởi chạy từ xa). |
+| `job_complete` | Job đã hoàn thành, bất kể kết quả thế nào. |
+| `job_success` | Job đã hoàn thành thành công (`code` là `0` hoặc `false`). |
+| `job_error` | Job đã hoàn thành với bất kỳ lỗi nào (`code` khác không/khác false). |
+| `job_warning` | Job đã hoàn thành với `code` được đặt thành `warning`. |
+| `job_critical` | Job đã hoàn thành với `code` được đặt thành `critical`. |
+| `job_abort` | Job đã bị hủy (do user hoặc điều kiện thất bại). |
+| `job_tag:TAGID` | Job đã hoàn thành và có tag được chỉ định. |
+| `alert_new` | Alert đã kích hoạt trên một server. |
+| `alert_cleared` | Alert đã được xóa trên một server. |
+| `alert_create` | `Định nghĩa alert đã được tạo: [description] ([alert.id])` |
+| `alert_update` | `Định nghĩa alert đã được cập nhật: [description] ([alert.id])` |
+| `alert_delete` | `Định nghĩa alert đã bị xóa: [description] ([alert.id])` |
+| `alert_update_tickets` | `Các ticket của alert invocation đã được cập nhật: #[description]` |
+| `alert_delete_invocation` | `Alert invocation đã bị xóa: #[description]` |
+| `apikey_create` | `API Key đã được tạo: [description]` |
+| `apikey_update` | `API Key đã được cập nhật: [description]` |
+| `apikey_delete` | `API Key đã bị xóa: [description]` |
+| `category_create` | `Category đã được tạo: [description] ([category.id])` |
+| `category_update` | `Category đã được cập nhật: [description] ([category.id])` |
+| `category_delete` | `Category đã bị xóa: [description] ([category.id])` |
+| `category_multi_update` | `Nhiều category đã được cập nhật ([updated]).` |
+| `channel_create` | `Channel đã được tạo: [description] ([channel.id])` |
+| `channel_update` | `Channel đã được cập nhật: [description] ([channel.id])` |
+| `channel_delete` | `Channel đã bị xóa: [description] ([channel.id])` |
+| `event_create` | `Event đã được tạo: [description] ([event.id])` |
+| `event_update` | `Event đã được cập nhật: [description] ([event.id])` |
+| `event_delete` | `Event đã bị xóa: [description] ([event.id])` |
+| `job_update` | `Job đã được cập nhật: #[description]` |
+| `job_update_tags` | `Các tag của job đã được cập nhật: #[description]` |
+| `job_update_tickets` | `Các ticket của job đã được cập nhật: #[description]` |
+| `job_update_comments` | `Các comment của job đã được cập nhật: #[description]` |
+| `job_abort` | `Job đã bị hủy: #[description]: [reason]` |
+| `job_delete` | `Job đã bị xóa: #[description]` |
+| `job_delete_file` | `File của job đã bị xóa: #[description]: [path]` |
+| `job_resume` | `Job đã được tiếp tục: #[description]` |
+| `queue_flush` | `Đã dọn dẹp hàng đợi job cho event: #[description]` |
+| `group_create` | `Group server đã được tạo: [description] ([group.id])` |
+| `group_update` | `Group server đã được cập nhật: [description] ([group.id])` |
+| `group_delete` | `Group server đã bị xóa: [description] ([group.id])` |
+| `group_multi_update` | `Nhiều group server đã được cập nhật ([updated]).` |
+| `group_watch` | `Một theo dõi trong [duration] đã được đặt trên group: [group.title] ([group.id])` |
+| `monitor_create` | `Monitor đã được tạo: [description] ([monitor.id])` |
+| `monitor_update` | `Monitor đã được cập nhật: [description] ([monitor.id])` |
+| `monitor_delete` | `Monitor đã bị xóa: [description] ([monitor.id])` |
+| `monitor_multi_update` | `Nhiều monitor đã được cập nhật ([updated]).` |
+| `plugin_create` | `Plugin đã được tạo: [description] ([plugin.id])` |
+| `plugin_update` | `Plugin đã được cập nhật: [description] ([plugin.id])` |
+| `plugin_delete` | `Plugin đã bị xóa: [description] ([plugin.id])` |
+| `tag_create` | `Tag đã được tạo: [description] ([tag.id])` |
+| `tag_update` | `Tag đã được cập nhật: [description] ([tag.id])` |
+| `tag_delete` | `Tag đã bị xóa: [description] ([tag.id])` |
+| `web_hook_create` | `Web Hook đã được tạo: [description] ([web_hook.id])` |
+| `web_hook_update` | `Web Hook đã được cập nhật: [description] ([web_hook.id])` |
+| `web_hook_delete` | `Web Hook đã bị xóa: [description] ([web_hook.id])` |
+| `bucket_create` | `Bucket đã được tạo: [description] ([bucket.id])` |
+| `bucket_update` | `Bucket đã được cập nhật: [description] ([bucket.id])` |
+| `bucket_delete` | `Bucket đã bị xóa: [description] ([bucket.id])` |
+| `secret_create` | `Secret đã được tạo: [description] ([secret.id])` |
+| `secret_update` | `Secret đã được cập nhật: [description] ([secret.id])` |
+| `secret_delete` | `Secret đã bị xóa: [description] ([secret.id])` |
+| `secret_access` | `Secret đã được truy cập: [description] ([secret.id])` |
+| `ticket_create` | `Ticket #[ticket.num] đã được tạo: [ticket.subject] ([ticket.id])` |
+| `ticket_update` | `Ticket #[ticket.num] đã được cập nhật: [ticket.subject] ([ticket.id])` |
+| `ticket_delete` | `Ticket #[ticket.num] đã bị xóa: [ticket.subject] ([ticket.id])` |
+| `ticket_add_change` | `Comment của ticket đã được thêm: #[ticket.num]: [ticket.subject] ([ticket.id])` |
+| `ticket_update_change` | `Comment của ticket đã được cập nhật: #[ticket.num]: [ticket.subject] ([ticket.id])` |
+| `user_create` | `User đã được tạo: [user.full_name] ([user.username])` |
+| `user_update` | `User đã được cập nhật: [user.full_name] ([user.username])` |
+| `user_delete` | `User đã bị xóa: [user.full_name] ([user.username])` |
+| `user_login` | `User đã đăng nhập: [user.full_name] ([user.username])` |
+| `user_password` | `Mật khẩu user đã được thay đổi: [user.full_name] ([user.username])` |
+| `role_create` | `Vai trò đã được tạo: [description] ([role.id])` |
+| `role_update` | `Vai trò đã được cập nhật: [description] ([role.id])` |
+| `role_delete` | `Vai trò đã bị xóa: [description] ([role.id])` |
+| `server_add` | `Server đã kết nối vào mạng: [hostname]` |
+| `server_remove` | `Server đã ngắt kết nối khỏi mạng: [hostname]` |
+| `server_delete` | `Server đã bị xóa: [hostname]` |
+| `server_update` | `Thông tin server đã được cập nhật: [hostname]` |
+| `server_watch` | `Một theo dõi trong [duration] đã được đặt trên server: [hostname]` |
+| `master_primary` | `Server conductor hiện là primary: [host]` |
+| `peer_add` | `Server conductor đã được thêm vào mạng: [host]` |
+| `peer_disconnect` | `Server conductor đã ngắt kết nối khỏi mạng: [host]` |
+| `peer_command` | `Lệnh điều khiển [commands] đã được gửi tới server conductor: [host]` |
+| `state_update` | `Trạng thái nội bộ đã được cập nhật: [description]` |
+| `internal_job` | `Job nội bộ đã hoàn thành: [job.title]` |
 
 ### Activity.description
 
-A short "description" of the action, which is typically a specific item ID.
+Một "mô tả" ngắn về action, thường là một ID mục cụ thể.
 
 ### Activity.epoch
 
-The date/time when the activity took place, represented in Unix seconds.
+Ngày/giờ khi activity diễn ra, được biểu diễn bằng giây Unix.
 
 ### Activity.headers
 
-If the activity was initiated by a HTTP request, this contains the incoming request headers (sans cookies).
+Nếu activity được bắt đầu bởi một HTTP request, điều này chứa các request header đến (không có cookie).
 
 ### Activity.ip
 
-If the activity was initiated by a HTTP request, this contains the primary IP address of the client.
+Nếu activity được bắt đầu bởi một HTTP request, điều này chứa địa chỉ IP chính của client.
 
 ### Activity.ips
 
-If the activity was initiated by a HTTP request, this contains all of the IP addresses (including proxies).
+Nếu activity được bắt đầu bởi một HTTP request, điều này chứa tất cả các địa chỉ IP (bao gồm cả các proxy).
 
 ### Activity.keywords
 
-An array of keywords used to search for the activity in the UI.
+Một mảng các keyword được sử dụng để tìm kiếm activity trong UI.
 
 ### Activity.username
 
-If the activity was initiated by a user, this contains the username (or API Key ID).
+Nếu activity được bắt đầu bởi một user, điều này chứa username (hoặc API Key ID).
 
 ## AlertInvocation
 
-An alert invocation is a specific instance of an alert being triggered. It contains information about the alert, the server it applies to, and the context in which it was triggered.  Here is an example alert invocation in JSON format:
+Alert invocation là một instance cụ thể của một alert đang được trigger. Nó chứa thông tin về alert, server áp dụng, và context trong đó nó được trigger. Dưới đây là một ví dụ alert invocation ở định dạng JSON:
 
 ```json
 {
@@ -2136,67 +2134,67 @@ An alert invocation is a specific instance of an alert being triggered. It conta
 
 ### AlertInvocation.id
 
-The unique identifier for the alert invocation.
+Định danh duy nhất cho alert invocation.
 
 ### AlertInvocation.active
 
-A boolean indicating whether the alert invocation is active (`true`) or cleared (`false`).
+Một boolean cho biết alert invocation đang hoạt động (`true`) hay đã được xóa (`false`).
 
 ### AlertInvocation.alert
 
-The [Alert.id](#alert-id) of the alert that triggered the invocation.
+[Alert.id](#alert-id) của alert đã trigger invocation.
 
 ### AlertInvocation.count
 
-An internal counter used to track the number of alert samples (warm-up and cool-down).
+Một bộ đếm nội bộ được sử dụng để theo dõi số lượng mẫu alert (warm-up và cool-down).
 
 ### AlertInvocation.date
 
-The Unix epoch timestamp of when the alert was triggered.
+Timestamp Unix epoch của thời điểm alert được trigger.
 
 ### AlertInvocation.exp
 
-The expression that triggered the alert.
+Biểu thức đã trigger alert.
 
 ### AlertInvocation.groups
 
-The groups that the server that triggered the alert belongs to.
+Các group mà server đã trigger alert thuộc về.
 
 ### AlertInvocation.jobs
 
-The jobs that were running on the server at the time of the alert invocation.
+Các job đang chạy trên server tại thời điểm alert invocation.
 
 ### AlertInvocation.message
 
-The message associated with the alert invocation.
+Message liên kết với alert invocation.
 
 ### AlertInvocation.modified
 
-The Unix epoch timestamp of when the alert invocation was last modified.
+Timestamp Unix epoch của thời điểm alert invocation được sửa đổi lần cuối.
 
 ### AlertInvocation.notified
 
-An internal boolean indicating whether the alert has been notified.
+Một boolean nội bộ cho biết alert đã được thông báo hay chưa.
 
 ### AlertInvocation.server
 
-The [Server.id](#server-id) that the alert is associated with.
+[Server.id](#server-id) mà alert được liên kết với.
 
 ### AlertInvocation.tickets
 
-An array of [Ticket.id](#ticket-id)s that reference the alert invocation.
+Một mảng các [Ticket.id](#ticket-id) tham chiếu đến alert invocation.
 
 ## ServerMonitorData
 
-Server monitoring data is collected every minute on every server, and is the source for all monitors and alerts.  It is a verbose structure, split up into the following top-level properties.
+Dữ liệu theo dõi server (Server monitoring data) được thu thập mỗi phút trên mỗi server, và là nguồn cho tất cả các monitor và alert. Nó là một cấu trúc dài dòng, được chia thành các thuộc tính top-level sau.
 
 ### ServerMonitorData.arch
 
-The architecture of the server (e.g. `x86_64`, `arm64`).
+Kiến trúc của server (ví dụ: `x86_64`, `arm64`).
 
 ### ServerMonitorData.commands
 
-The current raw output from all custom user commands (a.k.a Monitor Plugins), keyed by the [Plugin.id](#plugin-id).  Example:
+Đầu ra thô hiện tại từ tất cả các lệnh tùy chỉnh của user (hay còn gọi là Monitor Plugins), được đánh key bởi [Plugin.id](#plugin-id). Ví dụ:
 
 ```json
 {
@@ -2206,7 +2204,7 @@ The current raw output from all custom user commands (a.k.a Monitor Plugins), ke
 
 ### ServerMonitorData.conns
 
-An array of the current network connections on the server, including source and destination IP addresses, ports, and connection states.  Includes socket listeners.  Here is an example connection:
+Một mảng các kết nối mạng hiện tại trên server, bao gồm địa chỉ IP nguồn và đích, các cổng, và các trạng thái kết nối. Bao gồm các socket listener. Dưới đây là một ví dụ kết nối:
 
 ```json
 {
@@ -2222,7 +2220,7 @@ An array of the current network connections on the server, including source and 
 
 ### ServerMonitorData.cpu
 
-The current CPU usage statistics and information for the server, including user, system, and idle times, as well as CPU hardware and virtualization information.  Here is an example `cpu` object:
+Số liệu thống kê và thông tin sử dụng CPU hiện tại cho server, bao gồm thời gian của user, system, và idle, cũng như thông tin về phần cứng CPU và ảo hóa. Dưới đây là một ví dụ object `cpu`:
 
 ```json
 {
@@ -2292,7 +2290,7 @@ The current CPU usage statistics and information for the server, including user,
 
 ### ServerMonitorData.deltas
 
-Delta information for monitors that track changes over time.  This object is keyed by the [Monitor.id](#monitor-id), and the value is the current delta between the current and previous samples.  Example:
+Thông tin delta cho các monitor theo dõi thay đổi theo thời gian. Đối tượng này được lập khóa bằng [Monitor.id](#monitor-id) và giá trị là delta hiện tại giữa các mẫu hiện tại và trước đó. Ví dụ:
 
 ```json
 {
@@ -2306,7 +2304,7 @@ Delta information for monitors that track changes over time.  This object is key
 
 ### ServerMonitorData.interfaces
 
-An object containing information about the network interfaces on the server, including their names, IP addresses, and other relevant details.  The object properties are the interface names, e.g. `eth0` and the value is an object describing the interface.  Here is an example:
+Một đối tượng chứa thông tin về các giao diện mạng trên server, bao gồm tên của chúng, địa chỉ IP và các chi tiết liên quan khác. Các thuộc tính của đối tượng là tên giao diện, ví dụ: `eth0` và giá trị là một đối tượng mô tả giao diện. Dưới đây là một ví dụ:
 
 ```json
 {
@@ -2346,11 +2344,11 @@ An object containing information about the network interfaces on the server, inc
 
 ### ServerMonitorData.jobs
 
-The number of jobs currently running on the server.
+Số lượng các job đang chạy trên server.
 
 ### ServerMonitorData.load
 
-The three CPU load average readings as an array, measured over 1, 5, and 15 minutes.  Example:
+Ba chỉ số tải CPU trung bình dưới dạng một mảng, được đo trong khoảng thời gian 1, 5 và 15 phút. Ví dụ:
 
 ```json
 [
@@ -2362,7 +2360,7 @@ The three CPU load average readings as an array, measured over 1, 5, and 15 minu
 
 ### ServerMonitorData.memory
 
-Information about the server's current memory usage, including total, used, and free memory, as well as a variety of other readings.  Here is an example:
+Thông tin về mức sử dụng bộ nhớ hiện tại của server, bao gồm bộ nhớ tổng, đã sử dụng và trống, cũng như một loạt các chỉ số khác. Dưới đây là một ví dụ:
 
 ```json
 {
@@ -2410,7 +2408,7 @@ Information about the server's current memory usage, including total, used, and 
 
 ### ServerMonitorData.monitors
 
-The current computed values of all the monitors on the server.  These are all the user-defined monitors that track a single value over time, for the purpose of graphing (and often alerting).  Example:
+Các giá trị được tính toán hiện tại của tất cả các monitor trên server. Đây là tất cả các monitor do người dùng xác định theo dõi một giá trị duy nhất theo thời gian, nhằm mục đích vẽ biểu đồ (và thường là cảnh báo alert). Ví dụ:
 
 ```json
 {
@@ -2435,7 +2433,7 @@ The current computed values of all the monitors on the server.  These are all th
 
 ### ServerMonitorData.mounts
 
-Information about the mounted filesystems on the server.  Here is an example:
+Thông tin về các hệ thống tập tin được mount trên server. Dưới đây là một ví dụ:
 
 ```json
 {
@@ -2474,7 +2472,7 @@ Information about the mounted filesystems on the server.  Here is an example:
 
 ### ServerMonitorData.os
 
-Detailed information about the operating system running on the server.  Here is an example:
+Thông tin chi tiết về hệ điều hành đang chạy trên server. Dưới đây là một ví dụ:
 
 ```json
 {
@@ -2497,11 +2495,11 @@ Detailed information about the operating system running on the server.  Here is 
 
 ### ServerMonitorData.platform
 
-The platform of the server, as reported by the Node.js [os.platform()](https://nodejs.org/api/os.html#osplatform) function.  Possible values are `aix`, `darwin`, `freebsd`, `linux`, `openbsd`, `sunos`, and `win32`.
+Nền tảng của server, theo báo cáo của hàm Node.js [os.platform()](https://nodejs.org/api/os.html#osplatform). Các giá trị có thể có là `aix`, `darwin`, `freebsd`, `linux`, `openbsd`, `sunos` và `win32`.
 
 ### ServerMonitorData.process
 
-Information about the xyOps Satellite process itself.  Example:
+Thông tin về chính tiến trình PTOps Satellite. Ví dụ:
 
 ```json
 {
@@ -2514,7 +2512,7 @@ Information about the xyOps Satellite process itself.  Example:
 
 ### ServerMonitorData.processes
 
-Detailed information about all of the processes running on the server.  First, here is the structure of the `processes` object, which contains some process state counters, as well as a `list` array:
+Thông tin chi tiết về tất cả các tiến trình đang chạy trên server. Trước tiên, đây là cấu trúc của đối tượng `processes`, chứa một số bộ đếm trạng thái tiến trình, cũng như một mảng `list`:
 
 ```json
 {
@@ -2525,7 +2523,7 @@ Detailed information about all of the processes running on the server.  First, h
 }
 ```
 
-And here is an example process, which would be an element inside the `list` array:
+Và đây là một tiến trình ví dụ, sẽ là một phần tử bên trong mảng `list`:
 
 ```json
 {
@@ -2552,15 +2550,15 @@ And here is an example process, which would be an element inside the `list` arra
 
 ### ServerMonitorData.release
 
-The operating system name, as reported by the Node.js [os.release()](https://nodejs.org/api/os.html#osrelease) function.  Example: `6.12.34+rpt-rpi-v8`.
+Tên hệ điều hành, theo báo cáo của hàm Node.js [os.release()](https://nodejs.org/api/os.html#osrelease). Ví dụ: `6.12.34+rpt-rpi-v8`.
 
 ### ServerMonitorData.stats
 
-Contains information about filesystem, I/O and network throughput.  See below for details.
+Chứa thông tin về hệ thống tập tin, I/O và thông lượng mạng. Xem chi tiết bên dưới.
 
 ### ServerMonitorData.stats.fs
 
-Contains information about filesystem throughput on the server.  Example:
+Chứa thông tin về thông lượng hệ thống tập tin trên server. Ví dụ:
 
 ```json
 {
@@ -2576,7 +2574,7 @@ Contains information about filesystem throughput on the server.  Example:
 
 ### ServerMonitorData.stats.io
 
-Contains information about general I/O throughput on the server.  Example:
+Chứa thông tin về thông lượng I/O chung trên server. Ví dụ:
 
 ```json
 {
@@ -2598,7 +2596,7 @@ Contains information about general I/O throughput on the server.  Example:
 
 ### ServerMonitorData.stats.network
 
-Contains information about current network throughput on the server.  Example:
+Chứa thông tin về thông lượng mạng hiện hành trên server. Ví dụ:
 
 ```json
 {
@@ -2624,11 +2622,11 @@ Contains information about current network throughput on the server.  Example:
 
 ### ServerMonitorData.stats.uptime_sec
 
-The uptime of the server in seconds.
+Thời gian hoạt động (uptime) của server tính bằng giây.
 
 ## Snapshot
 
-A snapshot is a record of everything happening on a server for a specific instant in time, including all monitoring data, processes, network connections, and more.  See [Snapshots](snapshots.md) for more details.  Here is an example snapshot in JSON format, with the larger sections omitted for brevity:
+Một snapshot là bản ghi mọi thứ đang diễn ra trên một server trong một thời điểm cụ thể, bao gồm tất cả dữ liệu giám sát, tiến trình, kết nối mạng và nhiều thứ khác. Xem [Snapshots](snapshots.md) để biết thêm chi tiết. Dưới đây là một snapshot ví dụ ở định dạng JSON, với các phần lớn hơn được bỏ qua cho ngắn gọn:
 
 ```json
 {
@@ -2653,107 +2651,107 @@ A snapshot is a record of everything happening on a server for a specific instan
 
 ### Snapshot.id
 
-A unique lowercase alphanumeric ID automatically generated for the snapshot.
+Một ID chữ và số in thường duy nhất được tạo tự động cho snapshot.
 
 ### Snapshot.type
 
-The type of snapshot, which will be `server` for a single server, or `group` for a multi-server group snapshot.
+Loại snapshot, sẽ là `server` đối với một server đơn, hoặc `group` cho một snapshot nhóm nhiều server.
 
 ### Snapshot.server
 
-The [Server.id](#server-id) of the server that the snapshot was produced from.
+[Server.id](#server-id) của server mà từ đó snapshot được tạo ra.
 
 ### Snapshot.version
 
-The version of the snapshot data format.
+Phiên bản định dạng dữ liệu của snapshot.
 
 ### Snapshot.date
 
-The date/time when the snapshot was taken, in Unix seconds.
+Ngày/giờ mà snapshot được chụp, tính bằng giây Unix.
 
 ### Snapshot.groups
 
-An array of [Group.id](#group-id)s that the server belongs to.
+Một mảng các [Group.id](#group-id) mà server thuộc về.
 
 ### Snapshot.hostname
 
-The hostname of the server which produced the snapshot.
+Hostname của server đã tạo ra snapshot.
 
 ### Snapshot.ip
 
-The IP address of the server which produced the snapshot.
+Địa chỉ IP của server đã tạo ra snapshot.
 
 ### Snapshot.source
 
-A string denoting how the snapshot was taken, which will be one of: `alert`, `watch`, `user`, or `job`.
+Một chuỗi biểu thị cách thức snapshot được chụp, sẽ là một trong các giá trị sau: `alert`, `watch`, `user` hoặc `job`.
 
 ### Snapshot.username
 
-If the [Snapshot.source](#snapshot-source) is `user`, this is the [User.username](#user-username) of the user who snapped.
+Nếu [Snapshot.source](#snapshot-source) là `user`, đây là [User.username](#user-username) của người dùng đã thực hiện chụp.
 
 ### Snapshot.quickmon
 
-An array of [QuickmonData](#quickmondata) samples for the server, representing the last 60 seconds leading up to the snapshot being taken.
+Một mảng các mẫu [QuickmonData](#quickmondata) cho server, đại diện cho 60 giây cuối cùng trước khi snapshot được chụp.
 
 ### Snapshot.jobs
 
-An array of [Job.id](#job-id)s representing active jobs on the server at the time of the snapshot.
+Một mảng các [Job.id](#job-id) đại diện cho các job đang hoạt động trên server tại thời điểm thực hiện snapshot.
 
 ### Snapshot.alerts
 
-An array of [AlertInvocation.id](#alertinvocation-id)s representing active alerts on the server at the time of the snapshot.
+Một mảng các [AlertInvocation.id](#alertinvocation-id) đại diện cho các alert đang hoạt động trên server tại thời điểm snapshot.
 
 ### Snapshot.data
 
-A copy of the [ServerMonitorData](#servermonitordata) for the server taken at the time of the snapshot.
+Một bản sao của [ServerMonitorData](#servermonitordata) cho server được chụp tại thời điểm snapshot.
 
 ## GroupSnapshot
 
-Snapshots may be taken of entire server groups, which uses the following structure to store the data.
+Các snapshot có thể được chụp cho toàn bộ các group server, sử dụng cấu trúc sau để lưu trữ dữ liệu.
 
 ### GroupSnapshot.id
 
-A unique lowercase alphanumeric ID automatically generated for the snapshot.
+Một ID chữ và số viết thường duy nhất được tạo tự động cho snapshot.
 
 ### GroupSnapshot.type
 
-The type of snapshot, which will be set to `group` in this case.
+Loại snapshot, trong trường hợp này sẽ được đặt là `group`.
 
 ### GroupSnapshot.date
 
-The date/time when the snapshot was taken, in Unix seconds.
+Ngày/giờ khi snapshot được chụp, tính bằng giây Unix.
 
 ### GroupSnapshot.groups
 
-Will be an array with exactly one element, the [Group.id](#group-id) for the group.
+Sẽ là một mảng có đúng một phần tử, [Group.id](#group-id) cho group.
 
 ### GroupSnapshot.group_def
 
-A copy of the [Group](#group) object for the group, taken at the time of the snapshot.
+Một bản sao của đối tượng [Group](#group) cho group, được chụp tại thời điểm snapshot.
 
 ### GroupSnapshot.servers
 
-An array of [Server](#server) objects for the group.
+Một mảng các đối tượng [Server](#server) cho group.
 
 ### GroupSnapshot.snapshots
 
-An array of [ServerMonitorData](#servermonitordata)s for the group, with indices matching up with [GroupSnapshot.servers](#groupsnapshot-servers).
+Một mảng các [ServerMonitorData](#servermonitordata) cho group, với các chỉ số tương ứng với [GroupSnapshot.servers](#groupsnapshot-servers).
 
 ### GroupSnapshot.alerts
 
-An array of [AlertInvocation.id](#alertinvocation-id)s representing active alerts in the group at the time of the snapshot.
+Một mảng các [AlertInvocation.id](#alertinvocation-id) đại diện cho các alert đang hoạt động trong group tại thời điểm snapshot.
 
 ### GroupSnapshot.jobs
 
-An array of [Job.id](#job-id)s representing active jobs in the group at the time of the snapshot.
+Một mảng các [Job.id](#job-id) đại diện cho các job đang hoạt động trong group tại thời điểm snapshot.
 
 ### GroupSnapshot.quickmons
 
-An array of [QuickmonData](#quickmondata) samples for the group, with indices matching up with [GroupSnapshot.servers](#groupsnapshot-servers).
+Một mảng các mẫu [QuickmonData](#quickmondata) cho group, với các chỉ số tương ứng với [GroupSnapshot.servers](#groupsnapshot-servers).
 
 ## Conductor
 
-xyOps keep track of all online conductor (backup) servers in the cluster, using the following in-memory data structure (displayed as JSON):
+PTOps theo dõi tất cả các server conductor (sao lưu) đang trực tuyến trong cụm, sử dụng cấu trúc dữ liệu trong bộ nhớ sau (hiển thị dưới dạng JSON):
 
 ```json
 {
@@ -2772,60 +2770,60 @@ xyOps keep track of all online conductor (backup) servers in the cluster, using 
 
 ### Conductor.id
 
-This is the conductor server's internal ID, which is usually it's hostname.
+Đây là ID nội bộ của server conductor, thường là hostname của nó.
 
 ### Conductor.online
 
-A boolean indicating whether the server is online (connected) or not.
+Một boolean cho biết server có đang trực tuyến (đã kết nối) hay không.
 
 ### Conductor.master
 
-A boolean indicating whether the conductor is the current conductor primary or not.
+Một boolean cho biết conductor có phải là conductor chính hiện tại hay không.
 
 ### Conductor.date
 
-A timestamp in Unix seconds representing when the server came online.
+Một dấu thời gian tính bằng giây Unix đại diện cho thời điểm server lên mạng.
 
 ### Conductor.version
 
-Currently unused, will always be set to "1.0".  For future use.
+Hiện tại không được sử dụng, sẽ luôn được đặt là "1.0". Dành cho mục đích sử dụng trong tương lai.
 
 ### Conductor.ping
 
-The last ping time (in milliseconds) between the current conductor and the server (Websocket RTT).
+Thời gian ping gần nhất (tính bằng mili giây) giữa conductor hiện tại và server (Websocket RTT).
 
 ### Conductor.stats
 
-This object will contain basic stats about the server, including `mem` (current memory usage of the xyOps process), and `load` (minute load average).
+Đối tượng này sẽ chứa các số liệu thống kê cơ bản về server, bao gồm `mem` (việc sử dụng bộ nhớ hiện tại của tiến trình PTOps) và `load` (trung bình tải theo phút).
 
 ## State
 
-xyOps keeps state data in a `global/state` storage record.  This is so it can survive restarts, and survive conductor failover to a backup server.  It is used to store things like the scheduler switch, event state (time cursors), and server/group watches (snapshots).
+PTOps giữ dữ liệu trạng thái trong một bản ghi lưu trữ `global/state`. Điều này là để nó có thể tồn tại sau khi khởi động lại, và tồn tại sau khi chuyển đổi dự phòng conductor sang một server dự phòng. Nó được sử dụng để lưu trữ những thứ như bộ chuyển đổi lịch trình, trạng thái event (con trỏ thời gian) và theo dõi server/group (các snapshot).
 
 ### State.scheduler
 
-The `scheduler` object contains properties specific to the job scheduler subsystem.  Namely an `enabled` boolean, which will be `true` if the scheduler is active and running jobs, or `false` if it is paused.
+Đối tượng `scheduler` chứa các thuộc tính cụ thể cho hệ thống con lập lịch job. Cụ thể là một boolean `enabled`, sẽ là `true` nếu bộ lập lịch đang hoạt động và chạy các job, hoặc `false` nếu nó bị tạm dừng.
 
 ### State.events
 
-The `events` object holds state information about all events, namely their cursor for [Catch-Up](triggers.md#catch-up) mode, and information about previously completed jobs.  Here are the properties stored per event, each in `events.EVENTID.`:
+Đối tượng `events` giữ thông tin trạng thái về tất cả các event, cụ thể là con trỏ của chúng cho chế độ [Catch-Up](triggers.md#catch-up) và thông tin về các job đã hoàn thành trước đó. Đây là các thuộc tính được lưu trữ cho mỗi event, mỗi thuộc tính nằm trong `events.EVENTID.`:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `cursor` | Number | For [Catch-Up](triggers.md#catch-up) events, this contains the event's current timestamp, which is used to run all missed jobs during an outage window. |
-| `last_code` | Mixed | The [Job.code](#job-code) from the last completed job, if any. |
-| `last_job` | String | The [Job.id](#job-id) of the last completed job, if any. |
-| `total_elapsed` | Number | The total job elapsed time across all completed jobs (used to compute average). |
-| `total_count` | Number | Total completed jobs on record.  The `total_elapsed` is divided by this number to get an average job elapsed time for the event. |
+| `cursor` | Number | Đối với các event [Catch-Up](triggers.md#catch-up), thuộc tính này chứa dấu thời gian hiện tại của event, được sử dụng để chạy tất cả các job bị nhỡ trong một khoảng thời gian ngừng hoạt động. |
+| `last_code` | Mixed | [Job.code](#job-code) từ job hoàn thành gần nhất, nếu có. |
+| `last_job` | String | [Job.id](#job-id) của job hoàn thành gần nhất, nếu có. |
+| `total_elapsed` | Number | Tổng thời gian trôi qua của job trên tất cả các job đã hoàn thành (được sử dụng để tính trung bình). |
+| `total_count` | Number | Tổng số job đã hoàn thành được ghi nhận. `total_elapsed` được chia cho con số này để có thời gian job trôi qua trung bình cho event. |
 
 ### State.watches
 
-xyOps keeps track of server and group watches (automatic monitoring snapshots) in this object.  The data layout is as follows:
+PTOps theo dõi các phiên theo dõi server và group (các snapshot theo dõi tự động) trong đối tượng này. Bố cục dữ liệu như sau:
 
-- Server watches are stored in `watches.servers.SERVERID`.
-- Group watches are stored in `watches.groups.GROUPID`.
+- Các phiên theo dõi server được lưu trong `watches.servers.SERVERID`.
+- Các phiên theo dõi group được lưu trong `watches.groups.GROUPID`.
 
-The property values are Unix seconds, set to when the watch should end.  Example in JSON format:
+Các giá trị thuộc tính là giây Unix, được đặt thành thời điểm phiên theo dõi sẽ kết thúc. Ví dụ ở định dạng JSON:
 
 ```json
 {
@@ -2843,15 +2841,15 @@ The property values are Unix seconds, set to when the watch should end.  Example
 
 ### State.next_ticket_num
 
-This property holds the next available [Ticket.num](#ticket-num), which is applied and incremented when a new ticket is created.
+Thuộc tính này giữ [Ticket.num](#ticket-num) khả dụng tiếp theo, được áp dụng và tăng lên khi một ticket mới được tạo.
 
 ## Sub-Objects
 
-These objects are nested under other data structures, usually items of an array.
+Các đối tượng này được lồng dưới các cấu trúc dữ liệu khác, thường là các mục của một mảng.
 
 ### Action
 
-Actions can be assigned to job and alert related events such as job start, job completion, job errors, new alert, and other conditions.  Here is an example:
+Các action có thể được gán cho các event liên quan đến job và alert chẳng hạn như job bắt đầu, job hoàn thành, các lỗi job, alert mới và các điều kiện khác. Đây là một ví dụ:
 
 ```json
 {
@@ -2862,58 +2860,58 @@ Actions can be assigned to job and alert related events such as job start, job c
 }
 ```
 
-This action would fire when the job resulted in an error, and it would send an email to `admin@myserver.com`, notifying them about the event.
+action này sẽ kích hoạt khi job dẫn đến lỗi và nó sẽ gửi một email tới `admin@myserver.com`, thông báo cho họ về event.
 
-Each action object should have the following properties:
+Mỗi đối tượng action phải có các thuộc tính sau:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `enabled` | Boolean | Specifies whether the action is enabled (`true`) or disabled (`false`). |
-| `condition` | String | Specifies the condition which runs the action.  See [Action.conditions](#action-condition) below. |
-| `type` | String | Specifies which action will take place when the condition fires.  See [Action.type](#action-type) below. |
+| `enabled` | Boolean | Chỉ định xem action được bật (`true`) hay bị tắt (`false`). |
+| `condition` | String | Chỉ định điều kiện sẽ chạy action. Xem [Action.conditions](#action-condition) bên dưới. |
+| `type` | String | Chỉ định action nào sẽ diễn ra khi điều kiện kích hoạt. Xem [Action.type](#action-type) bên dưới. |
 
-Additional properties may be present based on the type.
+Các thuộc tính bổ sung có thể có mặt tùy thuộc vào loại.
 
 #### Action.condition
 
-Each action has a `condition` property which specifies when it should fire.  The value may be one of:
+Mỗi action có một thuộc tính `condition` chỉ định khi nào nó sẽ kích hoạt. Giá trị có thể là một trong:
 
 | Condition ID | Description |
 |------------|-------------|
-| `start` | Fires on job start. |
-| `complete` | Fires on job completion, regardless of the outcome. |
-| `success` | Fires on job success, i.e. when the `code` property is `0` or `false`. |
-| `error` | Fires on job errors, i.e. when the `code` property is any true value or string. |
-| `warning` | Fires on job warnings, i.e. when the `code` property is set to `"warning"`. |
-| `critical` | Fires on critical errors, i.e. when the `code` property is set to `"critical"`. |
-| `abort` | Fires when the job is aborted, either by user or special event (e.g. lost server). |
-| `tag:TAGID` | Fires on job completion only when a specific tag is present on the job. |
-| `alert_new` | Fires when a new alert is triggered on a server. |
-| `alert_cleared` | Fires when an active alert has cleared. |
+| `start` | Kích hoạt khi job bắt đầu. |
+| `complete` | Kích hoạt khi job hoàn thành, bất kể kết quả. |
+| `success` | Kích hoạt khi job thành công, tức là khi thuộc tính `code` là `0` hoặc `false`. |
+| `error` | Kích hoạt khi có lỗi job, tức là khi thuộc tính `code` là bất kỳ giá trị đúng hoặc chuỗi nào. |
+| `warning` | Kích hoạt khi có cảnh báo job, tức là khi thuộc tính `code` được đặt là `"warning"`. |
+| `critical` | Kích hoạt khi có lỗi nghiêm trọng, tức là khi thuộc tính `code` được đặt là `"critical"`. |
+| `abort` | Kích hoạt khi job bị hủy, do người dùng hoặc event đặc biệt (ví dụ: mất server). |
+| `tag:TAGID` | Chỉ kích hoạt khi job hoàn thành khi có một tag cụ thể trên job. |
+| `alert_new` | Kích hoạt khi một alert mới được kích hoạt trên một server. |
+| `alert_cleared` | Kích hoạt khi một alert đang hoạt động đã được xóa. |
 
 #### Action.type
 
-Each action has a `type` property which dictates what will happen when the condition fires.  The different types are listed below:
+Mỗi action có một thuộc tính `type` ra lệnh cho những gì sẽ xảy ra khi điều kiện kích hoạt. Các loại khác nhau được liệt kê bên dưới:
 
 | Type ID | Description |
 |---------|-------------|
-| `email` | Send email to one or more addresses.  The addresses should be in an extra property named `email` (comma-separated). |
-| `web_hook` | Fire off a web hook (HTTP POST) for the action.  The URL should be specified in a property named `url`. |
-| `run_event` | Run a custom job for the action.  The Event ID should be specified in a property named `event_id`. |
-| `channel` | Activate a notification channel for the action.  The Channel ID should be specified in a property named `channel_id`. |
-| `disable` | Disable the event for the action (no extra properties defined). |
-| `delete` | Delete the event for the action (no extra properties defined). |
-| `snapshot` | Take a server snapshot for the action (no extra properties defined). |
-| `suspend` | Suspend (pause) a workflow until a user resumes in the UI.  No extra properties defined. |
-| `tag` | Add one or more [Tags](tags.md) to the running job or workflow. |
-| `store` | Store data in a storage bucket. Requires `bucket_id` (the [Bucket.id](#bucket-id)), `bucket_sync` (species if files and/or data should be stored), and `bucket_glob` (glob pattern to match on files). |
-| `fetch` | Fetch data from a storage bucket. Requires `bucket_id` (the [Bucket.id](#bucket-id)), `bucket_sync` (species if files and/or data should be fetched), and `bucket_glob` (glob pattern to match on files). |
-| `ticket` | Create a ticket.  Requires `ticket_type` (see [Ticket.type](#ticket-type)), `ticket_assignees` (an array of [User.username](#user-username)s), and `ticket_tags` (an array of [Tag.id](#tag-id)s).  Can also include `ticket_due`, as an absolute Unix epoch time or a relative date delta such as `3 days`. |
-| `plugin` | Invoke a custom Plugin for the action.  Requires `plugin_id` (the [Plugin.id](#plugin-id)) and `params` (custom parameters defined by the Plugin). |
+| `email` | Gửi email đến một hoặc nhiều địa chỉ. Các địa chỉ phải nằm trong một thuộc tính bổ sung có tên `email` (được phân tách bằng dấu phẩy). |
+| `web_hook` | Kích hoạt một web hook (HTTP POST) cho action. URL phải được chỉ định trong một thuộc tính có tên `url`. |
+| `run_event` | Chạy một job tùy chỉnh cho action. Event ID phải được chỉ định trong một thuộc tính có tên `event_id`. |
+| `channel` | Kích hoạt một channel thông báo cho action. Channel ID phải được chỉ định trong một thuộc tính có tên `channel_id`. |
+| `disable` | Vô hiệu hóa event cho action (không có thuộc tính bổ sung nào được xác định). |
+| `delete` | Xóa event cho action (không có thuộc tính bổ sung nào được xác định). |
+| `snapshot` | Chụp một snapshot của server cho action (không có thuộc tính bổ sung nào được xác định). |
+| `suspend` | Đình chỉ (tạm dừng) một workflow cho đến khi người dùng tiếp tục lại trong giao diện người dùng. Không có thuộc tính bổ sung nào được xác định. |
+| `tag` | Thêm một hoặc nhiều [Tags](tags.md) vào job hoặc workflow đang chạy. |
+| `store` | Lưu trữ dữ liệu trong một bucket lưu trữ. Yêu cầu `bucket_id` ([Bucket.id](#bucket-id)), `bucket_sync` (chỉ định nếu các tập tin và/hoặc dữ liệu nên được lưu trữ) và `bucket_glob` (mẫu glob để khớp trên các tập tin). |
+| `fetch` | Lấy dữ liệu từ một bucket lưu trữ. Yêu cầu `bucket_id` ([Bucket.id](#bucket-id)), `bucket_sync` (chỉ định nếu các tập tin và/hoặc dữ liệu nên được lấy) và `bucket_glob` (mẫu glob để khớp trên các tập tin). |
+| `ticket` | Tạo một ticket. Yêu cầu `ticket_type` (xem [Ticket.type](#ticket-type)), `ticket_assignees` (một mảng các [User.username](#user-username)) và `ticket_tags` (một mảng các [Tag.id](#tag-id)). Cũng có thể bao gồm `ticket_due`, dưới dạng thời gian epoch Unix tuyệt đối hoặc độ lệch ngày tương đối như `3 days`. |
+| `plugin` | Gọi một Plugin tùy chỉnh cho action. Yêu cầu `plugin_id` ([Plugin.id](#plugin-id)) và `params` (các tham số tùy chỉnh được xác định bởi Plugin). |
 
 ### Limit
 
-Limits (otherwise known as "Resource Limits" in the UI) govern things like CPU, memory, and log size for running jobs.  They can be assigned to both events and categories, and each may have several different limits set.  Here is an example:
+Các limit (còn được gọi là "Resource Limits" trong giao diện người dùng) chi phối những thứ như CPU, bộ nhớ và kích thước nhật ký cho các job đang chạy. Chúng có thể được gán cho cả event và category, và mỗi thuộc tính có thể có một số limit khác nhau được đặt. Đây là một ví dụ:
 
 ```json
 {
@@ -2923,49 +2921,49 @@ Limits (otherwise known as "Resource Limits" in the UI) govern things like CPU, 
 }
 ```
 
-This would set a time limit of 3600 seconds (1 hour) for running jobs.
+Điều này sẽ đặt limit thời gian là 3600 giây (1 giờ) cho các job đang chạy.
 
-Each limit object should have the following properties:
+Mỗi đối tượng limit phải có các thuộc tính sau:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `enabled` | Boolean | Specifies whether the limit is enabled (`true`) or disabled (`false`). |
-| `type` | String | Specifies the type of limit.  See [Limit.type](#limit-type) below. |
+| `enabled` | Boolean | Chỉ định xem limit được bật (`true`) hay bị tắt (`false`). |
+| `type` | String | Chỉ định loại limit. Xem [Limit.type](#limit-type) bên dưới. |
 
-Additional properties may be present based on the type.
+Các thuộc tính bổ sung có thể có mặt tùy thuộc vào loại.
 
-When limits are assigned to categories, they act as defaults for events in that category.  Events may still override limits set in their categories.
+Khi các limit được gán cho các category, chúng hoạt động như mặc định cho các event trong category đó. Các event vẫn có thể ghi đè các limit được đặt trong các category của chúng.
 
 #### Limit.type
 
-Each limit has a `type` property which specifies what it governs.  The different types are described below:
+Mỗi limit có một thuộc tính `type` chỉ định những gì nó chi phối. Các loại khác nhau được mô tả bên dưới:
 
 | Type ID | Title | Description |
 |---------|-------|-------------|
-| `time` | **Max Run Time** | Set a maximum run time for jobs.  The limit should be in a property named `duration`, specified as seconds. |
-| `job` | **Max Concurrent Jobs** | Set a maximum number of concurrent jobs for the event.  The number should be a in property named `amount`. |
-| `log` | **Max Output Size** | Set a maximum limit on the output size for jobs.  The limit should be in a property named `amount`, specified as bytes. |
-| `mem` | **Max Memory Limit** | Set a maximum limit for memory usage for jobs (includes all child processes).  The limit should be in a property named `amount`, specified as bytes.  The sustain duration should be in a property named `duration`, specified as seconds. |
-| `cpu` | **Max CPU % Limit** | Set a maximum limit for CPU usage for jobs (includes all child processes).  The limit should be in a property named `amount`, specified as a percentage of one CPU core.  The sustain duration should be in a property named `duration`, specified as seconds. |
-| `retry` | **Max Retry Limit** | Set a maximum number of retries allowed for failed jobs.  The number of retries should be in a property named `amount`, and optionally the delay between retries should be in a property named `duration`, specified as seconds. |
-| `queue` | **Max Queue Limit** | Set a maximum number of jobs that may be queued up, if other limits prevent them from running concurrently.  The number should be in a property named `amount`. |
-| `file` | **Max File Limit** | Set a limit on the number and types of files allowed by the job.  This is a soft limit, and does not abort the job (the files are pruned if limits exceeded). |
+| `time` | **Max Run Time** | Đặt thời gian chạy tối đa cho các job. limit phải nằm trong một thuộc tính có tên `duration`, được chỉ định bằng giây. |
+| `job` | **Max Concurrent Jobs** | Đặt số lượng job đồng thời tối đa cho event. Số lượng phải nằm trong một thuộc tính có tên `amount`. |
+| `log` | **Max Output Size** | Đặt limit tối đa về kích thước đầu ra cho các job. limit phải nằm trong một thuộc tính có tên `amount`, được chỉ định bằng byte. |
+| `mem` | **Max Memory Limit** | Đặt limit tối đa cho việc sử dụng bộ nhớ cho các job (bao gồm tất cả các tiến trình con). limit phải nằm trong một thuộc tính có tên `amount`, được chỉ định bằng byte. Thời lượng duy trì phải nằm trong một thuộc tính có tên `duration`, được chỉ định bằng giây. |
+| `cpu` | **Max CPU % Limit** | Đặt limit tối đa cho việc sử dụng CPU cho các job (bao gồm tất cả các tiến trình con). limit phải nằm trong một thuộc tính có tên `amount`, được chỉ định dưới dạng tỷ lệ phần trăm của một lõi CPU. Thời lượng duy trì phải nằm trong một thuộc tính có tên `duration`, được chỉ định bằng giây. |
+| `retry` | **Max Retry Limit** | Đặt số lần thử lại tối đa được phép đối với các job thất bại. Số lần thử lại phải nằm trong một thuộc tính có tên `amount` và tùy chọn độ trễ giữa các lần thử lại phải nằm trong một thuộc tính có tên `duration`, được chỉ định bằng giây. |
+| `queue` | **Max Queue Limit** | Đặt số lượng job tối đa có thể được đưa vào hàng đợi, nếu các limit khác ngăn chúng chạy đồng thời. Số lượng phải nằm trong một thuộc tính có tên `amount`. |
+| `file` | **Max File Limit** | Đặt limit về số lượng và loại tập tin được job cho phép. Đây là limit mềm và không hủy bỏ job (các tập tin bị cắt bớt nếu vượt quá limit). |
 
-The **Max Run Time** (`time`), **Max Memory Limit** (`mem`), **Max CPU % Limit** (`cpu`) and **Max Output Size** (`log`) limit types all accept a set of additional parameters that enable special actions to take place when the limit is exceeded:
+Các loại limit **Max Run Time** (`time`), **Max Memory Limit** (`mem`), **Max CPU % Limit** (`cpu`) và **Max Output Size** (`log`) đều chấp nhận một tập hợp các tham số bổ sung cho phép các action đặc biệt diễn ra khi vượt quá limit:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `tags` | Array | An optional set of [Tag.id](#tag-id)s to apply to the job when the limit is exceeded. |
-| `users` | Array | An optional set of [User.username](#user-username)s to send an email to about the limit violation. |
-| `email` | String | An optional list of custom email addresses (in CSV format) to send to. |
-| `web_hook` | String | An optional [WebHook.id](#webhook-id) to fire when the limit is exceeded. |
-| `text` | String | If `web_hook` is populated, this can contain a custom text string to append to the web hook text. |
-| `snapshot` | Boolean | If set to `true`, a [server snapshot](snapshots.md) is taken when the limit is exceeded. |
-| `abort` | Boolean | If set to `true`, the job is aborted when the limit is exceeded. |
+| `tags` | Array | Một tập hợp các [Tag.id](#tag-id) tùy chọn để áp dụng cho job khi vượt quá limit. |
+| `users` | Array | Một tập hợp các [User.username](#user-username) tùy chọn để gửi email về việc vi phạm limit. |
+| `email` | String | Một danh sách các địa chỉ email tùy chỉnh (ở định dạng CSV) tùy chọn để gửi tới. |
+| `web_hook` | String | Một [WebHook.id](#webhook-id) tùy chọn để kích hoạt khi vượt quá limit. |
+| `text` | String | Nếu `web_hook` được điền, điều này có thể chứa một chuỗi văn bản tùy chỉnh để nối thêm vào văn bản web hook. |
+| `snapshot` | Boolean | Nếu được đặt là `true`, một [snapshot của server](snapshots.md) sẽ được chụp khi vượt quá limit. |
+| `abort` | Boolean | Nếu được đặt là `true`, job sẽ bị hủy khi vượt quá limit. |
 
 ### Trigger
 
-Events are scheduled using one or more trigger objects, which can define repeating invocations (hourly, daily, etc.), single-shots on an exact future date/time, and other misc. rules such as blackout dates.  Here is an example:
+Các event được lên lịch bằng cách sử dụng một hoặc nhiều đối tượng trigger, có thể xác định các lần kích hoạt lặp lại (hàng giờ, hàng ngày, v.v.), chạy một lần vào một ngày/giờ chính xác trong tương lai và các quy tắc khác như ngày cấm. Đây là một ví dụ:
 
 ```json
 {
@@ -2976,40 +2974,40 @@ Events are scheduled using one or more trigger objects, which can define repeati
 }
 ```
 
-This would run every day at 4:30 AM (repeating).
+Điều này sẽ chạy hàng ngày lúc 4:30 sáng (lặp lại).
 
-Each trigger object should have the following properties:
+Mỗi đối tượng trigger phải có các thuộc tính sau:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `enabled` | Boolean | Specifies whether the trigger is enabled (`true`) or disabled (`false`). |
-| `type` | String | Specifies the type of trigger.  See [Trigger.type](#trigger-type) below. |
+| `enabled` | Boolean | Chỉ định xem trigger được bật (`true`) hay bị tắt (`false`). |
+| `type` | String | Chỉ định loại trigger. Xem [Trigger.type](#trigger-type) bên dưới. |
 
-Additional properties may be present based on the type.
+Các thuộc tính bổ sung có thể có mặt tùy thuộc vào loại.
 
 #### Trigger.type
 
-Each trigger has a `type` property which describes its behavior.  The different types are listed below:
+Mỗi trigger có một thuộc tính `type` mô tả hành vi của nó. Các loại khác nhau được liệt kê bên dưới:
 
 | Type ID | Title | Description |
 |---------|-------|-------------|
-| `manual` | **Manual Run** | Allow the event to be executed manually (in the UI or API). |
-| `schedule` | **Schedule** | Set a repeating schedule to run the event (hourly, daily, etc.).  See [Schedule Rules](#schedule-rules) below. |
-| `interval` | **Interval** | Run the event on a repeating interval, given a starting date/time.  See [Intervals](#intervals) below. |
-| `single` | **Single Shot** | Set a single future exact date/time to run.  Requires an additional `epoch` property, set to the [Unix timestamp](https://en.wikipedia.org/wiki/Unix_time) at which to run. |
-| `catchup` | **Catch-Up** | Ensure that *every* scheduled job runs, even if it has to run late. |
-| `nth` | **Every Nth** | Run only every Nth scheduled job.  See [Every Nth](triggers.md#every-nth) for details. |
-| `range` | **Range** | Set a starting and/or ending date for a repeating event.  Requires additional `start` and/or `end` properties, set to [Unix timestamps](https://en.wikipedia.org/wiki/Unix_time). |
-| `blackout` | **Blackout** | Set a blackout date/time range when the event *cannot* run.  Requires additional `start` and `end` properties, set to [Unix timestamps](https://en.wikipedia.org/wiki/Unix_time). |
-| `delay` | **Delay** | Set an optional starting delay for all scheduled jobs.  Requires an additional `duration` property, set to the number of seconds to delay each job by. |
-| `precision` | **Precision** | Set an optional array of exact `seconds` to fire jobs within the current scheduled minute. |
-| `plugin` | **Plugin** | Custom scheduler Plugin (user-defined).  Requires an additional `plugin_id` property, as well as a `params` object, for Plugin-defined configuration. |
+| `manual` | **Manual Run** | Cho phép event được thực thi thủ công (trong giao diện người dùng hoặc API). |
+| `schedule` | **Schedule** | Đặt một lịch trình lặp lại để chạy event (hàng giờ, hàng ngày, v.v.). Xem [Schedule Rules](#schedule-rules) bên dưới. |
+| `interval` | **Interval** | Chạy event theo khoảng thời gian lặp lại, cho trước ngày/giờ bắt đầu. Xem [Intervals](#intervals) bên dưới. |
+| `single` | **Single Shot** | Đặt một ngày/giờ chính xác trong tương lai để chạy duy nhất một lần. Yêu cầu một thuộc tính `epoch` bổ sung, được đặt thành [dấu thời gian Unix](https://en.wikipedia.org/wiki/Unix_time) tại đó để chạy. |
+| `catchup` | **Catch-Up** | Đảm bảo rằng *mọi* job đã lên lịch đều chạy, ngay cả khi nó phải chạy trễ. |
+| `nth` | **Every Nth** | Chỉ chạy cứ mỗi job đã lên lịch thứ N. Xem [Every Nth](triggers.md#every-nth) để biết chi tiết. |
+| `range` | **Range** | Đặt ngày bắt đầu và/hoặc ngày kết thúc cho một event lặp lại. Yêu cầu các thuộc tính `start` và/hoặc `end` bổ sung, được đặt thành [dấu thời gian Unix](https://en.wikipedia.org/wiki/Unix_time). |
+| `blackout` | **Blackout** | Đặt phạm vi ngày/giờ cấm khi event *không thể* chạy. Yêu cầu các thuộc tính `start` và `end` bổ sung, được đặt thành [dấu thời gian Unix](https://en.wikipedia.org/wiki/Unix_time). |
+| `delay` | **Delay** | Đặt độ trễ bắt đầu tùy chọn cho tất cả các job đã lên lịch. Yêu cầu một thuộc tính `duration` bổ sung, được đặt bằng số giây để làm trễ mỗi job. |
+| `precision` | **Precision** | Đặt một mảng tùy chọn các giây chính xác để kích hoạt các job trong phút đã lên lịch hiện tại. |
+| `plugin` | **Plugin** | Plugin bộ lập lịch tùy chỉnh (do người dùng xác định). Yêu cầu một thuộc tính `plugin_id` bổ sung, cũng như một đối tượng `params`, để cấu hình do Plugin xác định. |
 
 ##### Schedule Rules
 
-The `schedule` type describes a repeating event (when and how frequent it should run jobs).  It works similarly to the [Unix Cron](https://en.wikipedia.org/wiki/Cron) system, with selections of years, months, days, weekdays, hours and/or minutes.  Each property should be an array of numerical values.  If omitted, it means the same as "all" in that category (i.e. asterisk `*` in Cron syntax).
+Loại `schedule` mô tả một event lặp lại (khi nào và mức độ thường xuyên nó sẽ chạy các job). Nó hoạt động tương tự như hệ thống [Unix Cron](https://en.wikipedia.org/wiki/Cron), với các lựa chọn về năm, tháng, ngày, ngày trong tuần, giờ và/hoặc phút. Mỗi thuộc tính phải là một mảng các giá trị số. Nếu bị bỏ qua, nó có nghĩa tương tự như "tất cả" trong hạng mục đó (tức là dấu hoa thị `*` trong cú pháp Cron).
 
-For example, an event with this trigger object would run once per hour, on the hour:
+Ví dụ, một event với đối tượng trigger này sẽ chạy mỗi giờ một lần, vào đúng giờ:
 
 ```json
 {
@@ -3019,9 +3017,9 @@ For example, an event with this trigger object would run once per hour, on the h
 }
 ```
 
-It essentially means every year, every month, every day, every hour, but only on the `0` minute.  The scheduler ticks only once a minute, so this only results in running one job for each matching minute.
+Về cơ bản nó có nghĩa là mỗi năm, mỗi tháng, mỗi ngày, mỗi giờ, nhưng chỉ ở phút `0`. Bộ lập lịch chỉ đánh dấu một lần một phút, do đó điều này chỉ dẫn đến việc chạy một job cho mỗi phút khớp.
 
-For another example, this would run twice daily, at 4:30 AM and 4:30 PM:
+Một ví dụ khác, điều này sẽ chạy hai lần mỗi ngày, lúc 4:30 sáng và 4:30 chiều:
 
 ```json
 {
@@ -3032,7 +3030,7 @@ For another example, this would run twice daily, at 4:30 AM and 4:30 PM:
 }
 ```
 
-For a more complex example, this would run only in year 2023, from March to May, on the 1st and 15th of the month (but only if also weekdays), at 6AM to 10AM, and on the :15 and :45 of those hours:
+Đối với một ví dụ phức tạp hơn, điều này sẽ chỉ chạy vào năm 2023, từ tháng 3 đến tháng 5, vào ngày 1 và 15 của tháng (nhưng chỉ khi cũng là các ngày trong tuần), từ 6 sáng đến 10 sáng, và vào phút :15 và :45 của những giờ đó:
 
 ```json
 {
@@ -3047,21 +3045,21 @@ For a more complex example, this would run only in year 2023, from March to May,
 }
 ```
 
-Here is a list of all the `schedule` type trigger object properties and their descriptions:
+Dưới đây là danh sách tất cả các thuộc tính đối tượng trigger loại `schedule` và mô tả của chúng:
 
 | Trigger Property | Range | Description |
 |-----------------|-------|-------------|
-| `years` | ∞ | One or more years in YYYY format. |
-| `months` | 1 - 12 | One or more months, where January is 1 and December is 12. |
-| `days` | 1 - 31 | One or more month days, from 1 to 31. |
-| `weekdays` | 0 - 6 | One or more weekdays, where Sunday is 0, and Saturday is 6. |
-| `hours` | 0 - 23 | One or more hours in 24-hour time, from 0 to 23. |
-| `minutes` | 0 - 59 | One or more minutes, from 0 to 59. |
-| `timezone` | n/a | Optional timezone to evaluate the schedule entry in.  Defaults to the conductor server timezone. |
+| `years` | ∞ | Một hoặc nhiều năm ở định dạng YYYY. |
+| `months` | 1 - 12 | Một hoặc nhiều tháng, trong đó tháng Giêng là 1 và tháng Mười Hai là 12. |
+| `days` | 1 - 31 | Một hoặc nhiều ngày trong tháng, từ 1 đến 31. |
+| `weekdays` | 0 - 6 | Một hoặc nhiều ngày trong tuần, trong đó Chủ Nhật là 0 và Thứ Bảy là 6. |
+| `hours` | 0 - 23 | Một hoặc nhiều giờ trong thời gian 24 giờ, từ 0 đến 23. |
+| `minutes` | 0 - 59 | Một hoặc nhiều phút, từ 0 đến 59. |
+| `timezone` | n/a | Múi giờ tùy chọn để đánh giá mục lịch trình. Mặc định là múi giờ của server conductor. |
 
 ##### Intervals
 
-The interval trigger type requires a `start` (epoch seconds) and a `duration` (the interval in seconds).  Example:
+Loại trigger interval yêu cầu một `start` (giây epoch) và một `duration` (khoảng thời gian tính bằng giây). Ví dụ:
 
 ```json
 {
@@ -3072,17 +3070,17 @@ The interval trigger type requires a `start` (epoch seconds) and a `duration` (t
 }
 ```
 
-That example `start` time is 2025/12/18 18:29:00 Pacific, so it would run the event on that exact timestamp, and then again every 90 seconds afterwards.  Examples:
+Thời gian `start` ví dụ đó là 2025/12/18 18:29:00 Pacific, vì vậy nó sẽ chạy event vào đúng dấu thời gian đó, và sau đó chạy lại cứ sau 90 giây. Ví dụ:
 
 - 2025/12/18 18:29:00 Pacific
 - 2025/12/18 18:30:30 Pacific
 - 2025/12/18 18:32:00 Pacific
 - 2025/12/18 18:33:30 Pacific
-- ...and so on.
+- ...và cứ tiếp tục như vậy.
 
 ### Workflow
 
-Workflows are really just [Event](#event)s with an extra `workflow` property, which describes the flow.  See [Workflows](workflows.md) for more details about workflows.  Here is an example workflow object in JSON format:
+Các workflow thực sự chỉ là các [Event](#event) với một thuộc tính `workflow` bổ sung, mô tả luồng. Xem [Workflows](workflows.md) để biết thêm chi tiết về các workflow. Đây là một ví dụ đối tượng workflow ở định dạng JSON:
 
 ```json
 {
@@ -3169,15 +3167,15 @@ Workflows are really just [Event](#event)s with an extra `workflow` property, wh
 
 #### Workflow.nodes
 
-An array of [WorkflowNode](#workflownode)s in the workflow.
+Mảng các [WorkflowNode](#workflownode) trong workflow.
 
 #### Workflow.connections
 
-An array of [WorkflowConnection](#workflowconnection)s in the workflow.
+Mảng các [WorkflowConnection](#workflowconnection) trong workflow.
 
 ### WorkflowNode
 
-A workflow node is an object which represents an event, an ad-hoc job, a trigger, a limit, an action, or a controller.  Here is an example node in JSON format:
+Một workflow node là một đối tượng đại diện cho một event, ad-hoc job, trigger, limit, action, hoặc controller. Dưới đây là ví dụ node ở định dạng JSON:
 
 ```json
 {
@@ -3197,49 +3195,49 @@ A workflow node is an object which represents an event, an ad-hoc job, a trigger
 
 #### WorkflowNode.id
 
-A unique lowercase alphanumeric ID for the node, which is automatically assigned when created.  Workflow Node IDs will always start with `n`.
+ID duy nhất kết hợp chữ cái và số viết thường cho node, được gán tự động khi tạo. Workflow Node ID sẽ luôn bắt đầu bằng `n`.
 
 #### WorkflowNode.type
 
-A string constant representing the node type, which will be one of: `event`, `job`, `trigger`, `limit`, `action`, or `controller`.
+Hằng chuỗi đại diện cho loại node, sẽ là một trong: `event`, `job`, `trigger`, `limit`, `action`, hoặc `controller`.
 
 #### WorkflowNode.data
 
-Nodes may have a `data` property which contains information specific to the node type.  Here is a summary of how this property is used:
+Các node có thể có thuộc tính `data` chứa thông tin cụ thể cho loại node đó. Dưới đây là tóm tắt cách thuộc tính này được sử dụng:
 
 | Node Type | Data Description |
 |-----------|------------------|
-| `event` | Will contain an `event` property, which refers to the [Event](#event), as well as properties that override defaults set in the event.  May also contain an optional `replay` property. |
-| `job` | Will contain most of the properties from the [Event](#event) object, to run an ad-hoc job without an explicit event definition.  May also contain an optional `replay` property. |
-| `trigger` | Not used.  Trigger nodes use their [WorkflowNode.id](#workflownode-id) property to link to the [Event.trigger](#event-trigger), which is the source of truth for the trigger. |
-| `limit` | Will contain properties from the [Limit](#limit) object. |
-| `action` | Will contain properties from the [Action](#action) object. |
-| `controller` | Will contain properties specific to the controller type.  See below. |
+| `event` | Sẽ chứa thuộc tính `event`, tham chiếu đến [Event](#event), cũng như các thuộc tính ghi đè mặc định được đặt trong event. Có thể chứa một thuộc tính `replay` tuỳ chọn. |
+| `job` | Sẽ chứa hầu hết các thuộc tính từ đối tượng [Event](#event), để chạy ad-hoc job mà không cần định nghĩa event rõ ràng. Có thể chứa một thuộc tính `replay` tuỳ chọn. |
+| `trigger` | Không được sử dụng. Các trigger node sử dụng thuộc tính [WorkflowNode.id](#workflownode-id) của chúng để liên kết với [Event.trigger](#event-trigger), đây là nguồn tin cậy cho trigger. |
+| `limit` | Sẽ chứa các thuộc tính từ đối tượng [Limit](#limit). |
+| `action` | Sẽ chứa các thuộc tính từ đối tượng [Action](#action). |
+| `controller` | Sẽ chứa các thuộc tính cụ thể cho loại controller. Xem bên dưới. |
 
-For `event` and `job` nodes, the optional `replay` property may contain a previous [Job.id](#job-id).  When this is set, the workflow node replays that previous job instead of launching a new sub-job.  The replayed job contributes its original output data, output files, `workflowData`, tags and completion result to the workflow, and downstream wire conditions are evaluated from that replayed result.
+Đối với các node `event` và `job`, thuộc tính `replay` tuỳ chọn có thể chứa một [Job.id](#job-id) trước đó. Khi giá trị này được đặt, workflow node sẽ chạy lại job trước đó thay vì khởi chạy một sub-job mới. Job được chạy lại sẽ đóng góp output data gốc, output files, `workflowData`, các tag và kết quả hoàn thành vào workflow, và các điều kiện luồng ở các bước tiếp theo sẽ được đánh giá từ kết quả được chạy lại đó.
 
-For controller nodes, see the following table for details on how the `data` property is used:
+Đối với các controller node, xem bảng sau để biết chi tiết về cách thuộc tính `data` được sử dụng:
 
 | Controller Type | Data Description |
 |-----------------|------------------|
-| `multiplex` | Will contain `stagger` (delay in seconds) for staggering jobs across servers, and `continue` (percentage) for gating success. |
-| `wait` | Will contain `wait` (delay in seconds). |
-| `repeat` | Will contain `repeat` (iteration count), and `continue` (percentage) for gating success. |
-| `split` | Will contain `split` (expression to split on), and `continue` (percentage) for gating success. |
-| `join` | Not used. |
-| `decision` | Will contain `label` (custom title), `icon` (custom icon), and `decision` (expression to evaluate). |
+| `multiplex` | Sẽ chứa `stagger` (độ trễ tính bằng giây) để làm các job chạy so le nhau qua các server, và `continue` (phần trăm) để làm cổng cho sự thành công. |
+| `wait` | Sẽ chứa `wait` (độ trễ tính bằng giây). |
+| `repeat` | Sẽ chứa `repeat` (số vòng lặp), và `continue` (phần trăm) để làm cổng cho sự thành công. |
+| `split` | Sẽ chứa `split` (biểu thức để phân chia), và `continue` (phần trăm) để làm cổng cho sự thành công. |
+| `join` | Không được sử dụng. |
+| `decision` | Sẽ chứa `label` (tiêu đề tuỳ chỉnh), `icon` (biểu tượng tuỳ chỉnh), và `decision` (biểu thức để đánh giá). |
 
 #### WorkflowNode.x
 
-The horizontal position of the top-left corner of the node in the UI, measured in CSS pixels at 1X zoom.
+Vị trí ngang của góc trên cùng bên trái của node trong UI, được đo bằng các CSS pixel ở mức thu phóng 1X.
 
 #### WorkflowNode.y
 
-The vertical position of the top-left corner of the node in the UI, measured in CSS pixels at 1X zoom.
+Vị trí dọc của góc trên cùng bên trái của node trong UI, được đo bằng các CSS pixel ở mức thu phóng 1X.
 
 ### WorkflowConnection
 
-A workflow connection object represents a connection between two nodes (rendered as a curved line in the UI).  Here is an example connection in JSON format:
+Một đối tượng workflow connection đại diện cho kết nối giữa hai node (được hiển thị dưới dạng đường cong trong UI). Dưới đây là ví dụ về kết nối ở định dạng JSON:
 
 ```json
 {
@@ -3252,23 +3250,23 @@ A workflow connection object represents a connection between two nodes (rendered
 
 #### WorkflowConnection.id
 
-A unique lowercase alphanumeric ID for the connection, which is automatically assigned when created.  Workflow Connection IDs will always start with `c`.
+ID duy nhất kết hợp chữ cái và số viết thường cho kết nối, được gán tự động khi tạo. Workflow Connection ID sẽ luôn bắt đầu bằng `c`.
 
 #### WorkflowConnection.source
 
-The [WorkflowNode.id](#workflownode-id) of the source node.
+[WorkflowNode.id](#workflownode-id) của node nguồn.
 
 #### WorkflowConnection.dest
 
-The [WorkflowNode.id](#workflownode-id) of the destination node.
+[WorkflowNode.id](#workflownode-id) của node đích.
 
 #### WorkflowConnection.condition
 
-Some connections have a `condition` which dictates when control will flow through to the destination node (namely from a job or event to another node).  See [Action.conditions](#action-condition) for a list of possible conditions.
+Một số kết nối có một `condition` quy định khi nào quyền điều khiển sẽ chuyển qua node đích (cụ thể là từ một job hoặc event tới node khác). Xem [Action.conditions](#action-condition) để biết danh sách các điều kiện có thể.
 
 ### JobWorkflow
 
-When a job starts, if the job is itself a workflow, or a sub-job inside a workflow, it will be given a `workflow` object, which is described below.  Here is an example object in JSON format, for a workflow job, but with some properties removed for brevity:
+Khi một job bắt đầu, nếu bản thân job đó là một workflow, hoặc là một sub-job bên trong một workflow, nó sẽ được cung cấp một đối tượng `workflow`, được mô tả bên dưới. Dưới đây là một ví dụ đối tượng ở định dạng JSON, cho một workflow job, nhưng một số thuộc tính đã bị xoá đi để cho ngắn gọn:
 
 ```json
 {
@@ -3341,19 +3339,19 @@ When a job starts, if the job is itself a workflow, or a sub-job inside a workfl
 
 ### JobWorkflow.nodes
 
-An array of [WorkflowNode](#workflownode)s in the workflow.
+Mảng các [WorkflowNode](#workflownode) trong workflow.
 
 ### JobWorkflow.connections
 
-An array of [WorkflowConnection](#workflowconnection)s in the workflow.
+Mảng các [WorkflowConnection](#workflowconnection) trong workflow.
 
 ### JobWorkflow.start
 
-The [WorkflowNode.id](#workflownode-id) of the starting node (typically a trigger node).
+[WorkflowNode.id](#workflownode-id) của node bắt đầu (thường là một trigger node).
 
 ### JobWorkflow.state
 
-Contains state information for each node in the workflow.  Typically this is used to track which nodes executed, and to track performance.  The object is keyed by the [WorkflowNode.id](#workflownode-id)s of the nodes, with values being specific to each node.  Example in JSON format:
+Chứa thông tin trạng thái cho mỗi node trong workflow. Thường nó được sử dụng để theo dõi các node nào đã thực thi, và để theo dõi hiệu suất. Đối tượng được khoá bởi [WorkflowNode.id](#workflownode-id) của các node, với giá trị cụ thể cho mỗi node. Ví dụ ở định dạng JSON:
 
 ```json
 {
@@ -3372,7 +3370,7 @@ Contains state information for each node in the workflow.  Typically this is use
 
 ### JobWorkflow.jobs
 
-Contains information about all completed jobs inside the workflow.  The `jobs` object is keyed by the [WorkflowNode.id](#workflownode-id)s of the nodes which spawned the jobs, and the value is an array of objects (because each node may spawn multiple jobs inside one workflow).  Here is an example:
+Chứa thông tin về tất cả các job đã hoàn thành bên trong workflow. Đối tượng `jobs` được khoá bởi [WorkflowNode.id](#workflownode-id) của các node đã sinh ra các job, và giá trị là một mảng các đối tượng (vì mỗi node có thể sinh ra nhiều job trong cùng một workflow). Dưới đây là một ví dụ:
 
 ```json
 {
@@ -3395,37 +3393,37 @@ Contains information about all completed jobs inside the workflow.  The `jobs` o
 }
 ```
 
-Each element of the array is a subset of properties copied from the [Job](#job) object.
+Mỗi phần tử của mảng là một tập hợp con các thuộc tính được sao chép từ đối tượng [Job](#job).
 
-If the node was configured to replay a previous job, the completed-job stub will include `replay: true`.
+Nếu node được cấu hình để chạy lại một job trước đó, bản nháp completed-job sẽ bao gồm `replay: true`.
 
 ### JobWorkflow.job
 
-If the job is a sub-job inside of a parent workflow, the `workflow.job` property will point to the [Job.id](#job-id) of the parent workflow job.
+Nếu job là một sub-job bên trong một workflow cha, thuộc tính `workflow.job` sẽ trỏ đến [Job.id](#job-id) của workflow job cha.
 
 ### JobWorkflow.event
 
-If the job is a sub-job inside of a parent workflow, the `workflow.event` property will point to the [Event.id](#event-id) of the parent workflow.
+Nếu job là một sub-job bên trong một workflow cha, thuộc tính `workflow.event` sẽ trỏ đến [Event.id](#event-id) của workflow cha.
 
 ### JobWorkflow.node
 
-If the job is a sub-job inside of a parent workflow, the `workflow.node` property will point to the [WorkflowNode.id](#workflownode-id) of the event or job node which started the job.
+Nếu job là một sub-job bên trong một workflow cha, thuộc tính `workflow.node` sẽ trỏ đến [WorkflowNode.id](#workflownode-id) của node event hoặc node job đã bắt đầu job.
 
 ### JobWorkflow.launcher
 
-If the job is a sub-job inside of a parent workflow, the `workflow.launcher` property will point to the [WorkflowNode.id](#workflownode-id) of the controller node which is governing the job.
+Nếu job là một sub-job bên trong một workflow cha, thuộc tính `workflow.launcher` sẽ trỏ đến [WorkflowNode.id](#workflownode-id) của node controller đang quản lý job đó.
 
 ### JobWorkflow.params
 
-If the job is a sub-job inside of a parent workflow, the `workflow.params` property will contain all the user parameters provided at workflow launch (if any).
+Nếu job là một sub-job bên trong một workflow cha, thuộc tính `workflow.params` sẽ chứa tất cả các user parameter được cung cấp khi khởi chạy workflow (nếu có).
 
 ### JobWorkflow.now
 
-If the job is a sub-job inside of a parent workflow, the `workflow.now` property will contain the value of the parent workflow's [Job.now](#job-now) value.  This is either the timestamp of when the workflow started, or it could be a timestamp in the past if the workflow is being run as part of [Catch-Up](triggers.md#catch-up).
+Nếu job là một sub-job bên trong một workflow cha, thuộc tính `workflow.now` sẽ chứa giá trị [Job.now](#job-now) của workflow cha. Giá trị này có thể là timestamp khi workflow bắt đầu, hoặc có thể là timestamp trong quá khứ nếu workflow đang được chạy như một phần của [Catch-Up](triggers.md#catch-up).
 
 ### Privileges
 
-The Privileges object describes which actions are allowed for a [User](#user), a [Role](#role), or an [API Key](#api-key).  For more details, see [Privileges](privileges.md).  Here is an example set of privileges in JSON format:
+Đối tượng Privileges mô tả những hành động nào được cho phép đối với một [User](#user), một [Role](#role), hoặc một [API Key](#api-key). Để biết thêm chi tiết, hãy xem [Privileges](privileges.md). Dưới đây là một tập hợp các privilege ví dụ ở định dạng JSON:
 
 ```json
 {
@@ -3438,67 +3436,67 @@ The Privileges object describes which actions are allowed for a [User](#user), a
 }
 ```
 
-Note that the `admin` privilege, when present, implicitly enables all other privileges.
+Lưu ý rằng privilege `admin`, khi hiện diện, sẽ mặc nhiên bật tất cả các privilege khác.
 
 ### JobHookData
 
-When job actions are executed, including firing web hooks and sending emails, the following data structure is used to expand macros in the web hook text and email body content.  It is also passed to custom action Plugins.
+Khi các job action được thực thi, bao gồm việc kích hoạt web hook và gửi email, cấu trúc dữ liệu sau được sử dụng để mở rộng các macro trong văn bản web hook và nội dung thân email. Nó cũng được truyền đến các custom action Plugin.
 
 | Property Path | Type | Description |
 |---------------|------|-------------|
-| `job` | Object | The current [Job](#job) object. |
-| `action` | Object | The current [Action](#action) object. |
-| `event` | Object | The [Event](#event) object from which the job was launched. |
-| `category` | Object | The [Category](#category) object for the job's category. |
-| `plugin` | Object | The [Plugin](#plugin) object for the job's event plugin (n/a for workflows). |
-| `server` | Object | The [Server](#server) object for the server that ran the job (if applicable). |
-| `nice_server` | String | A nice string representation of the current server (title, hostname or conductor host ID). |
-| `nice_hostname` | String | A nice string representation of the current server hostname, if applicable. |
-| `links` | Object | An object containing URLs for use in the email body text or web hook text. |
-| `links.job_details` | String | A fully-qualified URL to the job details page (requires login). |
-| `links.job_log` | String | A fully-qualified URL to the raw job output (auth included in URL). |
-| `links.job_files` | String | A markdown-formatted list of URLs to all the job's output files (auth included in URLs). |
-| `display` | Object | An object containing various formatted strings ready for display. |
-| `display.elapsed` | String | Human readable job elapsed time, if fired on job complete. |
-| `display.log_size` | String | Human readable job output size, if applicable. |
-| `display.perf` | String | A string representing the job performance metrics, if provided. |
-| `display.mem` | String | A human-readable string representing the average memory usage of the job, if available. |
-| `display.cpu` | String | A human-readable string representing the average CPU usage of the job, if available. |
-| `text` | String | A short summary of the action, using [hook_text_templates](config.md#hook_text_templates) as the template, and all macros expanded. |
+| `job` | Object | Đối tượng [Job](#job) hiện tại. |
+| `action` | Object | Đối tượng [Action](#action) hiện tại. |
+| `event` | Object | Đối tượng [Event](#event) từ đó job được khởi chạy. |
+| `category` | Object | Đối tượng [Category](#category) cho category của job. |
+| `plugin` | Object | Đối tượng [Plugin](#plugin) cho event plugin của job (không áp dụng cho workflow). |
+| `server` | Object | Đối tượng [Server](#server) cho server đã chạy job (nếu áp dụng). |
+| `nice_server` | String | Một biểu diễn chuỗi dễ đọc của server hiện tại (tiêu đề, hostname hoặc conductor host ID). |
+| `nice_hostname` | String | Một biểu diễn chuỗi dễ đọc của hostname server hiện tại, nếu áp dụng. |
+| `links` | Object | Một đối tượng chứa các URL để sử dụng trong văn bản thân email hoặc văn bản web hook. |
+| `links.job_details` | String | Một URL đầy đủ tới trang chi tiết job (yêu cầu đăng nhập). |
+| `links.job_log` | String | Một URL đầy đủ tới output gốc của job (xác thực được bao gồm trong URL). |
+| `links.job_files` | String | Một danh sách URL được định dạng markdown tới tất cả các output file của job (xác thực được bao gồm trong các URL). |
+| `display` | Object | Một đối tượng chứa các chuỗi được định dạng sẵn sàng để hiển thị. |
+| `display.elapsed` | String | Thời gian trôi qua của job ở định dạng dễ đọc cho người, nếu kích hoạt khi job hoàn thành. |
+| `display.log_size` | String | Kích thước output của job ở định dạng dễ đọc cho người, nếu áp dụng. |
+| `display.perf` | String | Chuỗi đại diện cho các chỉ số hiệu suất của job, nếu được cung cấp. |
+| `display.mem` | String | Chuỗi dễ đọc cho người đại diện cho mức sử dụng bộ nhớ trung bình của job, nếu có. |
+| `display.cpu` | String | Chuỗi dễ đọc cho người đại diện cho mức sử dụng CPU trung bình của job, nếu có. |
+| `text` | String | Bản tóm tắt ngắn về action, sử dụng [hook_text_templates](config.md#hook_text_templates) làm template, với tất cả macro được mở rộng. |
 
 ### AlertHookData
 
-When alerts fire and clear, the following data structure is used to expand macros in the web hook text and email body content.  It is also passed to Action Plugins:
+Khi các alert được kích hoạt và xoá, cấu trúc dữ liệu sau được sử dụng để mở rộng các macro trong văn bản web hook và nội dung thân email. Nó cũng được truyền đến các Action Plugin:
 
 | Property Path | Type | Description |
 |---------------|------|-------------|
-| `condition` | String | The current action taking place, will be one of `alert_new` or `alert_cleared`. |
-| `alert_def` | Object | The current [Alert](#alert) definition object. |
-| `alert` | Object | The current [AlertInvocation](#alertinvocation) object. |
-| `params` | Object | The current [ServerMonitorData](#servermonitordata) data from the server. |
-| `server` | Object | The [Server](#server) object for the server on which the alert fired or cleared. |
-| `active_jobs` | Array | An array of the current active jobs on the server, each with an `id` ([Job.id](#job-id)) and `event` ([Event.id](#event-id)) property. |
-| `date_time` | String | A human-readable localized date/time string, in the server's timezone. |
-| `nice_group` | String | A string representing the title of the primary server group. |
-| `nice_elapsed` | String | A human-readable representation of the alert elapsed time (if `alert_cleared`). |
-| `nice_load_avg` | String | A string representation of the current server load average. |
-| `nice_mem_total` | String | A string representation of the current server total memory. |
-| `nice_mem_avail` | String | A string representation of the current server available memory. |
-| `nice_uptime` | String | A string representation of the current server uptime. |
-| `nice_cpu` | String | A string representation of the current server CPU usage. |
-| `nice_os` | String | A string representation of the current server operating system. |
-| `nice_notes` | String | The current alert notes field, from the alert definition. |
-| `nice_hostname` | String | A string representation of the current server hostname. |
-| `nice_server` | String | A string representation of the current server title (or hostname, if no custom title). |
-| `nice_virt` | String | A string representation of the current server virtualization / container system, if applicable. |
-| `links` | Object | An object containing URLs for use in the email body text or web hook text. |
-| `links.server_url` | String | A fully-qualified URL to the job details page (requires login). |
-| `links.alert_url` | String | A fully-qualified URL to the job details page (requires login). |
-| `text` | String | A short summary of the action, using [hook_text_templates](config.md#hook_text_templates) as the template, and all macros expanded. |
+| `condition` | String | Action hiện tại đang diễn ra, sẽ là một trong `alert_new` hoặc `alert_cleared`. |
+| `alert_def` | Object | Đối tượng định nghĩa [Alert](#alert) hiện tại. |
+| `alert` | Object | Đối tượng [AlertInvocation](#alertinvocation) hiện tại. |
+| `params` | Object | Dữ liệu [ServerMonitorData](#servermonitordata) hiện tại từ server. |
+| `server` | Object | Đối tượng [Server](#server) cho server mà trên đó alert đã kích hoạt hoặc xoá. |
+| `active_jobs` | Array | Mảng các job đang hoạt động hiện tại trên server, mỗi job có thuộc tính `id` ([Job.id](#job-id)) và `event` ([Event.id](#event-id)). |
+| `date_time` | String | Chuỗi ngày/giờ được bản địa hoá dễ đọc cho người, theo múi giờ của server. |
+| `nice_group` | String | Chuỗi đại diện cho tiêu đề của nhóm server chính. |
+| `nice_elapsed` | String | Biểu diễn dễ đọc cho người về thời gian trôi qua của alert (nếu `alert_cleared`). |
+| `nice_load_avg` | String | Biểu diễn chuỗi về load average của server hiện tại. |
+| `nice_mem_total` | String | Biểu diễn chuỗi về tổng bộ nhớ của server hiện tại. |
+| `nice_mem_avail` | String | Biểu diễn chuỗi về bộ nhớ khả dụng của server hiện tại. |
+| `nice_uptime` | String | Biểu diễn chuỗi về thời gian hoạt động (uptime) của server hiện tại. |
+| `nice_cpu` | String | Biểu diễn chuỗi về mức sử dụng CPU của server hiện tại. |
+| `nice_os` | String | Biểu diễn chuỗi về hệ điều hành của server hiện tại. |
+| `nice_notes` | String | Trường ghi chú hiện tại của alert, từ định nghĩa alert. |
+| `nice_hostname` | String | Biểu diễn chuỗi về hostname của server hiện tại. |
+| `nice_server` | String | Biểu diễn chuỗi về tiêu đề của server hiện tại (hoặc hostname, nếu không có tiêu đề tuỳ chỉnh). |
+| `nice_virt` | String | Biểu diễn chuỗi về hệ thống ảo hoá / container của server hiện tại, nếu áp dụng. |
+| `links` | Object | Một đối tượng chứa các URL để sử dụng trong văn bản thân email hoặc văn bản web hook. |
+| `links.server_url` | String | Một URL đầy đủ tới trang chi tiết job (yêu cầu đăng nhập). |
+| `links.alert_url` | String | Một URL đầy đủ tới trang chi tiết job (yêu cầu đăng nhập). |
+| `text` | String | Bản tóm tắt ngắn về action, sử dụng [hook_text_templates](config.md#hook_text_templates) làm template, với tất cả macro được mở rộng. |
 
 ### QuickmonData
 
-xyOps captures "quick" monitoring data every second on every server, in a few key areas (CPU / mem / net / disk).  This data is used to render the real-time server monitors, and is used in server snapshots as well.  Here is an example Quickmon data sample in JSON format:
+PTOps chụp dữ liệu giám sát "nhanh" mỗi giây trên mỗi server, trong một số khía cạnh chính (CPU / mem / net / disk). Dữ liệu này được sử dụng để hiển thị màn hình giám sát server theo thời gian thực, và cũng được sử dụng trong các snapshot của server. Dưới đây là dữ liệu Quickmon mẫu ở định dạng JSON:
 
 ```json
 {
@@ -3514,11 +3512,11 @@ xyOps captures "quick" monitoring data every second on every server, in a few ke
 }
 ```
 
-The `date` is the sample time in Unix seconds.  The other properties correspond to the Quickmon monitor definitions in [quick_monitors](config.md#quick_monitors), and the values should all be raw numbers.
+`date` là thời gian lấy mẫu tính bằng Unix giây. Các thuộc tính khác tương ứng với các định nghĩa Quickmon monitor trong [quick_monitors](config.md#quick_monitors), và tất cả các giá trị nên là số thô.
 
 ### ServerTimelineData
 
-Every minute, xyOps takes the current [ServerMonitorData](#servermonitordata) from every server, pulls out all the [Monitor](#monitor) values, and stores them in a specialized timeseries database.  Here is an example entry in JSON format:
+Mỗi phút, PTOps lấy [ServerMonitorData](#servermonitordata) hiện tại từ mỗi server, trích xuất tất cả giá trị [Monitor](#monitor), và lưu trữ chúng trong một cơ sở dữ liệu chuỗi thời gian chuyên biệt. Dưới đây là một mục nhập ví dụ ở định dạng JSON:
 
 ```json
 {
@@ -3546,30 +3544,30 @@ Every minute, xyOps takes the current [ServerMonitorData](#servermonitordata) fr
 }
 ```
 
-The object consists of the following properties:
+Đối tượng bao gồm các thuộc tính sau:
 
 | Property Path | Type | Description |
 |---------------|------|-------------|
-| `count` | Number | The number of samples represented in this DB entry.  For daily, monthly and yearly systems, this will generally be greater than 1, and the totals will all be divided by it (i.e. averaged). |
-| `date` | Number | The date/time of the first sample in the DB entry, in Unix seconds. |
-| `epoch_div` | Number | The Unix seconds divided by a constant defined by the current system. |
-| `totals` | Object | An object containing all the [Monitor](#monitor) totals. |
+| `count` | Number | Số lượng các mẫu đại diện trong mục nhập DB này. Đối với các hệ thống daily, monthly và yearly, giá trị này thường sẽ lớn hơn 1, và tất cả tổng số sẽ được chia cho nó (nghĩa là lấy trung bình). |
+| `date` | Number | Ngày/giờ của mẫu đầu tiên trong mục nhập DB, tính bằng Unix giây. |
+| `epoch_div` | Number | Số Unix giây chia cho một hằng số được định nghĩa bởi hệ thống hiện tại. |
+| `totals` | Object | Một đối tượng chứa tất cả các tổng của [Monitor](#monitor). |
 
 ### File
 
-A file object is used to represent a file in storage.  It is used for [Job.files](#job-files), [Ticket.files](#ticket-files), and [Bucket.files](#bucket-files).  The object consists of the following properties:
+Đối tượng file được sử dụng để biểu diễn một tệp tin trong bộ lưu trữ. Nó được sử dụng cho [Job.files](#job-files), [Ticket.files](#ticket-files), và [Bucket.files](#bucket-files). Đối tượng bao gồm các thuộc tính sau:
 
 | Property Path | Type | Description |
 |---------------|------|-------------|
-| `path` | String | A normalized path to the file in storage, which can also be used as a URI path for viewing / downloading. |
-| `filename` | String | The filename of the file. |
-| `size` | Number | The size of the file in bytes. |
-| `date` | Number | The file's creation date as Unix seconds. |
-| `job` | String | If the file was created from a job, this will contain the [Job.id](#job-id). |
-| `server` | String | If the file was created on a server, this will contain the [Server.id](#server-id). |
-| `ticket` | String | If the file was created for a ticket, this will contain the [Ticket.id](#ticket-id). |
+| `path` | String | Đường dẫn được chuẩn hoá đến tệp tin trong bộ lưu trữ, cái mà cũng có thể được sử dụng làm URI path để xem / tải xuống. |
+| `filename` | String | Tên của tệp tin. |
+| `size` | Number | Kích thước của tệp tin tính bằng byte. |
+| `date` | Number | Ngày tạo tệp tin tính bằng Unix giây. |
+| `job` | String | Nếu tệp tin được tạo từ một job, thuộc tính này sẽ chứa [Job.id](#job-id). |
+| `server` | String | Nếu tệp tin được tạo trên một server, thuộc tính này sẽ chứa [Server.id](#server-id). |
+| `ticket` | String | Nếu tệp tin được tạo cho một ticket, thuộc tính này sẽ chứa [Ticket.id](#ticket-id). |
 
-Here is an example in JSON format:
+Dưới đây là một ví dụ ở định dạng JSON:
 
 ```json
 {

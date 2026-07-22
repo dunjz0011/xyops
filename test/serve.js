@@ -1,4 +1,4 @@
-// xyOps Server - Run foreground server pointed at unit test data
+// PTOps Server - Run foreground server pointed at unit test data
 // Copyright (c) 2019 - 2026 PixlCore LLC
 // Released under the BSD 3-Clause License.
 // See the LICENSE.md file in this repository.

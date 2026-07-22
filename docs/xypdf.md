@@ -1,52 +1,52 @@
-# xyOps Portable Data Format
+# Định Dạng Portable Data của PTOps
 
-## Overview
+## Tổng Quan
 
-This document describes the **xyOps Portable Data Format** (XYPDF) v1.0, which is a method of storage for data objects in xyOps.  It enables users to export, store, transfer, and import objects to and from xyOps installations.  Export and import functions are facilitated from the xyOps UI.
+Tài liệu này mô tả **Định Dạng Portable Data của PTOps** (XYPDF) v1.0, là một phương thức lưu trữ cho các data object trong PTOps. Nó cho phép người dùng xuất, lưu trữ, truyền tải, và nhập object vào/ra khỏi các bản cài đặt PTOps. Các hàm xuất và nhập được thực hiện từ UI của PTOps.
 
-- **Title**: xyOps Portable Data Format
+- **Tiêu đề**: Định Dạng Portable Data của PTOps
 - **ID**: XYPDF
-- **Version**: 1.1
-- **Date**: February 10, 2025
-- **Authors**: Joseph Huckaby (PixlCore)
+- **Phiên bản**: 1.1
+- **Ngày**: 10 tháng 2, 2025
+- **Tác giả**: Joseph Huckaby (PixlCore)
 
-XYPDF is a [JSON](https://en.wikipedia.org/wiki/JSON) formatted text file with a specific layout.  The file can be plain text (with a `.json` file extension), or [Gzip](https://en.wikipedia.org/wiki/Gzip)-compressed (with a `.json.gz` file extension).  The JSON itself may be compacted or pretty-printed.
+XYPDF là một file văn bản định dạng [JSON](https://en.wikipedia.org/wiki/JSON) với cấu trúc cụ thể. File có thể là văn bản thuần (với đuôi file `.json`), hoặc nén [Gzip](https://en.wikipedia.org/wiki/Gzip) (với đuôi file `.json.gz`). JSON có thể được nén gọn hoặc in đẹp (pretty-printed).
 
-## User Interface
+## Giao Diện Người Dùng
 
-xyOps allows the user to "export" objects of various types in the UI.  When this occurs, the selected data structure is serialized and placed in a XYPDF wrapper, making it portable and reusable.  The file is then downloaded to the user's local machine.  The same file can then be "imported" back to xyOps via file upload, either replacing existing objects with the same IDs, or creating new objects as needed.
+PTOps cho phép người dùng "xuất" các object thuộc nhiều loại khác nhau trong UI. Khi điều này xảy ra, cấu trúc dữ liệu đã chọn được serialize và đặt vào một wrapper XYPDF, làm cho nó có thể mang đi và tái sử dụng. File sau đó được tải xuống máy cục bộ của người dùng. File tương tự có thể được "nhập" lại vào PTOps qua tải file lên, hoặc thay thế object hiện có có cùng ID, hoặc tạo object mới khi cần.
 
-## Format
+## Định Dạng
 
-The top-level JSON properties in the XYPDF file are defined as follows:
+Các thuộc tính JSON cấp cao nhất trong file XYPDF được định nghĩa như sau:
 
-| Property Name | Type | Description |
+| Tên Thuộc Tính | Kiểu | Mô Tả |
 |---------------|------|-------------|
-| `type` | String | File format identifier, should be set to `xypdf`. |
-| `version` | String | File format version, should be set to `1.0` |
-| `xyops` | String | Minimum supported xyOps version in semver format, e.g. `1.0.0`. Added in XYPDF v1.1. |
-| `description` | String | Optional human-readable description of file, will be `xyOps Portable Data` if present. |
-| `items` | Array | An array of sub-objects that define each item in the file.  See below for more. |
+| `type` | String | Định danh định dạng file, nên đặt là `xypdf`. |
+| `version` | String | Phiên bản định dạng file, nên đặt là `1.0` |
+| `xyops` | String | Phiên bản PTOps tối thiểu được hỗ trợ theo định dạng semver, ví dụ `1.0.0`. Thêm vào từ XYPDF v1.1. |
+| `description` | String | Mô tả tuỳ chọn dễ đọc về file, sẽ là `PTOps Portable Data` nếu có mặt. |
+| `items` | Array | Một mảng sub-object định nghĩa từng item trong file. Xem bên dưới để biết thêm. |
 
-Each item the `items` array will be an object with the following properties:
+Mỗi item trong mảng `items` sẽ là một object với các thuộc tính sau:
 
-| Property Name | Type | Description |
+| Tên Thuộc Tính | Kiểu | Mô Tả |
 |---------------|------|-------------|
-| `type` | String | Data type identifier, e.g. `plugin`. See below for full list. |
-| `data` | Object | The actual contents of the object (format varies -- see below). |
+| `type` | String | Định danh loại dữ liệu, ví dụ `plugin`. Xem danh sách đầy đủ bên dưới. |
+| `data` | Object | Nội dung thực tế của object (định dạng thay đổi -- xem bên dưới). |
 
-## Object Types
+## Các Loại Object
 
-The following object types can be exported from xyOps and included in XYPDF files:
+Các loại object sau có thể được xuất từ PTOps và bao gồm trong file XYPDF:
 
-| Data Structure | Type ID | Notes |
+| Cấu Trúc Dữ Liệu | Type ID | Ghi Chú |
 |----------------|---------|-------|
 | [Alert](data.md#alert) | `alert` | - |
 | [APIKey](data.md#apikey) | `api_key` | - |
-| [Bucket](data.md#bucket) | `bucket` | Only includes bucket metadata, not actual files or data. |
+| [Bucket](data.md#bucket) | `bucket` | Chỉ bao gồm metadata bucket, không bao gồm file hoặc dữ liệu thực tế. |
 | [Category](data.md#category) | `category` | - |
 | [Channel](data.md#channel) | `channel` | - |
-| [Event](data.md#event) | `event` | Workflows are part of this group, as they are just events with extra properties. |
+| [Event](data.md#event) | `event` | Workflow thuộc nhóm này, vì chúng chỉ là event với thêm thuộc tính. |
 | [Group](data.md#group) | `group` | - |
 | [Monitor](data.md#monitor) | `monitor` | - |
 | [Plugin](data.md#plugin) | `plugin` | - |
@@ -54,16 +54,16 @@ The following object types can be exported from xyOps and included in XYPDF file
 | [Tag](data.md#tag) | `tag` | - |
 | [WebHook](data.md#webhook) | `web_hook` | - |
 
-## Examples
+## Ví Dụ
 
-Here is an example XYPDF file containing one item, in pretty-printed plain text format:
+Đây là một file XYPDF ví dụ chứa một item, ở dạng văn bản thuần in đẹp:
 
 ```json
 {
 	"type": "xypdf",
 	"version": "1.0",
 	"xyops": "1.0.0",
-	"description": "xyOps Portable Data",
+	"description": "PTOps Portable Data",
 	"items": [
 		{
 			"type": "web_hook",
@@ -80,7 +80,7 @@ Here is an example XYPDF file containing one item, in pretty-printed plain text 
 					},
 					{
 						"name": "User-Agent",
-						"value": "xyOps/WebHook"
+						"value": "PTOps/WebHook"
 					}
 				],
 				"body": "{\n\t\"text\": \"{{text}}\",\n\t\"content\": \"{{text}}\",\n\t\"message\": \"{{text}}\"\n}",
@@ -101,15 +101,15 @@ Here is an example XYPDF file containing one item, in pretty-printed plain text 
 }
 ```
 
-When exporting workflows, the XYPDF files may contain multiple items, for dependent Events and/or Plugins.
+Khi xuất workflow, file XYPDF có thể chứa nhiều item, cho các Event và/hoặc Plugin phụ thuộc.
 
-## Security
+## Bảo Mật
 
-Importing XYPDF files that were downloaded from untrusted sources can be very dangerous, as they may contain malicious code.  To guard against this, xyOps will not process any uploaded XYPDF file without first prompting the user with a popup dialog, and displaying the **entire** file's contents, pretty-printed.  The user is instructed to inspect the file before confirming the import.
+Nhập file XYPDF được tải xuống từ nguồn không đáng tin cậy có thể rất nguy hiểm, vì chúng có thể chứa mã độc. Để phòng chống điều này, PTOps sẽ không xử lý bất kỳ file XYPDF tải lên nào mà không nhắc người dùng trước bằng một hộp thoại popup, và hiển thị **toàn bộ** nội dung file, đã in đẹp. Người dùng được hướng dẫn kiểm tra file trước khi xác nhận nhập.
 
-Also, if any object in an imported XYPDF file will **replace existing data** the user is warned and must confirm this action.
+Ngoài ra, nếu bất kỳ object nào trong file XYPDF được nhập sẽ **thay thế dữ liệu hiện có**, người dùng được cảnh báo và phải xác nhận hành động này.
 
-## References
+## Tham Khảo
 
 - [JSON](https://en.wikipedia.org/wiki/JSON)
 - [Gzip](https://en.wikipedia.org/wiki/Gzip)

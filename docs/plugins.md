@@ -1,32 +1,32 @@
-# Plugins
+# Plugin
 
-## Overview
+## Tổng Quan
 
-This document describes the xyOps Plugin System.  You can extend xyOps with the inclusion of Plugins, either by writing them yourself (in any language!), or by finding one on the [Plugin Marketplace](marketplace.md).
+Tài liệu này mô tả Hệ Thống Plugin của PTOps. Bạn có thể mở rộng tính năng của PTOps bằng cách thêm các Plugin, tự viết chúng (bằng bất kỳ ngôn ngữ nào!), hoặc tìm kiếm trên [Plugin Marketplace](marketplace.md).
 
-## Plugin Types
+## Các Loại Plugin
 
-Here are the Plugin Types available:
+Dưới đây là các Loại Plugin khả dụng:
 
 ### Event Plugins
 
-Event Plugins are the main type of Plugin in xyOps, as they actually are the code that "runs" jobs.  When events launch a job, either standalone or as part of a workflow, they all point to a specific Event Plugin, which executes the code that constitutes the job itself.  Event Plugins run on the target server running the job, and are launched as child processes from xySat, our remote agent.
+Event Plugins là loại Plugin chính trong PTOps, vì chúng thực sự là đoạn code để "chạy" các job. Khi event khởi chạy một job, dù là độc lập hay là một phần của workflow, tất cả chúng đều trỏ đến một Event Plugin cụ thể để thực thi mã nguồn cấu thành nên chính job đó. Event Plugins chạy trên server đích thực thi job, và được khởi chạy dưới dạng các tiến trình con từ xySat, agent từ xa của chúng tôi.
 
-Several built-in Event Plugins ship with xyOps.  They are:
+Một số Event Plugins tích hợp sẵn đi kèm với PTOps bao gồm:
 
-| Plugin Name | Description |
+| Tên Plugin | Mô tả |
 |-------------|-------------|
-| **[Shell Plugin](#shell-plugin)** | The Shell Plugin allows you to easily create events that execute arbitrary shell code, without having to learn the xyOps Plugin API. |
-| **[HTTP Request Plugin](#http-request-plugin)** | The HTTP Plugin can send HTTP requests to any URL, and supports a variety of protocols and options, including custom headers and custom body content. |
-| **[Test Plugin](#test-plugin)** | The Test Plugin exists mainly to test xyOps, but it can also be useful for testing pieces of workflows.  It outputs sample data and optionally a sample file, which are passed to downstream events, if connected. |
-| **[Fire Web Hook Plugin](#fire-web-hook-plugin)** | The Fire Web Hook Plugin fires one of your configured xyOps web hooks as a standard job, so workflows can branch or fail based on the web hook result. |
-| **[Docker Plugin](#docker-plugin)** | The Docker Plugin allows you to run custom scripts inside a Docker container.  Similar to the [Shell Plugin](#shell-plugin), you can specify any custom code to run, and in any language, as long as it supports a [Shebang](https://en.wikipedia.org/wiki/Shebang_%28Unix%29) line. |
+| **[Shell Plugin](#shell-plugin)** | Shell Plugin cho phép bạn dễ dàng tạo các event thực thi mã shell tùy ý mà không cần tìm hiểu về Plugin API của PTOps. |
+| **[HTTP Request Plugin](#http-request-plugin)** | HTTP Plugin có thể gửi các yêu cầu HTTP đến bất kỳ URL nào, hỗ trợ nhiều giao thức và tùy chọn khác nhau, bao gồm các header tùy chỉnh và nội dung body tùy chỉnh. |
+| **[Test Plugin](#test-plugin)** | Test Plugin tồn tại chủ yếu để kiểm thử PTOps, nhưng nó cũng có thể hữu ích để kiểm thử các phần của workflow. Nó tạo ra dữ liệu mẫu và tùy chọn xuất ra một file mẫu để chuyển cho các event tiếp theo nếu được kết nối. |
+| **[Fire Web Hook Plugin](#fire-web-hook-plugin)** | Fire Web Hook Plugin kích hoạt một trong những web hook đã cấu hình của PTOps dưới dạng một job tiêu chuẩn, nhờ đó workflow có thể rẽ nhánh hoặc thất bại dựa trên kết quả của web hook. |
+| **[Docker Plugin](#docker-plugin)** | Docker Plugin cho phép bạn chạy các script tùy chỉnh bên trong một container Docker. Tương tự như [Shell Plugin](#shell-plugin), bạn có thể chỉ định bất kỳ đoạn code tùy chỉnh nào để chạy, bằng bất kỳ ngôn ngữ nào, miễn là nó hỗ trợ dòng [Shebang](https://en.wikipedia.org/wiki/Shebang_%28Unix%29). |
 
-To write your own Event Plugin, all you need is to provide a command-line executable, and have it read and write JSON over [STDIN and STDOUT](https://en.wikipedia.org/wiki/Standard_streams).  Information about the current job is passed as a JSON document to your STDIN, and you can send back status updates and completion events simply by writing JSON to your STDOUT.
+Để viết Event Plugin của riêng bạn, tất cả những gì bạn cần làm là cung cấp một tệp thực thi dòng lệnh, và cho nó đọc và ghi JSON qua [STDIN và STDOUT](https://en.wikipedia.org/wiki/Standard_streams). Thông tin về job hiện tại được truyền dưới dạng tài liệu JSON tới STDIN của bạn, và bạn có thể gửi lại các cập nhật tiến độ cùng các event hoàn thành một cách đơn giản bằng cách ghi JSON ra STDOUT của bạn.
 
-When your Plugin is executed on the target server for running a job, a unique temp directory will be created for it, and any files passed to the job will be pre-downloaded for you.  The CWD (current working directory) will be set to the temp dir, so your Plugin can easily list and access the input files.
+Khi Plugin của bạn được thực thi trên server đích để chạy một job, một thư mục tạm thời duy nhất sẽ được tạo cho nó, và mọi file được chuyển đến job sẽ được tải xuống trước cho bạn. Thư mục làm việc hiện tại (CWD - current working directory) sẽ được đặt thành thư mục tạm này, nhờ đó Plugin của bạn có thể dễ dàng liệt kê và truy cập các file đầu vào.
 
-Here is an example Event Plugin using Node.js:
+Dưới đây là một ví dụ về Event Plugin sử dụng Node.js:
 
 ```js
 // read job JSON from STDIN
@@ -49,24 +49,24 @@ setInterval( function() {
 }, 1000 );
 ```
 
-You can write Plugins using any language you want, as long as it supports reading / writing JSON over STDIO.
+Bạn có thể viết Plugin bằng bất kỳ ngôn ngữ nào bạn muốn, miễn là nó hỗ trợ đọc/ghi JSON qua STDIO.
 
 #### Event Parameters
 
-As with most other Plugin types, you can define custom parameters for Event Plugins.  These can be text fields, text boxes, code editors, select menus, checkboxes, or toolsets.  The user can then fill these out when they are editing the event, and they are passed to the Plugin when a job runs.  See [Plugin Parameters](#plugin-parameters) below for more details.
+Giống như hầu hết các loại Plugin khác, bạn có thể định nghĩa các tham số tùy chỉnh cho Event Plugins. Chúng có thể là các trường văn bản, hộp văn bản, trình biên tập code, menu chọn, hộp kiểm, hoặc bộ công cụ. Người dùng có thể điền các thông tin này khi họ chỉnh sửa event, và chúng sẽ được truyền tới Plugin khi job chạy. Xem [Tham Số Plugin](#tham-so-plugin) bên dưới để biết thêm chi tiết.
 
 #### Job Input
 
-When Event Plugins are invoked via a job launching, they are passed a JSON document on STDIN (compressed onto a single line).  The following top-level properties will be present in the object:
+Khi các Event Plugins được gọi thông qua việc khởi chạy một job, chúng được truyền một tài liệu JSON trên STDIN (được nén thành một dòng duy nhất). Các thuộc tính cấp cao nhất sau đây sẽ xuất hiện trong đối tượng:
 
-| Property Name | Type | Description |
+| Tên Thuộc Tính | Loại | Mô Tả |
 |---------------|------|-------------|
-| `xy` | Number | Indicates the [xyOps Wire Protocol](xywp.md) version.  Will be set to `1`. |
-| `type` | String | The [Plugin.type](data.md#plugin-type), which will be set to `event`. |
-| `params` | Object | If the Plugin defines any parameters, their values will be here. |
-| (Other) | Various | All the properties from the [Job](data.md#job) object are included here. |
+| `xy` | Number | Cho biết phiên bản [Giao thức Dây truyền tin PTOps (Wire Protocol)](xywp.md). Sẽ được đặt thành `1`. |
+| `type` | String | Thuộc tính [Plugin.type](data.md#plugin-type), sẽ được đặt thành `event`. |
+| `params` | Object | Nếu Plugin định nghĩa bất kỳ tham số nào, giá trị của chúng sẽ ở đây. |
+| (Khác) | Nhiều loại | Tất cả các thuộc tính từ đối tượng [Job](data.md#job) được bao gồm ở đây. |
 
-Here is an example JSON document sent to an Event Plugin's STDIN as part of a job launch:
+Dưới đây là một ví dụ tài liệu JSON được gửi đến STDIN của một Event Plugin như một phần của quá trình khởi chạy job:
 
 ```json
 {
@@ -118,15 +118,15 @@ Here is an example JSON document sent to an Event Plugin's STDIN as part of a jo
 }
 ```
 
-See the [Job](data.md#job) structure for more details on these properties.
+Xem cấu trúc [Job](data.md#job) để biết thêm chi tiết về các thuộc tính này.
 
-Note that all Plugin parameters are also passed to your Plugin process as environment variables (with IDs converted as needed).
+Lưu ý rằng tất cả các tham số Plugin cũng được truyền đến tiến trình Plugin của bạn dưới dạng các biến môi trường (với các ID được chuyển đổi nếu cần).
 
 ##### Input Files
 
-If your job is passed input files (either by a previous job, attached workflow node, or by manual user upload), they are made available to your Event Plugin, and file metadata is provided to you as well.
+Nếu job của bạn được truyền các file đầu vào (bởi một job trước đó, node workflow liên kết, hoặc do người dùng tải lên thủ công), chúng sẽ được cung cấp cho Event Plugin của bạn, và siêu dữ liệu (metadata) của file cũng được cung cấp kèm theo.
 
-First, all job input files are automatically written out to the job's unique temp directory, which is also the current working directory for your plugin.  This directory will be empty *except* for any input files, so you can use a [glob](https://en.wikipedia.org/wiki/Glob_%28programming%29) to list them.  However, the list of files is also provided to you via the [Job.input](data.md#job-input) object, specifically `input.files`.  Here is an example:
+Đầu tiên, tất cả các file đầu vào của job được tự động ghi ra thư mục tạm duy nhất của job đó, đây cũng chính là thư mục làm việc hiện tại của plugin của bạn. Thư mục này sẽ trống *ngoại trừ* các file đầu vào, vì vậy bạn có thể sử dụng một [glob](https://en.wikipedia.org/wiki/Glob_%28programming%29) để liệt kê chúng. Tuy nhiên, danh sách các file cũng được cung cấp cho bạn thông qua đối tượng [Job.input](data.md#job-input), cụ thể là `input.files`. Ví dụ:
 
 ```json
 "input": {
@@ -150,113 +150,113 @@ First, all job input files are automatically written out to the job's unique tem
 }
 ```
 
-So you can also discover and iterate over your input files by accessing this data structure.
+Do đó, bạn cũng có thể khám phá và duyệt qua các file đầu vào của mình bằng cách truy cập cấu trúc dữ liệu này.
 
-##### Environment Variables
+##### Biến Môi Trường
 
-When Event Plugins are invoked via a job launching, they are passed a set of environment variables.  These provide a convenient way to read event parameters and input data without having to parse the JSON sent to STDIN.  Here is a list of the variables provided to each running job:
+Khi các Event Plugins được gọi thông qua việc khởi chạy một job, chúng được truyền một tập hợp các biến môi trường. Chúng cung cấp một cách thuận tiện để đọc các tham số event và dữ liệu đầu vào mà không cần phải phân tích cú pháp JSON gửi tới STDIN. Dưới đây là danh sách các biến được cung cấp cho mỗi job đang chạy:
 
-| Variable Name | Description |
+| Tên Biến | Mô Tả |
 |---------------|-------------|
-| `XYOPS` | Will be set to the current xySat version. |
-| `JOB_ID` | Will contain the current [Job.id](data.md#job-id). |
-| `JOB_NOW` | Will contain the current [Job.now](data.md#job-now). |
-| `JOB_BASE_URL` | Will contain the current [Job.base_url](data.md#job-base_url). |
-| `data_*` | All top-level properties from the [Job.input.data](data.md#job-input) object are included as environment variables, with a `data_` prefix. |
-| `workflow_*` | All [workflow parameters](data.md#jobworkflow-params) (user fields) are included as environment variables, with a `workflow_` prefix. |
-| `workflow_data_*` | All top-level properties from the [Job.workflowData](data.md#job-workflowdata) object are included as environment variables, with a `workflow_data_` prefix. |
-| `server_data_*` | All top-level properties from the [Job.serverData](data.md#job-serverdata) object are included as environment variables, with a `server_data_` prefix. |
-| *(Event Param IDs)* | All event parameters are passed as environment variables with the param IDs used as variable names. |
-| *(Secrets)* | All assigned [Secret Vault](secrets.md) variables are included as environment variables. |
-| *(Job Env)* | All properties from the [job_env](config.md#job_env) global configuration object are included as environment variables. |
+| `XYOPS` | Sẽ được đặt thành phiên bản xySat hiện tại. |
+| `JOB_ID` | Sẽ chứa [Job.id](data.md#job-id) hiện tại. |
+| `JOB_NOW` | Sẽ chứa [Job.now](data.md#job-now) hiện tại. |
+| `JOB_BASE_URL` | Sẽ chứa [Job.base_url](data.md#job-base_url) hiện tại. |
+| `data_*` | Tất cả các thuộc tính cấp cao nhất từ đối tượng [Job.input.data](data.md#job-input) được bao gồm dưới dạng các biến môi trường, với tiền tố `data_`. |
+| `workflow_*` | Tất cả các [tham số workflow](data.md#jobworkflow-params) (trường người dùng) được bao gồm dưới dạng các biến môi trường, với tiền tố `workflow_`. |
+| `workflow_data_*` | Tất cả các thuộc tính cấp cao nhất từ đối tượng [Job.workflowData](data.md#job-workflowdata) được bao gồm dưới dạng các biến môi trường, với tiền tố `workflow_data_`. |
+| `server_data_*` | Tất cả các thuộc tính cấp cao nhất từ đối tượng [Job.serverData](data.md#job-serverdata) được bao gồm dưới dạng các biến môi trường, với tiền tố `server_data_`. |
+| *(Event Param IDs)* | Tất cả các tham số event được truyền dưới dạng các biến môi trường với các ID tham số được sử dụng làm tên biến. |
+| *(Secrets)* | Tất cả các biến [Secret Vault](secrets.md) được chỉ định đều được đưa vào dưới dạng các biến môi trường. |
+| *(Job Env)* | Tất cả các thuộc tính từ đối tượng cấu hình toàn cục [job_env](config.md#job_env) được đưa vào dưới dạng các biến môi trường. |
 
 #### Job Output
 
-Your Plugin is expected to write JSON to STDOUT in order to report status back to the xyOps primary conductor.  At the very least, you need to notify xyOps that the job was completed, and the result of the job (i.e. success or fail).  This is done by printing a JSON object with a `xy` property set to `1` (indicating the [xyOps Wire Protocol](xywp.md) version), and a `code` property set to `0` indicating success.  You need to make sure the JSON is compacted onto a single line, and ends with a single EOL character (`\n` on Unix).  Example:
+Plugin của bạn dự kiến sẽ ghi JSON ra STDOUT để báo cáo trạng thái lại cho conductor chính của PTOps. Ít nhất, bạn cần thông báo cho PTOps rằng job đã hoàn thành, và kết quả của job (tức là thành công hay thất bại). Việc này được thực hiện bằng cách in ra một đối tượng JSON với thuộc tính `xy` được đặt thành `1` (cho biết phiên bản [Giao thức Dây truyền tin PTOps](xywp.md)), và thuộc tính `code` được đặt thành `0` biểu thị thành công. Bạn cần đảm bảo JSON được nén thành một dòng duy nhất, và kết thúc bằng một ký tự xuống dòng EOL đơn (`\n` trên Unix). Ví dụ:
 
 ```json
 { "xy": 1, "code": 0 }
 ```
 
-This tells xyOps that the job was completed successfully, and your process is about to exit.  However, if the job failed and you need to report an error, you need to set the `code` property set to any non-zero error code you want, and add a `description` property set to a custom error string.  Include these along with the `xy` property in the JSON.  Example:
+Điều này thông báo cho PTOps biết rằng job đã hoàn thành thành công, và tiến trình của bạn chuẩn bị thoát. Tuy nhiên, nếu job thất bại và bạn cần báo cáo lỗi, bạn cần đặt thuộc tính `code` thành bất kỳ mã lỗi khác không nào bạn muốn, và thêm thuộc tính `description` chứa một chuỗi thông báo lỗi tùy chỉnh. Đưa các thuộc tính này cùng với thuộc tính `xy` vào JSON. Ví dụ:
 
 ```json
 { "xy": 1, "code": 999, "description": "Failed to connect to database." }
 ```
 
-Your error code and description will be displayed on the Job Details page in the UI, and in any e-mail notifications and/or web hooks sent out for the event completion.  The error code can be a number or a string.
+Mã lỗi và phần mô tả của bạn sẽ được hiển thị trên trang Chi tiết Job trong UI, và trong bất kỳ thông báo email và/hoặc web hook nào được gửi đi khi event hoàn thành. Mã lỗi có thể là một số hoặc một chuỗi.
 
-If your Plugin writes anything other than JSON to STDOUT (or STDERR), or it is missing the `xy` property, it is automatically appended to your log file as text.  This is so you don't have to worry about using existing code or utilities that may emit some kind of JSON output.  xyOps is very forgiving in this regard.
+Nếu Plugin của bạn ghi bất kỳ nội dung nào khác ngoài JSON ra STDOUT (hoặc STDERR), hoặc nó bị thiếu thuộc tính `xy`, nội dung đó sẽ được tự động thêm vào file log của bạn dưới dạng văn bản thuần. Nhờ đó, bạn không phải lo lắng về việc sử dụng mã nguồn hoặc các tiện ích hiện có vốn có thể phát ra các định dạng JSON khác. PTOps rất linh hoạt về khía cạnh này.
 
-Please note that the once you send a JSON line containing the `code` property, xyOps will consider your job completed, and *not process any further JSON updates from your Plugin*.  So make sure it is the **last** JSON line you send for a job.
+Xin lưu ý rằng khi bạn gửi một dòng JSON chứa thuộc tính `code`, PTOps sẽ coi job của bạn đã hoàn thành, và *sẽ không xử lý thêm bất kỳ cập nhật JSON nào từ Plugin của bạn*. Vì vậy, hãy đảm bảo đó là dòng JSON **cuối cùng** bạn gửi cho một job.
 
-##### Progress
+##### Tiến Độ
 
-In addition to reporting success or failure at the end of a job, you can also optionally report progress at custom intervals while your job is running.  This is how xyOps can display its visual progress meter in the UI, as well as calculate the estimated time remaining.  To update the progress of a job, simply print a JSON document with a `xy` property set to `1`, and a `progress` property, set to a number between `0.0` and `1.0`.  Example:
+Bên cạnh việc báo cáo thành công hay thất bại ở cuối job, bạn cũng có thể tùy chọn báo cáo tiến độ tại các khoảng thời gian tùy chỉnh trong khi job đang chạy. Từ đó, PTOps có thể hiển thị thanh đo tiến độ trực quan trong UI, cũng như tính toán thời gian còn lại ước tính. Để cập nhật tiến độ của một job, chỉ cần in một tài liệu JSON với thuộc tính `xy` được đặt thành `1`, và thuộc tính `progress` được đặt thành một số trong khoảng từ `0.0` đến `1.0`. Ví dụ:
 
 ```json
 { "xy": 1, "progress": 0.5 }
 ```
 
-This would show progress at 50% completion, and automatically calculate the estimated time remaining based on the duration and progress so far.  You can repeat this as often as you like, with as granular progress as you can provide.  Note that the estimated time remaining is a "best guess effort", and is more accurate if your job progresses in a "linear" fashion, with regular progress updates.
+Điều này sẽ hiển thị tiến độ ở mức hoàn thành 50%, và tự động tính toán thời gian còn lại ước tính dựa trên khoảng thời gian chạy và tiến độ đạt được cho đến thời điểm đó. Bạn có thể lặp lại việc này thường xuyên tùy thích, với mức tiến độ chi tiết nhất bạn có thể cung cấp. Lưu ý rằng thời gian còn lại ước tính là một "dự đoán tốt nhất", và sẽ chính xác hơn nếu job của bạn tiến triển theo kiểu "tuyến tính", với các cập nhật tiến độ thường xuyên.
 
 > [!IMPORTANT]
-> Beware of STDIO output buffering which many languages enable by default.  This may delay your progress updates (not to mention other output), unless you set it to auto-flush on every write.  See your specific language documentation for details.
+> Hãy lưu ý về hiện tượng đệm (buffering) đầu ra STDIO mà nhiều ngôn ngữ bật theo mặc định. Điều này có thể làm chậm trễ các cập nhật tiến độ của bạn (chưa kể đến các đầu ra khác), trừ khi bạn thiết lập tự động flush sau mỗi lần ghi. Hãy xem tài liệu ngôn ngữ cụ thể của bạn để biết chi tiết.
 
-##### Status
+##### Trạng Thái
 
-In addition to [indicating job progress](#progress), you can also set a "status" string, which is displayed on the live job details page during a job run.  Similar to the progress indicator, you can update this as often as you like, for e.g. to report which phase of a job you are in.  To set the job status, simply print a JSON document with a `xy` property set to `1`, and a `status` property set to any string you want.  Example:
+Bên cạnh việc [cho biết tiến độ job](#tien-do), bạn cũng có thể thiết lập một chuỗi "trạng thái" (status), vốn được hiển thị trên trang chi tiết job trực tiếp khi job đang chạy. Tương tự như chỉ báo tiến độ, bạn có thể cập nhật thông tin này thường xuyên tùy thích, ví dụ để báo cáo bạn đang ở giai đoạn nào của job. Để thiết lập trạng thái job, chỉ cần in một tài liệu JSON với thuộc tính `xy` được đặt thành `1`, và thuộc tính `status` được đặt thành bất kỳ chuỗi nào bạn muốn. Ví dụ:
 
 ```json
 { "xy": 1, "status": "Processing client report..." }
 ```
 
-You can combine this with progress (and any other job updates too):
+Bạn có thể kết hợp thuộc tính này với tiến độ (và bất kỳ cập nhật job nào khác):
 
 ```json
 { "xy": 1, "progress": 0.5, "status": "Processing file 34 of 68..." }
 ```
 
-Note that the status string is *only* displayed during a live job run, and not after the job completes.  It is shown just under the progress bar, replacing the summary box title heading.
+Lưu ý rằng chuỗi trạng thái *chỉ* được hiển thị khi job đang chạy trực tiếp, chứ không hiển thị sau khi job hoàn thành. Nó hiển thị ngay dưới thanh tiến độ, thay thế tiêu đề của hộp tóm tắt.
 
-##### Perf Metrics
+##### Số Liệu Hiệu Năng
 
-You can optionally include performance metrics at the end of a job, which are displayed as a pie chart on the Job Details page.  These metrics can consist of any categories you like, and the JSON format is a simple `perf` object where the values represent the amount of time spent in seconds.  Example:
+Bạn có thể tùy chọn đưa các số liệu hiệu năng vào cuối job, chúng sẽ hiển thị dưới dạng một biểu đồ hình tròn trên trang Chi tiết Job. Các số liệu này có thể bao gồm bất kỳ danh mục nào bạn thích, và định dạng JSON là một đối tượng `perf` đơn giản nơi các giá trị đại diện cho lượng thời gian tiêu hao tính bằng giây. Ví dụ:
 
 ```json
 { "xy": 1, "perf": { "db": 18.51, "http": 3.22, "gzip": 0.84 } }
 ```
 
-The perf keys can be anything you want.  They are just arbitrary categories you can make up, which represent how your Plugin spent its time during the job.
+Các key perf có thể là bất kỳ thứ gì bạn muốn. Chúng chỉ là các danh mục tùy ý bạn tự tạo ra, đại diện cho việc Plugin của bạn đã tiêu tốn thời gian như thế nào trong suốt job.
 
-xyOps accepts a number of different formats for the perf metrics, to accommodate various performance tracking libraries.  For example, you can provide the metrics in query string format, like this:
+PTOps chấp nhận một số định dạng khác nhau cho các số liệu hiệu năng, để thích ứng với các thư viện theo dõi hiệu năng khác nhau. Ví dụ: bạn có thể cung cấp số liệu ở định dạng query string, như thế này:
 
 ```json
 { "xy":1, "perf": "db=18.51&http=3.22&gzip=0.84" }
 ```
 
-If your metrics include a `total` (or `t`) in addition to other metrics, this is assumed to represent the total time, and will automatically be excluded from the pie chart (but included in the performance history graph).
+Nếu số liệu của bạn bao gồm một thuộc tính `total` (hoặc `t`) bên cạnh các số liệu khác, thuộc tính này được giả định đại diện cho tổng thời gian, và sẽ tự động được loại trừ khỏi biểu đồ hình tròn (nhưng được bao gồm trong biểu đồ lịch sử hiệu năng).
 
-If you track metrics in units other than seconds, you can provide the `scale`.  For example, if your metrics are all in milliseconds, just set the `scale` property to `1000`.  Example:
+Nếu bạn theo dõi các số liệu bằng các đơn vị khác ngoài giây, bạn có thể cung cấp thuộc tính `scale`. Ví dụ: nếu tất cả số liệu của bạn đều tính bằng mili giây, chỉ cần đặt thuộc tính `scale` thành `1000`. Ví dụ:
 
 ```json
 { "xy": 1, "perf": { "scale": 1000, "db": 1851, "http": 3220, "gzip": 840 } }
 ```
 
-The slightly more complex format produced by our own [pixl-perf](https://www.npmjs.com/package/pixl-perf) library is also supported.
+Định dạng hơi phức tạp hơn một chút được tạo ra bởi thư viện [pixl-perf](https://www.npmjs.com/package/pixl-perf) của riêng chúng tôi cũng được hỗ trợ.
 
-##### Custom Content
+##### Nội Dung Tùy Chỉnh
 
-If your Plugin produces statistics or other tabular data, you can have xyOps render this into a table on the Job Details page.  You can do this during or at the end of a job run.  Simply print a JSON object with a property named `table`, containing the following keys:
+Nếu Plugin của bạn tạo ra các số liệu thống kê hoặc dữ liệu dạng bảng khác, bạn có thể để PTOps render nội dung này thành một bảng trên trang Chi tiết Job. Bạn có thể thực hiện việc này trong hoặc vào cuối một lượt chạy job. Chỉ cần in một đối tượng JSON với thuộc tính có tên là `table`, chứa các key sau:
 
-| Property Name | Description |
+| Tên Thuộc Tính | Mô tả |
 |---------------|-------------|
-| `title` | Optional title displayed above the table, defaults to "Job Data Table". |
-| `header` | Optional array of header columns, displayed in shaded bold above the main data rows. |
-| `rows` | **Required** array of rows, with each one being its own inner array of column values. |
-| `caption` | Optional caption to show under the table (centered, small gray text). |
+| `title` | Tiêu đề tùy chọn hiển thị phía trên bảng, mặc định là "Job Data Table". |
+| `header` | Mảng tùy chọn các cột tiêu đề, hiển thị dạng in đậm có bóng phía trên các dòng dữ liệu chính. |
+| `rows` | **Bắt buộc** mảng các hàng, với mỗi hàng là một mảng bên trong chứa các giá trị cột. |
+| `caption` | Chú thích tùy chọn hiển thị dưới bảng (văn bản màu xám nhỏ, căn giữa). |
 
-Here is an example data table.  Note that this has been expanded for documentation purposes, but in practice your JSON needs to be compacted onto a single line when printed to STDOUT.
+Dưới đây là một ví dụ bảng dữ liệu. Lưu ý rằng bảng này đã được mở rộng để phục vụ mục đích tài liệu, nhưng trong thực tế JSON của bạn cần được nén trên một dòng duy nhất khi in ra STDOUT.
 
 ```json
 {
@@ -283,15 +283,15 @@ Here is an example data table.  Note that this has been expanded for documentati
 }
 ```
 
-If you would prefer to generate your own custom HTML content from your Plugin code, and just have it rendered into the Job Details page, you can do that as well.  Simply print a JSON object with a property named `html`, containing the following keys:
+Nếu bạn muốn tạo nội dung HTML tùy chỉnh của riêng mình từ mã Plugin, và hiển thị nó trong trang Chi tiết Job, bạn cũng có thể làm được điều đó. Chỉ cần in một đối tượng JSON với thuộc tính có tên là `html`, chứa các key sau:
 
-| Property Name | Description |
+| Tên Thuộc Tính | Mô tả |
 |---------------|-------------|
-| `title` | Optional title displayed above the section, defaults to "Job Custom Data". |
-| `content` | **Required** Raw HTML content to render into the page. |
-| `caption` | Optional caption to show under your HTML (centered, small gray text). |
+| `title` | Tiêu đề tùy chọn hiển thị phía trên phần nội dung, mặc định là "Job Custom Data". |
+| `content` | **Bắt buộc** Nội dung HTML thô để render vào trang. |
+| `caption` | Chú thích tùy chọn hiển thị dưới phần HTML của bạn (văn bản màu xám nhỏ, căn giữa). |
 
-Here is an example HTML report.  Note that this has been expanded for documentation purposes, but in practice your JSON needs to be compacted onto a single line when printed to STDOUT.
+Dưới đây là một ví dụ báo cáo HTML. Lưu ý rằng báo cáo này đã được mở rộng để phục vụ mục đích tài liệu, nhưng trong thực tế JSON của bạn cần được nén trên một dòng duy nhất khi in ra STDOUT.
 
 ```json
 {
@@ -304,9 +304,9 @@ Here is an example HTML report.  Note that this has been expanded for documentat
 }
 ```
 
-Note that only basic HTML elements are allowed here, in order to prevent XSS attacks.  See `sanitize_html_config` in the `/opt/xyops/internal/ui.json` file for the full list of allowed tags.
+Lưu ý rằng chỉ các phần tử HTML cơ bản được phép ở đây nhằm ngăn chặn các cuộc tấn công XSS. Xem `sanitize_html_config` trong file `/opt/xyops/internal/ui.json` để biết danh sách đầy đủ các tag được cho phép.
 
-If your Plugin generates plain text instead of HTML, you can change `html` to `text`, which will preserve formatting such as whitespace.  Example:
+Nếu Plugin của bạn tạo ra văn bản thuần (plain text) thay vì HTML, bạn có thể đổi thuộc tính `html` thành `text`, việc này sẽ bảo toàn định dạng như khoảng trắng. Ví dụ:
 
 ```json
 {
@@ -319,7 +319,7 @@ If your Plugin generates plain text instead of HTML, you can change `html` to `t
 }
 ```
 
-Similarly, if your Plugin generates markdown, you can include that instead of HTML or text:
+Tương tự, nếu Plugin của bạn tạo ra định dạng markdown, bạn có thể đưa nó vào thay vì HTML hoặc text:
 
 ```json
 {
@@ -332,23 +332,23 @@ Similarly, if your Plugin generates markdown, you can include that instead of HT
 }
 ```
 
-Note that only one of `html`, `text` or `markdown` output is allowed per job (text and markdown are rendered down to HTML).
+Lưu ý rằng chỉ một trong số các loại đầu ra `html`, `text` hoặc `markdown` được phép cho mỗi job (text và markdown được render lại thành HTML).
 
-##### Job Labels
+##### Nhãn Job
 
-Your can optionally add custom labels to your jobs, which will be displayed on the completed job history pages alongside the Job IDs.  This is useful if you launch jobs with custom parameters, and need to differentiate them in the completed list.
+Bạn có thể tùy chọn thêm các nhãn tùy chỉnh vào các job của mình, chúng sẽ được hiển thị trên các trang lịch sử job đã hoàn thành bên cạnh các Job ID. Điều này hữu ích nếu bạn khởi chạy các job với các tham số tùy chỉnh, và cần phân biệt chúng trong danh sách đã hoàn thành.
 
-To set the label for a job, simply include a `label` property in your Plugin's JSON output, set to any string you want.  Example:
+Để thiết lập nhãn cho một job, chỉ cần đưa một thuộc tính `label` vào JSON đầu ra của Plugin của bạn, được đặt thành bất kỳ chuỗi nào bạn muốn. Ví dụ:
 
 ```json
 { "xy": 1, "label": "Reindex Database" }
 ```
 
-This would cause the "Reindex Database" label to be displayed alongside the Job ID.
+Điều này sẽ khiến nhãn "Reindex Database" hiển thị bên cạnh Job ID.
 
-##### Output Data
+##### Dữ Liệu Đầu Ra
 
-To include arbitrary data output from your job, which will be automatically passed to the next job (via workflow node connection or run event action), use this message format:
+Để đưa đầu ra dữ liệu tùy ý từ job của bạn, vốn sẽ được chuyển tự động tới job tiếp theo (qua kết nối node workflow hoặc action run event), hãy sử dụng định dạng tin nhắn này:
 
 ```json
 {
@@ -363,25 +363,25 @@ To include arbitrary data output from your job, which will be automatically pass
 }
 ```
 
-The format of the `data` object is freeform, and can contain whatever content you want.  Note that the above example is pretty-printed for display, but in practice all messages must be sent as single lines, so remember to compact your JSON when serializing it.
+Định dạng của đối tượng `data` là tự do, và có thể chứa bất kỳ nội dung nào bạn muốn. Lưu ý rằng ví dụ trên được in đẹp để hiển thị, nhưng trong thực tế tất cả các tin nhắn phải được gửi dưới dạng các dòng đơn, vì vậy hãy nhớ nén JSON của bạn khi tuần tự hóa (serialize) nó.
 
-Note that if you send multiple messages containing `data` within the same job, the top-level data object properties are shallow-merged (the latter prevails on duplicate keys).  Using this you can add data incrementally during a job run.  Additionally, if you are overwriting a top-level array with another array, it will be *concatenated* instead of replaced.  Example:
+Lưu ý rằng nếu bạn gửi nhiều tin nhắn chứa `data` trong cùng một job, các thuộc tính của đối tượng data cấp cao nhất sẽ được shallow-merge (trộn nông - giá trị sau sẽ ghi đè lên giá trị trước đối với các key bị trùng). Sử dụng tính năng này, bạn có thể thêm dữ liệu dần dần trong suốt quá trình chạy job. Ngoài ra, nếu bạn ghi đè lên một mảng cấp cao nhất bằng một mảng khác, nó sẽ được *nối tiếp* (concatenate) thay vì bị thay thế. Ví dụ:
 
 ```json
 { "xy": 1, "data": { "arr": [0, 1, 2] } }
 ```
 
-Then later, in the same job:
+Sau đó, trong cùng job đó:
 
 ```json
 { "xy": 1, "data": { "arr": [3, 4, 5] } }
 ```
 
-This would end up with `[0, 1, 2, 3, 4, 5]` in the final `arr` data array when the job completes.
+Điều này sẽ dẫn đến kết quả `[0, 1, 2, 3, 4, 5]` trong mảng dữ liệu `arr` cuối cùng khi job hoàn thành.
 
-##### Output Files
+##### File Đầu Ra
 
-To upload files as part of your job output, you can simply tell xyOps where they are on disk.  When your job completes, the files will be attached and uploaded with the job data, and displayed in the UI.  They will also be passed to the next job if applicable (via workflow node connection or run event action).  Here is an example:
+Để tải lên các file như một phần đầu ra job của bạn, bạn chỉ cần báo cho PTOps biết chúng nằm ở đâu trên đĩa. Khi job của bạn hoàn thành, các file sẽ được đính kèm và tải lên cùng với dữ liệu job, và hiển thị trong UI. Chúng cũng sẽ được chuyển đến job tiếp theo nếu có (qua kết nối node workflow hoặc action run event). Dưới đây là một ví dụ:
 
 ```json
 {
@@ -393,7 +393,7 @@ To upload files as part of your job output, you can simply tell xyOps where they
 }
 ```
 
-You don't actually have to name each file.  You can instead specify a wildcard (glob pattern) which may match multiple files:
+Bạn không nhất thiết phải đặt tên cụ thể cho từng file. Thay vào đó, bạn có thể chỉ định một ký tự đại diện (glob pattern) vốn có thể khớp với nhiều file:
 
 ```json
 {
@@ -402,7 +402,7 @@ You don't actually have to name each file.  You can instead specify a wildcard (
 }
 ```
 
-If the files are located in the current working directory (your job's unique temp directory), you can omit the leading path and just include filename(s):
+Nếu các file nằm trong thư mục làm việc hiện tại (thư mục tạm duy nhất của job của bạn), bạn có thể bỏ qua đường dẫn dẫn đầu và chỉ cần đưa vào (các) tên file:
 
 ```json
 {
@@ -411,7 +411,7 @@ If the files are located in the current working directory (your job's unique tem
 }
 ```
 
-If you want to have xyOps delete the files for you after uploading, specify an object inside the files array, with `path` and `delete` properties.  Example:
+Nếu bạn muốn PTOps xóa các file cho bạn sau khi tải lên, hãy chỉ định một đối tượng bên trong mảng files, chứa các thuộc tính `path` và `delete`. Ví dụ:
 
 ```json
 {
@@ -422,11 +422,11 @@ If you want to have xyOps delete the files for you after uploading, specify an o
 }
 ```
 
-Note that if you send multiple messages with `files` properties, the previous list is overwritten (i.e. the latter prevails).
+Lưu ý rằng nếu bạn gửi nhiều tin nhắn có thuộc tính `files`, danh sách trước đó sẽ bị ghi đè (tức là giá trị sau sẽ thắng).
 
-##### Tags
+##### Tag
 
-To **add** tags to the current job, use the following "push" message format:
+Để **thêm** các tag vào job hiện tại, hãy sử dụng định dạng tin nhắn "push" sau:
 
 ```json
 {
@@ -437,11 +437,11 @@ To **add** tags to the current job, use the following "push" message format:
 }
 ```
 
-The `push` object is used here to instruct xyOps to "push" (append) tags onto the existing set (you cannot replace or delete tags).  The tags themselves should be valid [Tag.id](data.md#tag-id)s, and duplicates are automatically removed.
+Đối tượng `push` được sử dụng ở đây để chỉ thị cho PTOps "push" (thêm vào cuối) các tag vào tập hợp hiện có (bạn không thể thay thế hoặc xóa các tag). Bản thân các tag phải là các [Tag.id](data.md#tag-id) hợp lệ, và các tag trùng lặp sẽ tự động bị loại bỏ.
 
-##### Actions
+##### Action
 
-To **add** actions to the current job, use the following "push" message format.  This example would send an email to a specific address when the job completes:
+Để **thêm** các action vào job hiện tại, hãy sử dụng định dạng tin nhắn "push" sau. Ví dụ này sẽ gửi một email tới một địa chỉ cụ thể khi job hoàn thành:
 
 ```json
 {
@@ -454,7 +454,7 @@ To **add** actions to the current job, use the following "push" message format. 
 }
 ```
 
-Here is another example which will launch a subsequent job when the current job completes successfully:
+Dưới đây là một ví dụ khác sẽ khởi chạy một job tiếp theo khi job hiện tại hoàn thành thành công:
 
 ```json
 {
@@ -467,11 +467,11 @@ Here is another example which will launch a subsequent job when the current job 
 }
 ```
 
-The `push` object is used here to instruct xyOps to "push" (append) actions onto the existing set (you cannot replace or delete actions).  See [Action Types](actions.md#action-types) for all the possible action objects you can add here.
+Đối tượng `push` được sử dụng ở đây để chỉ thị cho PTOps "push" (thêm vào cuối) các action vào tập hợp hiện có (bạn không thể thay thế hoặc xóa các action). Xem [Các Loại Action](actions.md#các-loại-action) để biết tất cả các đối tượng action khả thi bạn có thể thêm ở đây.
 
-##### Server Data
+##### Dữ Liệu Server
 
-To update the [Server User Data](servers.md#user-data) for the current server from inside a running job, use the following output format:
+Để cập nhật [Dữ Liệu Người Dùng Server](servers.md#user-data) cho server hiện tại từ bên trong một job đang chạy, hãy sử dụng định dạng đầu ra sau:
 
 ```json
 {
@@ -482,13 +482,13 @@ To update the [Server User Data](servers.md#user-data) for the current server fr
 }
 ```
 
-Note that the server data is shallow-merged, so you can specify a sparsely-populated object and it will only add / replace the included top-level properties.  If your job outputs multiple messages with `serverData` they are all shallow-merged together (the latter prevails on duplicate keys).
+Lưu ý rằng dữ liệu server được trộn nông (shallow-merged), vì vậy bạn có thể chỉ định một đối tượng chứa ít thuộc tính và nó sẽ chỉ thêm / thay thế các thuộc tính cấp cao nhất được đưa vào. Nếu job của bạn xuất ra nhiều tin nhắn chứa `serverData`, tất cả chúng sẽ được shallow-merge lại với nhau (giá trị sau sẽ ghi đè lên các key trùng lặp).
 
-The server user data is only updated when the job completes.  If you need to update the server data *immediately* during a job, use the [update_server_data](api.md#update_server_data) API instead.
+Dữ liệu người dùng của server chỉ được cập nhật khi job hoàn thành. Nếu bạn cần cập nhật dữ liệu server *ngay lập tức* trong suốt job, hãy sử dụng API [update_server_data](api.md#update_server_data) thay thế.
 
-##### Workflow Data
+##### Dữ Liệu Workflow
 
-To update the [Workflow Data](workflows.md#sharing-data-between-all-nodes) for the current workflow from inside a running job, use the following output format:
+Để cập nhật [Dữ Liệu Workflow](workflows.md#sharing-data-between-all-nodes) cho workflow hiện tại từ bên trong một job đang chạy, hãy sử dụng định dạng đầu ra sau:
 
 ```json
 {
@@ -499,37 +499,37 @@ To update the [Workflow Data](workflows.md#sharing-data-between-all-nodes) for t
 }
 ```
 
-Note that the workflow data is shallow-merged, so you can specify a sparsely-populated object and it will only add / replace the included top-level properties.  If your job outputs multiple messages with `workflowData` they are all shallow-merged together.  Additionally, top-level arrays are concatenated when merging.
+Lưu ý rằng dữ liệu workflow được trộn nông (shallow-merged), vì vậy bạn có thể chỉ định một đối tượng chứa ít thuộc tính và nó sẽ chỉ thêm / thay thế các thuộc tính cấp cao nhất được đưa vào. Nếu job của bạn xuất ra nhiều tin nhắn chứa `workflowData`, tất cả chúng sẽ được shallow-merge lại với nhau. Ngoài ra, các mảng cấp cao nhất được nối tiếp khi merge.
 
-The workflow data is only updated in the parent workflow when the sub-job completes.
+Dữ liệu workflow chỉ được cập nhật trong workflow cha khi sub-job hoàn thành.
 
 ### Action Plugins
 
-Action Plugins are designed for custom actions that take place in response to jobs starting, completing, or completing with specific result codes (e.g. success, error, warning, critical, etc.).  They can also run in response to alerts firing or clearing.  You can already assign a number of [built-in actions](actions.md) including sending an email, firing a web hook, launching an event, taking a server snapshot, and more.  But with Plugins you can write your own actions that do anything you want.  They can even be configured to accept a custom set of parameters that are configured by the user in the UI.
+Action Plugins được thiết kế cho các hành động tùy chỉnh diễn ra để phản hồi các job đang bắt đầu, hoàn thành, hoặc hoàn thành với các mã kết quả cụ thể (ví dụ: thành công, lỗi, cảnh báo, nghiêm trọng, v.v.). Chúng cũng có thể chạy để phản hồi các alert đang kích hoạt hoặc đang xóa bỏ. Bạn đã có thể gán một số [action tích hợp sẵn](actions.md) bao gồm gửi email, kích hoạt web hook, khởi chạy event, chụp snapshot server, v.v. Nhưng với các Plugin, bạn có thể tự viết các action của riêng mình để làm bất kỳ điều gì bạn muốn. Chúng thậm chí có thể được cấu hình để chấp nhận một tập hợp các tham số tùy chỉnh do người dùng cấu hình trong UI.
 
-Action Plugins run *on the primary conductor server*, as they are part of the core engine.  However, you can still write them in any language, as they are spawned as a child subprocess, and communication API is JSON over STDIO.  To create an Action Plugin, navigate to the **Plugins** page, and click the **New Plugin** button.  For the Plugin type, select "Action Plugin".
+Action Plugins chạy *trên server conductor chính*, vì chúng là một phần của engine cốt lõi. Tuy nhiên, bạn vẫn có thể viết chúng bằng bất kỳ ngôn ngữ nào, vì chúng được sinh ra dưới dạng các tiến trình con phụ (subprocesses), và API truyền thông là JSON qua STDIO. Để tạo một Action Plugin, hãy điều hướng đến trang **Plugins**, và nhấp vào nút **New Plugin**. Đối với loại Plugin, chọn "Action Plugin".
 
 #### Action Parameters
 
-As with most other Plugin types, you can define custom parameters for Action Plugins.  These can be text fields, text boxes, code editors, select menus, checkboxes, or toolsets.  The user can then fill these out when they are editing the event or alert, and they are passed to the Plugin when the action fires.  See [Plugin Parameters](#plugin-parameters) below for more details.
+Giống như hầu hết các loại Plugin khác, bạn có thể định nghĩa các tham số tùy chỉnh cho Action Plugins. Chúng có thể là các trường văn bản, hộp văn bản, trình biên tập code, menu chọn, hộp kiểm, hoặc bộ công cụ. Người dùng có thể điền thông tin này khi họ chỉnh sửa event hoặc alert, và chúng sẽ được truyền tới Plugin khi action kích hoạt. Xem [Tham Số Plugin](#tham-so-plugin) bên dưới để biết thêm chi tiết.
 
 #### Action Input
 
-When Action Plugins are invoked, they are passed a JSON document on STDIN (compressed to a single line).  The following top-level properties will be present in the object:
+Khi các Action Plugins được gọi, chúng được truyền một tài liệu JSON trên STDIN (được nén thành một dòng duy nhất). Các thuộc tính cấp cao nhất sau đây sẽ xuất hiện trong đối tượng:
 
-| Property Name | Type | Description |
+| Tên Thuộc Tính | Loại | Mô Tả |
 |---------------|------|-------------|
-| `xy` | Number | Indicates the [xyOps Wire Protocol](xywp.md) version.  Will be set to `1`. |
-| `type` | String | The [Plugin.type](data.md#plugin-type), which will be set to `action`. |
-| `condition` | String | The [Action.condition](data.md#action-condition) which activated the Plugin. |
-| `params` | Object | If the Plugin defines any parameters, their values will be here. |
-| `secrets` | Object | If the Plugin is assigned any [Secrets](secrets.md), they are included here (as well as in environment variables). |
-| `base_url` | String | A localhost base URL is provided in case your Plugin needs to make any xyOps API calls. |
-| (Other) | Various | Based on context; see below. |
+| `xy` | Number | Cho biết phiên bản [Giao thức Dây truyền tin PTOps](xywp.md). Sẽ được đặt thành `1`. |
+| `type` | String | Thuộc tính [Plugin.type](data.md#plugin-type), sẽ được đặt thành `action`. |
+| `condition` | String | Thuộc tính [Action.condition](data.md#action-condition) đã kích hoạt Plugin. |
+| `params` | Object | Nếu Plugin định nghĩa bất kỳ tham số nào, giá trị của chúng sẽ ở đây. |
+| `secrets` | Object | Nếu Plugin được gán bất kỳ [Secret](secrets.md) nào, chúng sẽ được bao gồm ở đây (cũng như trong các biến môi trường). |
+| `base_url` | String | Một localhost base URL được cung cấp trong trường hợp Plugin của bạn cần thực hiện bất kỳ lệnh gọi API nào tới PTOps. |
+| (Khác) | Nhiều loại | Dựa trên ngữ cảnh; xem bên dưới. |
 
-If the Action Plugin is being invoked in job-related context (i.e. on job start, job complete, or other job actions) the contents of [JobHookData](data.md#jobhookdata) will also be merged in at the top-level.  Similarly, if the plugin is being invoked in an alert-related context (alert fired or cleared), then the contents of [AlertHookData](data.md#alerthookdata) will be merged in.
+Nếu Action Plugin đang được gọi trong ngữ cảnh liên quan đến job (tức là khi job bắt đầu, job hoàn thành, hoặc các action khác của job), nội dung của [JobHookData](data.md#jobhookdata) cũng sẽ được merge ở cấp cao nhất. Tương tự, nếu plugin đang được gọi trong ngữ cảnh liên quan đến alert (alert được kích hoạt hoặc xóa bỏ), thì nội dung của [AlertHookData](data.md#alerthookdata) sẽ được merge.
 
-Here is an example JSON document sent to an Action Plugin's STDIN as part of a job completion:
+Dưới đây là một ví dụ tài liệu JSON được gửi đến STDIN của một Action Plugin như một phần của quá trình hoàn thành job:
 
 ```json
 {
@@ -551,29 +551,23 @@ Here is an example JSON document sent to an Action Plugin's STDIN as part of a j
 		"description": "",
 		"completed": 1763151180.219,
 		"elapsed": 0.701
-		/* See Job data structure for more */
 	},
 	"action": {
 		"type": "plugin",
 		"condition": "success",
-		"plugin_id": "pmhzan6voso",
-		/* See Action data structure for more */
+		"plugin_id": "pmhzan6voso"
 	},
 	"event": {
-		"id": "emhzaoispta",
-		/* See Event data structure for more */
+		"id": "emhzaoispta"
 	},
 	"plugin": {
-		"id": "shellplug",
-		/* See Plugin data structure for more */
+		"id": "shellplug"
 	},
 	"category": {
-		"id": "general",
-		/* See Category data structure for more */
+		"id": "general"
 	},
 	"server": {
-		"id": "smf4j79snhe",
-		/* See Server data structure for more */
+		"id": "smf4j79snhe"
 	},
 	"nice_server": "raspberrypi",
 	"nice_hostname": "raspberrypi",
@@ -589,13 +583,13 @@ Here is an example JSON document sent to an Action Plugin's STDIN as part of a j
 		"mem": "47.4 MB (Peak: 47.4 MB)",
 		"cpu": "28% (Peak: 28%)"
 	},
-	"text": "xyOps Job completed successfully on raspberrypi: Run Custom Action: https://local.xyops.io:5523/#Job?id=jmhzaot10tm"
+	"text": "PTOps Job completed successfully on raspberrypi: Run Custom Action: https://local.xyops.io:5523/#Job?id=jmhzaot10tm"
 }
 ```
 
-See [JobHookData](data.md#jobhookdata) for more details on these properties.
+Xem [JobHookData](data.md#jobhookdata) để biết thêm chi tiết về các thuộc tính này.
 
-And here is an example JSON document sent to an Action Plugin's STDIN as part of a new alert triggering:
+Và đây là một ví dụ tài liệu JSON được gửi đến STDIN của một Action Plugin như một phần của việc kích hoạt alert mới:
 
 ```json
 {
@@ -603,8 +597,7 @@ And here is an example JSON document sent to an Action Plugin's STDIN as part of
 	"type": "action",
 	"condition": "alert_new",
 	"alert_def": {
-		"id": "active_jobs_high",
-		/* See Alert data structure for more */
+		"id": "active_jobs_high"
 	},
 	"params": {
 		"foo": "Foosball"
@@ -612,14 +605,12 @@ And here is an example JSON document sent to an Action Plugin's STDIN as part of
 	"secrets": {},
 	"base_url": "http://localhost:5522",
 	"server": {
-		"id": "smf4j79snhe",
-		/* See Server data structure for more */
+		"id": "smf4j79snhe"
 	},
 	"alert": {
 		"id": "amhzbmb6jhw",
 		"exp": "monitors.active_jobs >= 1",
-		"message": "Active job count is too high: 1",
-		/* See AlertInvocation data structure for more */
+		"message": "Active job count is too high: 1"
 	},
 	"active_jobs": [
 		{
@@ -644,15 +635,15 @@ And here is an example JSON document sent to an Action Plugin's STDIN as part of
 		"server_url": "https://local.xyops.io:5523/#Server?id=smf4j79snhe",
 		"alert_url": "https://local.xyops.io:5523/#Alerts?id=amhzbmb6jhw"
 	},
-	"text": "xyOps Alert: raspberrypi: High Active Jobs: n/a: https://local.xyops.io:5523/#Alerts?id=amhzbmb6jhw"
+	"text": "PTOps Alert: raspberrypi: High Active Jobs: n/a: https://local.xyops.io:5523/#Alerts?id=amhzbmb6jhw"
 }
 ```
 
-See [AlertHookData](data.md#alerthookdata) for more details on these properties.
+Xem [AlertHookData](data.md#alerthookdata) để biết thêm chi tiết về các thuộc tính này.
 
 #### Action Output
 
-When your Action Plugin has completed, you can inform xyOps of the result (success or fail), and any additional details you might want to add.  This is done by sending a JSON record out through your process STDOUT.  Similar to the document you received via STDIN, it needs to have a top-level `xy` property set to `1`, a `code` property indicating success or fail, and an optional `description` property:
+Khi Action Plugin của bạn hoàn thành, bạn có thể thông báo cho PTOps về kết quả (thành công hay thất bại), và bất kỳ chi tiết bổ sung nào bạn muốn thêm. Việc này được thực hiện bằng cách gửi một bản ghi JSON ra STDOUT của tiến trình. Tương tự như tài liệu bạn nhận được qua STDIN, nó cần có một thuộc tính `xy` cấp cao nhất được đặt thành `1`, một thuộc tính `code` cho biết thành công hay thất bại, và một thuộc tính `description` tùy chọn:
 
 ```json
 {
@@ -662,29 +653,29 @@ When your Action Plugin has completed, you can inform xyOps of the result (succe
 }
 ```
 
-As with all other xyOps APIs, a code of `0` or `false` indicates success, while any other value means that an error occurred.  You can use the `description` property to pass an optional success or error message.  All this information will be stored with the job or alert, and displayed in the xyOps UI.
+Như các API khác của PTOps, mã `0` hoặc `false` biểu thị thành công, trong khi bất kỳ giá trị nào khác đều có nghĩa là đã xảy ra lỗi. Bạn có thể sử dụng thuộc tính `description` để chuyển tiếp một thông báo thành công hoặc lỗi tùy chọn. Tất cả thông tin này sẽ được lưu trữ cùng với job hoặc alert, và hiển thị trong PTOps UI.
 
-As an advanced tip, you can also include an optional `details` property, which is rendered as Markdown in the details dialog for the action.  This can be useful if your action produces a large amount of output or logs that you want to capture and expose to the user.
+Mẹo nâng cao: bạn cũng có thể đưa vào thuộc tính `details` tùy chọn, thuộc tính này sẽ được render dưới dạng Markdown trong hộp thoại chi tiết cho action. Điều này hữu ích nếu action của bạn tạo ra lượng lớn output hoặc log mà bạn muốn ghi lại và hiển thị cho người dùng.
 
-If your Plugin does not output JSON, no problem.  When no JSON is detected in the output stream, xyOps will assume success or failure based on the process exit code, and display the raw output as plain text, if any.
+Nếu Plugin của bạn không xuất ra JSON thì cũng không sao. Khi không có JSON nào được phát hiện trong luồng output, PTOps sẽ giả định thành công hay thất bại dựa trên mã thoát (exit code) của tiến trình, và hiển thị output thô dưới dạng văn bản thuần nếu có.
 
 ### Trigger Plugins
 
-Trigger Plugins are extensions of the scheduler system, in that they can decide "when" and "if" to launch jobs.  Specifically, if an event uses a trigger plugin, it is consulted *once per scheduled job*, and the Plugin decides whether to launch each assigned job or not.  For example, this can be used for custom timing algorithms like sunrise / sunset, or even watching a directory or S3 prefix for new files to appear.
+Trigger Plugins là các phần mở rộng của hệ thống scheduler, theo nghĩa là chúng có thể quyết định "khi nào" và "liệu có" khởi chạy các job. Cụ thể, nếu một event sử dụng một trigger plugin, nó sẽ được tham vấn *mỗi lượt chạy một job được lập lịch*, và Plugin sẽ quyết định có khởi chạy từng job được chỉ định hay không. Ví dụ: thuộc tính này có thể được sử dụng cho các thuật toán định thời tùy chỉnh như bình minh / hoàng hôn, hoặc thậm chí theo dõi một thư mục hoặc tiền tố S3 để chờ các file mới xuất hiện.
 
-This is a "modifier" trigger, so it needs to be configured in conjunction with a standard schedule trigger.  The schedule sets the cadence and frequency of when the Plugin is launched.
+Đây là một trigger kiểu "bổ nghĩa" (modifier), vì vậy nó cần được cấu hình kết hợp với một trigger schedule tiêu chuẩn. Lịch trình sẽ thiết lập chu kỳ và tần suất khi Plugin được khởi chạy.
 
-Trigger Plugins run *on the primary conductor server*, as they execute before a job is launched and before a server is chosen for it.  However, like the other Plugin types, they are spawned as sub-processes and can be written in virtually any language.  There is no SDK to use -- xyOps communicates with Plugins via simple JSON over STDIO.
+Trigger Plugins chạy *trên server conductor chính*, vì chúng thực thi trước khi một job được khởi chạy và trước khi một server được chọn cho job đó. Tuy nhiên, tương tự như các loại Plugin khác, chúng được sinh ra dưới dạng các tiến trình con và có thể được viết bằng hầu hết mọi ngôn ngữ. Không có SDK nào cần sử dụng -- PTOps giao tiếp với các Plugin qua định dạng JSON đơn giản trên STDIO.
 
-To create a Trigger Plugin, navigate to the **Plugins** page, and click the **New Plugin** button.  For the Plugin type, select "Trigger Plugin".
+Để tạo một Trigger Plugin, hãy điều hướng đến trang **Plugins**, và nhấp vào nút **New Plugin**. Đối với loại Plugin, chọn "Trigger Plugin".
 
 #### Trigger Parameters
 
-As with most other Plugin types, you can define custom parameters for Trigger Plugins.  These can be text fields, text boxes, code editors, select menus or checkboxes.  The user can then fill these out when they are editing the event, and they are passed to the Plugin when deciding to run jobs for that event.
+Giống như hầu hết các loại Plugin khác, bạn có thể định nghĩa các tham số tùy chỉnh cho Trigger Plugins. Chúng có thể là các trường văn bản, hộp văn bản, trình biên tập code, menu chọn hoặc hộp kiểm. Người dùng có thể điền thông tin này khi họ chỉnh sửa event, và chúng sẽ được truyền tới Plugin khi quyết định chạy các job cho event đó.
 
 #### Trigger Input
 
-When your trigger plugin is invoked, it will be passed an array of all the events awaiting a launch decision (i.e. all the events which have added your trigger plugin to them).  A single line of JSON will be passed to your plugin process via STDIN, which looks like this (pretty-printed for display purposes):
+Khi trigger plugin của bạn được gọi, nó sẽ được truyền một mảng chứa tất cả các event đang chờ quyết định khởi chạy (tức là tất cả các event đã thêm trigger plugin của bạn vào đó). Một dòng JSON duy nhất sẽ được chuyển đến tiến trình plugin của bạn qua STDIN, trông tương tự như thế này (được in đẹp để phục vụ mục đích hiển thị):
 
 ```json
 {
@@ -729,40 +720,40 @@ When your trigger plugin is invoked, it will be passed an array of all the event
 }
 ```
 
-As with all xyOps STDIO communication, the JSON will always have a top-level `xy` property set to `1` (the [xyOps Wire Protocol](xywp.md) version), and a `type` property set to `trigger`.  Here is the full list of top-level properties you can expect:
+Giống như tất cả các hoạt động giao tiếp STDIO của PTOps, JSON sẽ luôn có một thuộc tính `xy` cấp cao nhất được đặt thành `1` (phiên bản [Giao thức Dây truyền tin PTOps](xywp.md)), và một thuộc tính `type` được đặt thành `trigger`. Dưới đây là danh sách đầy đủ các thuộc tính cấp cao nhất bạn có thể mong đợi:
 
-| Property Name | Type | Description |
+| Tên Thuộc Tính | Loại | Mô Tả |
 |---------------|------|-------------|
-| `xy` | Number | The [xyOps Wire Protocol](xywp.md) version. |
-| `type` | String | Will always be set to `triger` for Trigger Plugin payloads. |
-| `items` | Array | An array of scheduled events for the plugin to process.  See below for details. |
-| `secrets` | Object | If your plugin was assigned any secrets, they will be passed in this object (and also as environment variables). |
-| `active_jobs` | Array | An array of all active [Job](data.md#job)s currently running. |
-| `base_url` | String | A localhost base URL is provided in case your Plugin needs to make any xyOps API calls. |
+| `xy` | Number | Phiên bản [Giao thức Dây truyền tin PTOps](xywp.md). |
+| `type` | String | Sẽ luôn được đặt thành `trigger` cho các payload của Trigger Plugin. |
+| `items` | Array | Mảng chứa các event được lập lịch để plugin xử lý. Xem chi tiết bên dưới. |
+| `secrets` | Object | Nếu plugin của bạn được gán bất kỳ secret nào, chúng sẽ được chuyển trong đối tượng này (và cũng dưới dạng các biến môi trường). |
+| `active_jobs` | Array | Mảng chứa tất cả các [Job](data.md#job) đang hoạt động hiện tại. |
+| `base_url` | String | Một localhost base URL được cung cấp trong trường hợp Plugin của bạn cần thực hiện bất kỳ cuộc gọi API nào tới PTOps. |
 
-The `items` array will contain an element for each event that is scheduled to launch, and has the plugin assigned as a trigger.  It is up to your plugin code to decide if each event should actually launch a job or not.  You are also provided some other information about the each event:
+Mảng `items` sẽ chứa một phần tử cho mỗi event được lập lịch khởi chạy, và có plugin được gán làm trigger. Quyết định xem mỗi event có thực sự khởi chạy một job hay không là tùy thuộc vào mã nguồn plugin của bạn. Bạn cũng được cung cấp một số thông tin khác về từng event:
 
-| Property Name | Type | Description |
+| Tên Thuộc Tính | Loại | Mô Tả |
 |---------------|------|-------------|
-| `timezone` | String | The currently selected timezone for the event. |
-| `now` | Number | The current time for the potential job launch in Epoch seconds.  Note that this may be in the past, if xyOps is catching up on missed events. |
-| `dargs` | Object | The current date/tme for the job launch, separated out into individual numerical elements, in the event's timezone.  See below for details. |
-| `params` | Object | This object will contain your plugin's own custom defined parameters, filled out by the user at the event level. |
-| `job` | Object | This is a copy of the [Event](data.md#event) object that will be used to launch the job if your plugin decides it should. |
+| `timezone` | String | Múi giờ hiện tại được chọn cho event. |
+| `now` | Number | Thời gian hiện tại cho lần khởi chạy job tiềm năng tính bằng Epoch giây. Lưu ý rằng thời gian này có thể ở quá khứ nếu PTOps đang thực hiện chạy bù các event bị lỡ. |
+| `dargs` | Object | Ngày/giờ hiện tại cho lần khởi chạy job, được phân tách thành các phần tử số riêng lẻ, theo múi giờ của event. Xem chi tiết bên dưới. |
+| `params` | Object | Đối tượng này chứa các tham số tùy chỉnh của riêng plugin của bạn, được người dùng điền ở cấp độ event. |
+| `job` | Object | Bản sao của đối tượng [Event](data.md#event) vốn sẽ được sử dụng để khởi chạy job nếu plugin của bạn quyết định chạy nó. |
 
-Here are descriptions of all the `dargs` date/time properties:
+Dưới đây là mô tả của tất cả các thuộc tính ngày/giờ `dargs`:
 
-| Property Name | Type | Description |
+| Tên Thuộc Tính | Loại | Mô Tả |
 |---------------|------|-------------|
-| `year` | Number | The year as an integer, e.g. `2025`. |
-| `month` | Number | The month number from `1` to `12`. |
-| `day` | Number | The month day from `1` to `31`. |
-| `rday` | Number | The reverse month day (e.g. the last day of the month will be `-1`, the second-to-last day will be `-2`, and so on). |
-| `weekday` | Number | A number representing the day of the week, from `0` (Sunday) to `6` (Saturday). |
-| `hour` | Number | The hour in 24-hour format (from `0` to `23`). |
-| `minute` | Number | The minute number from `0` to `59`. |
+| `year` | Number | Năm dạng số nguyên, ví dụ: `2025`. |
+| `month` | Number | Số tháng từ `1` đến `12`. |
+| `day` | Number | Ngày trong tháng từ `1` đến `31`. |
+| `rday` | Number | Ngày trong tháng tính ngược (ví dụ ngày cuối cùng của tháng sẽ là `-1`, ngày sát cuối sẽ là `-2`, v.v.). |
+| `weekday` | Number | Một số đại diện cho ngày trong tuần, từ `0` (Chủ Nhật) đến `6` (Thứ Bảy). |
+| `hour` | Number | Giờ ở định dạng 24 giờ (từ `0` đến `23`). |
+| `minute` | Number | Số phút từ `0` đến `59`. |
 
-The JSON will be provided to your plugin as a single line on STDIN.  You will need to read and parse the JSON to iterate over the `items` array.  Here is an example in Node.js (but you can use any language you want):
+JSON sẽ được cung cấp cho plugin của bạn dưới dạng một dòng duy nhất trên STDIN. Bạn sẽ cần đọc và phân tích cú pháp JSON để duyệt qua mảng `items`. Dưới đây là một ví dụ bằng Node.js (nhưng bạn có thể sử dụng bất kỳ ngôn ngữ nào mình muốn):
 
 ```js
 // read JSON from STDIN
@@ -777,7 +768,7 @@ data.items.forEach( function(item) {
 
 #### Trigger Output
 
-Once your plugin decides which events should launch jobs (if any), you need to communicate that information back to xyOps.  This is done by sending a JSON record out through your process STDOUT.  Similar to the document you received via STDIN, it needs to have a top-level `xy` property set to `1`, and an `items` array:
+Khi plugin của bạn quyết định event nào nên khởi chạy job (nếu có), bạn cần truyền thông tin đó ngược lại cho PTOps. Việc này được thực hiện bằng cách gửi một bản ghi JSON ra STDOUT của tiến trình. Tương tự như tài liệu bạn nhận được qua STDIN, nó cần có một thuộc tính `xy` cấp cao nhất được đặt thành `1`, và một mảng `items`:
 
 ```json
 {
@@ -786,9 +777,9 @@ Once your plugin decides which events should launch jobs (if any), you need to c
 }
 ```
 
-The `items` array should have the same number of elements as the initial one you received, and each element can be set to a simple Boolean as shown above.  In this case `true` means launch a job for the event, and `false` means do not.  Each item in your output array needs to line up with the corresponding object in the input array, via their indexes.
+Mảng `items` cần có số lượng phần tử tương tự như mảng ban đầu bạn nhận được, và mỗi phần tử có thể được đặt thành một giá trị Boolean đơn giản như hiển thị ở trên. Trong trường hợp này, `true` nghĩa là khởi chạy một job cho event, và `false` nghĩa là không chạy. Mỗi mục trong mảng đầu ra của bạn cần khớp hàng với đối tượng tương ứng trong mảng đầu vào thông qua chỉ số (index) của chúng.
 
-Now, instead of a simple Boolean, the items can also be objects containing a `launch` Boolean (indicating whether to launch a job or not).  This alternate verbose format exists so you can include additional metadata for the launched jobs.  Example:
+Thay vì một Boolean đơn giản, các phần tử cũng có thể là các đối tượng chứa thuộc tính Boolean `launch` (cho biết có khởi chạy job hay không). Định dạng dài chi tiết thay thế này tồn tại để bạn có thể đưa vào siêu dữ liệu bổ sung cho các job được khởi chạy. Ví dụ:
 
 ```json
 {
@@ -809,7 +800,7 @@ Now, instead of a simple Boolean, the items can also be objects containing a `la
 }
 ```
 
-In fact, what you can do instead of constructing a new `items` array for the output, is to modify in place the existing `items` array you received via STDIN (i.e. just add `launch` and other properties directly to it), and then echo the modified object back out via STDOUT.  To illustrate this, here is a silly example that randomly launches jobs based on a 50% probability:
+Thực tế, thay vì xây dựng một mảng `items` mới cho đầu ra, việc bạn có thể làm là sửa đổi trực tiếp mảng `items` hiện có nhận được qua STDIN (tức là chỉ cần thêm `launch` và các thuộc tính khác trực tiếp vào đó), và sau đó echo đối tượng đã sửa đổi ngược lại qua STDOUT. Để minh họa điều này, dưới đây là một ví dụ vui hiển thị việc khởi chạy ngẫu nhiên các job dựa trên xác suất 50%:
 
 ```js
 // read JSON from STDIN
@@ -826,11 +817,11 @@ data.items.forEach( function(item) {
 process.stdout.write( JSON.stringify(data) + "\n" );
 ```
 
-Obviously your plugin will do something more useful than this, but you get the idea.  See the following sections to learn what else you can include in the `items` array elements.
+Rõ ràng plugin của bạn sẽ thực hiện điều gì đó hữu ích hơn thế này, nhưng bạn đã hiểu ý tưởng. Hãy xem các phần sau để tìm hiểu xem bạn có thể đưa thêm những gì vào các phần tử của mảng `items`.
 
-##### Trigger Data
+##### Dữ Liệu Trigger
 
-When your trigger plugin decides to launch a job, you can optionally include arbitrary data that will be passed to it.  This is done by including a `data` object inside the item element, alongside the `launch` boolean.  Example:
+Khi trigger plugin của bạn quyết định khởi chạy một job, bạn có thể tùy chọn đưa vào dữ liệu tùy ý vốn sẽ được chuyển tới job đó. Việc này được thực hiện bằng cách đưa một đối tượng `data` vào bên trong phần tử item, nằm cạnh thuộc tính boolean `launch`. Ví dụ:
 
 ```json
 {
@@ -853,11 +844,11 @@ When your trigger plugin decides to launch a job, you can optionally include arb
 }
 ```
 
-The format of the `data` property is user-defined, and it will be passed verbatim to the launched job, becoming the [input.data](data.md#job-input) property inside the [Job](data.md#job) object (same as if data is passed to it from a previous chained job, workflow, action, etc.).
+Định dạng của thuộc tính `data` do người dùng tự định nghĩa, và nó sẽ được chuyển nguyên bản tới job được khởi chạy, trở thành thuộc tính [input.data](data.md#job-input) bên trong đối tượng [Job](data.md#job) (tương tự như khi dữ liệu được chuyển tới nó từ một job liên kết trước đó, workflow, action, v.v.).
 
-##### Trigger Files
+##### File Trigger
 
-You can also send along files to your launched jobs.  These will be attached to the job as inputs, and automatically downloaded in each job's temp directory on the remote server.  To do this, include a `files` array alongside your `launch` property.  The files array should be populated like this:
+Bạn cũng có thể gửi các file đi kèm tới các job được khởi chạy của mình. Chúng sẽ được đính kèm vào job dưới dạng các đầu vào, và tự động được tải xuống thư mục tạm của mỗi job trên server từ xa. Để làm điều này, hãy đưa một mảng `files` vào cạnh thuộc tính `launch` của bạn. Mảng files nên chứa dữ liệu như thế này:
 
 ```json
 {
@@ -879,13 +870,13 @@ You can also send along files to your launched jobs.  These will be attached to 
 }
 ```
 
-Each object in the `files` array needs to have a `path` property that points to a single file.  You can also optionally pass a `delete` property.  If this is set to `true` then xyOps will automatically delete the file after it is uploaded.
+Mỗi đối tượng trong mảng `files` cần có một thuộc tính `path` trỏ đến một file duy nhất. Bạn cũng có thể tùy chọn chuyển một thuộc tính `delete`. Nếu thuộc tính này được đặt thành `true`, PTOps sẽ tự động xóa file sau khi nó được tải lên.
 
-This mechanism works the same as if the files were passed to your job from a previous chained job, workflow, action, etc.
+Cơ chế này hoạt động tương tự như khi các file được chuyển tới job của bạn từ một job liên kết trước đó, workflow, action, v.v.
 
-##### Trigger Delay
+##### Trì Hoãn Trigger
 
-If you would like to delay a job launch, send back a `delay` property alongside the `launch` Boolean, set to the number of seconds you want the job to wait before running.  Example:
+Nếu bạn muốn trì hoãn một lượt khởi chạy job, hãy gửi lại một thuộc tính `delay` bên cạnh thuộc tính Boolean `launch`, đặt giá trị thành số giây bạn muốn job chờ đợi trước khi chạy. Ví dụ:
 
 ```json
 {
@@ -905,37 +896,37 @@ If you would like to delay a job launch, send back a `delay` property alongside 
 }
 ```
 
-Note that this mechanism works similarly to the built-in [Delay](triggers.md#delay) scheduler option.  Meaning, the job still "launches" but is set to a special pending state until the specified delay elapses, at which time the job becomes active and runs proper.  Also note that the delay value is computed relative to the job's original start time (i.e. the [Job.now](data.md#job-now) actual on-the-minute time).
+Lưu ý rằng cơ chế này hoạt động tương tự như tùy chọn scheduler [Trì Hoãn (Delay)](triggers.md#trì-hoãn) tích hợp sẵn. Nghĩa là, job vẫn "khởi chạy" nhưng được đặt ở trạng thái chờ đặc biệt cho đến khi thời gian trì hoãn chỉ định trôi qua, tại thời điểm đó job sẽ trở nên hoạt động và chạy bình thường. Cũng lưu ý rằng giá trị trì hoãn được tính toán tương đối so với thời gian bắt đầu ban đầu của job (tức là thời gian thực tế trên từng phút [Job.now](data.md#job-now)).
 
 ### Monitor Plugins
 
-Monitor Plugins can extend the xyOps monitoring system by gathering **any** custom metrics that you want.  These Plugins run directly on the servers they are targeted to (i.e. xySat runs them as child processes), and then their custom metrics are included along with the server last-minute monitoring data sent back to the xyOps conductor server.
+Monitor Plugins có thể mở rộng hệ thống giám sát của PTOps bằng cách thu thập **bất kỳ** metric tùy chỉnh nào bạn muốn. Các Plugin này chạy trực tiếp trên các server mà chúng được nhắm mục tiêu (tức là xySat chạy chúng dưới dạng các tiến trình con), và sau đó các metric tùy chỉnh của chúng được đưa vào cùng với dữ liệu giám sát phút cuối cùng của server được gửi lại cho conductor chính của PTOps.
 
-Instead of running in response to an event or action, Monitor Plugins run every single minute, 24x7.  They are essentially "data collectors", and are expected to produce monitoring data for the instant in which they are run, or in many cases they return accumulated data for the last 60 seconds.
+Thay vì chạy để phản hồi một event hay action, Monitor Plugins chạy mỗi phút một lần, 24x7. Về bản chất chúng là "bộ thu thập dữ liệu", và dự kiến sẽ tạo ra dữ liệu giám sát cho thời điểm chúng chạy, hoặc trong nhiều trường hợp chúng trả về dữ liệu tích lũy cho 60 giây vừa qua.
 
-Monitor Plugins differ from the other xyOps Plugin types in that they are not passed a JSON document on STDIN, and they do not need to produce a specific JSON output format.  The API contract for these plugins is simpler -- they just execute every minute, and they can output freeform JSON, XML, or plain text.  It is then up to your [Monitors](monitors.md) to pull specific data values out of that data, and use them for graphs, alerts, etc.
+Monitor Plugins khác với các loại Plugin khác của PTOps ở chỗ chúng không được truyền một tài liệu JSON trên STDIN, và chúng không cần tạo ra một định dạng đầu ra JSON cụ thể. Ràng buộc API cho các plugin này đơn giản hơn -- chúng chỉ thực thi mỗi phút, và chúng có thể xuất ra định dạng JSON, XML tùy ý hoặc văn bản thuần. Sau đó, các [Monitor](monitors.md) của bạn sẽ tự rút trích các giá trị dữ liệu cụ thể từ dữ liệu đó và sử dụng chúng cho các biểu đồ, alert, v.v.
 
-Here is an example.  This Plugin actually ships with xyOps, and it tracks the total number of open files on the server:
+Dưới đây là một ví dụ. Plugin này thực sự đi kèm với PTOps, và nó theo dõi tổng số file đang mở trên server:
 
-- **Plugin Title**: Count Open Files
+- **Tiêu đề Plugin**: Count Open Files
 - **Plugin ID**: `open_files`
-- **Command**: `/bin/sh`
+- **Lệnh**: `/bin/sh`
 - **Script**: `cat /proc/sys/fs/file-nr`
-- **Format**: `text`
+- **Định dạng**: `text`
 
-That's it -- that's the entire Plugin, including the source code.  In this example the code is this small `/bin/sh` shell script:
+Chỉ vậy thôi -- đó là toàn bộ Plugin, bao gồm cả mã nguồn. Trong ví dụ này, mã nguồn là script shell `/bin/sh` nhỏ này:
 
 ```sh
 cat /proc/sys/fs/file-nr
 ```
 
-The output of this is obviously just plain text:
+Đầu ra của lệnh này rõ ràng chỉ là văn bản thuần:
 
 ```
 1056	0	9223372036854775807
 ```
 
-But that's fine!  The syntax doesn't matter at this point.  What happens is, this raw data gets included with the server's [ServerMonitorData.commands](data.md#servermonitordata-commands), keyed by the [Plugin.id](data.md#plugin-id), and is then made available to monitors and alerts in this format:
+Nhưng điều đó vẫn ổn! Cú pháp không quan trọng ở điểm này. Những gì xảy ra là dữ liệu thô này được đưa vào cùng với [ServerMonitorData.commands](data.md#servermonitordata-commands) của server, được định danh bằng [Plugin.id](data.md#plugin-id), và sau đó được cung cấp cho các monitor và alert ở định dạng này:
 
 ```json
 "commands": {
@@ -943,36 +934,34 @@ But that's fine!  The syntax doesn't matter at this point.  What happens is, thi
 }
 ```
 
-Then separately, we define a [Monitor](monitors.md) which pulls the appropriate value (in this case the first number) out of the raw text:
+Sau đó một cách riêng biệt, chúng tôi định nghĩa một [Monitor](monitors.md) để kéo giá trị thích hợp (trong trường hợp này là con số đầu tiên) ra khỏi văn bản thô:
 
-- **Monitor Title**: Open Files
-- **Expression**: `commands.open_files`
-- **Data Match**: `(\\d+)`
-- **Data Type**: `integer`
+- **Tiêu đề Monitor**: Open Files
+- **Biểu thức**: `commands.open_files`
+- **Khớp Dữ Liệu**: `(\\d+)`
+- **Kiểu Dữ Liệu**: `integer`
 
-And it's as simple as that.  Our custom monitor now graphs the total open files on the server over time, based on a custom command we execute.
+Và mọi việc đơn giản như thế. Monitor tùy chỉnh của chúng tôi giờ đây có thể vẽ biểu đồ tổng số file đang mở trên server theo thời gian, dựa trên một lệnh tùy chỉnh chúng tôi thực thi.
 
-If your Monitor Plugin is set to XML or JSON format, you can actually output a large, multi-value data structure, and different monitors can grab specific values out of it.  This is really useful for things like grabbing **all** of your application's performance metrics in one command, output it as a large JSON/XML structure, and then you can configure individual xyOps monitors to pull out and graph specific values.  Alerts can trigger on the data values as well.
+Nếu Monitor Plugin của bạn được đặt thành định dạng XML hoặc JSON, bạn thực sự có thể xuất ra một cấu trúc dữ liệu lớn, đa giá trị, và các monitor khác nhau có thể lấy các giá trị cụ thể từ đó. Điều này thực sự hữu ích cho những việc như lấy **tất cả** các metric hiệu năng của ứng dụng của bạn trong một lệnh, xuất nó dưới dạng một cấu trúc JSON/XML lớn, và sau đó bạn có thể cấu hình các monitor PTOps riêng lẻ để kéo ra và vẽ biểu đồ cho các giá trị cụ thể. Các alert cũng có thể kích hoạt dựa trên các giá trị dữ liệu này.
 
+## Tham Số Plugin
 
+Hầu hết các Plugin chấp nhận một hoặc nhiều "tham số", vốn là các trường người dùng có thể cấu hình. Chúng được hiển thị trong UI để người dùng điền thông tin khi họ cấu hình các event hoặc workflow. Xem bên dưới để biết tất cả các loại tham số khả dụng. Xem [Plugin.params](data.md#plugin-params) để biết cấu trúc dữ liệu nội bộ.
 
-## Plugin Parameters
-
-Most Plugins accept one or more "parameters", which are configurable user fields.  These are displayed in the UI for users to populate when they are configuring events or workflows.  See below for all the types of parameters available.  See [Plugin.params](data.md#plugin-params) for the internal data structure.
-
-Each parameter is stored as an object inside the Plugin's `params` array.  Every control type needs a locally unique `id`, a user-facing `title`, and a `type`.  Most controls also have a default `value`, plus optional `caption`, `required`, `regex` and `locked` properties where supported.
+Mỗi tham số được lưu trữ dưới dạng một đối tượng bên trong mảng `params` của Plugin. Mỗi loại control cần một `id` duy nhất cục bộ, một `title` hiển thị cho người dùng, và một `type`. Hầu hết các control cũng có một `value` mặc định, cùng các thuộc tính tùy chọn như `caption`, `required`, `regex` và `locked` nếu được hỗ trợ.
 
 ### Text
 
-A "text" parameter type is presented to the user as a single-line text field.
+Một tham số loại "text" được hiển thị cho người dùng dưới dạng trường nhập văn bản một dòng.
 
-An optional "variant" property may be included, which changes the visible UI control in the browser: `color`, `date`, `datetime-local`, `email`, `number`, `password`, `text`, `time`, `tel` or `url`.
+Có thể đưa vào một thuộc tính `variant` tùy chọn, thuộc tính này sẽ thay đổi control UI hiển thị trong trình duyệt: `color`, `date`, `datetime-local`, `email`, `number`, `password`, `text`, `time`, `tel` hoặc `url`.
 
-Note that the parameter value is almost always set to a string -- the "variant" only controls the visual UI control and behavior.  However, the "number" variant is a special case, where the value will actually be parsed and stored in the parameters as an actual JavaScript Number, or `null` when empty.
+Lưu ý rằng giá trị tham số hầu như luôn được đặt thành một chuỗi -- thuộc tính `variant` chỉ kiểm soát control UI trực quan và hành vi. Tuy nhiên, variant "number" là một trường hợp đặc biệt, nơi giá trị thực sự sẽ được phân tích cú pháp và lưu trữ trong các tham số dưới dạng một số JavaScript Number thực tế, hoặc `null` khi để trống.
 
-The "number" variant is also special in that you can specify a `range` property (string), which limits the minimum, maximum, and step increment for the value.  The range should be in the format: `MIN - MAX / STEP`.  So for example, to limit the number range from 0 to 100 with increments of 5, use `0 - 100 / 5`.  Floats and negatives are allowed, and the step can be the special keyword `any` (for no enforced step increment).
+Variant "number" cũng đặc biệt ở chỗ bạn có thể chỉ định một thuộc tính `range` (chuỗi), giới hạn mức tối thiểu, tối đa và bước tăng (step) cho giá trị. Phạm vi nên ở định dạng: `MIN - MAX / STEP`. Ví dụ: để giới hạn phạm vi số từ 0 đến 100 với các bước tăng là 5, hãy sử dụng `0 - 100 / 5`. Số thực và số âm được cho phép, và bước tăng có thể là từ khóa đặc biệt `any` (để không áp đặt bước tăng cụ thể).
 
-Example text parameter definition:
+Ví dụ định nghĩa tham số văn bản:
 
 ```json
 {
@@ -987,7 +976,7 @@ Example text parameter definition:
 }
 ```
 
-Example number variant definition:
+Ví dụ định nghĩa variant number:
 
 ```json
 {
@@ -1004,9 +993,9 @@ Example number variant definition:
 
 ### Textarea
 
-A "textarea" parameter type is presented to the user as a multi-line text box.  Here the user can enter multiple lines of text (no maximum length is enforced).
+Một tham số loại "textarea" được hiển thị cho người dùng dưới dạng một hộp văn bản nhiều dòng. Tại đây, người dùng có thể nhập nhiều dòng văn bản (không áp đặt độ dài tối đa).
 
-Example textarea parameter definition:
+Ví dụ định nghĩa tham số textarea:
 
 ```json
 {
@@ -1022,9 +1011,9 @@ Example textarea parameter definition:
 
 ### Code
 
-A "code" parameter type is a variant of the textarea, but it is presented to the user as a button that pops up a full code editor dialog.  The user can enter "code" of any language, and the format is automatically detected and syntax-highlighted.
+Một tham số loại "code" là một biến thể của textarea, nhưng nó được hiển thị cho người dùng dưới dạng một nút bấm mở ra một hộp thoại trình biên tập code đầy đủ. Người dùng có thể nhập "code" thuộc bất kỳ ngôn ngữ nào, và định dạng sẽ tự động được phát hiện và highlight cú pháp.
 
-Example code parameter definition:
+Ví dụ định nghĩa tham số code:
 
 ```json
 {
@@ -1039,11 +1028,11 @@ Example code parameter definition:
 
 ### JSON
 
-A "JSON" parameter type is a variant of the textarea, but it is presented to the user as a button that pops up a full code editor dialog with JSON syntax-highlighting and line numbers.  The JSON is also validated, so the user can only enter a proper JSON document.
+Một tham số loại "JSON" là một biến thể của textarea, nhưng nó được hiển thị cho người dùng dưới dạng một nút bấm mở ra một hộp thoại trình biên tập code đầy đủ với tính năng highlight cú pháp JSON và số dòng. JSON cũng được xác thực, vì vậy người dùng chỉ có thể nhập một tài liệu JSON hợp lệ.
 
-This type is special in that the JSON is parsed and stored in the parameters as a real object (not a string).
+Loại tham số này đặc biệt ở chỗ JSON được phân tích cú pháp và lưu trữ trong các tham số dưới dạng một đối tượng thực tế (không phải một chuỗi).
 
-Example JSON parameter definition:
+Ví dụ định nghĩa tham số JSON:
 
 ```json
 {
@@ -1059,31 +1048,31 @@ Example JSON parameter definition:
 
 ### Menu
 
-A "menu" is presented as a drop-down menu, with a configurable list of items.  The plugin declares these as a CSV list.  Example:
+Một "menu" được hiển thị dưới dạng một menu thả xuống (drop-down), với danh sách các mục cấu hình được. Plugin khai báo các mục này dưới dạng một danh sách phân tách bằng dấu phẩy (CSV). Ví dụ:
 
 ```
 Alpha, Beta, Gamma
 ```
 
-This item has type `select` in the API, to match the HTML element of the same name.
+Mục này có loại `select` trong API, để khớp với phần tử HTML cùng tên.
 
-To include an empty item at the top of the menu (allowing the user to select "nothing" as an option), simply start the CSV list with a leading comma.  Example:
+Để đưa một mục trống vào đầu menu (cho phép người dùng chọn "không có gì" làm tùy chọn), chỉ cần bắt đầu danh sách CSV bằng một dấu phẩy dẫn đầu. Ví dụ:
 
 ```
 , Alpha, Beta, Gamma
 ```
 
-To set the item values and the labels separately, specify the values in square brackets like this:
+Để thiết lập giá trị mục (values) và nhãn hiển thị (labels) riêng biệt, hãy chỉ định các giá trị trong dấu ngoặc vuông như thế này:
 
 ```
 Alpha [a1], Beta [b2], Gamma [c3]
 ```
 
-This would show only the labels in the menu ("Alpha", "Beta", "Gamma"), but in the data the values would be specified instead (`a1`, `b2`, `c3`).  Note that the values may only contain alphanumerics, underscores, dashes and dots, and when this feature is used the visual labels are **not** passed into the data at all.
+Điều này sẽ chỉ hiển thị các nhãn trong menu ("Alpha", "Beta", "Gamma"), nhưng trong dữ liệu, các giá trị tương ứng sẽ được sử dụng thay thế (`a1`, `b2`, `c3`). Lưu ý rằng các giá trị chỉ có thể chứa chữ-số, dấu gạch dưới, dấu gạch ngang và dấu chấm, và khi tính năng này được sử dụng, các nhãn trực quan sẽ **không** được truyền vào dữ liệu chút nào.
 
-Note that if you check the "Multi-Select" checkbox when configuring the menu field, your parameter value will be an array of selected values, as opposed to a string for a single-select menu.
+Lưu ý rằng nếu bạn tick vào hộp kiểm "Multi-Select" khi cấu hình trường menu, giá trị tham số của bạn sẽ là một mảng các giá trị được chọn, thay vì là một chuỗi cho menu chọn một giá trị.
 
-Example single-select menu parameter definition:
+Ví dụ định nghĩa tham số menu chọn một giá trị (single-select):
 
 ```json
 {
@@ -1096,7 +1085,7 @@ Example single-select menu parameter definition:
 }
 ```
 
-Example multi-select menu parameter definition:
+Ví dụ định nghĩa tham số menu chọn nhiều giá trị (multi-select):
 
 ```json
 {
@@ -1111,9 +1100,9 @@ Example multi-select menu parameter definition:
 
 ### Bucket Menu
 
-A "bucket menu" is a dynamically populated menu, which automatically loads its items from a global [Storage Bucket](buckets.md) that you configure.  Using this feature you can have menus across multiple Plugins or events that all share the same item pool.
+Một "bucket menu" là một menu được điền động, tự động tải các mục của nó từ một [Storage Bucket](buckets.md) toàn cục mà bạn cấu hình. Bằng cách sử dụng tính năng này, bạn có thể có các menu trên nhiều Plugin hoặc event cùng chia sẻ chung một nhóm tài nguyên mục.
 
-To define the set of items, simply create a Storage Bucket, and edit the JSON data within.  Place your JSON array anywhere in the bucket data.  Example:
+Để định nghĩa tập hợp các mục, chỉ cần tạo một Storage Bucket và chỉnh sửa dữ liệu JSON bên trong. Đặt mảng JSON của bạn ở bất kỳ đâu trong dữ liệu bucket. Ví dụ:
 
 ```json
 {
@@ -1132,13 +1121,13 @@ To define the set of items, simply create a Storage Bucket, and edit the JSON da
 }
 ```
 
-Make sure to save the bucket changes after editing the JSON.
+Hãy đảm bảo lưu các thay đổi của bucket sau khi chỉnh sửa JSON.
 
-Then, when you add your parameter and select the "Bucket Menu" field type, you will need to select the target bucket, and optionally enter a "Data Path".  The path is how to specify *where* inside the storage bucket your item array lives.  In the above example it's in a top-level property named `countries`, so that's exactly what you'd enter for the Data Path.
+Sau đó, khi bạn thêm tham số của mình và chọn kiểu trường "Bucket Menu", bạn sẽ cần chọn bucket đích, và có thể nhập một đường dẫn "Data Path". Đường dẫn này giúp chỉ định *nơi* bên trong dữ liệu JSON của storage bucket mảng mục của bạn sinh sống. Trong ví dụ trên, nó nằm ở một thuộc tính cấp cao nhất tên là `countries`, vì vậy đó chính là nội dung bạn cần nhập cho Data Path.
 
-This allows you to store multiple different item lists in the same storage bucket.
+Điều này cho phép bạn lưu trữ nhiều danh sách mục khác nhau trong cùng một storage bucket.
 
-Alternatively, if your item array lives at the very top level of the bucket JSON data, i.e. like this:
+Ngoài ra, nếu mảng mục của bạn nằm ở cấp cao nhất của dữ liệu JSON bucket, tức là như thế này:
 
 ```json
 [
@@ -1155,9 +1144,9 @@ Alternatively, if your item array lives at the very top level of the bucket JSON
 ]
 ```
 
-Then you should leave the "Data Path" field empty (as in this case the *entire* bucket data is the array).
+Thì bạn nên để trống trường "Data Path" (vì trong trường hợp này *toàn bộ* dữ liệu bucket chính là mảng).
 
-This feature also allows you to customize the menu item "values" (i.e. what goes into the [Job.params](data.md#job-params)) and menu item "labels" (i.e. what is displayed in the menu) separately.  To do this, define your JSON array as an array of objects, with each object containing an `id` and a `title` property.  Example:
+Tính năng này cũng cho phép bạn tùy chỉnh các giá trị mục menu (tức là những gì đi vào [Job.params](data.md#job-params)) và các nhãn mục menu (tức là những gì được hiển thị trong menu) riêng biệt. Để làm điều này, hãy định nghĩa mảng JSON của bạn dưới dạng một mảng các đối tượng, với mỗi đối tượng chứa thuộc tính `id` và `title`. Ví dụ:
 
 ```json
 {
@@ -1176,9 +1165,9 @@ This feature also allows you to customize the menu item "values" (i.e. what goes
 }
 ```
 
-So in this case if the user selected "Germany" from the menu, the actual job param value would be the string `DE`.
+Như vậy trong trường hợp này nếu người dùng chọn "Germany" từ menu, giá trị thực tế của tham số job sẽ là chuỗi `DE`.
 
-Finally, you can define groups of items in the menu by including an object with a `label` and an `items` sub-array.  These show up as delimited labeled sections within the menu (a.k.a. an [optgroup](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/optgroup)).  Example of this:
+Cuối cùng, bạn có thể định nghĩa các nhóm mục trong menu bằng cách đưa vào một đối tượng chứa thuộc tính `label` và một mảng con `items`. Chúng hiển thị dưới dạng các phần có nhãn được phân ranh giới trong menu (còn gọi là một [optgroup](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/optgroup)). Ví dụ về việc này:
 
 ```json
 {
@@ -1212,9 +1201,9 @@ Finally, you can define groups of items in the menu by including an object with 
 }
 ```
 
-Note that if you check the "Multi-Select" checkbox when configuring the bucket menu field, your parameter value will be an array of selected values, as opposed to a string for a single-select menu.
+Lưu ý rằng nếu bạn tick vào hộp kiểm "Multi-Select" khi cấu hình trường bucket menu, giá trị tham số của bạn sẽ là một mảng các giá trị được chọn, thay vì là một chuỗi cho menu chọn một giá trị.
 
-Example bucket menu parameter definition:
+Ví dụ định nghĩa tham số bucket menu:
 
 ```json
 {
@@ -1228,7 +1217,7 @@ Example bucket menu parameter definition:
 }
 ```
 
-If the item array is at the top level of the bucket data, set `bucket_path` to an empty string:
+Nếu mảng mục nằm ở cấp cao nhất của dữ liệu bucket, đặt `bucket_path` thành một chuỗi trống:
 
 ```json
 {
@@ -1244,11 +1233,11 @@ If the item array is at the top level of the bucket data, set `bucket_path` to a
 
 ### System Menu
 
-A "system menu" is a dynamically populated menu, similar to a [Bucket Menu](#bucket-menu), but the menu items are pulled from xyOps itself.  This is useful when a Plugin needs the user to select an existing xyOps object, such as an event, category, server, server group, plugin, user, role, web hook or monitor.
+Một "system menu" là một menu được điền động, tương tự như [Bucket Menu](#bucket-menu), nhưng các mục menu được lấy trực tiếp từ bản thân PTOps. Điều này hữu ích khi một Plugin cần người dùng chọn một đối tượng PTOps hiện có, chẳng hạn như một event, category, server, server group, plugin, user, role, web hook hoặc monitor.
 
-When you add your parameter and select the "System Menu" field type, you will need to select the internal xyOps list to use for the menu.  The menu is populated automatically from the current system data, and xyOps adds a `(None)` item at the top so no item is selected by default.
+Khi bạn thêm tham số của mình và chọn loại trường "System Menu", bạn sẽ cần chọn danh sách PTOps nội bộ để sử dụng cho menu. Menu được điền tự động từ dữ liệu hệ thống hiện tại, và PTOps thêm một mục `(None)` ở đầu để không có mục nào được chọn theo mặc định.
 
-When the user selects an item, the selected item's ID is stored in [Job.params](data.md#job-params) and passed to the Plugin.  For example, if you define a parameter with ID `custom_event`, point it at the Events system list, and the user selects an event with ID `emp6dulft42zjevn8`, the Plugin would receive this:
+Khi người dùng chọn một mục, thuộc tính `id` thông thường của mục được chọn sẽ được lưu trữ trong [Job.params](data.md#job-params) và truyền tới Plugin. Ví dụ: nếu bạn định nghĩa một tham số với ID `custom_event`, trỏ nó tới danh sách hệ thống Events, và người dùng chọn một event có ID `emp6dulft42zjevn8`, Plugin sẽ nhận được thông tin này:
 
 ```json
 {
@@ -1256,35 +1245,35 @@ When the user selects an item, the selected item's ID is stored in [Job.params](
 }
 ```
 
-Most system menus store the selected item's normal `id` property.  The Users menu is a special case, and stores the selected user's `username`.
+Hầu hết các system menu đều lưu trữ thuộc tính `id` thông thường của mục được chọn. Menu Users là một trường hợp đặc biệt, nó lưu trữ `username` của người dùng được chọn.
 
-The following system lists are available:
+Các danh sách hệ thống sau đây khả dụng:
 
-| List | Stored Value |
+| Danh sách | Giá trị Lưu trữ |
 |------|--------------|
 | Alerts | Alert ID |
-| Algorithms | Target algorithm ID |
+| Algorithms | ID thuật toán đích |
 | Buckets | Bucket ID |
 | Categories | Category ID |
 | Channels | Channel ID |
 | Events | Event ID |
-| Groups | Server group ID |
+| Groups | ID nhóm server |
 | Monitors | Monitor ID |
 | Plugins | Plugin ID |
 | Roles | Role ID |
 | Servers | Server ID |
 | Tags | Tag ID |
-| Targets | Server group ID or server ID |
+| Targets | ID nhóm server hoặc ID server |
 | Users | Username |
 | Web Hooks | Web Hook ID |
 
-The "Targets" menu is a combined list which includes both server groups and individual servers, arranged into menu sections.  This is handy for Plugin parameters that should accept either kind of job target.  The Algorithms menu contains the built-in event target selection algorithms, such as Random.
+Menu "Targets" là một danh sách kết hợp bao gồm cả các nhóm server và các server riêng lẻ, được sắp xếp thành các mục menu. Điều này tiện lợi cho các tham số Plugin cần chấp nhận một trong hai loại đích đến của job. Menu Algorithms chứa các thuật toán chọn đích đến của event tích hợp sẵn, chẳng hạn như Random.
 
-API Keys and Secrets are intentionally not offered as system menu sources.
+Các API Key và Secret được cố tình không cung cấp làm nguồn cho system menu vì lý do bảo mật.
 
-Note that if you check the "Multi-Select" checkbox when configuring the system menu field, your parameter value will be an array of selected values, as opposed to a string for a single-select menu.
+Lưu ý rằng nếu bạn tick vào hộp kiểm "Multi-Select" khi cấu hình trường system menu, giá trị tham số của bạn sẽ là một mảng các giá trị được chọn, thay vì là một chuỗi cho menu chọn một giá trị.
 
-Example system menu parameter definition:
+Ví dụ định nghĩa tham số system menu:
 
 ```json
 {
@@ -1297,7 +1286,7 @@ Example system menu parameter definition:
 }
 ```
 
-Example multi-select system menu parameter definition:
+Ví dụ định nghĩa tham số system menu chọn nhiều giá trị (multi-select):
 
 ```json
 {
@@ -1312,9 +1301,9 @@ Example multi-select system menu parameter definition:
 
 ### Checkbox
 
-A checkbox is displayed with a label, and the "checked" state is stored as a Boolean parameter value (`true` or `false`).
+Hộp kiểm được hiển thị cùng với một nhãn, và trạng thái "checked" được lưu dưới dạng giá trị tham số Boolean (`true` hoặc `false`).
 
-Example checkbox parameter definition:
+Ví dụ định nghĩa tham số checkbox:
 
 ```json
 {
@@ -1328,9 +1317,9 @@ Example checkbox parameter definition:
 
 ### Hidden
 
-A hidden type is not shown in the UI.  Instead, it's just a hidden, pre-populated key/value pair that is passed to the Plugin as a parameter.  The value is specified when the hidden field is added.
+Loại ẩn không được hiển thị trong UI. Thay vào đó, nó chỉ là một cặp key/value ẩn, được điền sẵn và chuyển tới Plugin dưới dạng tham số. Giá trị được chỉ định khi thêm trường ẩn.
 
-Example hidden parameter definition:
+Ví dụ định nghĩa tham số ẩn:
 
 ```json
 {
@@ -1343,9 +1332,9 @@ Example hidden parameter definition:
 
 ### Toolset
 
-Arguably the most powerful of the Plugin parameter types, the "toolset" is presented as a drop-down menu, with a dynamic set of sub-parameters that appear based on the menu selection (i.e. the "tool").  In this way you can request different parameters from the user based on whichever "tool" is selected.
+Có thể coi là mạnh mẽ nhất trong số các loại tham số Plugin, "toolset" được hiển thị dưới dạng một menu thả xuống, với một tập hợp động các tham số phụ xuất hiện dựa trên lựa chọn trong menu (tức là "công cụ" - tool). Bằng cách này, bạn có thể yêu cầu các tham số khác nhau từ người dùng dựa trên việc "công cụ" nào được chọn.
 
-The toolset "data" is entered in JSON format, and describes all the tools and sub-parameters that should be displayed for each tool.  Here is an example:
+"Dữ liệu" của toolset được nhập ở định dạng JSON, mô tả tất cả các công cụ và tham số phụ sẽ được hiển thị cho từng công cụ. Dưới đây là một ví dụ:
 
 ```json
 {
@@ -1405,9 +1394,9 @@ The toolset "data" is entered in JSON format, and describes all the tools and su
 }
 ```
 
-Here the toolset menu would show two tools: "Upload Files" and "List Files".  When "Upload Files" was selected in the menu, three new sub-parameters would appear in a box under the menu: "Local Path", "Filename Pattern" and "Remote Path".  If the user selected a different tool, e.g. "List Files", then the sub-parameters would change, and a different set would be shown.
+Ở đây, menu toolset sẽ hiển thị hai công cụ: "Upload Files" và "List Files". Khi "Upload Files" được chọn trong menu, ba tham số phụ mới sẽ xuất hiện trong một khung bên dưới menu: "Local Path", "Filename Pattern" và "Remote Path". Nếu người dùng chọn một công cụ khác, ví dụ "List Files", các tham số phụ sẽ thay đổi và một tập hợp khác sẽ được hiển thị.
 
-Tool fields use the same internal format as plugin parameters, but only [checkbox](#checkbox), [code](#code), [json](#json), [hidden](#hidden), [select](#select), [text](#text) and [textarea](#textarea) field types are allowed inside a toolset.  Here is another example showing all the available field types in a single tool:
+Các trường của công cụ sử dụng cùng định dạng nội bộ như các tham số plugin thông thường, nhưng chỉ các loại trường [checkbox](#checkbox), [code](#code), [json](#json), [hidden](#hidden), [select](#select), [text](#text) và [textarea](#textarea) được phép sử dụng bên trong một toolset. Dưới đây là một ví dụ khác hiển thị tất cả các loại trường khả dụng trong một công cụ duy nhất:
 
 ```json
 {
@@ -1470,19 +1459,19 @@ Tool fields use the same internal format as plugin parameters, but only [checkbo
 }
 ```
 
-Note that when all the parameter values are collected from the user, they are "flattened" into a single-level object, and they share the namespace with all the other plugin parameters.  As such, field IDs must be unique, and not collide with any other plugin parameters defined outside the toolset.  The same field IDs can be used across tools, however, as only one tool will be selected at a time.
+Lưu ý rằng khi tất cả các giá trị tham số được thu thập từ người dùng, chúng sẽ được "làm phẳng" (flattened) thành một đối tượng cấp duy nhất, và chúng chia sẻ chung namespace với tất cả các tham số plugin khác. Do đó, các ID trường phải là duy nhất và không trùng lặp với bất kỳ tham số plugin nào khác được định nghĩa bên ngoài toolset. Tuy nhiên, các ID trường giống nhau có thể được sử dụng giữa các công cụ khác nhau, vì tại một thời điểm chỉ có một công cụ được chọn.
 
 ### Group
 
-Use the `group` control type to automatically group all controls below into a fieldset (a visual box), with a custom label and an optional Markdown-formatted caption.  The group will encompass all controls below it, until one of the following is encountered:
+Sử dụng loại control `group` để tự động nhóm tất cả các control bên dưới thành một fieldset (khung trực quan), với một nhãn tùy chỉnh và một chú thích tùy chọn định dạng bằng Markdown. Nhóm sẽ bao gồm tất cả các control bên dưới nó, cho đến khi gặp một trong các đối tượng sau:
 
-- Another named group
-- A toolset parameter
-- The end of the parameter list
+- Một nhóm có tên khác
+- Một tham số dạng toolset
+- Điểm kết thúc của danh sách tham số
 
-Groups are visual separators only, and do not change any functionality, parameter names, etc.
+Các nhóm chỉ đóng vai trò phân tách trực quan và không thay đổi bất kỳ chức năng hay tên tham số nào, v.v.
 
-Example group:
+Ví dụ nhóm:
 
 ```json
 {
@@ -1493,11 +1482,11 @@ Example group:
 }
 ```
 
-Groups also need a locally unique `id` (alphanumeric).
+Các nhóm cũng cần một `id` duy nhất cục bộ (dạng chữ-số).
 
 ## Macro Expansion
 
-All Plugin Parameter string values support inline macro expansion using the common `{{ mustache }}` syntax.  Using this feature you can dynamically insert values into parameters from arbitrary data passed into the job from a previous job (connected workflow node or launched by action).  Here is how it works.  Imagine that a previous job completes, and outputs the following data:
+Tất cả các giá trị chuỗi của Tham Số Plugin đều hỗ trợ việc mở rộng macro nội tuyến bằng cách sử dụng cú pháp `{{ mustache }}` phổ biến. Bằng cách sử dụng tính năng này, bạn có thể chèn động các giá trị vào tham số từ dữ liệu tùy ý được chuyển vào job từ một job trước đó (node workflow kết nối hoặc được khởi chạy bằng action). Dưới đây là cách hoạt động. Hãy tưởng tượng rằng một job trước đó hoàn thành và xuất ra dữ liệu sau:
 
 ```json
 {
@@ -1510,36 +1499,36 @@ All Plugin Parameter string values support inline macro expansion using the comm
 }
 ```
 
-This data object is then passed into the next job's input (either by workflow or run event action).  You could access the data directly in your Plugin by parsing the JSON from STDIN and looking in `input.data`.  However, the idea with macro expansion is that user can reroute data values into Plugin parameters.  Let's say your Plugin has a text field parameter, and the user populated it in the event configuration like this:
+Đối tượng dữ liệu này sau đó được chuyển vào đầu vào của job tiếp theo (bởi workflow hoặc run event action). Bạn có thể truy cập dữ liệu trực tiếp trong Plugin của mình bằng cách phân tích cú pháp JSON từ STDIN và tìm trong `input.data`. Tuy nhiên, ý tưởng với việc mở rộng macro là người dùng có thể định tuyến lại các giá trị dữ liệu vào các tham số của Plugin. Giả sử Plugin của bạn có một tham số trường văn bản, và người dùng đã điền nó trong cấu hình event như thế này:
 
 ```
 My favorite animal is {{ data.animal }}, and my favorite color is {{ data.color }}.
 ```
 
-When the job runs, those `{{ mustache }}` placeholders are automatically expanded using the [Job](data.md#job) object as the context.  In addition, the [Job.input](data.md#job-input) sub-object is "flattened" into the outer context for convenience (just so you can skip the `input` prefix in the macros).  This allows you to access all the output data from the previous job in the current job, and copy it into Plugin parameters.
+Khi job chạy, những placeholder `{{ mustache }}` đó sẽ tự động được mở rộng bằng cách sử dụng đối tượng [Job](data.md#job) làm ngữ cảnh. Ngoài ra, đối tượng con [Job.input](data.md#job-input) được "làm phẳng" vào ngữ cảnh bên ngoài để thuận tiện (để bạn có thể bỏ qua tiền tố `input` trong các macro). Điều này cho phép bạn truy cập tất cả dữ liệu đầu ra từ job trước đó trong job hiện tại, và sao chép nó vào các tham số của Plugin.
 
-The mustache macros can do more than just data lookups.  They can also evaluate simple JavaScript-style expressions as well.  For more on this, see [xyOps Expression Syntax](xyexp.md).
+Các macro mustache có thể làm nhiều việc hơn là chỉ tra cứu dữ liệu. Chúng cũng có thể đánh giá các biểu thức đơn giản kiểu JavaScript. Để biết thêm về vấn đề này, hãy xem [Cú pháp Biểu thức PTOps](xyexp.md).
 
-## Built-in Plugins
+## Các Plugin Tích Hợp Sẵn
 
-The following Event Plugins are built into xyOps and come preinstalled.
+Các Event Plugins sau đây được tích hợp sẵn vào PTOps và được cài đặt sẵn.
 
 ### Shell Plugin
 
-xyOps ships with a built-in "Shell Plugin", which you can use to execute arbitrary shell scripts.  Simply select the Shell Plugin when creating an event or workflow, and enter your script.  This is an easy way to get up and running quickly, because you don't have to worry about reading or writing JSON.
+PTOps đi kèm với một "Shell Plugin" tích hợp sẵn, bạn có thể sử dụng nó để thực thi các script shell tùy ý. Chỉ cần chọn Shell Plugin khi tạo một event hoặc workflow, và nhập script của bạn. Đây là một cách dễ dàng để bắt đầu nhanh chóng vì bạn không phải lo lắng về việc đọc hoặc ghi JSON.
 
-Here are the parameters it accepts:
+Dưới đây là các tham số nó chấp nhận:
 
-| Param Name | Param ID | Type | Description |
+| Tên Tham Số | ID Tham Số | Loại | Mô tả |
 |------------|----------|------|-------------|
-| **Script Source** | `script` | Code | Enter the shell script source to run.  This parameter is **Administrator Locked** by default, so standard users and non-admin API Keys cannot change it unless an administrator unlocks the parameter or grants admin privilege. |
-| **Add Date/Time Stamps to Log** | `annotate` | Checkbox | Prefix non-JSON stdout lines with date/time stamps in the job output, so each line is easier to trace during long-running jobs. |
-| **Data Passthrough** | `pass` | Checkbox | Legacy option that copies the job input data into the job output data, so downstream workflow nodes or run-event actions receive the same data.  For new workflows, [Workflow Data](workflows.md#sharing-data-between-all-nodes) is usually the better option. |
+| **Script Source** | `script` | Code | Nhập mã nguồn script shell để chạy. Tham số này được **Khóa cho Quyền Admin (Administrator Locked)** theo mặc định, do đó người dùng tiêu chuẩn và các API Key không có quyền admin không thể thay đổi nó trừ khi quản trị viên mở khóa tham số hoặc cấp quyền admin. |
+| **Add Date/Time Stamps to Log** | `annotate` | Checkbox | Thêm dấu thời gian vào trước các dòng stdout không phải JSON trong đầu ra của job, giúp mỗi dòng dễ dàng được theo dõi hơn trong các job chạy lâu. |
+| **Data Passthrough** | `pass` | Checkbox | Tùy chọn kế thừa sao chép dữ liệu đầu vào của job vào dữ liệu đầu ra của job, nhờ đó các node workflow tiếp theo hoặc các action run-event nhận được cùng một dữ liệu. Đối với các workflow mới, [Dữ Liệu Workflow](workflows.md#sharing-data-between-all-nodes) thường là tùy chọn tốt hơn. |
 
 > [!IMPORTANT]
-> The Shell Plugin can execute arbitrary code on your servers.  Keep the `script` parameter administrator locked unless you intentionally want non-admin users or API Keys to provide shell commands.
+> Shell Plugin có thể thực thi mã tùy ý trên các server của bạn. Hãy giữ tham số `script` bị khóa quyền quản trị viên trừ khi bạn thực sự muốn người dùng thông thường hoặc API Key cung cấp các lệnh shell.
 
-The Shell Plugin determines success or failure based on the [exit code](https://en.wikipedia.org/wiki/Exit_status) of your script.  This defaults to `0` representing success.  Meaning, if you want to trigger an error, exit with a non-zero status code, and make sure you print your error message to STDOUT or STDERR (both will be appended to your job's output capture).  Example:
+Shell Plugin quyết định thành công hay thất bại dựa trên [mã thoát (exit code)](https://en.wikipedia.org/wiki/Exit_status) của script của bạn. Mặc định mã thoát `0` đại diện cho thành công. Nghĩa là, nếu bạn muốn kích hoạt lỗi, hãy thoát với một mã trạng thái khác không, và đảm bảo bạn in thông báo lỗi ra STDOUT hoặc STDERR (cả hai sẽ được thêm vào phần chụp đầu ra của job của bạn). Ví dụ:
 
 ```sh
 #!/bin/bash
@@ -1550,7 +1539,7 @@ The Shell Plugin determines success or failure based on the [exit code](https://
 /usr/local/bin/my-task-3.bin || exit 1
 ```
 
-You can still report intermediate progress with the Shell Plugin.  It can accept JSON in the [standard output format](#progress) if enabled, but there is also a shorthand.  You can echo a single number on its own line, from 0 to 100, with a `%` suffix, and that will be interpreted as the current progress.  Example:
+Bạn vẫn có thể báo cáo tiến độ trung gian với Shell Plugin. Nó có thể chấp nhận định dạng JSON trong [định dạng đầu ra tiêu chuẩn](#progress) nếu được bật, nhưng cũng có một cách viết tắt. Bạn có thể echo một con số duy nhất trên dòng riêng của nó, từ 0 đến 100, kèm theo hậu tố `%`, và dòng đó sẽ được hiểu là tiến độ hiện tại. Ví dụ:
 
 ```sh
 #!/bin/bash
@@ -1571,35 +1560,35 @@ echo "75%"
 /usr/local/bin/my-task-4.bin || exit 1
 ```
 
-This would allow xyOps to show a graphical progress bar in the UI, and estimate the time remaining based on the elapsed time and current progress.
+Điều này cho phép PTOps hiển thị thanh tiến trình đồ họa trong UI, và ước tính thời gian còn lại dựa trên thời gian đã trôi qua và tiến độ hiện tại.
 
 > [!TIP]
-> The Shell Plugin actually supports any interpreted scripting language, including Node.js, PHP, Perl, Python, and more.  Basically, any language that supports a [Shebang](https://en.wikipedia.org/wiki/Shebang_%28Unix%29) line will work in the Shell Plugin.  Just change the `#!/bin/sh` to point to your interpreter of choice.
+> Shell Plugin thực tế hỗ trợ bất kỳ ngôn ngữ lập trình kịch bản thông dịch nào, bao gồm Node.js, PHP, Perl, Python, và nhiều ngôn ngữ khác. Cơ bản, bất kỳ ngôn ngữ nào hỗ trợ dòng [Shebang](https://en.wikipedia.org/wiki/Shebang_%28Unix%29) đều hoạt động trong Shell Plugin. Chỉ cần thay đổi `#!/bin/sh` để trỏ tới trình thông dịch bạn chọn.
 
 ### HTTP Request Plugin
 
-xyOps ships with a built-in "HTTP Request" Plugin, which you can use to send simple GET, HEAD or POST requests to any URL, and log the response.  You can specify custom HTTP request headers, and also supply regular expressions to match a successful response based on the content.
+PTOps đi kèm với một Plugin "HTTP Request" tích hợp sẵn, bạn có thể sử dụng nó để gửi các yêu cầu GET, HEAD hoặc POST đơn giản tới bất kỳ URL nào, và ghi log phản hồi. Bạn có thể chỉ định các header yêu cầu HTTP tùy chỉnh, và cũng cung cấp các biểu thức chính quy (regular expressions) để khớp một phản hồi thành công dựa trên nội dung.
 
-Here are the parameters it accepts:
+Dưới đây là các tham số nó chấp nhận:
 
-| Param Name | Param ID | Type | Description |
+| Tên Tham Số | ID Tham Số | Loại | Mô tả |
 |------------|----------|------|-------------|
-| **Method** | `method` | Menu | Select the HTTP request method, either GET, HEAD, POST, PUT or DELETE. |
-| **URL** | `url` | Text | Enter your fully-qualified URL here, which must begin with either `http://` or `https://`. |
-| **Headers** | `headers` | Text Box | Optionally include any custom request headers here, one per line. |
-| **POST Data** | `data` | Text Box | If you are sending a HTTP POST, enter the raw POST data here. |
-| **Timeout** | `timeout` | Number | Enter the timeout in seconds, which is measured as the time to first byte in the response. |
-| **Idle Timeout** | `idle_timeout` | Number | Enter the idle timeout in seconds, which is measured between data packets after the response begins. |
-| **Connect Timeout** | `connect_timeout` | Number | Enter the connection timeout in seconds, which is measured while opening the socket connection. |
-| **Success Match** | `success_match` | Text | Optionally enter a regular expression here, which is matched against the response body.  If specified, this must match to consider the job a success. |
-| **Error Match** | `error_match` | Text | Optionally enter a regular expression here, which is matched against the response body.  If this matches the response body, then the job is aborted with an error. |
-| **Follow Redirects** | `follow` | Checkbox | Check this box to automatically follow HTTP redirect responses (up to 32 of them). |
-| **Download File** | `download` | Checkbox | Check this box to attach the response body as a job output file instead of logging it as text. |
-| **SSL Cert Bypass** | `ssl_cert_bypass` | Checkbox | Check this box if you need to make HTTPS requests to servers with invalid SSL certificates (self-signed or other). |
+| **Method** | `method` | Menu | Chọn phương thức yêu cầu HTTP, một trong các phương thức GET, HEAD, POST, PUT hoặc DELETE. |
+| **URL** | `url` | Text | Nhập URL đầy đủ của bạn tại đây, phải bắt đầu bằng `http://` hoặc `https://`. |
+| **Headers** | `headers` | Text Box | Tùy chọn bao gồm bất kỳ header yêu cầu tùy chỉnh nào tại đây, mỗi dòng một header. |
+| **POST Data** | `data` | Text Box | Nếu bạn đang gửi một HTTP POST, hãy nhập dữ liệu POST thô tại đây. |
+| **Timeout** | `timeout` | Number | Nhập thời gian chờ (timeout) tính bằng giây, được tính là thời gian nhận được byte đầu tiên trong phản hồi. |
+| **Idle Timeout** | `idle_timeout` | Number | Nhập thời gian chờ rảnh rỗi tính bằng giây, được đo giữa các gói dữ liệu sau khi phản hồi bắt đầu. |
+| **Connect Timeout** | `connect_timeout` | Number | Nhập thời gian chờ kết nối tính bằng giây, được đo trong khi mở kết nối socket. |
+| **Success Match** | `success_match` | Text | Tùy chọn nhập một biểu thức chính quy tại đây để so khớp với phần body phản hồi. Nếu được chỉ định, biểu thức này phải khớp để coi job là thành công. |
+| **Error Match** | `error_match` | Text | Tùy chọn nhập một biểu thức chính quy tại đây để so khớp với phần body phản hồi. Nếu biểu thức này khớp với body phản hồi, job sẽ bị hủy bỏ với một lỗi. |
+| **Follow Redirects** | `follow` | Checkbox | Tick vào ô này để tự động đi theo các phản hồi chuyển hướng HTTP (tối đa 32 lần). |
+| **Download File** | `download` | Checkbox | Tick vào ô này để đính kèm body phản hồi dưới dạng file đầu ra của job thay vì ghi log nó dưới dạng văn bản. |
+| **SSL Cert Bypass** | `ssl_cert_bypass` | Checkbox | Tick vào ô này nếu bạn cần thực hiện các yêu cầu HTTPS tới các server có chứng chỉ SSL không hợp lệ (tự ký hoặc chứng chỉ khác). |
 
-#### Request Chaining
+#### Chuỗi Yêu Cầu (Request Chaining)
 
-The HTTP Request Plugin supports passing data between jobs.  First, information about the HTTP response is passed into the job output data, so connected events can read and act on it.  Specifically, the HTTP response code, all the HTTP response headers, and possibly even the content body itself (if formatted as JSON and smaller than 1 MB) are included.  Example:
+HTTP Request Plugin hỗ trợ chuyển dữ liệu giữa các job. Đầu tiên, thông tin về phản hồi HTTP được chuyển vào dữ liệu đầu ra của job, nhờ đó các event liên kết có thể đọc và hành động dựa trên đó. Cụ thể, mã phản hồi HTTP, tất cả các header phản hồi HTTP, và có thể cả bản thân nội dung body (nếu được định dạng dưới dạng JSON và nhỏ hơn 1 MB) sẽ được bao gồm. Ví dụ:
 
 ```js
 "data": {
@@ -1623,110 +1612,110 @@ The HTTP Request Plugin supports passing data between jobs.  First, information 
 }
 ```
 
-In this example an HTTP request was made that returned those specific response headers (the header names are converted to lower-case), and the body was also formatted as JSON, so the JSON data itself is parsed and included in a property named `json`.  Downstream events that are linked to the HTTP Request job (either by workflow node or run event action) can read these properties and act on them.
+Trong ví dụ này, một yêu cầu HTTP đã được thực hiện và trả về các header phản hồi cụ thể đó (các tên header được chuyển đổi thành chữ thường), và phần body cũng được định dạng dưới dạng JSON, vì vậy bản thân dữ liệu JSON được phân tích cú pháp và bao gồm trong thuộc tính có tên là `json`. Các event downstream được liên kết với job HTTP Request (qua node workflow hoặc action run event) có thể đọc các thuộc tính này và hành động dựa trên chúng.
 
-Secondly, you can chain an HTTP Request into *another* HTTP Request, and use the chained data values from the previous response in the next request.  To do this, you need to utilize a special `{{ mustache }}` template syntax in the second request, to lookup values in the `data` object from the first one.  You can use these placeholders in the **URL**, **Request Headers** and **POST Data** text fields.  Example:
+Thứ hai, bạn có thể nối một HTTP Request vào một HTTP Request *khác*, và sử dụng các giá trị dữ liệu chuỗi từ phản hồi trước đó trong yêu cầu tiếp theo. Để làm điều này, bạn cần sử dụng cú pháp template `{{ mustache }}` đặc biệt trong yêu cầu thứ hai, để tra cứu các giá trị trong đối tượng `data` từ yêu cầu đầu tiên. Bạn có thể sử dụng các placeholder này trong các trường văn bản **URL**, **Request Headers** và **POST Data**. Ví dụ:
 
 - **URL**: `http://myserver.com/test.json?key={{ data.json.key1 }}`
 - **Headers**: `X-UUID: {{ data.headers['x-uuid'] }}`
 
-Here you can see we are using two placeholders, one in the URL and another in the HTTP request headers.  These are looking up values from a *previous* HTTP Request event, and passing them into the next request.  Specifically, we are using:
+Tại đây bạn có thể thấy chúng ta đang sử dụng hai placeholder, một trong URL và một trong các header yêu cầu HTTP. Chúng đang tìm kiếm các giá trị từ một event HTTP Request *trước đó*, và chuyển chúng vào yêu cầu tiếp theo. Cụ thể, chúng ta đang sử dụng:
 
-| Placeholder | Description |
+| Placeholder | Mô tả |
 |-------------|-------------|
-| `{{ data.json.key1 }}` | This placeholder is looking up the `key` value from the JSON data (body content) of the previous HTTP response.  Using our example response shown above, this would resolve to `value1`. |
-| `{{ data.headers['x-uuid'] }}` | This placeholder is looking up the `X-UUID` response header from the previous HTTP response.  Using our example response shown above, this would resolve to `7617a494-823f-4566-8f8b-f479c2a6e707`. |
+| `{{ data.json.key1 }}` | Placeholder này tra cứu giá trị `key` từ dữ liệu JSON (nội dung body) của phản hồi HTTP trước đó. Sử dụng ví dụ phản hồi của chúng tôi hiển thị ở trên, placeholder này sẽ phân giải thành `value1`. |
+| `{{ data.headers['x-uuid'] }}` | Placeholder này tra cứu header phản hồi `X-UUID` từ phản hồi HTTP trước đó. Sử dụng ví dụ phản hồi của chúng tôi hiển thị ở trên, placeholder này sẽ phân giải thành `7617a494-823f-4566-8f8b-f479c2a6e707`. |
 
-So once the second request is sent off, after placeholder expansion the URL would actually resolve to:
+Do đó, một khi yêu cầu thứ hai được gửi đi, sau khi mở rộng placeholder, URL sẽ thực sự phân giải thành:
 
 ```
 http://myserver.com/test.json?key=value1
 ```
 
-And the header would expand to:
+Và header sẽ mở rộng thành:
 
 ```
 X-UUID: 7617a494-823f-4566-8f8b-f479c2a6e707
 ```
 
-You can chain as many requests together as you like, but note that each request can only see and act on chain data from the *previous* request (the one that directly chained to it).
+Bạn có thể liên kết bao nhiêu yêu cầu tùy thích, nhưng lưu ý rằng mỗi yêu cầu chỉ có thể nhìn thấy và hành động dựa trên dữ liệu chuỗi từ yêu cầu *ngay trước đó* (yêu cầu trực tiếp liên kết đến nó).
 
-#### Using Secrets in Requests
+#### Sử dụng Secret trong Yêu Cầu
 
-To use secrets in the HTTP Request Plugin, you need to specify them using a custom macro syntax: `[secrets.KEY_NAME]`.  This square-bracket format works in the URL, the request headers, and the request body.
+Để sử dụng các secret trong HTTP Request Plugin, bạn cần chỉ định chúng bằng cú pháp macro tùy chỉnh: `[secrets.KEY_NAME]`. Định dạng dấu ngoặc vuông này hoạt động trong URL, các header yêu cầu, và body yêu cầu.
 
-Note that the secrets will be printed on the job output screen.
+Lưu ý rằng các secret sẽ được che lại trên màn hình hiển thị đầu ra của job.
 
 ### Test Plugin
 
-The Test Plugin exists mainly to test xyOps, but it can also be useful for testing pieces of workflows.  It outputs sample data and optionally a sample file, which are passed to downstream events, if connected.  It can also simulate various job outcomes (success, fail, etc.).  It offers the following parameters:
+Test Plugin tồn tại chủ yếu để kiểm thử PTOps, nhưng nó cũng có thể hữu ích để kiểm thử các phần của workflow. Nó tạo ra dữ liệu mẫu và tùy chọn xuất ra một file mẫu để chuyển cho các event tiếp theo nếu được kết nối. Nó cũng có thể mô phỏng các kết quả job khác nhau (thành công, lỗi, v.v.). Nó cung cấp các tham số sau:
 
-| Param Name | Param ID | Type | Description |
+| Tên Tham Số | ID Tham Số | Loại | Mô tả |
 |------------|----------|------|-------------|
-| **Test Duration** | `duration` | Number | The number of seconds to run before reporting completion.  Progress is always reported. |
-| **Simulate Result** | `action` | Menu | Select which result to simulate (Success, Error, Warning, Critical, Crash). |
-| **Custom Value** | `custom` | Text | Enter an optional custom value to include in the test output data. |
-| **Burn Memory/CPU** | `burn` | Checkbox | If checked the Plugin will use some memory and CPU (it will allocate 128-256MB of memory and use about 10% of a CPU core doing math in a loop). |
-| **Generate Network Traffic** | `network` | Checkbox | If checked the Plugin will make continuous network requests downloading large binary data blobs (from GitHub). |
-| **Upload Sample File** | `upload` | Checkbox | If checked the Plugin will produce a sample file and attach it to the job output. |
+| **Test Duration** | `duration` | Number | Số giây cần chạy trước khi báo cáo hoàn thành. Tiến độ luôn được báo cáo. |
+| **Simulate Result** | `action` | Menu | Chọn kết quả muốn mô phỏng (Success, Error, Warning, Critical, Crash). |
+| **Custom Value** | `custom` | Text | Nhập một giá trị tùy chọn để đưa vào dữ liệu đầu ra thử nghiệm. |
+| **Burn Memory/CPU** | `burn` | Checkbox | Nếu được tick, Plugin sẽ sử dụng một số bộ nhớ và CPU (nó sẽ cấp phát 128-256MB bộ nhớ và sử dụng khoảng 10% lõi CPU để thực hiện phép toán trong một vòng lặp). |
+| **Generate Network Traffic** | `network` | Checkbox | Nếu được tick, Plugin sẽ thực hiện các yêu cầu mạng liên tục để tải xuống các blob dữ liệu nhị phân lớn (từ GitHub). |
+| **Upload Sample File** | `upload` | Checkbox | Nếu được tick, Plugin sẽ tạo ra một file mẫu và đính kèm nó vào đầu ra của job. |
 
 ### Fire Web Hook Plugin
 
-xyOps ships with a built-in "Fire Web Hook" Plugin, which you can use to fire one of your configured [Web Hooks](webhooks.md) as a standard job.  This is useful when web hook delivery needs to be part of a workflow's actual job graph, rather than a follow-up [Action](actions.md) that runs after another job has already completed.
+PTOps đi kèm với một Plugin "Fire Web Hook" tích hợp sẵn, bạn có thể sử dụng nó để kích hoạt một trong các [Web Hook](webhooks.md) đã cấu hình của mình dưới dạng một job tiêu chuẩn. Điều này hữu ích khi việc gửi web hook cần phải là một phần trong đồ thị job thực tế của một workflow, thay vì là một [Action](actions.md) theo sau chạy sau khi một job khác đã hoàn thành.
 
-The standard Web Hook action is still the best fit for notifications and side effects, where delivery failure should not change the original job's outcome.  The Fire Web Hook Plugin is different: the web hook is the job.  If the web hook succeeds, the job succeeds.  If the web hook fails, the job fails, and you can branch, retry, abort the workflow, or run other follow-up logic based on that result.
+Action Web Hook tiêu chuẩn vẫn là lựa chọn phù hợp nhất cho các thông báo và tác dụng phụ (side effects), nơi việc gửi thất bại không nên thay đổi kết quả của job gốc. Fire Web Hook Plugin thì khác: bản thân web hook chính là job. Nếu web hook thành công, job thành công. Nếu web hook thất bại, job thất bại, và bạn có thể rẽ nhánh, thử lại, hủy bỏ workflow, hoặc chạy các logic tiếp theo dựa trên kết quả đó.
 
 > [!NOTE]
-> This Plugin is included with new installs starting in xyOps v1.0.69 and xySat v1.0.31.  Existing installations upgraded from earlier versions may need to import the [Fire Web Hook Plugin import file](https://pixlcore.com/software/xywiki/xyops-plugin-hookplug.json), because xyOps upgrades do not currently mutate existing system configuration.
+> Plugin này được bao gồm trong các bản cài đặt mới bắt đầu từ PTOps v1.0.69 và xySat v1.0.31. Các bản cài đặt hiện tại được nâng cấp từ các phiên bản trước đó có thể cần import [file import Fire Web Hook Plugin](https://pixlcore.com/software/xywiki/xyops-plugin-hookplug.json), vì việc nâng cấp PTOps hiện không tự động làm thay đổi cấu hình hệ thống hiện có.
 
-Here are the parameters it accepts:
+Dưới đây là các tham số nó chấp nhận:
 
-| Param Name | Param ID | Type | Description |
+| Tên Tham Số | ID Tham Số | Loại | Mô tả |
 |------------|----------|------|-------------|
-| **Web Hook** | `web_hook` | System Menu | Select the configured xyOps web hook to fire.  This field is required. |
-| **Custom Text** | `text` | Text Box | Optionally enter custom text to append to the standard generated web hook message. |
+| **Web Hook** | `web_hook` | System Menu | Chọn web hook PTOps đã cấu hình để kích hoạt. Trường này là bắt buộc. |
+| **Custom Text** | `text` | Text Box | Tùy chọn nhập văn bản tùy chỉnh để thêm vào cuối tin nhắn web hook được tạo tiêu chuẩn. |
 
-The selected web hook still uses the normal web hook definition, including its URL, method, headers, body, secrets, timeout, retries, redirect settings, TLS settings, and `{{ ... }}` template expressions.  See [Web Hooks](webhooks.md) for more details.
+Web hook được chọn vẫn sử dụng định nghĩa web hook thông thường, bao gồm URL, phương thức, các header, body, các secret, thời gian chờ, số lần thử lại, cài đặt chuyển hướng, cài đặt TLS, và các biểu thức template `{{ ... }}`. Xem [Web Hook](webhooks.md) để biết thêm chi tiết.
 
-Note that the **Custom Text** parameter only matters if the selected web hook template uses the standard `{{text}}` value somewhere, for example in a JSON body field such as `text`, `content`, or `message`.  If your web hook body does not reference `{{text}}`, then this extra text is not sent to the remote endpoint.
+Lưu ý rằng tham số **Custom Text** chỉ có ý nghĩa nếu template web hook được chọn sử dụng giá trị `{{text}}` tiêu chuẩn ở đâu đó, ví dụ trong một trường JSON body như `text`, `content` hoặc `message`. Nếu body web hook của bạn không tham chiếu `{{text}}`, thì văn bản bổ sung này sẽ không được gửi tới endpoint từ xa.
 
 ### Docker Plugin
 
-The Docker Plugin allows you to run custom scripts inside a Docker container.  Similar to the [Shell Plugin](#shell-plugin), you can specify any custom code to run, and in any language, as long as it supports a [Shebang](https://en.wikipedia.org/wiki/Shebang_%28Unix%29) line.
+Docker Plugin cho phép bạn chạy các script tùy chỉnh bên trong một container Docker. Tương tự như [Shell Plugin](#shell-plugin), bạn có thể chỉ định bất kỳ đoạn code tùy chỉnh nào để chạy, bằng bất kỳ ngôn ngữ nào, miễn là nó hỗ trợ dòng [Shebang](https://en.wikipedia.org/wiki/Shebang_%28Unix%29).
 
-You can enter any Docker image to use, including remote ones.  By default, our own [xyOps Shell Image](https://github.com/pixlcore/xyops-shell-image) is selected, which is based in Debian 12, and comes preinstalled with a variety of popular software, as well as our [xyRun](https://github.com/pixlcore/xyrun) wrapper.  xyRun will track system resources *inside* the container, as well as handle file upload/download for your jobs.  This is optional, and you can use any Docker image you want, including your own custom ones.
+Bạn có thể nhập bất kỳ Docker image nào để sử dụng, bao gồm cả các image từ xa. Theo mặc định, [PTOps Shell Image](https://github.com/pixlcore/xyops-shell-image) của chúng tôi được chọn, dựa trên Debian 12 và được cài đặt sẵn nhiều phần mềm phổ biến, cũng như công cụ bọc [xyRun](https://github.com/pixlcore/xyrun) của chúng tôi. xyRun sẽ theo dõi tài nguyên hệ thống *bên trong* container, cũng như quản lý việc upload/download file cho các job của bạn. Đây là tùy chọn, và bạn có thể sử dụng bất kỳ Docker image nào bạn muốn, bao gồm cả các image tùy chỉnh của riêng bạn.
 
-This is built on top of [docker run](https://docs.docker.com/reference/cli/docker/container/run/), so each job creates a new container, and can optionally delete it when the job is complete (which is the default behavior).
+Dịch vụ này được xây dựng trên nền tảng [docker run](https://docs.docker.com/reference/cli/docker/container/run/), vì vậy mỗi job sẽ tạo ra một container mới, và có thể tùy chọn xóa nó khi job hoàn thành (đây là hành vi mặc định).
 
-The Docker Plugin uses the following parameters:
+Docker Plugin sử dụng các tham số sau:
 
-| Param Name | Param ID | Type | Description |
+| Tên Tham Số | ID Tham Số | Loại | Mô tả |
 |------------|----------|------|-------------|
-| **Image Name** | `image_name` | Text | The name of the Docker image to use, which can be local or remote. |
-| **Image Version** | `image_ver` | Text | The version of the image to use, or `latest`. |
-| **Container Name** | `cont_name` | Text | The name of the Docker container, which can use macros such as `{{id}}` to make it unique per job. |
-| **Max CPUs** | `cont_cpus` | Number | The max number of CPU cores the container is allowed to use, or 0 for unlimited. |
-| **Max Memory** | `cont_mem` | Text | The max amount of memory to allow the container to use (default is unlimited). |
-| **Join Network** | `cont_net` | Text | Optionally specify a Docker network name for the container to join. |
-| **Command Extras** | `cont_extras` | Text | Optionally add any extra command-line arguments to pass to `docker run` (for e.g. volume mounts). |
-| **Launch Command** | `cont_cmd` | Text | The initial command to run as the container starts.  It is recommended to use [xyRun](https://github.com/pixlcore/xyrun) for this, so resources are monitored, and files are managed properly. |
-| **Run Mode** | `run_mode` | Menu | Choose whether you want the entire job JSON data to be sent to STDIN, or only the script source (advanced). |
-| **Script Source** | `script` | Code | The code to run inside the container.  You can use any language that supports a shebang line. |
-| **Init Process Manager** | `cont_init` | Checkbox | Run an "init" inside the container that forwards signals and reaps processes. |
-| **Ephemeral Container** | `cont_rm` | Checkbox | Automatically delete the container after the job completes (recommended). |
-| **Verbose Logging** | `verbose` | Checkbox | Enable verbose debug logging (raw docker command, etc.) |
+| **Image Name** | `image_name` | Text | Tên của Docker image sử dụng, có thể là local hoặc remote. |
+| **Image Version** | `image_ver` | Text | Phiên bản của image sử dụng, hoặc `latest`. |
+| **Container Name** | `cont_name` | Text | Tên của Docker container, có thể sử dụng các macro như `{{id}}` để đảm bảo nó duy nhất cho mỗi job. |
+| **Max CPUs** | `cont_cpus` | Number | Số lượng lõi CPU tối đa container được phép sử dụng, hoặc 0 để không giới hạn. |
+| **Max Memory** | `cont_mem` | Text | Lượng bộ nhớ tối đa cho phép container sử dụng (mặc định là không giới hạn). |
+| **Join Network** | `cont_net` | Text | Tùy chọn chỉ định một tên mạng Docker để container tham gia vào. |
+| **Command Extras** | `cont_extras` | Text | Tùy chọn thêm bất kỳ đối số dòng lệnh bổ sung nào để chuyển tới `docker run` (ví dụ volume mounts). |
+| **Launch Command** | `cont_cmd` | Text | Lệnh ban đầu để chạy khi container khởi động. Khuyến nghị sử dụng [xyRun](https://github.com/pixlcore/xyrun) cho việc này để tài nguyên được giám sát và các file được quản lý chính xác. |
+| **Run Mode** | `run_mode` | Menu | Chọn xem bạn muốn toàn bộ dữ liệu JSON của job được gửi tới STDIN, hay chỉ gửi mã nguồn script (nâng cao). |
+| **Script Source** | `script` | Code | Code chạy bên trong container. Bạn có thể sử dụng bất kỳ ngôn ngữ nào hỗ trợ dòng shebang. |
+| **Init Process Manager** | `cont_init` | Checkbox | Chạy một tiến trình "init" bên trong container để chuyển tiếp tín hiệu và thu hồi các tiến trình con (reap processes). |
+| **Ephemeral Container** | `cont_rm` | Checkbox | Tự động xóa container sau khi job hoàn thành (khuyến nghị). |
+| **Verbose Logging** | `verbose` | Checkbox | Bật ghi log debug chi tiết (lệnh docker thô, v.v.). |
 
-#### Custom Images
+#### Image Tùy Chỉnh (Custom Images)
 
-Feel free to create your own custom Docker image for use in the Docker Plugin.  You can either build one on top of ours, or build your own from scratch.  Either way, we highly recommend you install [xyRun](https://github.com/pixlcore/xyrun) inside your image as a command wrapper, so xyOps can track system resource usage, and manage files for your jobs.
+Bạn có thể tự do tạo Docker image tùy chỉnh của riêng mình để sử dụng trong Docker Plugin. Bạn có thể xây dựng một image dựa trên image của chúng tôi, hoặc tự xây dựng từ đầu. Dù bằng cách nào, chúng tôi khuyên bạn nên cài đặt [xyRun](https://github.com/pixlcore/xyrun) bên trong image của mình làm trình bọc lệnh, để PTOps có thể theo dõi việc sử dụng tài nguyên hệ thống, và quản lý các file cho các job của bạn.
 
-If you use an image without xyRun, please note the following caveats:
+Nếu bạn sử dụng một image không có xyRun, vui lòng lưu ý các cảnh báo sau:
 
-- Environment variables will not be set (i.e. `JOB_ID`, `JOB_NOW`, etc.).
-- Secrets will not be passed into the container.
+- Các biến môi trường sẽ không được thiết lập (tức là `JOB_ID`, `JOB_NOW`, v.v.).
+- Các secret sẽ không được truyền vào container.
 
-To use a pre-existing Docker image such as `ubuntu`, you can set the launch command to something like `sh`, and then set the "Run Mode" to "Script Source".  This will pipe in your script source directly to the STDIN of the launch process, e.g. `sh`, which will execute it inside the container.
+Để sử dụng một Docker image có sẵn như `ubuntu`, bạn có thể đặt lệnh khởi động thành một thứ như `sh`, và sau đó đặt "Run Mode" thành "Script Source". Việc này sẽ chuyển trực tiếp mã nguồn script của bạn tới STDIN của tiến trình khởi động, ví dụ `sh`, vốn sẽ thực thi nó bên trong container.
 
 ## Plugin Marketplace
 
-xyOps has an integrated Plugin Marketplace, so you can expand the app's feature set by leveraging Plugins published both by PixlCore (the makers of xyOps), as well as the developer community.  For more on this, please see the [Marketplace Guide](marketplace.md).
+PTOps có một Plugin Marketplace tích hợp sẵn, nhờ đó bạn có thể mở rộng tập hợp các tính năng của ứng dụng bằng cách tận dụng các Plugin được phát hành bởi cả PixlCore (nhà phát triển PTOps), cũng như cộng đồng lập trình viên. Để biết thêm về vấn đề này, vui lòng xem [Hướng Dẫn Marketplace](marketplace.md).

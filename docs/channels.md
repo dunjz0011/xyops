@@ -1,78 +1,78 @@
 # Channels
 
-## Overview
+## Tổng Quan
 
-Notification Channels in xyOps let you bundle multiple notification targets and follow-up actions under a single reusable name. Instead of attaching individual emails, web hooks, or run-event actions everywhere, you reference a channel from your event/workflow or alert action and xyOps executes the channel's configured actions together.
+Notification Channel trong PTOps cho phép bạn đóng gói nhiều đích thông báo và action theo sau dưới một tên tái sử dụng duy nhất. Thay vì gắn từng email, web hook, hoặc action run-event riêng lẻ ở mọi nơi, bạn tham chiếu một channel từ event/workflow hoặc alert action của mình và PTOps thực thi các action đã cấu hình của channel cùng nhau.
 
-Typical use case: Create a channel named "Severity 1" that emails your on-call team, sends a Slack/web hook, runs a remediation event, and plays an audible alert in the UI for connected users.
+Trường hợp sử dụng điển hình: Tạo một channel tên "Severity 1" gửi email cho team on-call của bạn, gửi web hook Slack, chạy một event khắc phục (remediation), và phát âm báo động trên UI cho các user đang kết nối.
 
-This document explains how channels work, where they are used, what they can do, and provides an example configuration.
+Tài liệu này giải thích cách channel hoạt động, nơi chúng được sử dụng, chúng có thể làm gì, và cung cấp một ví dụ cấu hình.
 
-## Key Points
+## Điểm Chính
 
-- Channels are reusable notification/action bundles that you define once and reference from actions.
-- Attach a channel via an action of type "Notify Channel" on events/workflows or alerts. See [Actions](actions.md).
-- When a channel runs, xyOps can: email users and explicit addresses, fire a web hook, launch an event, and display in-app notifications with an optional sound for selected users.
-- Channels can be enabled/disabled, have an optional icon, and support a per-day rate limit to prevent notification floods.
-- Channel execution is recorded in job Activity logs (for jobs) or stored on the alert record (for alerts), including sub-action details.
+- Channel là các bó thông báo/action tái sử dụng mà bạn định nghĩa một lần và tham chiếu từ action.
+- Gắn một channel qua action loại "Notify Channel" trên event/workflow hoặc alert. Xem [Actions](actions.md).
+- Khi một channel chạy, PTOps có thể: gửi email cho user và địa chỉ rõ ràng, gửi web hook, khởi chạy một event, và hiển thị thông báo trong app với âm thanh tuỳ chọn cho các user được chọn.
+- Channel có thể được bật/tắt, có icon tuỳ chọn, và hỗ trợ giới hạn tần suất mỗi ngày để tránh lũ thông báo.
+- Việc thực thi channel được ghi lại trong log Activity của job (đối với job) hoặc lưu trên record alert (đối với alert), bao gồm chi tiết các sub-action.
 
-## Where Channels Are Used
+## Nơi Channel Được Sử Dụng
 
-- Event/Workflow actions: Add an action type "Notify Channel" to run on job start, or a completion outcome such as error, warning, etc.
-- Alert actions: Add an action with type "Notify Channel" to run on alerts firing or clearing.
-- Admin UI: Create and manage channels in Admin → Channels.
+- Action của Event/Workflow: Thêm một action loại "Notify Channel" để chạy khi job start, hoặc khi có kết quả hoàn thành như error, warning, v.v.
+- Action của Alert: Thêm một action loại "Notify Channel" để chạy khi alert kích hoạt hoặc được xoá.
+- Admin UI: Tạo và quản lý channel trong Admin → Channels.
 
-See [Actions](actions.md) for action conditions and behavior.
+Xem [Actions](actions.md) để biết điều kiện và hành vi của action.
 
-## Privileges
+## Privilege
 
-Managing channels requires account privileges:
+Quản lý channel yêu cầu privilege tài khoản:
 
-- `create_channels`: Create notification channels.
-- `edit_channels`: Edit existing channels.
-- `delete_channels`: Delete channels.
+- `create_channels`: Tạo channel thông báo.
+- `edit_channels`: Sửa channel hiện có.
+- `delete_channels`: Xóa channel.
 
-See [Privileges](privileges.md) for details on assigning privileges or roles.
+Xem [Privileges](privileges.md) để biết chi tiết về gán privilege hoặc role.
 
-## What Channels Can Do
+## Channel Có Thể Làm Gì
 
-When a channel is invoked, xyOps executes these configured actions in parallel:
+Khi một channel được kích hoạt, PTOps thực thi các action đã cấu hình này song song:
 
-- Email: Email all channel users plus any extra addresses provided.
-- Web Hook: Fire a configured outbound web hook with a rich, templated payload.
-- Run Event: Launch a specific event as a follow-up/remediation.
-- In-App Notify: Send a UI notification to all channel users; can optionally play a sound.
+- Email: Gửi email cho tất cả user của channel cùng với bất kỳ địa chỉ bổ sung nào được cung cấp.
+- Web Hook: Gửi một web hook gửi ra đã cấu hình với payload dạng template phong phú.
+- Run Event: Khởi chạy một event cụ thể như một hành động khắc phục/theo sau.
+- In-App Notify: Gửi thông báo UI cho tất cả user của channel; có thể tuỳ chọn phát âm thanh.
 
-Notes:
+Lưu ý:
 
-- Email and web hook payloads are templated based on context. For jobs, payloads include job links, log excerpts, and metadata. For alerts, payloads include server and alert details with direct links.
-- Launched events inherit context: job actions include the parent job's output data/files; alert actions include alert metadata in the child job's input data.
-- Channel actions are executed in parallel, and their individual results are aggregated into the parent action's details for auditing.
-- Disabled channels are skipped. If a referenced channel is disabled, the action records a message and does nothing.
+- Payload email và web hook được dựng template dựa trên context. Đối với job, payload bao gồm link job, trích đoạn log, và metadata. Đối với alert, payload bao gồm chi tiết server và alert với link trực tiếp.
+- Các event được khởi chạy kế thừa context: action job bao gồm dữ liệu/file output của job cha; action alert bao gồm metadata alert trong dữ liệu input của job con.
+- Các action channel được thực thi song song, và kết quả riêng của chúng được tổng hợp vào chi tiết của action cha để phục vụ auditing.
+- Channel bị tắt sẽ bị bỏ qua. Nếu channel được tham chiếu bị tắt, action ghi lại một message và không làm gì.
 
-## Rate Limiting
+## Giới Hạn Tần Suất
 
-Channels support an optional per-day cap. When the limit is reached, the channel action is skipped for the rest of the day and a message is recorded. Counts reset daily at midnight (local server timezone).
+Channel hỗ trợ giới hạn tuỳ chọn mỗi ngày. Khi đạt đến giới hạn, action channel bị bỏ qua cho đến hết ngày đó và một message được ghi lại. Số lượng reset mỗi ngày vào nửa đêm (giờ server cục bộ).
 
-## Channel Object
+## Đối Tượng Channel
 
-Channels are first-class objects with these key properties. See the canonical definition in [Channel](data.md#channel).
+Channel là các đối tượng hạng nhất với các thuộc tính chính sau. Xem định nghĩa chuẩn trong [Channel](data.md#channel).
 
-- `id`: Unique alphanumeric identifier. If omitted on creation, xyOps auto-generates one.
-- `title`: Display title shown in the UI and notifications.
-- `enabled`: Enable/disable the channel.
-- `icon`: Optional Material Design icon name for UI display.
-- `users`: Array of usernames to notify. Used for both email lookup and in-app notifications.
-- `email`: Optional comma-separated email address list (external recipients).
-- `web_hook`: Optional [WebHook.id](data.md#webhook-id) to fire.
-- `run_event`: Optional [Event.id](data.md#event-id) to launch.
-- `sound`: Optional `.mp3` filename to play for channel users in the UI notification.
-- `max_per_day`: Optional cap on channel invocations per day (0 = unlimited).
-- `notes`: Optional free-form notes.
+- `id`: ID định danh alphanumeric duy nhất. Nếu bỏ trống khi tạo, PTOps sẽ tự tạo một ID.
+- `title`: Tiêu đề hiển thị trên UI và thông báo.
+- `enabled`: Bật/tắt channel.
+- `icon`: Tên icon Material Design tuỳ chọn để hiển thị trên UI.
+- `users`: Mảng username để thông báo. Dùng cho cả tra cứu email và thông báo trong app.
+- `email`: Danh sách địa chỉ email phân tách bằng dấu phẩy tuỳ chọn (người nhận bên ngoài).
+- `web_hook`: [WebHook.id](data.md#webhook-id) tuỳ chọn để gửi.
+- `run_event`: [Event.id](data.md#event-id) tuỳ chọn để khởi chạy.
+- `sound`: Tên file `.mp3` tuỳ chọn để phát cho user của channel trong thông báo UI.
+- `max_per_day`: Giới hạn tuỳ chọn về số lần kích hoạt channel mỗi ngày (0 = không giới hạn).
+- `notes`: Ghi chú tự do tuỳ chọn.
 
-## Example Channel
+## Ví Dụ Channel
 
-Example JSON for a "Severity 1" channel:
+JSON ví dụ cho một channel "Severity 1":
 
 ```json
 {
@@ -90,11 +90,11 @@ Example JSON for a "Severity 1" channel:
 }
 ```
 
-## Using a Channel in Actions
+## Sử Dụng Channel Trong Action
 
-Attach the channel via an action of type "Notify Channel". Example action snippets (JSON):
+Gắn channel qua một action loại "Notify Channel". Ví dụ đoạn action (JSON):
 
-- Job action (on error):
+- Action của job (khi error):
 
 ```json
 {
@@ -105,7 +105,7 @@ Attach the channel via an action of type "Notify Channel". Example action snippe
 }
 ```
 
-- Alert action (when fired):
+- Action của alert (khi kích hoạt):
 
 ```json
 {
@@ -116,47 +116,47 @@ Attach the channel via an action of type "Notify Channel". Example action snippe
 }
 ```
 
-See [Actions → Channel](actions.md#channel) for action semantics and deduplication.
+Xem [Actions → Channel](actions.md#channel) để biết ngữ nghĩa action và cách loại bỏ trùng lặp.
 
-## Behavior Details
+## Chi Tiết Hành Vi
 
-- Parallel execution: Email, web hook, run event, and UI notifications execute concurrently.
-- Deduplication: xyOps dedupes actions by type and target at the job/alert level. Multiple references to the same channel within a single trigger run only once; their contained actions execute once as part of the channel.
-- In-app notifications: All `users` receive a popup notification with an optional sound. Job actions link to the job; alert actions link to the alert.
-- Templates: Email/web hook messages use standard job/alert templates. Channel configuration does not add custom text; customize per-action text by using direct email/web hook actions if needed.
-- Auditing: For jobs, sub-action results are aggregated into the job's Activity log under the channel action. For alerts, results are stored with the alert's action history.
+- Thực thi song song: Email, web hook, run event, và thông báo UI thực thi đồng thời.
+- Loại bỏ trùng lặp: PTOps loại bỏ trùng lặp action theo loại và target ở cấp job/alert. Nhiều tham chiếu đến cùng một channel trong một lần kích hoạt duy nhất chỉ chạy một lần; các action chứa trong đó thực thi một lần như một phần của channel.
+- Thông báo trong app: Tất cả `users` nhận thông báo popup với âm thanh tuỳ chọn. Action job liên kết đến job; action alert liên kết đến alert.
+- Template: Message email/web hook dùng template job/alert chuẩn. Cấu hình channel không thêm văn bản tuỳ chỉnh; tuỳ chỉnh văn bản riêng cho từng action bằng cách dùng action email/web hook trực tiếp nếu cần.
+- Auditing: Đối với job, kết quả sub-action được tổng hợp vào log Activity của job dưới action channel. Đối với alert, kết quả được lưu cùng lịch sử action của alert.
 
-## Managing Channels
+## Quản Lý Channel
 
-- Create/Edit/Delete in Admin → Channels.
-- Toggle enabled status from the channel list or editor.
-- Choose an optional icon and sound. Sound files must be `.mp3`. The UI provides a curated list; you can preview sounds in the editor.
-- Set `max_per_day` to cap total channel invocations per day.
+- Tạo/Sửa/Xóa trong Admin → Channels.
+- Chuyển đổi trạng thái bật/tắt từ danh sách hoặc trình chỉnh sửa channel.
+- Chọn icon và âm thanh tuỳ chọn. File âm thanh phải là `.mp3`. UI cung cấp danh sách được chọn lọc; bạn có thể nghe trước âm thanh trong trình chỉnh sửa.
+- Đặt `max_per_day` để giới hạn tổng số lần kích hoạt channel mỗi ngày.
 
-## API Endpoints
+## Endpoint API
 
-For automation and tools, these endpoints manage channels:
+Đối với automation và công cụ, các endpoint này quản lý channel:
 
-- `app/get_channels/v1`: List all channels.
-- `app/get_channel/v1`: Fetch a single channel by `id`.
-- `app/create_channel/v1`: Create a channel. If `id` is omitted, one is auto-generated.
-- `app/update_channel/v1`: Update a channel.
-- `app/delete_channel/v1`: Delete a channel.
+- `app/get_channels/v1`: Liệt kê tất cả channel.
+- `app/get_channel/v1`: Lấy một channel duy nhất theo `id`.
+- `app/create_channel/v1`: Tạo channel. Nếu bỏ trống `id`, một ID sẽ được tự tạo.
+- `app/update_channel/v1`: Cập nhật channel.
+- `app/delete_channel/v1`: Xóa channel.
 
-See [Channels API](api.md#channels) for more API details.
+Xem [Channels API](api.md#channels) để biết thêm chi tiết API.
 
-## Notes and Tips
+## Ghi Chú và Mẹo
 
-- Keep channels focused: Create separate channels for different severities or teams (e.g., `ops_oncall`, `security_incidents`, `customer_success`).
-- Prefer channels for consistency: Reference the same channel across multiple events and alerts to keep your notification patterns uniform.
-- Use run-event carefully: Ensure the remediation event is idempotent and safe to trigger on repeated conditions.
-- Rate limits are per channel: If you need separate caps for different targets, split into multiple channels.
+- Giữ channel tập trung: Tạo channel riêng cho các mức độ nghiêm trọng hoặc team khác nhau (ví dụ `ops_oncall`, `security_incidents`, `customer_success`).
+- Ưu tiên channel để đảm bảo nhất quán: Tham chiếu cùng một channel qua nhiều event và alert để giữ mẫu thông báo của bạn đồng nhất.
+- Cẩn thận với run-event: Đảm bảo event khắc phục là idempotent và an toàn để kích hoạt khi điều kiện lặp lại.
+- Giới hạn tần suất là theo từng channel: Nếu bạn cần giới hạn riêng cho các target khác nhau, tách thành nhiều channel.
 
-## See Also
+## Xem Thêm
 
 - API: [Channels](api.md#channels)
 - Actions: [Actions](actions.md)
-- Data structures: [Channel](data.md#channel)
+- Cấu trúc dữ liệu: [Channel](data.md#channel)
 - Privileges: [Privileges](privileges.md)
 - Web Hooks: [Web Hooks](webhooks.md)
 - Events: [Events](events.md)

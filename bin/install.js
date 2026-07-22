@@ -1,4 +1,4 @@
-// xyOps Auto Installer
+// PTOps Auto Installer
 // Copyright (c) 2019 - 2026 PixlCore LLC
 // Released under the BSD 3-Clause License.
 // https://github.com/pixlcore/xyops/blob/main/LICENSE.md
@@ -27,14 +27,14 @@ if (process.version.match(/^v?(\d+)/) && (parseInt(RegExp.$1) < 20) && !process.
 
 // Error out if we have low memory
 if ((os.totalmem() < 64 * 1024 * 1024) && !process.env['XYOPS_DANGER']) {
-	console.error("\nERROR: The current machine has less than 64 MB of total RAM.  xyOps will likely fail to install successfully under such low memory conditions.\n\nTo ignore this error and attempt the install anyway, set a XYOPS_DANGER environment variable.  Do this at your own risk.\n");
+	console.error("\nERROR: The current machine has less than 64 MB of total RAM.  PTOps will likely fail to install successfully under such low memory conditions.\n\nTo ignore this error and attempt the install anyway, set a XYOPS_DANGER environment variable.  Do this at your own risk.\n");
 	process.exit(1);
 }
 
 // make sure we have NPM available
 try { cp.execSync('which npm'); }
 catch (err) {
-	console.error("\nERROR: NPM cannot be found.  xyOps requires both Node.js and NPM to be preinstalled.  Instructions: https://nodejs.org/en/download/\n");
+	console.error("\nERROR: NPM cannot be found.  PTOps requires both Node.js and NPM to be preinstalled.  Instructions: https://nodejs.org/en/download/\n");
 	process.exit(1);
 }
 
@@ -68,7 +68,7 @@ log_file = log_dir + '/install.log';
 logonly( "\nStarting install run: " + (new Date()).toString() + "\n" );
 
 print( 
-	"\n" + "xyOps Installer v" + installer_version + "\n" + 
+	"\n" + "PTOps Installer v" + installer_version + "\n" +
 	"Copyright (c) 2026 PixlCore.com. BSD 3-Clause License.\n" + 
 	"Log File: " + log_file + "\n\n" 
 );
@@ -164,13 +164,13 @@ cp.exec('curl -s ' + gh_releases_url, function (err, stdout, stderr) {
 	}
 	
 	// proceed with installation
-	if (is_preinstalled) print("Upgrading xyOps from " + cur_version + " to " + new_version + "...\n");
-	else print("Installing xyOps " + new_version + "...\n");
+	if (is_preinstalled) print("Upgrading PTOps from " + cur_version + " to " + new_version + "...\n");
+	else print("Installing PTOps " + new_version + "...\n");
 	
 	if (is_running) {
 		print("\nStopping service: " + stop_cmd + "\n");
 		try { cp.execSync( stop_cmd, { stdio: 'inherit' } ); }
-		catch (err) { die("Failed to stop xyOps: " + err); }
+		catch (err) { die("Failed to stop PTOps: " + err); }
 		print("\n");
 	}
 	
@@ -230,13 +230,13 @@ cp.exec('curl -s ' + gh_releases_url, function (err, stdout, stderr) {
 						if (is_running) {
 							print( "Starting service: " + start_cmd + "\n" );
 							try { cp.execSync( start_cmd, { stdio: 'inherit' } ); }
-							catch (err) { die("Failed to start xyOps: " + err); }
+							catch (err) { die("Failed to start PTOps: " + err); }
 							print("\n");
 						}
 						else if (is_container) {
 							// special container mode -- EXIT the service after upgrade (docker should restart it)
 							try { cp.execSync( base_dir + "/bin/control.sh stop", { stdio: 'inherit' } ); }
-							catch (err) { die("Failed to stop xyOps service: " + err); }
+							catch (err) { die("Failed to stop PTOps service: " + err); }
 							print("\n");
 						}
 					}

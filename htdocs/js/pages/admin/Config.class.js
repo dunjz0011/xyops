@@ -121,7 +121,7 @@ Page.Config = class Config extends Page.PageUtils {
 			html += args.query ? `Settings Matching &ldquo;${args.query}&rdquo;` : 'All Configuration Settings';
 			html += '<div class="box_title_widget" style="overflow:visible"><i class="mdi mdi-magnify" onClick="$(\'#fe_cfgh_search\').focus()">&nbsp;</i><input type="text" id="fe_cfgh_search" placeholder="Filter..."/></div>';
 			html += '<div class="clear"></div>';
-			html += '<div class="box_subtitle">' + inline_marked('Use this form to customize your xyOps configuration. [Learn More](#Docs/config)') + '</div>';
+			html += '<div class="box_subtitle">' + inline_marked('Use this form to customize your PTOps configuration. [Learn More](#Docs/config)') + '</div>';
 		html += '</div>';
 		
 		html += '<div class="box_content config_editor maximize">';

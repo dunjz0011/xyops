@@ -417,7 +417,7 @@ Page.Monitors = class Monitors extends Page.PageUtils {
 					value: monitor.id
 				}),
 				suffix: this.getFormIDCopier(),
-				caption: 'This is a unique ID for the monitor, used by the xyOps API.  It cannot be changed.'
+				caption: 'This is a unique ID for the monitor, used by the PTOps API.  It cannot be changed.'
 			});
 		}
 		

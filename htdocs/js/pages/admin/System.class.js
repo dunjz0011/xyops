@@ -119,13 +119,13 @@ Page.System = class System extends Page.PageUtils {
 		// upgrade satellite
 		html += '<div class="maint_unit">';
 			html += '<div class="button danger" onClick="$P().do_upgrade_satellite()"><i class="mdi mdi-cloud-upload-outline">&nbsp;</i>Upgrade Workers...</div>';
-			html += '<div class="caption">Upgrade or downgrade the xyOps Satellite software across your fleet of worker servers.</div>';
+			html += '<div class="caption">Upgrade or downgrade the PTOps Satellite software across your fleet of worker servers.</div>';
 		html += '</div>';
 		
 		// upgrade masters
 		html += '<div class="maint_unit">';
 			html += '<div class="button danger" onClick="$P().do_upgrade_masters()"><i class="mdi mdi-database-arrow-up-outline">&nbsp;</i>Upgrade Conductors...</div>';
-			html += '<div class="caption">Upgrade or downgrade xyOps on your conductor servers to any selected version.</div>';
+			html += '<div class="caption">Upgrade or downgrade PTOps on your conductor servers to any selected version.</div>';
 		html += '</div>';
 		
 		// rotate secret key
@@ -184,7 +184,7 @@ Page.System = class System extends Page.PageUtils {
 		// orch version
 		// html += '<div class="dash_unit_box">';
 		// 	html += '<div class="dash_unit_value">' + data.version + '</div>';
-		// 	html += '<div class="dash_unit_label">xyOps Version</div>';
+		// 	html += '<div class="dash_unit_label">PTOps Version</div>';
 		// html += '</div>';
 		
 		// node version
@@ -381,7 +381,7 @@ Page.System = class System extends Page.PageUtils {
 	prompt_import_data() {
 		// prompt user with instructions and warnings
 		var self = this;
-		var text = "Use this feature to bulk import data into xyOps by uploading a file from your local machine.  The file should have been generated from a previous xyOps or Cronicle export.\n\n**Warning:** This operation is destructive, and will delete all data in the way!  Also, this will abort all running jobs, flush all queued jobs, and the scheduler will automatically be paused.  Proceed with extreme caution.";
+		var text = "Use this feature to bulk import data into PTOps by uploading a file from your local machine.  The file should have been generated from a previous PTOps or Cronicle export.\n\n**Warning:** This operation is destructive, and will delete all data in the way!  Also, this will abort all running jobs, flush all queued jobs, and the scheduler will automatically be paused.  Proceed with extreme caution.";
 		
 		var html = '';
 		html += `<div class="dialog_intro">${inline_marked(text)}</div>`;
@@ -393,7 +393,7 @@ Page.System = class System extends Page.PageUtils {
 			content: this.getFormMenuMulti({
 				id: 'fe_sys_im_fmt',
 				title: 'Select File Format',
-				options: [{ id: 'xyops', title: 'xyOps Data Format', icon: 'rocket-launch' }, { id: 'cronicle', title: 'Cronicle Data Format', icon: 'progress-clock' }],
+				options: [{ id: 'xyops', title: 'PTOps Data Format', icon: 'rocket-launch' }, { id: 'cronicle', title: 'Cronicle Data Format', icon: 'progress-clock' }],
 				value: 'xyops',
 				'data-shrinkwrap': 1
 			}),
@@ -440,7 +440,7 @@ Page.System = class System extends Page.PageUtils {
 		var self = this;
 		var html = '';
 		
-		html += `<div class="dialog_intro">This allows you to bulk export xyOps data to your local machine.  A gzip-compressed text file will be downloaded when the process is complete.  Please select which categories of data you wish you export.</div>`;
+		html += `<div class="dialog_intro">This allows you to bulk export PTOps data to your local machine.  A gzip-compressed text file will be downloaded when the process is complete.  Please select which categories of data you wish you export.</div>`;
 		html += '<div class="dialog_box_content maximize" style="max-height:75vh; overflow-x:hidden; overflow-y:auto;">';
 		
 		html += this.getFormRow({
@@ -525,7 +525,7 @@ Page.System = class System extends Page.PageUtils {
 		var self = this;
 		var html = '';
 		
-		html += `<div class="dialog_intro">This allows you to <b>permanently delete</b> xyOps data in bulk.  Please select which categories of data you wish you delete.  It is highly recommended that you stop all running jobs before deleting data.  Also note that the scheduler will automatically be paused if it is active.</div>`;
+		html += `<div class="dialog_intro">This allows you to <b>permanently delete</b> PTOps data in bulk.  Please select which categories of data you wish you delete.  It is highly recommended that you stop all running jobs before deleting data.  Also note that the scheduler will automatically be paused if it is active.</div>`;
 		html += '<div class="dialog_box_content maximize" style="max-height:75vh; overflow-x:hidden; overflow-y:auto;">';
 		
 		html += this.getFormRow({
@@ -680,7 +680,7 @@ Page.System = class System extends Page.PageUtils {
 		var self = this;
 		var html = '';
 		
-		html += `<div class="dialog_intro markdown-inline">` + inline_marked(`This allows you to upgrade the xyOps Satellite (xySat) software on your worker servers.  The installer will also wait for all jobs to complete on each worker server before starting the upgrade process, to reduce potential disruptions.  [xySat Changelog](https://github.com/pixlcore/xysat/blob/main/CHANGELOG.md)`) + `</div>`;
+		html += `<div class="dialog_intro markdown-inline">` + inline_marked(`This allows you to upgrade the PTOps Satellite (xySat) software on your worker servers.  The installer will also wait for all jobs to complete on each worker server before starting the upgrade process, to reduce potential disruptions.  [xySat Changelog](https://github.com/pixlcore/xysat/blob/main/CHANGELOG.md)`) + `</div>`;
 		html += '<div class="dialog_box_content maximize" style="max-height:75vh; overflow-x:hidden; overflow-y:auto;">';
 		
 		// targets
@@ -770,7 +770,7 @@ Page.System = class System extends Page.PageUtils {
 		var self = this;
 		var html = '';
 		
-		html += `<div class="dialog_intro markdown-inline">` + inline_marked(`This allows you to upgrade the xyOps software on your conductor servers.  Note that if you include the current primary conductor in the upgrade list, it will be upgraded last (and the client will be disconnected during the upgrade process). [xyOps Changelog](https://github.com/pixlcore/xyops/blob/main/CHANGELOG.md)`) + `</div>`;
+		html += `<div class="dialog_intro markdown-inline">` + inline_marked(`This allows you to upgrade the PTOps software on your conductor servers.  Note that if you include the current primary conductor in the upgrade list, it will be upgraded last (and the client will be disconnected during the upgrade process). [PTOps Changelog](https://github.com/pixlcore/xyops/blob/main/CHANGELOG.md)`) + `</div>`;
 		html += '<div class="dialog_box_content maximize" style="max-height:75vh; overflow-x:hidden; overflow-y:auto;">';
 		
 		// targets
@@ -864,7 +864,7 @@ Page.System = class System extends Page.PageUtils {
 		var self = this;
 		var html = '';
 		
-		html += `<div class="dialog_intro">Use this to rotate the conductor secret key.  xyOps will automatically generate a new, cryptographically secure one for you, install it, and re-encrypt all secrets, re-authenticate all servers, and update all conductor peers securely.  <b>Please make sure that all your servers are online before proceeding.</b>  Also, the scheduler will be paused, and all active jobs aborted.</div>`;
+		html += `<div class="dialog_intro">Use this to rotate the conductor secret key.  PTOps will automatically generate a new, cryptographically secure one for you, install it, and re-encrypt all secrets, re-authenticate all servers, and update all conductor peers securely.  <b>Please make sure that all your servers are online before proceeding.</b>  Also, the scheduler will be paused, and all active jobs aborted.</div>`;
 		html += '<div class="dialog_box_content maximize" style="max-height:75vh; overflow-x:hidden; overflow-y:auto;">';
 		
 		html += this.getFormRow({
@@ -957,7 +957,7 @@ Page.System = class System extends Page.PageUtils {
 		var self = this;
 		var redacts = app.users.map( user => user.username );
 		var md = '';
-		md += `# xyOps Diagnostics Report\n`;
+		md += `# PTOps Diagnostics Report\n`;
 		
 		var user = app.user;
 		var ropts = Intl.DateTimeFormat().resolvedOptions();
@@ -990,7 +990,7 @@ Page.System = class System extends Page.PageUtils {
 				md += `- **Online:** ` + (item.online ? 'Yes' : 'No') + `\n`;
 				md += `- **Ping:** ` + item.ping + `ms\n`;
 			}
-			md += `- **xyOps Version:** ` + (stats.xyops || '(Unknown)') + `\n`;
+			md += `- **PTOps Version:** ` + (stats.xyops || '(Unknown)') + `\n`;
 			md += `- **Node.js Version:** ` + (stats.node || '(Unknown)') + `\n`;
 			md += `- **Run Mode:** ` + (stats.foreground ? 'Foreground' : 'Daemon') + `\n`;
 			md += `- **Memory Usage:** ` + get_text_from_bytes(stats.mem) + `\n`;

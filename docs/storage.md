@@ -1,50 +1,50 @@
-# Storage Setup
+# Thiết lập bộ lưu trữ
 
-xyOps is built atop the [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage) module, and uses it both as a database and for general file storage.  It supports multiple back-end "engines" for handling the underlying data I/O, including a special [Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid) engine for splitting data and files across two different providers.
+PTOps được xây dựng dựa trên module [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage), và sử dụng nó làm cả cơ sở dữ liệu và lưu trữ file thông thường. Nó hỗ trợ nhiều "engine" back-end để xử lý dữ liệu I/O cơ sở, bao gồm một engine [Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid) đặc biệt để chia tách dữ liệu và các file trên hai nhà cung cấp khác nhau.
 
-This is important because xyOps has **two very different storage workloads**:
+Điều này rất quan trọng vì PTOps có **hai khối lượng công việc lưu trữ rất khác nhau**:
 
-- **Data**: Lots of small JSON records, used in lists, hashes, indexes, job data, monitoring data, and general app metadata.
-- **Files**: Bucket files, ticket attachments, user uploads, avatars, job files, compressed job logs, and other binary payloads.
+- **Dữ liệu**: Rất nhiều bản ghi JSON nhỏ, được sử dụng trong danh sách, hash, index, dữ liệu job, dữ liệu monitoring và siêu dữ liệu (metadata) ứng dụng nói chung.
+- **File**: Các file của bucket, file đính kèm ticket, file upload của user, avatar, file của job, log của job được nén, và các payload nhị phân khác.
 
-Some engines can technically serve both roles, but xyOps works best when each workload lands on storage that fits it.  For live production, especially with multiple conductors, the official recommendation is a [Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid) configuration: use Redis or Postgres for JSON data, and use S3 or an S3-compatible service for binary files.
+Một số engine về mặt kỹ thuật có thể phục vụ cả hai vai trò, nhưng PTOps hoạt động tốt nhất khi mỗi khối lượng công việc được đặt trên bộ lưu trữ phù hợp với nó. Đối với môi trường production thực tế, đặc biệt là với nhiều conductor, khuyến nghị chính thức là cấu hình [Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid): sử dụng Redis hoặc Postgres cho dữ liệu JSON, và sử dụng S3 hoặc dịch vụ tương thích S3 cho các file nhị phân.
 
-This matters for transactions.  SQLite, Postgres, and Redis support native engine transactions in pixl-server-storage.  When one of these engines is the Hybrid `docEngine`, transaction commits are handled inside the database itself.  If a conductor crashes during a commit and a backup conductor takes over, the database owns the final commit or rollback decision.  Engines without native transaction support still use pixl-server-storage's local rollback log system, which means the original conductor may be needed for recovery after a hard crash.
+Điều này rất quan trọng đối với các giao dịch (transaction). SQLite, Postgres, và Redis hỗ trợ các transaction engine native trong pixl-server-storage. Khi một trong các engine này là `docEngine` của Hybrid, các commit transaction sẽ được xử lý bên trong chính cơ sở dữ liệu. Nếu một conductor bị crash trong quá trình commit và một conductor dự phòng tiếp quản, cơ sở dữ liệu sẽ sở hữu quyết định commit hoặc rollback cuối cùng. Các engine không có hỗ trợ transaction native vẫn sử dụng hệ thống log rollback cục bộ của pixl-server-storage, điều đó có nghĩa là conductor ban đầu có thể cần thiết để khôi phục sau một cú crash nghiêm trọng.
 
-In general:
+Nhìn chung:
 
-| Engine / Provider | Good for Data | Native Transactions | Good for Files | Notes |
+| Engine / Nhà cung cấp | Tốt cho dữ liệu | Transaction native | Tốt cho file | Lưu ý |
 |-------------------|---------------|---------------------|----------------|-------|
-| Filesystem | - | - | ✅ | Fine for local files, but not shared across conductors. |
-| NFS | - | - | ✅ | Only recommended for binary files, not tiny JSON record workloads. |
-| AWS S3 | - | - | ✅ | Excellent for files, but too latent for xyOps database traffic. |
-| S3-compatible, such as MinIO or RustFS | Possible | - | ✅ | Great file tier, but not recommended as the all-in-one data engine for multi-conductor production. |
-| Redis | ✅ | ✅ | - | Great for tiny records, poor fit for general binary files. |
-| SQLite | ✅ | ✅ | - | Great local doc store, but single-host only. |
-| Postgres | ✅ | ✅ | - | Good shared doc store, but not ideal for large files. |
+| Filesystem | - | - | ✅ | Tốt cho các file cục bộ, nhưng không được chia sẻ giữa các conductor. |
+| NFS | - | - | ✅ | Chỉ khuyến nghị cho các file nhị phân, không phù hợp cho khối lượng công việc bản ghi JSON nhỏ. |
+| AWS S3 | - | - | ✅ | Xuất sắc cho các file, nhưng độ trễ quá lớn đối với lưu lượng cơ sở dữ liệu của PTOps. |
+| Tương thích S3, như MinIO hoặc RustFS | Có thể | - | ✅ | Lớp lưu trữ file tuyệt vời, nhưng không được khuyến nghị làm engine dữ liệu tất-cả-trong-một cho production đa conductor. |
+| Redis | ✅ | ✅ | - | Tuyệt vời cho các bản ghi nhỏ, không phù hợp cho các file nhị phân thông thường. |
+| SQLite | ✅ | ✅ | - | Kho lưu trữ tài liệu cục bộ tuyệt vời, nhưng chỉ dành cho máy host đơn lẻ. |
+| Postgres | ✅ | ✅ | - | Kho lưu trữ tài liệu chia sẻ tốt, nhưng không lý tưởng cho các file lớn. |
 
-For single-conductor deployments, meaning development, testing, homelabs, and small internal tools, the default configuration of [SQLite and Filesystem](#sqlite-and-filesystem) is still the best choice.  For live production and especially for multi-conductor deployments, the recommended configurations are now:
+Đối với các triển khai đơn conductor, nghĩa là phát triển (development), kiểm thử (testing), lab gia đình và các công cụ nội bộ nhỏ, cấu hình mặc định là [SQLite và Filesystem](#sqlite-and-filesystem) vẫn là lựa chọn tốt nhất. Đối với môi trường production thực tế và đặc biệt là đối với triển khai đa conductor, các cấu hình được khuyến nghị hiện nay là:
 
-1. [Redis and S3](#redis-and-s3), or an S3-compatible service such as MinIO or RustFS.
-2. [Postgres and S3](#postgres-and-s3), or an S3-compatible service such as MinIO or RustFS.
+1. [Redis và S3](#redis-and-s3), hoặc một dịch vụ tương thích S3 như MinIO hoặc RustFS.
+2. [Postgres và S3](#postgres-and-s3), hoặc một dịch vụ tương thích S3 như MinIO hoặc RustFS.
 
-## Rules of Thumb
+## Quy tắc ngón tay cái (Rules of Thumb)
 
-- For a **single conductor**, use the stock [SQLite and Filesystem](#sqlite-and-filesystem) setup unless you have a clear reason to change it.
-- For **multi-conductor** and/or live production, you need shared external storage for all conductors.  Local SQLite plus local disk is not enough.
-- For **multi-conductor live production**, prefer **Redis + S3** or **Postgres + S3** via the [Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid) engine.
-- If your S3 endpoint is on premises, such as **MinIO** or **RustFS**, use it as the Hybrid `binaryEngine` for files, while Redis or Postgres remains the `docEngine` for data.
-- Leave [Storage.transactions](config.md#storage-transactions) enabled no matter which engine(s) you choose.
-- Keep your conductors as close as possible to the storage engine handling data.  Latency matters a lot for xyOps.
+- Đối với **một conductor duy nhất**, hãy sử dụng thiết lập mặc định [SQLite và Filesystem](#sqlite-and-filesystem) trừ khi bạn có lý do rõ ràng để thay đổi nó.
+- Đối với **đa conductor** và/hoặc production thực tế, bạn cần bộ lưu trữ ngoài dùng chung cho tất cả các conductor. SQLite cục bộ cộng với đĩa cục bộ là không đủ.
+- Đối với **production thực tế đa conductor**, hãy ưu tiên **Redis + S3** hoặc **Postgres + S3** thông qua engine [Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid).
+- Nếu endpoint S3 của bạn nằm trong mạng nội bộ (on premises), chẳng hạn như **MinIO** hoặc **RustFS**, hãy sử dụng nó làm `binaryEngine` của Hybrid cho các file, trong khi Redis hoặc Postgres vẫn là `docEngine` cho dữ liệu.
+- Giữ cho [Storage.transactions](config.md#storage-transactions) được bật bất kể bạn chọn (các) engine nào.
+- Giữ các conductor của bạn càng gần càng tốt với engine lưu trữ xử lý dữ liệu. Độ trễ là rất quan trọng đối với PTOps.
 
-## Common Configurations
+## Các cấu hình phổ biến
 
-### SQLite and Filesystem
+### SQLite và Filesystem
 
 > [!TIP]
-> This is the default storage configuration that ships with xyOps.  It should work fine for any single-conductor setup.
+> Đây là cấu hình lưu trữ mặc định đi kèm với PTOps. Nó sẽ hoạt động tốt cho bất kỳ thiết lập conductor đơn lẻ nào.
 
-This configuration utilizes the [Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid) engine to use [SQLite](https://github.com/jhuckaby/pixl-server-storage#sqlite) for the database, and [Filesystem](https://github.com/jhuckaby/pixl-server-storage#local-filesystem) for general file storage.  Example setup:
+Cấu hình này tận dụng engine [Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid) để sử dụng [SQLite](https://github.com/jhuckaby/pixl-server-storage#sqlite) cho cơ sở dữ liệu, và [Filesystem](https://github.com/jhuckaby/pixl-server-storage#local-filesystem) cho việc lưu trữ file nói chung. Ví dụ thiết lập:
 
 ```json
 {
@@ -59,7 +59,6 @@ This configuration utilizes the [Hybrid](https://github.com/jhuckaby/pixl-server
 		"base_dir": "data",
 		"key_namespaces": 1
 	},
-
 	"SQLite": {
 		"base_dir": "data",
 		"filename": "sqlite.db",
@@ -84,45 +83,42 @@ This configuration utilizes the [Hybrid](https://github.com/jhuckaby/pixl-server
 }
 ```
 
-Use this when:
+Sử dụng cấu hình này khi:
 
-- You only have one conductor.
-- You want the simplest possible setup.
-- Your database and file storage can both live on the same local disk.
+- Bạn chỉ có một conductor duy nhất.
+- Bạn muốn một thiết lập đơn giản nhất có thể.
+- Cơ sở dữ liệu và lưu trữ file của bạn đều có thể nằm trên cùng một đĩa cục bộ.
 
-The downside to this configuration is that it only supports a single conductor.  The database is local to that host, so there is nothing for another conductor to share.
+Nhược điểm của cấu hình này là nó chỉ hỗ trợ một conductor duy nhất. Cơ sở dữ liệu là cục bộ đối với máy host đó, vì vậy không có gì để một conductor khác chia sẻ.
 
-See also:
+Xem thêm:
 
-- [Hybrid Engine](https://github.com/jhuckaby/pixl-server-storage#hybrid)
-- [SQLite Engine](https://github.com/jhuckaby/pixl-server-storage#sqlite)
-- [Filesystem Engine](https://github.com/jhuckaby/pixl-server-storage#local-filesystem)
+- [Engine Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid)
+- [Engine SQLite](https://github.com/jhuckaby/pixl-server-storage#sqlite)
+- [Engine Filesystem](https://github.com/jhuckaby/pixl-server-storage#local-filesystem)
 
-### SQLite and NFS
+### SQLite và NFS
 
-This is very similar to [SQLite and Filesystem](#sqlite-and-filesystem), except that the Filesystem engine's `base_dir` points to an NFS mount.  Conversely, the SQLite engine's `base_dir` should point to a local directory which is *not* NFS mounted.  Finally, the SQLite backups can point to the NFS mount if you would like to keep a copy off the conductor host.
+Cấu hình này rất giống với [SQLite và Filesystem](#sqlite-and-filesystem), ngoại trừ việc `base_dir` của engine Filesystem trỏ đến một điểm mount NFS. Ngược lại, `base_dir` của engine SQLite nên trỏ đến một thư mục cục bộ *không* mount NFS. Cuối cùng, các bản backup SQLite có thể trỏ đến điểm mount NFS nếu bạn muốn giữ một bản sao ngoài máy host conductor.
 
-Assumptions:
+Giả định:
 
-- `/mnt/xyops` is your NFS mount.
-- `/data/xyops` is a local directory with enough disk space for SQLite.
+- `/mnt/xyops` là điểm mount NFS của bạn.
+- `/data/xyops` là thư mục cục bộ có đủ dung lượng đĩa cho SQLite.
 
-Example setup:
+Ví dụ thiết lập:
 
 ```json
 {
 	"engine": "Hybrid",
-
 	"Hybrid": {
 		"docEngine": "SQLite",
 		"binaryEngine": "Filesystem"
 	},
-
 	"Filesystem": {
 		"base_dir": "/mnt/xyops",
 		"key_namespaces": 1
 	},
-
 	"SQLite": {
 		"base_dir": "/data/xyops",
 		"filename": "sqlite.db",
@@ -147,51 +143,51 @@ Example setup:
 }
 ```
 
-Use this when:
+Sử dụng cấu hình này khi:
 
-- You only have one conductor.
-- You want files on a NAS or shared volume.
-- You still want SQLite to stay on fast local disk.
+- Bạn chỉ có một conductor duy nhất.
+- Bạn muốn lưu trữ file trên một NAS hoặc volume chia sẻ.
+- Bạn vẫn muốn SQLite nằm trên đĩa cục bộ tốc độ cao.
 
-The downside to this configuration is that it still only supports a single conductor, because the SQLite database is local to one machine.  Also, if you lose the conductor due to local disk failure, you will need to restore from a SQLite backup.  Those backups are written daily, so some data loss is possible between the last backup and the failure.
+Nhược điểm của cấu hình này là nó vẫn chỉ hỗ trợ một conductor duy nhất, vì cơ sở dữ liệu SQLite nằm cục bộ trên một máy. Ngoài ra, nếu bạn mất conductor do lỗi đĩa cục bộ, bạn sẽ cần khôi phục từ một bản backup SQLite. Các bản backup đó được ghi hàng ngày, vì vậy có thể xảy ra mất mát dữ liệu giữa lần backup cuối cùng và thời điểm xảy ra sự cố.
 
-See also:
+Xem thêm:
 
-- [Hybrid Engine](https://github.com/jhuckaby/pixl-server-storage#hybrid)
-- [SQLite Engine](https://github.com/jhuckaby/pixl-server-storage#sqlite)
-- [Filesystem Engine](https://github.com/jhuckaby/pixl-server-storage#local-filesystem)
+- [Engine Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid)
+- [Engine SQLite](https://github.com/jhuckaby/pixl-server-storage#sqlite)
+- [Engine Filesystem](https://github.com/jhuckaby/pixl-server-storage#local-filesystem)
 
 ### MinIO
 
 > [!WARNING]
-> Before adopting MinIO, review its current licensing, packaging, and support status.  MinIO remains an excellent technical fit for xyOps, but the [project landscape has changed](https://www.chainguard.dev/unchained/secure-and-free-minio-chainguard-containers) recently.
+> Trước khi áp dụng MinIO, hãy xem xét kỹ lưỡng tình trạng bản quyền, đóng gói và hỗ trợ hiện tại của nó. MinIO vẫn là một lựa chọn kỹ thuật tuyệt vời cho PTOps, nhưng [bối cảnh dự án đã thay đổi](https://www.chainguard.dev/unchained/secure-and-free-minio-chainguard-containers) gần đây.
 
-MinIO is a great S3-compatible file store for xyOps.  It is usually deployed on premises, close to the conductors, so it can provide low-latency binary storage for bucket files, ticket attachments, user uploads, job files, and compressed job logs.
+MinIO là một kho lưu trữ file tương thích S3 tuyệt vời cho PTOps. Nó thường được triển khai on premises, gần các conductor, vì vậy nó có thể cung cấp lưu trữ nhị phân độ trễ thấp cho các file bucket, file đính kèm ticket, file upload của user, file job, và log của job được nén.
 
-For multi-conductor live production, use MinIO as the Hybrid `binaryEngine`, not as the all-in-one storage engine.  Pair it with [Redis](#redis-and-s3) or [Postgres](#postgres-and-s3) as the `docEngine`, so JSON transactions use native database commits.
+Đối với môi trường production thực tế đa conductor, hãy sử dụng MinIO làm `binaryEngine` của Hybrid, chứ không phải là engine lưu trữ tất-cả-trong-một. Hãy ghép nối nó với [Redis](#redis-and-s3) hoặc [Postgres](#postgres-and-s3) làm `docEngine`, để các transaction JSON sử dụng các commit cơ sở dữ liệu native.
 
-Here is a quick-start guide to getting MinIO up and running.  First, create a Docker volume to store your MinIO data:
+Dưới đây là hướng dẫn khởi động nhanh để đưa MinIO vào hoạt động. Đầu tiên, hãy tạo một volume Docker để lưu trữ dữ liệu MinIO của bạn:
 
 ```sh
 docker volume create minio-data
 ```
 
-Next, download and run the [Chainguard MinIO](https://images.chainguard.dev/directory/image/minio/overview) container, binding to the new data volume:
+Tiếp theo, tải xuống và chạy container [Chainguard MinIO](https://images.chainguard.dev/directory/image/minio/overview), liên kết với volume dữ liệu mới:
 
 ```sh
 docker run --detach --name minio -p 9000:9000 -p 9001:9001 -v minio-data:/data cgr.dev/chainguard/minio:latest server /data --console-address ":9001"
 ```
 
-If you are also running xyOps in Docker on the same machine, you will need to [create a Docker network](https://docs.docker.com/engine/network/) and add both containers to the same network so they can communicate with each other.
+Nếu bạn cũng đang chạy PTOps trong Docker trên cùng một máy, bạn sẽ cần [tạo một mạng Docker](https://docs.docker.com/engine/network/) và thêm cả hai container vào cùng một mạng để chúng có thể giao tiếp với nhau.
 
-Pull up the MinIO web interface in your browser by navigating to `http://MINIO_HOSTNAME:9001`.  Log in using the default MinIO admin username and password for a fresh install, then change them immediately:
+Mở giao diện web MinIO trong trình duyệt của bạn bằng cách truy cập `http://MINIO_HOSTNAME:9001`. Đăng nhập bằng username và password admin MinIO mặc định cho một bản cài đặt mới, sau đó thay đổi chúng ngay lập tức:
 
 - **Username**: `minioadmin`
 - **Password**: `minioadmin`
 
-Create a new bucket, for example `xydata`.
+Tạo một bucket mới, ví dụ `xydata`.
 
-Then shut down xyOps completely, and reconfigure your [Storage.AWS](config.md#storage-aws) and [Storage.S3](config.md#storage-s3) objects thusly:
+Sau đó tắt hoàn toàn PTOps, và cấu hình lại các object [Storage.AWS](config.md#storage-aws) và [Storage.S3](config.md#storage-s3) của bạn như sau:
 
 ```json
 "AWS": {
@@ -222,51 +218,51 @@ Then shut down xyOps completely, and reconfigure your [Storage.AWS](config.md#st
 }
 ```
 
-For initial testing you can set `accessKeyId` and `secretAccessKey` to the MinIO defaults, but you should replace them before production.
+Để thử nghiệm ban đầu, bạn có thể đặt `accessKeyId` và `secretAccessKey` thành các giá trị mặc định của MinIO, nhưng bạn nên thay thế chúng trước khi đưa vào production.
 
-Finally, set [Storage.engine](config.md#storage-engine) to `Hybrid`, set the Hybrid `binaryEngine` to `S3`, and choose either `Redis` or `Postgres` as the Hybrid `docEngine`.  See [Redis and S3](#redis-and-s3) and [Postgres and S3](#postgres-and-s3) for complete examples.
+Cuối cùng, đặt [Storage.engine](config.md#storage-engine) thành `Hybrid`, đặt `binaryEngine` của Hybrid thành `S3`, và chọn `Redis` hoặc `Postgres` làm `docEngine` của Hybrid. Xem mục [Redis và S3](#redis-and-s3) và [Postgres và S3](#postgres-and-s3) để biết các ví dụ đầy đủ.
 
-Where this fits:
+Vai trò cấu hình này:
 
-- MinIO handles binary files through the S3 engine.
-- All conductors can share the same backend.
-- Redis or Postgres handles JSON records and native transaction commits.
-- This avoids depending on conductor-local rollback logs for production database transactions.
+- MinIO xử lý các file nhị phân thông qua engine S3.
+- Tất cả các conductor có thể chia sẻ cùng một backend.
+- Redis hoặc Postgres xử lý các bản ghi JSON và các commit transaction native.
+- Điều này tránh việc phụ thuộc vào các log rollback cục bộ của conductor cho các giao dịch cơ sở dữ liệu production.
 
-See [Migration](#migration) below for migrating data between storage engines.
+Xem mục [Di chuyển dữ liệu](#migration) bên dưới để biết cách di chuyển dữ liệu giữa các engine lưu trữ.
 
 ### RustFS
 
-[RustFS](https://rustfs.com/) is also a great S3-compatible file store for xyOps.  Like MinIO, it can be hosted on premises and kept close to the conductors, which makes it a good Hybrid `binaryEngine` for files.
+[RustFS](https://rustfs.com/) cũng là một kho lưu trữ file tương thích S3 tuyệt vời cho PTOps. Giống như MinIO, nó có thể được host on premises và đặt gần các conductor, làm cho nó trở thành một `binaryEngine` của Hybrid tuyệt vời cho các file.
 
-For multi-conductor live production, use RustFS as the S3-compatible file tier, and pair it with [Redis](#redis-and-s3) or [Postgres](#postgres-and-s3) for JSON data and native transaction commits.
+Đối với môi trường production thực tế đa conductor, hãy sử dụng RustFS làm lớp lưu trữ file tương thích S3, và ghép nối nó với [Redis](#redis-and-s3) hoặc [Postgres](#postgres-and-s3) cho dữ liệu JSON và các commit transaction native.
 
-Here is a quick-start guide to getting RustFS up and running.  Note that as of this writing, RustFS is still relatively young, so test it carefully in your own environment before rolling it into a mission-critical production system.
+Dưới đây là hướng dẫn khởi động nhanh để đưa RustFS vào hoạt động. Lưu ý rằng tính đến thời điểm viết bài này, RustFS vẫn còn tương đối mới, vì vậy hãy kiểm tra kỹ lưỡng trong môi trường của riêng bạn trước khi đưa nó vào một hệ thống production quan trọng.
 
-First, create a Docker volume to store your RustFS data:
+Đầu tiên, tạo một volume Docker để lưu trữ dữ liệu RustFS của bạn:
 
 ```sh
 docker volume create rustfs-data
 ```
 
-Next, download and run the official RustFS container, binding to the new data volume:
+Tiếp theo, tải xuống và chạy container RustFS chính thức, liên kết với volume dữ liệu mới:
 
 ```sh
 docker run -d --name rustfs -p 9000:9000 -p 9001:9001 -v rustfs-data:/data rustfs/rustfs:latest
 ```
 
-If you are also running xyOps in Docker on the same machine, you will need to [create a Docker network](https://docs.docker.com/engine/network/) and add both containers to the same network so they can communicate with each other.
+Nếu bạn cũng đang chạy PTOps trong Docker trên cùng một máy, bạn sẽ cần [tạo một mạng Docker](https://docs.docker.com/engine/network/) và thêm cả hai container vào cùng một mạng để chúng có thể giao tiếp với nhau.
 
-Pull up the RustFS web interface in your browser by navigating to `http://RUSTFS_HOSTNAME:9001`.  Log in using the default RustFS admin username and password, then change them immediately:
+Mở giao diện web RustFS trong trình duyệt của bạn bằng cách truy cập `http://RUSTFS_HOSTNAME:9001`. Đăng nhập bằng username và password admin RustFS mặc định, sau đó thay đổi chúng ngay lập tức:
 
 - **Username**: `rustfsadmin`
 - **Password**: `rustfsadmin`
 
-Create a new bucket, for example `xydata`.
+Tạo một bucket mới, ví dụ `xydata`.
 
-Create a new access key, and save both the key and secret.
+Tạo một access key mới, và lưu lại cả key và secret.
 
-Then shut down xyOps completely, and reconfigure your [Storage.AWS](config.md#storage-aws) and [Storage.S3](config.md#storage-s3) objects thusly:
+Sau đó tắt hoàn toàn PTOps, và cấu hình lại các object [Storage.AWS](config.md#storage-aws) và [Storage.S3](config.md#storage-s3) của bạn như sau:
 
 ```json
 "AWS": {
@@ -297,38 +293,36 @@ Then shut down xyOps completely, and reconfigure your [Storage.AWS](config.md#st
 }
 ```
 
-Finally, set [Storage.engine](config.md#storage-engine) to `Hybrid`, set the Hybrid `binaryEngine` to `S3`, and choose either `Redis` or `Postgres` as the Hybrid `docEngine`.  See [Redis and S3](#redis-and-s3) and [Postgres and S3](#postgres-and-s3) for complete examples.
+Cuối cùng, đặt [Storage.engine](config.md#storage-engine) thành `Hybrid`, đặt `binaryEngine` của Hybrid thành `S3`, và chọn `Redis` hoặc `Postgres` làm `docEngine` của Hybrid. Xem mục [Redis và S3](#redis-and-s3) và [Postgres và S3](#postgres-and-s3) để biết các ví dụ đầy đủ.
 
-Where this fits:
+Vai trò cấu hình này:
 
-- RustFS handles binary files through the S3 engine.
-- All conductors can share the same backend.
-- Redis or Postgres handles JSON records and native transaction commits.
-- This avoids depending on conductor-local rollback logs for production database transactions.
+- RustFS xử lý các file nhị phân thông qua engine S3.
+- Tất cả các conductor có thể chia sẻ cùng một backend.
+- Redis hoặc Postgres xử lý các bản ghi JSON và các commit transaction native.
+- Điều này tránh việc phụ thuộc vào các log rollback cục bộ của conductor cho các giao dịch cơ sở dữ liệu production.
 
-See [Migration](#migration) below for migrating data between storage engines.
+Xem mục [Di chuyển dữ liệu](#migration) bên dưới để biết cách di chuyển dữ liệu giữa các engine lưu trữ.
 
-### Redis and NFS
+### Redis và NFS
 
-This configuration uses [Redis](https://github.com/jhuckaby/pixl-server-storage#redis) for JSON records and [Filesystem](https://github.com/jhuckaby/pixl-server-storage#local-filesystem) pointed at an NFS mount for binary files.  This is a solid production option if you already operate Redis reliably and already have a NAS or NFS service for shared files.
+Cấu hình này sử dụng [Redis](https://github.com/jhuckaby/pixl-server-storage#redis) cho các bản ghi JSON và [Filesystem](https://github.com/jhuckaby/pixl-server-storage#local-filesystem) trỏ đến một điểm mount NFS cho các file nhị phân. Đây là một tùy chọn production vững chắc nếu bạn đã vận hành Redis một cách đáng tin cậy và đã có một dịch vụ NAS hoặc NFS cho các file chia sẻ.
 
-Assumptions:
+Giả định:
 
-- `redis.internal.mycompany.com` is your Redis host.
-- `/mnt/xyops` is an NFS mount visible to all conductors.
-- Redis persistence is enabled, meaning RDB and/or AOF.
+- `redis.internal.mycompany.com` là host Redis của bạn.
+- `/mnt/xyops` là điểm mount NFS hiển thị cho tất cả các conductor.
+- Tính năng persistence của Redis đã được bật, nghĩa là RDB và/hoặc AOF.
 
-Example setup:
+Ví dụ thiết lập:
 
 ```json
 {
 	"engine": "Hybrid",
-
 	"Hybrid": {
 		"docEngine": "Redis",
 		"binaryEngine": "Filesystem"
 	},
-
 	"Redis": {
 		"host": "redis.internal.mycompany.com",
 		"port": 6379,
@@ -340,7 +334,6 @@ Example setup:
 			"maxBytes": 104857600
 		}
 	},
-
 	"Filesystem": {
 		"base_dir": "/mnt/xyops",
 		"key_namespaces": 1
@@ -348,38 +341,36 @@ Example setup:
 }
 ```
 
-Use this when:
+Sử dụng cấu hình này khi:
 
-- You already trust Redis for low-latency key/value data.
-- You already have shared NFS storage for files.
-- You want multi-conductor support without introducing an on-prem S3 service.
+- Bạn đã tin tưởng Redis cho dữ liệu key/value độ trễ thấp.
+- Bạn đã có bộ lưu trữ NFS chia sẻ cho các file.
+- Bạn muốn hỗ trợ đa conductor mà không cần đưa vào một dịch vụ S3 on-premises.
 
-Tradeoffs:
+Đánh đổi:
 
-- You now operate two different storage systems instead of one.
-- NFS is only recommended for binary files, not the document workload.
-- Redis must be configured for persistence, or a restart can become a data-loss event.
-- Large file traffic still depends on NFS performance and mount stability.
+- Giờ đây bạn phải vận hành hai hệ thống lưu trữ khác nhau thay vì một.
+- NFS chỉ được khuyến nghị cho các file nhị phân, không phù hợp cho khối lượng công việc tài liệu.
+- Redis phải được cấu hình persistence, nếu không một lượt restart có thể trở thành sự kiện mất mát dữ liệu.
+- Lưu lượng file lớn vẫn phụ thuộc vào hiệu suất NFS và sự ổn định của điểm mount.
 
-If you are starting from scratch on premises, prefer [Redis and S3](#redis-and-s3) or [Postgres and S3](#postgres-and-s3).  MinIO or RustFS are good S3-compatible choices for the file side.
+Nếu bạn đang bắt đầu lại từ đầu on premises, hãy ưu tiên chọn [Redis và S3](#redis-and-s3) hoặc [Postgres và S3](#postgres-and-s3). MinIO hoặc RustFS là các lựa chọn tương thích S3 tốt cho phía lưu trữ file.
 
-### Redis and S3
+### Redis và S3
 
-This configuration uses Redis for JSON records and S3 for binary files.  This is one of the recommended multi-conductor production configurations, because Redis handles JSON commits using native `MULTI` / `EXEC` transactions, while S3 handles binary files.
+Cấu hình này sử dụng Redis cho các bản ghi JSON và S3 cho các file nhị phân. Đây là một trong những cấu hình production đa conductor được khuyến nghị, vì Redis xử lý các commit JSON bằng các transaction `MULTI` / `EXEC` native, trong khi S3 xử lý các file nhị phân.
 
-You can use AWS S3, or an S3-compatible service such as MinIO or RustFS.  The important part is that Redis remains the `docEngine`, because pixl-server-storage transactions only apply to JSON records.
+Bạn có thể sử dụng AWS S3, hoặc một dịch vụ tương thích S3 như MinIO hoặc RustFS. Phần quan trọng là Redis vẫn là `docEngine`, vì các transaction của pixl-server-storage chỉ áp dụng cho các bản ghi JSON.
 
-Example setup:
+Ví dụ thiết lập:
 
 ```json
 {
 	"engine": "Hybrid",
-
 	"Hybrid": {
 		"docEngine": "Redis",
 		"binaryEngine": "S3"
 	},
-
 	"Redis": {
 		"host": "redis.internal.mycompany.com",
 		"port": 6379,
@@ -391,7 +382,6 @@ Example setup:
 			"maxBytes": 104857600
 		}
 	},
-
 	"AWS": {
 		"region": "us-west-1",
 		"credentials": {
@@ -399,7 +389,6 @@ Example setup:
 			"secretAccessKey": "YOUR_AMAZON_SECRET_KEY"
 		}
 	},
-
 	"S3": {
 		"connectTimeout": 5000,
 		"socketTimeout": 5000,
@@ -413,38 +402,36 @@ Example setup:
 }
 ```
 
-Use Redis and S3 when:
+Sử dụng Redis và S3 khi:
 
-- You already run Redis and want it to remain your document store.
-- You want files in object storage rather than on NFS.
-- You need multi-conductor support with native transaction commits for JSON data.
+- Bạn đã chạy Redis và muốn nó tiếp tục làm kho lưu trữ tài liệu của bạn.
+- Bạn muốn lưu trữ file trong bộ lưu trữ object thay vì trên NFS.
+- Bạn cần hỗ trợ đa conductor với các commit transaction native cho dữ liệu JSON.
 
-Tradeoffs:
+Đánh đổi:
 
-- You still operate two different storage systems.
-- AWS S3 is fine for files, but not for the JSON record workload, which is why it stays on Redis.
-- Redis must be configured for persistence, meaning RDB and/or AOF, or a restart can become a data-loss event.
+- Bạn vẫn phải vận hành hai hệ thống lưu trữ khác nhau.
+- AWS S3 tốt cho các file, nhưng không tốt cho khối lượng công việc bản ghi JSON của PTOps, đó là lý do dữ liệu vẫn nằm trên Redis.
+- Redis phải được cấu hình persistence, nghĩa là RDB và/hoặc AOF, nếu không một lượt restart có thể trở thành sự kiện mất mát dữ liệu.
 
-### Postgres and NFS
+### Postgres và NFS
 
-This configuration uses [Postgres](https://github.com/jhuckaby/pixl-server-storage#postgres) for JSON records and [Filesystem](https://github.com/jhuckaby/pixl-server-storage#local-filesystem) pointed at NFS for binary files.  It is a good fit if your organization already runs a highly available Postgres service and you want to keep xyOps inside that operational model.
+Cấu hình này sử dụng [Postgres](https://github.com/jhuckaby/pixl-server-storage#postgres) cho các bản ghi JSON và [Filesystem](https://github.com/jhuckaby/pixl-server-storage#local-filesystem) trỏ đến NFS cho các file nhị phân. Nó phù hợp nếu tổ chức của bạn đã vận hành một dịch vụ Postgres có tính sẵn sàng cao (HA) và bạn muốn giữ PTOps hoạt động bên trong mô hình vận hành đó.
 
-Assumptions:
+Giả định:
 
-- `postgres.internal.mycompany.com` is your Postgres host.
-- `/mnt/xyops` is an NFS mount visible to all conductors.
+- `postgres.internal.mycompany.com` là host Postgres của bạn.
+- `/mnt/xyops` là điểm mount NFS hiển thị cho tất cả các conductor.
 
-Example setup:
+Ví dụ thiết lập:
 
 ```json
 {
 	"engine": "Hybrid",
-
 	"Hybrid": {
 		"docEngine": "Postgres",
 		"binaryEngine": "Filesystem"
 	},
-
 	"Postgres": {
 		"min": 1,
 		"max": 32,
@@ -464,7 +451,6 @@ Example setup:
 			"maxBytes": 104857600
 		}
 	},
-
 	"Filesystem": {
 		"base_dir": "/mnt/xyops",
 		"key_namespaces": 1
@@ -472,34 +458,32 @@ Example setup:
 }
 ```
 
-Use this when:
+Sử dụng cấu hình này khi:
 
-- Your team already operates Postgres at scale.
-- You want multi-conductor support.
-- You want files on shared storage rather than in the database.
+- Đội ngũ của bạn đã vận hành Postgres ở quy mô lớn.
+- Bạn muốn hỗ trợ đa conductor.
+- Bạn muốn các file nằm trên bộ lưu trữ chia sẻ thay vì trong cơ sở dữ liệu.
 
-Tradeoffs:
+Đánh đổi:
 
-- You still operate two storage systems.
-- Postgres is a very good document store here, but only because files stay out of it.
+- Bạn vẫn phải vận hành hai hệ thống lưu trữ.
+- Postgres là một kho tài liệu rất tốt ở đây, nhưng chỉ khi các file được để bên ngoài nó.
 
-### Postgres and S3
+### Postgres và S3
 
-This configuration uses Postgres for JSON records and S3 for binary files.  This is one of the recommended multi-conductor production configurations, because Postgres handles JSON commits using native PostgreSQL transactions, while S3 handles binary files.
+Cấu hình này sử dụng Postgres cho các bản ghi JSON và S3 cho các file nhị phân. Đây là một trong những cấu hình production đa conductor được khuyến nghị, vì Postgres xử lý các commit JSON bằng các transaction PostgreSQL native, trong khi S3 xử lý các file nhị phân.
 
-You can use AWS S3, or an S3-compatible service such as MinIO or RustFS.  The important part is that Postgres remains the `docEngine`, because pixl-server-storage transactions only apply to JSON records.
+Bạn có thể sử dụng AWS S3, hoặc một dịch vụ tương thích S3 như MinIO hoặc RustFS. Phần quan trọng là Postgres vẫn là `docEngine`, vì các transaction của pixl-server-storage chỉ áp dụng cho các bản ghi JSON.
 
-Example setup:
+Ví dụ thiết lập:
 
 ```json
 {
 	"engine": "Hybrid",
-
 	"Hybrid": {
 		"docEngine": "Postgres",
 		"binaryEngine": "S3"
 	},
-
 	"Postgres": {
 		"min": 1,
 		"max": 32,
@@ -519,7 +503,6 @@ Example setup:
 			"maxBytes": 104857600
 		}
 	},
-
 	"AWS": {
 		"region": "us-west-1",
 		"credentials": {
@@ -527,7 +510,6 @@ Example setup:
 			"secretAccessKey": "YOUR_AMAZON_SECRET_KEY"
 		}
 	},
-
 	"S3": {
 		"connectTimeout": 5000,
 		"socketTimeout": 5000,
@@ -541,23 +523,23 @@ Example setup:
 }
 ```
 
-Use Postgres and S3 when:
+Sử dụng Postgres và S3 khi:
 
-- You already operate Postgres.
-- You already have object storage.
-- You want multi-conductor support with native transaction commits for JSON data.
+- Bạn đã vận hành Postgres.
+- Bạn đã có bộ lưu trữ object.
+- Bạn muốn hỗ trợ đa conductor với các commit transaction native cho dữ liệu JSON.
 
-Tradeoffs:
+Đánh đổi:
 
-- You still have two backends to manage.
-- AWS S3 is acceptable for files, but not for xyOps database traffic, which is why Postgres handles the document side.
-- Postgres is a very good document store here, but only because files stay out of it.
+- Bạn vẫn có hai backend cần quản lý.
+- AWS S3 có thể chấp nhận được đối với các file, nhưng không phù hợp cho lưu lượng database của PTOps, đó là lý do Postgres xử lý phía tài liệu.
+- Postgres là một kho tài liệu rất tốt ở đây, nhưng chỉ khi các file được để bên ngoài nó.
 
 ### Postgres SSL
 
-The Postgres engine passes all extra properties in the `Postgres` configuration block directly into the [pg.Pool constructor](https://node-postgres.com/apis/pool), except for `table` and `cache`, which are used by pixl-server-storage itself.  This means you can use the standard [node-postgres SSL options](https://node-postgres.com/features/ssl) without any special pixl-server-storage code.
+Engine Postgres truyền tất cả các thuộc tính bổ sung trong khối cấu hình `Postgres` trực tiếp vào [constructor pg.Pool](https://node-postgres.com/apis/pool), ngoại trừ `table` và `cache`, vốn được sử dụng bởi chính pixl-server-storage. Điều này có nghĩa là bạn có thể sử dụng các [tùy chọn node-postgres SSL tiêu chuẩn](https://node-postgres.com/features/ssl) mà không cần bất kỳ code pixl-server-storage đặc biệt nào.
 
-For a server with a certificate trusted by Node.js already, you can enable SSL by simply adding `"ssl":true` like this:
+Đối với một server có chứng chỉ đã được Node.js tin cậy sẵn, bạn có thể bật SSL bằng cách chỉ cần thêm `"ssl":true` như thế này:
 
 ```json
 {
@@ -572,7 +554,7 @@ For a server with a certificate trusted by Node.js already, you can enable SSL b
 }
 ```
 
-For a private CA, self-signed server certificate, or hosted database that requires its own CA bundle, pass an `ssl` object.  This object is passed through to Node.js TLS, so you can provide `ca`, `cert`, `key`, `servername`, and other supported TLS options.  If you store PEM text directly in JSON, preserve line breaks as `\n` (standard JSON string encoding):
+Đối với một CA riêng tư, chứng chỉ server tự ký, hoặc cơ sở dữ liệu được host yêu cầu gói CA riêng của nó, hãy truyền một object `ssl`. Object này được truyền qua Node.js TLS, vì vậy bạn có thể cung cấp `ca`, `cert`, `key`, `servername`, và các tùy chọn TLS được hỗ trợ khác. Nếu bạn lưu trữ văn bản PEM trực tiếp trong JSON, hãy giữ các ký tự xuống dòng dưới dạng `\n` (mã hóa chuỗi JSON tiêu chuẩn):
 
 ```json
 {
@@ -589,7 +571,7 @@ For a private CA, self-signed server certificate, or hosted database that requir
 }
 ```
 
-If you need to load the CA certificate from disk, you can also use a `connectionString` with the standard Postgres SSL parameters.  The `pg` module will read `sslrootcert` and use it as the TLS CA:
+Nếu bạn cần tải chứng chỉ CA từ đĩa, bạn cũng có thể sử dụng một `connectionString` với các tham số SSL Postgres tiêu chuẩn. Module `pg` sẽ đọc `sslrootcert` và sử dụng nó làm TLS CA:
 
 ```json
 {
@@ -601,13 +583,13 @@ If you need to load the CA certificate from disk, you can also use a `connection
 }
 ```
 
-If you put SSL parameters such as `sslmode`, `sslcert`, `sslkey`, or `sslrootcert` in the connection string, avoid also setting a separate `ssl` object.  The `pg` connection string parser replaces the `ssl` object when those URL parameters are present.
+Nếu bạn đưa các tham số SSL như `sslmode`, `sslcert`, `sslkey`, hoặc `sslrootcert` vào connection string, hãy tránh thiết lập thêm một object `ssl` riêng biệt. Trình phân tích cú pháp connection string của `pg` sẽ thay thế object `ssl` khi các tham số URL đó có mặt.
 
-Please avoid `ssl: { "rejectUnauthorized": false }` for production use.  It can be useful as a short diagnostic test, but it disables certificate verification.
+Vui lòng tránh sử dụng `ssl: { "rejectUnauthorized": false }` cho môi trường production. Nó có thể hữu ích cho một bài kiểm thử chẩn đoán ngắn, nhưng nó sẽ vô hiệu hóa việc xác thực chứng chỉ.
 
 #### AWS RDS
 
-Amazon RDS for PostgreSQL works well with this setup.  Download the appropriate RDS CA bundle from the [AWS RDS SSL/TLS documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html), place it somewhere readable by your app, and use `sslmode=verify-full` with `sslrootcert`:
+Amazon RDS cho PostgreSQL hoạt động tốt với thiết lập này. Tải xuống gói RDS CA thích hợp từ [tài liệu AWS RDS SSL/TLS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html), đặt nó ở nơi ứng dụng của bạn có thể đọc được, và sử dụng `sslmode=verify-full` với `sslrootcert`:
 
 ```json
 {
@@ -619,102 +601,102 @@ Amazon RDS for PostgreSQL works well with this setup.  Download the appropriate 
 }
 ```
 
-AWS has a few quirks worth knowing:
+AWS có một vài điểm đặc thù cần lưu ý:
 
-* RDS for PostgreSQL 15 and newer enables `rds.force_ssl` by default, so non-SSL connections may be rejected with an error similar to `no pg_hba.conf entry ... SSL off`.
-* `sslmode=verify-full` verifies both the certificate chain and the hostname.  Use the actual RDS endpoint hostname in your connection string when possible.
-* If you connect through a custom DNS name, SSH tunnel, or local proxy, hostname verification may need the original RDS endpoint as the TLS `servername` option.  In that case, prefer explicit config properties and an `ssl` object instead of URL SSL parameters.
-* AWS recommends trusting the root RDS CA certificate.  Avoid pinning intermediate certificates, as that can cause trouble when RDS rotates server certificates.
+* RDS cho PostgreSQL 15 và mới hơn bật `rds.force_ssl` theo mặc định, vì vậy các kết nối không có SSL có thể bị từ chối với lỗi tương tự như `no pg_hba.conf entry ... SSL off`.
+* `sslmode=verify-full` xác thực cả chuỗi chứng chỉ và hostname. Hãy sử dụng hostname endpoint RDS thực tế trong connection string của bạn khi có thể.
+* Nếu bạn kết nối thông qua một tên DNS tùy chỉnh, SSH tunnel, hoặc proxy nội bộ, việc xác thực hostname có thể cần endpoint RDS ban đầu làm tùy chọn TLS `servername`. Trong trường hợp đó, hãy ưu tiên các thuộc tính cấu hình rõ ràng và một object `ssl` thay vì các tham số SSL của URL.
+* AWS khuyên bạn nên tin tưởng chứng chỉ RDS CA gốc. Tránh ghim (pinning) các chứng chỉ trung gian, vì điều đó có thể gây rắc rối khi RDS xoay vòng các chứng chỉ server.
 
-## Developer Configurations
+## Các cấu hình dành cho nhà phát triển
 
 > [!WARNING]
-> The following configurations technically work, because pixl-server-storage allows JSON records and binary files to live in the same engine.  However, they are not recommended for serious production use with xyOps.  They are better suited for development, testing, and edge cases where you fully understand the tradeoffs.
+> Các cấu hình sau đây về mặt kỹ thuật vẫn hoạt động, vì pixl-server-storage cho phép các bản ghi JSON và các file nhị phân nằm trong cùng một engine. Tuy nhiên, chúng không được khuyến nghị cho việc sử dụng production nghiêm túc với PTOps. Chúng phù hợp hơn cho việc phát triển, thử nghiệm và các trường hợp biên nơi bạn hiểu rõ các đánh đổi.
 
 ### SQLite
 
-Using plain [SQLite](https://github.com/jhuckaby/pixl-server-storage#sqlite) as the sole storage engine means **both** JSON records and binary files are stored inside the same database file.  This is convenient for development because everything lives in one place, but it is a poor production fit.
+Sử dụng plain [SQLite](https://github.com/jhuckaby/pixl-server-storage#sqlite) làm engine lưu trữ duy nhất có nghĩa là **cả** các bản ghi JSON và các file nhị phân đều được lưu trữ bên trong cùng một file cơ sở dữ liệu. Điều này thuận tiện cho việc phát triển vì mọi thứ nằm ở một nơi, nhưng nó không phù hợp cho môi trường production.
 
-Why it is not recommended:
+Tại sao nó không được khuyến nghị:
 
-- Large files become `BLOB`s inside the table, so uploads and downloads must be materialized through SQLite and process memory.
-- Big blobs inflate the WAL file, backups, restores, and vacuum operations.
-- The database still lives on one host, so this does not solve multi-conductor storage sharing.
-- A database that should contain lots of tiny JSON records now also has to carry general file storage, which is the wrong workload mix.
+- Các file lớn trở thành các `BLOB` bên trong bảng, vì vậy việc tải lên và tải xuống phải được hiện thực hóa thông qua SQLite và bộ nhớ tiến trình.
+- Các blob lớn làm phình file WAL, các bản backup, restore và các hoạt động vacuum.
+- Cơ sở dữ liệu vẫn nằm trên một máy host, vì vậy điều này không giải quyết được việc chia sẻ lưu trữ đa conductor.
+- Một cơ sở dữ liệu đáng lẽ chỉ chứa các bản ghi JSON nhỏ giờ đây phải mang thêm cả lưu trữ file thông thường, đây là sự kết hợp khối lượng công việc không đúng.
 
-Use SQLite alone only for local development, small lab setups, or temporary testing.
+Chỉ sử dụng SQLite đơn độc cho việc phát triển cục bộ, các thiết lập lab nhỏ hoặc thử nghiệm tạm thời.
 
 ### S3
 
-Using a cloud-hosted [S3](https://github.com/jhuckaby/pixl-server-storage#amazon-s3) service as the only storage engine means every JSON record, list page, hash page, transaction record, and index-related object is stored as a separate S3 object.  pixl-server-storage supports this, but xyOps is a terrible workload for high-latency object storage on the document side.
+Sử dụng dịch vụ [S3](https://github.com/jhuckaby/pixl-server-storage#amazon-s3) được host trên đám mây làm engine lưu trữ duy nhất có nghĩa là mọi bản ghi JSON, trang danh sách, trang hash, bản ghi transaction và object liên quan đến index đều được lưu trữ dưới dạng một object S3 riêng biệt. pixl-server-storage hỗ trợ điều này, nhưng PTOps là một khối lượng công việc tồi tệ đối với lưu trữ object độ trễ cao ở phía tài liệu.
 
-For clarity, this is specifically talking about cloud-hosted S3 services like AWS S3, Cloudflare R2, Backblaze B2, Wasabi, DigitalOcean Spaces, Vultr, Akamai Object Storage, etc.
+Để làm rõ, điều này đặc biệt nói về các dịch vụ S3 được host trên đám mây như AWS S3, Cloudflare R2, Backblaze B2, Wasabi, DigitalOcean Spaces, Vultr, Akamai Object Storage, v.v.
 
-Why it is not recommended:
+Tại sao nó không được khuyến nghị:
 
-- xyOps performs an enormous number of reads and writes against tiny JSON objects.
-- Even with the S3 cache enabled, cache misses and transactional workflows still pay remote object-store latency.
-- Lists, hashes, indexes, and maintenance tasks amplify the small-object problem.
-- S3 is designed for durable object storage, not as a low-latency database for millions of tiny records.
+- PTOps thực hiện một số lượng cực kỳ lớn các hoạt động đọc và ghi đối với các object JSON nhỏ.
+- Ngay cả khi bật bộ nhớ đệm (cache) S3, các lượt cache miss và các quy trình transaction vẫn phải chịu độ trễ của kho lưu trữ object từ xa.
+- Các danh sách, hash, index và các tác vụ bảo trì làm trầm trọng thêm vấn đề object nhỏ.
+- S3 được thiết kế cho việc lưu trữ object bền vững, chứ không phải làm cơ sở dữ liệu độ trễ thấp cho hàng triệu bản ghi nhỏ.
 
-S3 is excellent as a `binaryEngine` (as part of a [Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid) split).  It is not the recommended all-in-one engine for xyOps production, even when the S3 service is something fast and on premises like [MinIO](#minio) or [RustFS](#rustfs), because the S3 engine does not support native transactions.  Use Redis or Postgres for the Hybrid `docEngine` instead.
+S3 là một `binaryEngine` xuất sắc (như một phần của việc chia tách [Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid)). Nó không phải là engine tất-cả-trong-một được khuyến nghị cho production PTOps, ngay cả khi dịch vụ S3 là một dịch vụ nhanh và chạy on premises như [MinIO](#minio) hoặc [RustFS](#rustfs), vì engine S3 không hỗ trợ các transaction native. Hãy sử dụng Redis hoặc Postgres cho `docEngine` của Hybrid thay thế.
 
 ### Redis
 
-Using [Redis](https://github.com/jhuckaby/pixl-server-storage#redis) as the only storage engine means both JSON records and general file payloads live in Redis memory.  That is fast, but it is also very expensive and operationally awkward for binary storage.
+Sử dụng [Redis](https://github.com/jhuckaby/pixl-server-storage#redis) làm engine lưu trữ duy nhất có nghĩa là cả bản ghi JSON và payload file thông thường đều nằm trong bộ nhớ Redis. Điều đó rất nhanh, nhưng nó cũng rất đắt đỏ và không tiện lợi về mặt vận hành đối với việc lưu trữ nhị phân.
 
-Why it is not recommended:
+Tại sao nó không được khuyến nghị:
 
-- Files consume RAM during transit.
-- Persistence operations such as RDB snapshots and AOF rewrites get larger and slower.
-- Replication and restarts become more painful as binary payloads accumulate.
-- If Redis eviction is enabled and memory pressure occurs, file loss becomes a real risk.
+- Các file tiêu thụ RAM trong quá trình truyền tải.
+- Các hoạt động persistence như chụp snapshot RDB và viết lại AOF trở nên lớn hơn và chậm hơn.
+- Việc nhân bản (replication) và restart trở nên khó khăn hơn khi các payload nhị phân tích tụ lại.
+- Nếu cơ chế eviction của Redis được bật và xảy ra áp lực bộ nhớ, nguy cơ mất file là hoàn toàn có thật.
 
-Redis is excellent as a document store for xyOps, provided persistence is enabled.  It is not a good place to keep general uploads, attachments, and file blobs.
+Redis là một kho tài liệu tuyệt vời cho PTOps, với điều kiện là tính năng persistence được bật. Nó không phải là một nơi tốt để giữ các file upload, file đính kèm và file blob thông thường.
 
 ### Postgres
 
-Using plain [Postgres](https://github.com/jhuckaby/pixl-server-storage#postgres) as the only storage engine means both JSON records and general files are stored in the same table as `BYTEA` payloads.  This works, but it is not what Postgres does best.
+Sử dụng plain [Postgres](https://github.com/jhuckaby/pixl-server-storage#postgres) làm engine lưu trữ duy nhất có nghĩa là cả bản ghi JSON và các file thông thường đều được lưu trữ trong cùng một bảng dưới dạng payload `BYTEA`. Điều này có hoạt động, nhưng nó không phải là thứ Postgres làm tốt nhất.
 
-Why it is not recommended:
+Tại sao nó không được khuyến nghị:
 
-- Large binary payloads bloat the table, WAL stream, backups, and replication traffic.
-- File uploads and downloads still have to flow through the database connection pool and use memory.
-- Autovacuum and general table maintenance become heavier than they need to be.
-- It mixes two unrelated workloads, transactional document storage and general file storage, into one place.
+- Các payload nhị phân lớn làm phình bảng, luồng WAL, các bản backup và lưu lượng nhân bản.
+- Việc upload và download file vẫn phải chảy qua pool kết nối cơ sở dữ liệu và tiêu thụ bộ nhớ.
+- Hoạt động autovacuum và bảo trì bảng nói chung trở nên nặng nề hơn mức cần thiết.
+- Nó trộn lẫn hai khối lượng công việc không liên quan, lưu trữ tài liệu giao dịch và lưu trữ file thông thường, vào cùng một nơi.
 
-Postgres is a very good `docEngine` (as part of a [Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid) split).  It is not a great all-in-one engine for xyOps.
+Postgres là một `docEngine` rất tốt (như một phần của việc chia tách [Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid)). Nó không phải là một engine tất-cả-trong-một tuyệt vời cho PTOps.
 
 ### NFS
 
-Using plain [Filesystem](https://github.com/jhuckaby/pixl-server-storage#local-filesystem) pointed at NFS as the only storage engine sounds simple, but it means xyOps stores **everything** as files on a shared filesystem, including its document workload.  That is exactly the wrong shape for NFS at scale.
+Sử dụng plain [Filesystem](https://github.com/jhuckaby/pixl-server-storage#local-filesystem) trỏ đến NFS làm engine lưu trữ duy nhất nghe có vẻ đơn giản, nhưng điều đó có nghĩa là PTOps lưu trữ **mọi thứ** dưới dạng file trên một hệ thống file dùng chung, bao gồm cả khối lượng công việc tài liệu của nó. Đó chính xác là mô hình không phù hợp cho NFS ở quy mô lớn.
 
-Why it is not recommended:
+Tại sao nó không được khuyến nghị:
 
-- xyOps generates a very large number of tiny JSON records, which means constant metadata churn and tiny-file I/O.
-- Networked filesystems generally hate millions of tiny files spread across a hot working set.
-- Cache coherency, locking behavior, and latency are all worse than local disk or a real key/value store.
-- You may be able to improve consistency with mount options like `noac` and `sync`, but that usually makes performance even worse.
+- PTOps tạo ra một số lượng rất lớn các bản ghi JSON nhỏ, điều này đồng nghĩa với việc biến động siêu dữ liệu (metadata) liên tục và các hoạt động I/O file nhỏ.
+- Các hệ thống file qua mạng nói chung rất ghét hàng triệu file nhỏ trải rộng trên một tập hợp công việc nóng (hot working set).
+- Tính nhất quán của cache (cache coherency), hành vi khóa (locking) và độ trễ đều tệ hơn đĩa cục bộ hoặc một kho chứa key/value thực tế.
+- Bạn có thể cải thiện tính nhất quán bằng các tùy chọn mount như `noac` và `sync`, nhưng điều đó thường làm cho hiệu suất thậm chí còn tệ hơn.
 
-NFS is acceptable as a `binaryEngine` for files only (as part of a [Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid) split).  It should not be your one-size-fits-all backend for xyOps production data.
+NFS có thể chấp nhận được như một `binaryEngine` chỉ dành cho các file (như một phần của việc chia tách [Hybrid](https://github.com/jhuckaby/pixl-server-storage#hybrid)). Nó không nên là backend vạn năng cho dữ liệu production PTOps của bạn.
 
-## Migration
+## Di chuyển dữ liệu (Migration)
 
-Migrating between storage configurations is straightforward, but do it during a maintenance window.  The safest approach is:
+Việc di chuyển giữa các cấu hình lưu trữ rất đơn giản, nhưng hãy thực hiện việc đó trong một khoảng thời gian bảo trì (maintenance window). Cách tiếp cận an toàn nhất là:
 
-1. In the xyOps UI, go to **System** and click **Export Data**.
-2. Export everything you need from the old system.  For a full logical migration, select all lists, all indexes, and all extras, including bucket files, ticket files, job files, user avatars, monitor data, and any other payloads you care about.
-3. Shut down xyOps completely.
-4. Change the [Storage](config.md#storage) configuration to the new engine or hybrid setup.
-5. Start xyOps again.  If the new storage is empty, xyOps will create a fresh default dataset and you can log in with `admin` / `admin`.
-6. Go back to **System** and import the export archive into the new storage backend.
-7. Verify your users, schedules, alerts, buckets, tickets, and uploaded files before returning the system to service.
+1. Trong UI PTOps, vào mục **System** và nhấp vào **Export Data**.
+2. Export mọi thứ bạn cần từ hệ thống cũ. Để di chuyển logic đầy đủ, hãy chọn tất cả các danh sách, tất cả các index và tất cả các mục bổ sung, bao gồm các file bucket, file ticket, file job, avatar của user, dữ liệu monitor và bất kỳ payload nào khác bạn quan tâm.
+3. Tắt hoàn toàn PTOps.
+4. Thay đổi cấu hình [Storage](config.md#storage) sang engine mới hoặc thiết lập hybrid mới.
+5. Khởi động lại PTOps. Nếu bộ lưu trữ mới trống, PTOps sẽ tạo một tập dữ liệu mặc định mới và bạn có thể đăng nhập bằng `admin` / `admin`.
+6. Quay lại mục **System** và import archive đã export vào backend lưu trữ mới.
+7. Xác minh các user, lịch trình (schedule), alert, bucket, ticket và các file đã tải lên trước khi đưa hệ thống trở lại hoạt động.
 
-Important notes:
+Lưu ý quan trọng:
 
-- The export/import flow is a **logical migration**, not a byte-for-byte replica of your old backend.
-- If you want a truly complete migration, make sure you include the relevant extras for binary payloads.
-- Very large job logs and job files may not be included in export if they exceed the built-in export limits.
-- Always keep a backup of the old backend until you have validated the new one.
+- Quy trình export/import là một **sự di chuyển logic (logical migration)**, chứ không phải là một bản sao byte-đối-byte của backend cũ của bạn.
+- Nếu bạn muốn di chuyển thực sự hoàn chỉnh, hãy đảm bảo rằng bạn đã bao gồm các mục bổ sung có liên quan cho các payload nhị phân.
+- Các file job và log job rất lớn có thể không được đưa vào bản export nếu chúng vượt quá giới hạn export tích hợp sẵn.
+- Luôn giữ một bản backup của backend cũ cho đến khi bạn đã xác thực hoàn toàn backend mới.
 
-For more details on the export format, see [xyOps Backup Format](xybk.md).
+Để biết thêm chi tiết về định dạng export, xem [Định dạng backup PTOps](xybk.md).

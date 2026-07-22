@@ -2549,11 +2549,11 @@ Page.Base = class Base extends Page {
 		var filename = '';
 		
 		// possibly customize filename for current page
-		if (this.job) filename = 'xyops-job-' + this.job.id + '-' + get_unique_id(8) + '-' + key + '.png';
-		else if (this.server) filename = 'xyops-server-' + this.server.id + '-' + get_unique_id(8) + '-' + key + '.png';
-		else if (this.snapshot) filename = 'xyops-snapshot-' + this.snapshot.id + '-' + get_unique_id(8) + '-' + key + '.png';
-		else if (this.event) filename = 'xyops-event-' + this.event.id + '-' + get_unique_id(8) + '-' + key + '.png';
-		else filename = 'xyops-' + get_unique_id(8) + '-' + key + '.png';
+		if (this.job) filename = 'ptops-job-' + this.job.id + '-' + get_unique_id(8) + '-' + key + '.png';
+		else if (this.server) filename = 'ptops-server-' + this.server.id + '-' + get_unique_id(8) + '-' + key + '.png';
+		else if (this.snapshot) filename = 'ptops-snapshot-' + this.snapshot.id + '-' + get_unique_id(8) + '-' + key + '.png';
+		else if (this.event) filename = 'ptops-event-' + this.event.id + '-' + get_unique_id(8) + '-' + key + '.png';
+		else filename = 'ptops-' + get_unique_id(8) + '-' + key + '.png';
 		
 		chart.download({
 			filename: filename,

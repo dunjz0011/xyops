@@ -45,7 +45,7 @@ Page.Conductors = class Conductors extends Page.PageUtils {
 		// save local copy for actions
 		this.masters = rows;
 		
-		var cols = ['Host ID', 'Status', 'xyOps', 'Load Avg', 'Ping', 'Uptime', 'Actions'];
+		var cols = ['Host ID', 'Status', 'PTOps', 'Load Avg', 'Ping', 'Uptime', 'Actions'];
 		
 		html += '<div class="box">';
 		html += '<div class="box_title">';
@@ -118,11 +118,11 @@ Page.Conductors = class Conductors extends Page.PageUtils {
 			if (master_int < latest_int) {
 				// outdated!
 				self.div.find('#d_ec_ver_' + CSS.escape(item.id)).html(
-					`<button class="link outdated" data-host="${item.id}" onClick="$P().go_nav_upgrade(this)" title="A new xyOps version is available (${app.latestMasterVersion})."><i class="mdi mdi-alert-rhombus">&nbsp;</i>v${item.version}</span>`
+					`<button class="link outdated" data-host="${item.id}" onClick="$P().go_nav_upgrade(this)" title="A new PTOps version is available (${app.latestMasterVersion})."><i class="mdi mdi-alert-rhombus">&nbsp;</i>v${item.version}</span>`
 				);
 			}
 			else {
-				self.div.find('#d_ec_ver_' + CSS.escape(item.id)).attr('title', 'xyOps is up to date.').css({ color: 'var(--green)', fontWeight: 'bold' }).html(
+				self.div.find('#d_ec_ver_' + CSS.escape(item.id)).attr('title', 'PTOps is up to date.').css({ color: 'var(--green)', fontWeight: 'bold' }).html(
 					`<i class="mdi mdi-check-circle">&nbsp;</i>v${item.version}</span>`
 				);
 			}

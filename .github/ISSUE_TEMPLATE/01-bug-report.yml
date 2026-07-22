@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to try xyOps, and fill out this bug report.  If you need help with something, please start a discussion thread instead.  If you are reporting a **security vulnerability**, please do **not** file a public GitHub issue.  Instead, email us directly at [security@pixlcore.com](mailto:security@pixlcore.com).  See our [Security Guide](https://github.com/pixlcore/xyops/blob/main/docs/security.md) for details.
+        Thanks for taking the time to try PTOps, and fill out this bug report.  If you need help with something, please start a discussion thread instead.  If you are reporting a **security vulnerability**, please do **not** file a public GitHub issue.  Instead, email us directly at [security@pixlcore.com](mailto:security@pixlcore.com).  See our [Security Guide](https://github.com/pixlcore/xyops/blob/main/docs/security.md) for details.
   - type: checkboxes
     id: existing
     attributes:
@@ -43,8 +43,8 @@ body:
   - type: input
     id: xyops-ver
     attributes:
-      label: xyOps Version
-      description: Which xyOps version do you have installed?
+      label: PTOps Version
+      description: Which PTOps version do you have installed?
       placeholder: ex. v0.9.72
     validations:
       required: true

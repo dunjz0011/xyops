@@ -1,4 +1,4 @@
-// xyOps Web App
+// PTOps Web App
 // Copyright (c) 2019 - 2026 PixlCore LLC
 // Released under the BSD 3-Clause License.
 // See the LICENSE.md file in this repository.
@@ -99,7 +99,7 @@ app.extend({
 		
 		if (config.debug) {
 			Debug.enable( this.debug_cats );
-			Debug.trace('system', "xyOps Client Starting Up");
+			Debug.trace('system', "PTOps Client Starting Up");
 		}
 		
 		// setup theme (light / dark)
@@ -294,12 +294,15 @@ app.extend({
 	
 	showSidebar: function(visible) {
 		// show or hide sidebar
+		var $sidebar = $('div.sidebar');
 		if (visible) {
 			$('body').addClass('sidebar');
+			$sidebar.removeAttr('aria-hidden').prop('inert', false);
 			$('div.header').css('background-image', 'none');
 		}
 		else {
 			$('body').removeClass('sidebar');
+			$sidebar.attr('aria-hidden', 'true').prop('inert', true);
 			$('div.header').css('background-image', 'url(' + config.logo_url + ')');
 		}
 	},
@@ -727,7 +730,7 @@ app.extend({
 			}
 		} );
 		
-		$('#tab_Conductors').toggleClass( 'outdated', is_outdated ).attr( 'title', is_outdated ? `One or more conductors have outdated xyOps software.` : null );
+		$('#tab_Conductors').toggleClass( 'outdated', is_outdated ).attr( 'title', is_outdated ? `One or more conductors have outdated PTOps software.` : null );
 		
 		if (is_outdated && !$('#tab_Conductors > i.section_badge').length) {
 			$('#tab_Conductors').append( `<i class="mdi mdi-alert-rhombus-outline section_badge"></i>` );
@@ -1328,7 +1331,7 @@ app.extend({
 		
 		// optional system-level notification
 		if (this.user.notifications && (Notification.permission === "granted")) {
-			var note = new Notification( "xyOps: " + channel.title, {
+			var note = new Notification( "PTOps: " + channel.title, {
 				body: args.message.replace(/<.+?>/g, ''),
 				icon: '/images/logo-256.png',
 				tag: 'xyops-channel',

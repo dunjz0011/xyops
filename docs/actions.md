@@ -2,18 +2,18 @@
 
 ## Overview
 
-Actions in xyOps handle responses to job outcomes and alert state changes. You attach actions to events (jobs) and alerts so when specific conditions occur, xyOps executes one or more actions in parallel. Typical actions include sending email, firing a web hook, running a job, creating a ticket, taking a snapshot, and more.
+Action trong PTOps xử lý phản ứng với kết quả job và thay đổi trạng thái alert. Bạn gắn action vào event (job) và alert để khi các điều kiện cụ thể xảy ra, PTOps thực thi một hoặc nhiều action song song. Các action thường gặp bao gồm gửi email, kích hoạt web hook, chạy job, tạo ticket, chụp snapshot, và nhiều hơn nữa.
 
-This document explains how actions work, the conditions they support, and details each action type with parameters and examples.
+Tài liệu này giải thích action hoạt động thế nào, các condition mà chúng hỗ trợ, và chi tiết từng loại action kèm tham số và ví dụ.
 
 ## Key Points
 
-- Actions are small definition objects with three core fields: `enabled`, `condition`, and `type`. Extra fields depend on the type.
-- Job actions live in events and may fire when the job starts or completes with a specific outcome. Some action types are job-only.  Categories and universal defaults can add actions.
-- Alert actions live in alert definitions and fire when an alert is created (fired) and/or cleared. Groups and universal defaults can add actions.
-- Actions execute in parallel and are deduplicated per type + target (e.g., same email recipients, same web hook ID). Results are recorded in activity logs with details where available.
+- Action là các object định nghĩa nhỏ với ba trường cốt lõi: `enabled`, `condition`, và `type`. Các trường bổ sung tuỳ theo loại.
+- Job action nằm trong event và có thể kích hoạt khi job bắt đầu hoặc hoàn thành với một kết quả cụ thể. Một số loại action chỉ dùng cho job. Category và universal default có thể bổ sung action.
+- Alert action nằm trong định nghĩa alert và kích hoạt khi alert được tạo (fired) và/hoặc clear. Group và universal default có thể bổ sung action.
+- Action thực thi song song và được loại bỏ trùng lặp (dedupe) theo type + target (ví dụ: cùng người nhận email, cùng web hook ID). Kết quả được ghi vào activity log kèm chi tiết khi có.
 
-Example minimal action (JSON format):
+Ví dụ action tối giản (định dạng JSON):
 
 ```json
 {
@@ -24,80 +24,80 @@ Example minimal action (JSON format):
 }
 ```
 
-## Where Actions Are Defined
+## Nơi Action Được Định Nghĩa
 
-- **Event editor**: Add job actions to run on job start or completion outcomes.
-- **Workflow builder**: Attach job actions to workflow nodes.
-- **Alert setup**: Add alert actions to run when alerts fire and/or clear.
-- **Categories**: Event categories can set default job actions.
-- **Groups**: Server groups can set default alert actions.
-- **Universal**: The server config can add universal job and alert actions.
+- **Trình chỉnh sửa Event**: Thêm job action để chạy khi job bắt đầu hoặc theo kết quả hoàn thành.
+- **Trình dựng Workflow**: Gắn job action vào node workflow.
+- **Alert Setup**: Thêm alert action để chạy khi alert fire và/hoặc clear.
+- **Categories**: Category của event có thể đặt job action mặc định.
+- **Groups**: Group của server có thể đặt alert action mặc định.
+- **Universal**: Cấu hình server có thể thêm job action và alert action toàn hệ thống.
 
-## Action Conditions
+## Action Condition
 
-Each action has a `condition` selecting when it runs.
+Mỗi action có một `condition` chọn thời điểm nó chạy.
 
-- **Job conditions**:
-  - `start`: When the job first starts (before remote launch).
-  - `complete`: When the job completes, regardless of outcome.
-  - `success`: When the job completes successfully (i.e. with `code` equal to `0` or `false`).
-  - `error`: When the job completes with any error (i.e. non-zero/non-false `code`).
-  - `user`: When the job completes with a custom error code (i.e. not `warning`, `critical` or `abort`).
-  - `warning`: When the job completes with `code` set to `"warning"`.
-  - `critical`: When the job completes with `code` set to `"critical"`.
-  - `abort`: When the job is aborted (by user or failure condition).
-  - `tag:TAGID`: On job completion, only if the tag is present on the job.
-- **Workflow conditions**:
-  - `continue`: A special condition that fires from a [Controller](workflows.md#controller-nodes) in a workflow, after all the connected jobs complete.
-- **Alert conditions**:
-  - `alert_new`: When an alert fires on a server.
-  - `alert_cleared`: When an active alert clears.
+- **Job condition**:
+  - `start`: Khi job bắt đầu chạy (trước khi khởi chạy trên remote).
+  - `complete`: Khi job hoàn thành, bất kể kết quả.
+  - `success`: Khi job hoàn thành thành công (nghĩa là `code` bằng `0` hoặc `false`).
+  - `error`: Khi job hoàn thành với bất kỳ lỗi nào (nghĩa là `code` khác 0/false).
+  - `user`: Khi job hoàn thành với mã lỗi tuỳ chỉnh (nghĩa là không phải `warning`, `critical` hay `abort`).
+  - `warning`: Khi job hoàn thành với `code` là `"warning"`.
+  - `critical`: Khi job hoàn thành với `code` là `"critical"`.
+  - `abort`: Khi job bị hủy (do người dùng hoặc điều kiện lỗi).
+  - `tag:TAGID`: Khi job hoàn thành, chỉ nếu tag đó có mặt trên job.
+- **Workflow condition**:
+  - `continue`: Condition đặc biệt kích hoạt từ một [Controller](workflows.md#controller-nodes) trong workflow, sau khi tất cả job được kết nối đã hoàn thành.
+- **Alert condition**:
+  - `alert_new`: Khi alert fire trên một server.
+  - `alert_cleared`: Khi alert đang active được clear.
 
-Notes:
+Ghi chú:
 
-- Job completion actions only fire if the job was not retried.  This includes tag conditions.
-- Job start actions run before remote launch; a start action can suspend or abort a job before it launches.
+- Job completion action chỉ chạy nếu job không bị retry. Điều này bao gồm cả tag condition.
+- Job start action chạy trước khi khởi chạy trên remote; một start action có thể suspend hoặc abort job trước khi nó chạy.
 
-## How Actions Run
+## Action Chạy Như Thế Nào
 
-- **Execution**: All matched actions for a given trigger run in parallel.
-- **Deduplication**: Actions are deduped by a composite of type and target (e.g., email recipients, web hook ID, event ID, channel ID, plugin ID, bucket ID). This prevents sending duplicates when multiple sources contribute the same action.
-- **Recording**: For jobs, action activity and details appear in the job's Activity log and metadata. For alerts, the invocation stores action results and details.
+- **Thực thi**: Tất cả action khớp với một trigger nhất định chạy song song.
+- **Loại bỏ trùng lặp**: Action được dedupe theo tổ hợp type và target (ví dụ: người nhận email, web hook ID, event ID, channel ID, plugin ID, bucket ID). Điều này ngăn gửi trùng lặp khi nhiều nguồn cùng đóng góp một action giống nhau.
+- **Ghi nhận**: Với job, hoạt động action và chi tiết xuất hiện trong Activity log và metadata của job. Với alert, bản ghi invocation lưu kết quả và chi tiết của action.
 
-## Compatibility
+## Tính Tương Thích
 
-Some action types are job-only and cannot be used with alerts:
+Một số loại action chỉ dùng cho job và không thể dùng với alert:
 
-- Job-only: Store Bucket (`store`), Fetch Bucket (`fetch`), Disable Event (`disable`), Delete Event (`delete`), Suspend Job (`suspend`).
-- All others can be used with both jobs and alerts.
+- Chỉ dùng cho job: Store Bucket (`store`), Fetch Bucket (`fetch`), Disable Event (`disable`), Delete Event (`delete`), Suspend Job (`suspend`).
+- Tất cả loại khác có thể dùng cho cả job và alert.
 
 ## Action Object
 
-All [Action](data.md#action) objects include these common properties:
+Tất cả object [Action](data.md#action) bao gồm các thuộc tính chung sau:
 
-| Property | Type | Description |
+| Thuộc Tính | Kiểu | Mô Tả |
 |---------|------|-------------|
-| `enabled` | Boolean | Enable (`true`) or disable (`false`) the action. |
-| `condition` | String | When to run the action. See Action Conditions. |
-| `type` | String | Which action to perform. See Action Types below. |
+| `enabled` | Boolean | Bật (`true`) hoặc tắt (`false`) action. |
+| `condition` | String | Khi nào action chạy. Xem Action Condition. |
+| `type` | String | Action nào sẽ thực thi. Xem Action Types bên dưới. |
 
-Additional properties are required based on the action type.
+Các thuộc tính bổ sung tuỳ theo loại action.
 
 ## Action Types
 
 ### Email
 
-Send an email notification to one or more users and/or explicit email addresses. For jobs, the message includes context (links, log excerpt, performance, etc.). For alerts, templates include server context and links.
+Gửi thông báo email đến một hoặc nhiều user và/hoặc địa chỉ email tường minh. Với job, message bao gồm context (link, đoạn log, hiệu năng, v.v.). Với alert, template bao gồm context của server và link.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Kiểu | Bắt Buộc | Mô Tả |
 |------|------|----------|-------------|
-| `users` | Array(String) | Optional | Array of [User.username](data.md#user-username) values to email. |
-| `email` | String | Optional | One or more additional recipients, comma-separated. |
-| `body` | String | Optional | Optionally customize the email subject and body using Markdown (see [Custom Email](#custom-email) below). |
+| `users` | Array(String) | Tuỳ chọn | Danh sách [User.username](data.md#user-username) để gửi email. |
+| `email` | String | Tuỳ chọn | Một hoặc nhiều người nhận bổ sung, phân tách bằng dấu phẩy. |
+| `body` | String | Tuỳ chọn | Tuỳ chọn tuỳ chỉnh chủ đề và nội dung email bằng Markdown (xem [Custom Email](#custom-email) bên dưới). |
 
-Example (job error):
+Ví dụ (job error):
 
 ```json
 {
@@ -109,7 +109,7 @@ Example (job error):
 }
 ```
 
-Example (alert fired):
+Ví dụ (alert fired):
 
 ```json
 {
@@ -123,9 +123,9 @@ Example (alert fired):
 
 #### Custom Email
 
-If the `body` property is provided, this is used instead of a standard template for composing the email.  It should be a [GitHub-Flavored Markdown](https://github.github.com/gfm/) formatted multi-line text string.  You can also use the [xyOps Expression Format](xyexp.md) to pull in values from the [JobHookData](data.md#jobhookdata) object.
+Nếu thuộc tính `body` được cung cấp, nó được dùng thay cho template chuẩn khi soạn email. Đây nên là chuỗi văn bản nhiều dòng theo định dạng [GitHub-Flavored Markdown](https://github.github.com/gfm/). Bạn cũng có thể dùng [PTOps Expression Format](xyexp.md) để lấy giá trị từ object [JobHookData](data.md#jobhookdata).
 
-In addition, special metadata key/value pairs may be specified using [HTML Comments](https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Comments) (which are ignored by the markdown parser) for things such as the email subject line.  The syntax is: `<!-- KEY: VALUE -->`.  Example use:
+Ngoài ra, các cặp key/value metadata đặc biệt có thể được chỉ định bằng [HTML Comments](https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Comments) (bị trình phân giải markdown bỏ qua) cho những thứ như dòng chủ đề email. Cú pháp là: `<!-- KEY: VALUE -->`. Ví dụ sử dụng:
 
 ```
 <!-- To: {{email_to}} -->
@@ -134,20 +134,20 @@ In addition, special metadata key/value pairs may be specified using [HTML Comme
 <!-- Button: View Details | {{links.job_details}} -->
 ```
 
-Here is the list of supported comment properties you can include:
+Đây là danh sách các thuộc tính comment được hỗ trợ mà bạn có thể đưa vào:
 
-| Comment Key | Description |
+| Comment Key | Mô Tả |
 |-------------|-------------|
-| `To` | Becomes the email "To" header.  Use `{{email_to}}` for the combined list of recipients from the action. |
-| `From` | Becomes the email "From" header.  Defaults to the [email_from](config.md#email_from) global configuration property. |
-| `Subject` | Becomes the email "Subject" header. |
-| `Title` | Displayed in large bold text inside the HTML email header.  Usually less verbose than the subject. |
-| `Button` | Optionally include a large button in the header with a label and a link (separated by a pipe). |
-| `Logo_URL` | Optionally customize the URL to the logo image used in the HTML email header. |
-| `Version` | Optionally customize the version text shown in the HTML email footer. |
-| `Copyright` | Optionally customize the copyright text shown in the HTML email footer. |
+| `To` | Trở thành header "To" của email. Dùng `{{email_to}}` cho danh sách người nhận kết hợp từ action. |
+| `From` | Trở thành header "From" của email. Mặc định là thuộc tính cấu hình toàn cục [email_from](config.md#email_from). |
+| `Subject` | Trở thành header "Subject" của email. |
+| `Title` | Hiển thị bằng chữ đậm lớn trong phần header HTML của email. Thường ngắn gọn hơn subject. |
+| `Button` | Tuỳ chọn hiển thị một nút lớn trong header với label và link (phân tách bằng dấu pipe). |
+| `Logo_URL` | Tuỳ chọn tuỳ chỉnh URL ảnh logo dùng trong header HTML của email. |
+| `Version` | Tuỳ chọn tuỳ chỉnh văn bản version hiển thị ở footer HTML của email. |
+| `Copyright` | Tuỳ chọn tuỳ chỉnh văn bản copyright hiển thị ở footer HTML của email. |
 
-Here is the full template used when jobs complete successfully:
+Đây là template đầy đủ dùng khi job hoàn thành thành công:
 
 ```
 	<!-- To: {{email_to}} -->
@@ -185,16 +185,16 @@ Here is the full template used when jobs complete successfully:
 
 ### Web Hook
 
-Fire a configured outbound web hook. xyOps sends a templated payload with rich context (job or alert), and you may append custom text.
+Kích hoạt một web hook đã cấu hình. PTOps gửi một payload theo template với context phong phú (job hoặc alert), và bạn có thể thêm văn bản tuỳ chỉnh.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Kiểu | Bắt Buộc | Mô Tả |
 |------|------|----------|-------------|
-| `web_hook` | String | Yes | The [WebHook.ID](data.md#webhook-id) for the hook. |
-| `text` | String | Optional | Extra text appended to the generated message text. |
+| `web_hook` | String | Có | [WebHook.ID](data.md#webhook-id) của hook. |
+| `text` | String | Tuỳ chọn | Văn bản bổ sung thêm vào nội dung message được tạo. |
 
-Example (job critical):
+Ví dụ (job critical):
 
 ```json
 {
@@ -206,7 +206,7 @@ Example (job critical):
 }
 ```
 
-Example (alert cleared):
+Ví dụ (alert cleared):
 
 ```json
 {
@@ -217,22 +217,22 @@ Example (alert cleared):
 }
 ```
 
-See [Web Hooks](webhooks.md) for more details on web hooks.
+Xem [Web Hooks](webhooks.md) để biết thêm chi tiết về web hook.
 
 ### Run Event
 
-Launch another event as a follow-up action. The new job inherits context, and for job actions you can override the child event's params.
+Chạy một event khác như một action tiếp theo. Job mới kế thừa context, và với job action bạn có thể ghi đè tham số của event con.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Kiểu | Bắt Buộc | Mô Tả |
 |------|------|----------|-------------|
-| `event_id` | String | Yes | Target [Event.id](data.md#event-id) to run. |
-| `params` | Object | Optional | Override parameters for the launched event. |
-| `target_server` | Boolean | Optional | For alert actions, this will override the [Event.targets](data.md#event-targets) to point at the server where the alert triggered. |
-| `clear_alert` | Boolean | Optional | For alert actions, this will clear the alert when the job completes.  Useful for signal alerts (e.g. files waiting for pickup). |
+| `event_id` | String | Có | [Event.id](data.md#event-id) đích để chạy. |
+| `params` | Object | Tuỳ chọn | Ghi đè tham số cho event được chạy. |
+| `target_server` | Boolean | Tuỳ chọn | Với alert action, việc này sẽ ghi đè [Event.targets](data.md#event-targets) để nhắm vào server nơi alert kích hoạt. |
+| `clear_alert` | Boolean | Tuỳ chọn | Với alert action, việc này sẽ clear alert khi job hoàn thành. Hữu ích cho signal alert (ví dụ: file đang chờ xử lý). |
 
-Example (job warning):
+Ví dụ (job warning):
 
 ```json
 {
@@ -244,7 +244,7 @@ Example (job warning):
 }
 ```
 
-Example (alert fired):
+Ví dụ (alert fired):
 
 ```json
 {
@@ -257,19 +257,19 @@ Example (alert fired):
 }
 ```
 
-See [Events](events.md) for more details on events.
+Xem [Events](events.md) để biết thêm chi tiết về event.
 
 ### Channel
 
-Notify a configured channel. Channels can bundle users (email/notify), a web hook, and/or an event to run. xyOps executes the contained actions and aggregates their results.
+Thông báo đến một channel đã cấu hình. Channel có thể đóng gói user (email/notify), một web hook, và/hoặc một event để chạy. PTOps thực thi các action bên trong và tổng hợp kết quả của chúng.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Kiểu | Bắt Buộc | Mô Tả |
 |------|------|----------|-------------|
-| `channel_id` | String | Yes | Notification [Channel.id](data.md@channel-id). |
+| `channel_id` | String | Có | [Channel.id](data.md@channel-id) channel thông báo. |
 
-Example (job error):
+Ví dụ (job error):
 
 ```json
 {
@@ -280,7 +280,7 @@ Example (job error):
 }
 ```
 
-Example (alert fired):
+Ví dụ (alert fired):
 
 ```json
 {
@@ -291,15 +291,15 @@ Example (alert fired):
 }
 ```
 
-See [Channels](channels.md) for more details on channels.
+Xem [Channels](channels.md) để biết thêm chi tiết về channel.
 
 ### Snapshot
 
-Capture a server snapshot. For jobs, the job must target a specific server. For alerts, the snapshot is taken for the alert's server. Links to the snapshot are included in results.
+Chụp snapshot server. Với job, job phải nhắm vào một server cụ thể. Với alert, snapshot được chụp cho server của alert. Link đến snapshot được bao gồm trong kết quả.
 
-Parameters: None
+Tham số: Không có
 
-Example (job error):
+Ví dụ (job error):
 
 ```json
 {
@@ -309,7 +309,7 @@ Example (job error):
 }
 ```
 
-Example (alert fired):
+Ví dụ (alert fired):
 
 ```json
 {
@@ -319,22 +319,22 @@ Example (alert fired):
 }
 ```
 
-See [Snapshots](snapshots.md) for more details on snapshots.
+Xem [Snapshots](snapshots.md) để biết thêm chi tiết về snapshot.
 
 ### Ticket
 
-Create a ticket with a generated body based on context (job or alert). The ticket is inserted into xyOps's ticket system and linked back to the job or alert.
+Tạo một ticket với nội dung được tự động sinh dựa trên context (job hoặc alert). Ticket được thêm vào hệ thống ticket của PTOps và liên kết lại với job hoặc alert.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Kiểu | Bắt Buộc | Mô Tả |
 |------|------|----------|-------------|
-| `ticket_type` | String | Yes | See [Ticket.type](data.md#ticket-type) (e.g., `issue`, `task`, etc.). |
-| `ticket_assignees` | Array(String) | Yes | Array of [User.username](data.md#user-username) assignees. |
-| `ticket_tags` | Array(String) | Optional | Array of [Tag.id](data.md#tag-id) values. |
-| `ticket_due` | String or Number | Optional | Due date for the new ticket.  This may be an absolute Unix epoch time, or a relative date delta such as `1 day`, `3 days`, or `1d`. |
+| `ticket_type` | String | Có | Xem [Ticket.type](data.md#ticket-type) (ví dụ: `issue`, `task`, v.v.). |
+| `ticket_assignees` | Array(String) | Có | Danh sách [User.username](data.md#user-username) người được assign. |
+| `ticket_tags` | Array(String) | Tuỳ chọn | Danh sách giá trị [Tag.id](data.md#tag-id). |
+| `ticket_due` | String hoặc Number | Tuỳ chọn | Hạn chót cho ticket mới. Có thể là Unix epoch time tuyệt đối, hoặc một độ lệch ngày tương đối như `1 day`, `3 days`, hoặc `1d`. |
 
-Example (job error):
+Ví dụ (job error):
 
 ```json
 {
@@ -348,7 +348,7 @@ Example (job error):
 }
 ```
 
-Example (alert cleared):
+Ví dụ (alert cleared):
 
 ```json
 {
@@ -362,20 +362,20 @@ Example (alert cleared):
 }
 ```
 
-See [Tickets](tickets.md) for more details on tickets, including the [New Ticket Template](tickets.md#new-ticket-template), which can provide default `cc`, `notify`, and `due` values.
+Xem [Tickets](tickets.md) để biết thêm chi tiết về ticket, bao gồm [New Ticket Template](tickets.md#new-ticket-template), có thể cung cấp giá trị mặc định `cc`, `notify`, và `due`.
 
 ### Plugin
 
-Invoke a custom Action Plugin. xyOps executes your plugin command/script with a structured JSON payload via STDIN and environment variables. The plugin can emit JSON to STDOUT for rich results.
+Gọi một Action Plugin tuỳ chỉnh. PTOps thực thi command/script của plugin bạn với một payload JSON có cấu trúc qua STDIN và biến môi trường. Plugin có thể xuất JSON ra STDOUT cho kết quả phong phú.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Kiểu | Bắt Buộc | Mô Tả |
 |------|------|----------|-------------|
-| `plugin_id` | String | Yes | The [Plugin.id](data.md#plugin-id) of a plugin with `type: "action"`. |
-| `params` | Object | Optional | Plugin-defined parameter values. |
+| `plugin_id` | String | Có | [Plugin.id](data.md#plugin-id) của một plugin với `type: "action"`. |
+| `params` | Object | Tuỳ chọn | Giá trị tham số do plugin định nghĩa. |
 
-Example (job success):
+Ví dụ (job success):
 
 ```json
 {
@@ -387,7 +387,7 @@ Example (job success):
 }
 ```
 
-Example (alert fired):
+Ví dụ (alert fired):
 
 ```json
 {
@@ -399,24 +399,24 @@ Example (alert fired):
 }
 ```
 
-See [Plugins](plugins.md) for more details on plugins.
+Xem [Plugins](plugins.md) để biết thêm chi tiết về plugin.
 
 ### Suspend Job
 
-Suspend the running job until a user resumes it in the UI. Optionally notify users and/or fire a web hook about the suspension.
+Suspend job đang chạy cho đến khi user resume nó trên UI. Tuỳ chọn thông báo cho user và/hoặc kích hoạt web hook về việc suspend.
 
-For workflow sub-jobs, a suspension that fires at job completion can optionally resume by jumping to a selected workflow Event or Job node.  This resume choice is only presented for completion actions, such as `On Complete`, `On Success`, `On Any Error` and other end-of-job conditions.  It is not presented for `On Start` suspensions.  See [Custom Resume Flow](workflows.md#custom-resume-flow) for details.
+Với sub-job của workflow, một suspend kích hoạt tại thời điểm job hoàn thành có thể tuỳ chọn resume bằng cách nhảy đến một node Event hoặc Job được chọn trong workflow. Lựa chọn resume này chỉ hiện ra cho completion action, như `On Complete`, `On Success`, `On Any Error` và các condition kết thúc job khác. Nó không hiện ra cho suspend `On Start`. Xem [Custom Resume Flow](workflows.md#custom-resume-flow) để biết chi tiết.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Kiểu | Bắt Buộc | Mô Tả |
 |------|------|----------|-------------|
-| `users` | Array(String) | Optional | Array of [User.username](data.md#user-username) values to email. |
-| `email` | String | Optional | One or more additional recipients, comma-separated. |
-| `web_hook` | String | Optional | [WebHook.id](data.md#webhook-id) to fire on suspension. |
-| `text` | String | Optional | Extra text appended to the suspension web hook message. |
+| `users` | Array(String) | Tuỳ chọn | Danh sách [User.username](data.md#user-username) để gửi email. |
+| `email` | String | Tuỳ chọn | Một hoặc nhiều người nhận bổ sung, phân tách bằng dấu phẩy. |
+| `web_hook` | String | Tuỳ chọn | [WebHook.id](data.md#webhook-id) để kích hoạt khi suspend. |
+| `text` | String | Tuỳ chọn | Văn bản bổ sung thêm vào message web hook khi suspend. |
 
-Example (job start):
+Ví dụ (job start):
 
 ```json
 {
@@ -432,11 +432,11 @@ Example (job start):
 
 ### Disable Event
 
-Disable the current event when the action runs. Useful after failures to prevent subsequent scheduled executions until manually re-enabled.
+Tắt event hiện tại khi action chạy. Hữu ích sau các lỗi để ngăn các lần chạy theo schedule tiếp theo cho đến khi được bật lại thủ công.
 
-Parameters: None
+Tham số: Không có
 
-Example (job error):
+Ví dụ (job error):
 
 ```json
 {
@@ -448,11 +448,11 @@ Example (job error):
 
 ### Delete Event
 
-Delete the current event when the action runs. Use with care; the event is removed from the system.  This action is designed for ephemeral one-shot events that self-delete after running.
+Xoá event hiện tại khi action chạy. Sử dụng cẩn thận; event bị xoá khỏi hệ thống. Action này được thiết kế cho các event một lần dùng (ephemeral) tự xoá sau khi chạy.
 
-Parameters: None
+Tham số: Không có
 
-Example (job critical):
+Ví dụ (job critical):
 
 ```json
 {
@@ -464,17 +464,17 @@ Example (job critical):
 
 ### Store Bucket
 
-Store job data and/or files into a storage bucket. You can control whether to sync data, files, or both, and filter which files are included via a glob pattern. Bucket limits (max file size, max files per bucket) apply.
+Lưu dữ liệu và/hoặc file của job vào storage bucket. Bạn có thể kiểm soát việc đồng bộ data, file, hoặc cả hai, và lọc file nào được bao gồm bằng glob pattern. Các limit của bucket (kích thước file tối đa, số file tối đa mỗi bucket) vẫn được áp dụng.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Kiểu | Bắt Buộc | Mô Tả |
 |------|------|----------|-------------|
-| `bucket_id` | String | Yes | [Bucket.id](data.md#bucket-id) target. |
-| `bucket_sync` | String | Yes | Controls what types of data are stored.  One of `data`, `files`, `data_and_files`. |
-| `bucket_glob` | String | Optional | Glob pattern to match selective job files and only store those (default `*`). |
+| `bucket_id` | String | Có | [Bucket.id](data.md#bucket-id) đích. |
+| `bucket_sync` | String | Có | Kiểm soát loại dữ liệu nào được lưu. Một trong `data`, `files`, `data_and_files`. |
+| `bucket_glob` | String | Tuỳ chọn | Glob pattern để khớp các file nhất định của job và chỉ lưu những file đó (mặc định `*`). |
 
-Example (job success):
+Ví dụ (job success):
 
 ```json
 {
@@ -487,23 +487,23 @@ Example (job success):
 }
 ```
 
-**Note:** The job has to explicitly output data and/or files before the Store Bucket action can see them.  See [Output Data](plugins.md#output-data) and [Output Files](plugins.md#output-files) for details.
+**Lưu ý:** Job phải xuất data và/hoặc file một cách tường minh trước khi action Store Bucket có thể thấy chúng. Xem [Output Data](plugins.md#output-data) và [Output Files](plugins.md#output-files) để biết chi tiết.
 
-See [Buckets](buckets.md) for more details on storage buckets.
+Xem [Buckets](buckets.md) để biết thêm chi tiết về storage bucket.
 
 ### Fetch Bucket
 
-Fetch bucket data and/or files and attach them to the job's input context. Files matched by the glob are added to the job input file list; data is shallow-merged into job input data.
+Lấy data và/hoặc file từ bucket và gắn chúng vào input context của job. File khớp với glob được thêm vào danh sách file input của job; data được shallow-merge vào data input của job.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Kiểu | Bắt Buộc | Mô Tả |
 |------|------|----------|-------------|
-| `bucket_id` | String | Yes | [Bucket.id](data.md#bucket-id) target. |
-| `bucket_sync` | String | Yes | Controls what types of data are fetched.  One of `data`, `files`, `data_and_files`. |
-| `bucket_glob` | String | Optional | Glob pattern to match selective job files and only fetch those (default `*`). |
+| `bucket_id` | String | Có | [Bucket.id](data.md#bucket-id) đích. |
+| `bucket_sync` | String | Có | Kiểm soát loại dữ liệu nào được lấy. Một trong `data`, `files`, `data_and_files`. |
+| `bucket_glob` | String | Tuỳ chọn | Glob pattern để khớp các file nhất định của job và chỉ lấy những file đó (mặc định `*`). |
 
-Example (job start):
+Ví dụ (job start):
 
 ```json
 {
@@ -518,15 +518,15 @@ Example (job start):
 
 ### Apply Tags
 
-Apply a custom set of tags to the job or workflow.
+Áp dụng một tập tag tuỳ chỉnh vào job hoặc workflow.
 
-Parameters:
+Tham số:
 
-| Name | Type | Required | Description |
+| Tên | Kiểu | Bắt Buộc | Mô Tả |
 |------|------|----------|-------------|
-| `tags` | Array | Yes | A list of [Tag.id](data.md#tag-id)s to apply. |
+| `tags` | Array | Có | Danh sách [Tag.id](data.md#tag-id) để áp dụng. |
 
-Example (job complete):
+Ví dụ (job complete):
 
 ```json
 {
@@ -537,16 +537,23 @@ Example (job complete):
 }
 ```
 
-Note that tags are deduplicated when the job completes.
+Lưu ý rằng tag được loại bỏ trùng lặp khi job hoàn thành.
 
-## Notes and Tips
+## Ghi Chú và Gợi Ý
 
-- For job actions, the email/web hook payloads include job links, log excerpts, performance metrics and any attached files (where applicable).
-- For alert actions, payloads include friendly server details, links to the server and alert, and the alert message.
-- Tag-based job conditions are specified as `tag:TAGID` and fire only at job completion.
-- Bucket actions respect configured limits such as maximum file size and maximum files per bucket.
+- Với job action, payload email/web hook bao gồm link job, đoạn log, chỉ số hiệu năng và mọi file đính kèm (nếu có).
+- Với alert action, payload bao gồm chi tiết server dễ đọc, link đến server và alert, và message của alert.
+- Job condition dựa trên tag được chỉ định là `tag:TAGID` và chỉ kích hoạt khi job hoàn thành.
+- Bucket action tuân theo các limit đã cấu hình như kích thước file tối đa và số file tối đa mỗi bucket.
 
-## See Also
+## Xem Thêm
 
-- [Action](data.md#action) data structure
+- Cấu trúc dữ liệu [Action](data.md#action)
 - [Alerts](alerts.md)
+- [Webhooks](webhooks.md)
+- [Channels](channels.md)
+- [Buckets](buckets.md)
+- [Tickets](tickets.md)
+- [Plugins](plugins.md)
+- [Events](events.md)
+- [Workflows](workflows.md)

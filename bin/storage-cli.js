@@ -71,7 +71,7 @@ if (config.uid && (process.getuid() != 0)) {
 	process.exit(1);
 }
 
-// make sure xyops isn't running
+// make sure PTOps isn't running
 var is_running = false;
 var pid_file = config.log_dir + '/xyops.pid';
 try {
@@ -80,7 +80,7 @@ try {
 }
 catch (err) {;}
 if (is_running && !args.force) {
-	print( "ERROR: Please stop xyOps before running this script.\n" );
+	print( "ERROR: Please stop PTOps before running this script.\n" );
 	process.exit(1);
 }
 

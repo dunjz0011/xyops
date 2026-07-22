@@ -1,16 +1,16 @@
-# Self-Hosting
+# Tự chạy host (Self-Hosting)
 
-## Overview
+## Tổng quan
 
-This guide covers self-hosting xyOps on your own infrastructure.  However, please note that for live production installs, it is dangerous to go alone.  While we provide all necessary documentation here, we strongly recommend our [Enterprise Plan](https://xyops.io/pricing). This gives you access to our white-glove onboarding service, where our team will guide you through every step, validate your configuration, and ensure your integration is both secure and reliable.  This also gets you priority ticket support, and live chat support from a xyOps engineer.
+Hướng dẫn này bao gồm việc tự host PTOps trên cơ sở hạ tầng của riêng bạn. Tuy nhiên, xin lưu ý rằng đối với các bản cài đặt production thực tế, việc tự thực hiện đơn độc sẽ rất nguy hiểm. Mặc dù chúng tôi cung cấp tất cả các tài liệu cần thiết ở đây, chúng tôi khuyên bạn nên sử dụng [Gói Enterprise](https://xyops.io/pricing) của chúng tôi. Gói này cung cấp cho bạn quyền truy cập vào dịch vụ onboarding tận tình của chúng tôi, nơi đội ngũ của chúng tôi sẽ hướng dẫn bạn qua từng bước, xác thực cấu hình của bạn và đảm bảo việc tích hợp của bạn vừa bảo mật vừa đáng tin cậy. Điều này cũng giúp bạn có được hỗ trợ ticket ưu tiên và hỗ trợ live chat từ kỹ sư PTOps.
 
-## Prerequisites
+## Điều kiện tiên quyết
 
-It is really important to understand that wherever you decide to run xyOps, that server (or container) needs to be **addressable on your network by its hostname**.  This is how your worker servers will connect to xyOps, so they need a fixed hostname that will resolve to an IP that they can reach from wherever they are.  With Docker you should set the **container hostname** to something that resolves and can be reached on your network.
+Một điều cực kỳ quan trọng cần hiểu là bất kể bạn quyết định chạy PTOps ở đâu, server (hoặc container) đó cần phải **định địa chỉ được trên mạng của bạn bằng hostname của nó**. Đây là cách các server worker kết nối tới PTOps, vì vậy chúng cần một hostname cố định để phân giải thành một IP mà chúng có thể tiếp cận từ bất kỳ nơi nào. Với Docker, bạn nên đặt **hostname container** thành một địa chỉ có thể phân giải và tiếp cận được trên mạng của bạn.
 
-## Quick-Start
+## Khởi động nhanh (Quick-Start)
 
-To start quickly and just get xyOps up and running with a single conductor server, you can use the following Docker command (but **please** see the notes below, as they are extremely important):
+Để khởi động nhanh và đưa PTOps vào hoạt động với một server conductor duy nhất, bạn có thể sử dụng lệnh Docker sau (nhưng **làm ơn** hãy xem các lưu ý bên dưới, vì chúng cực kỳ quan trọng):
 
 ```sh
 docker run \
@@ -31,7 +31,7 @@ docker run \
 	ghcr.io/pixlcore/xyops:latest
 ```
 
-Here it is as a docker compose file:
+Dưới đây là file docker compose tương ứng:
 
 ```yaml
 services:
@@ -62,51 +62,51 @@ volumes:
   xy-data:
 ```
 
-Please change `./xyops01-conf` and `./xyops01-logs` to suitable locations for the xyOps configuration and logs directories to live on the host machine.
+Vui lòng thay đổi `./xyops01-conf` và `./xyops01-logs` thành các vị trí thích hợp để thư mục cấu hình và log của PTOps nằm trên máy host.
 
-Then hit http://localhost:5522/ in your browser (see [TLS](#tls) below for HTTPS setup).  A default administrator account will be created with username `admin` and password `admin`.  This will create a Docker volume (`xy-data`) to persist the xyOps database, which by default is a hybrid of a SQLite DB and the filesystem itself for file storage.
+Sau đó, truy cập http://localhost:5522/ trong trình duyệt của bạn (xem mục [TLS](#tls) bên dưới để thiết lập HTTPS). Một tài khoản administrator mặc định sẽ được tạo với username là `admin` và password là `admin`. Việc này sẽ tạo một volume Docker (`xy-data`) để lưu trữ cơ sở dữ liệu PTOps, theo mặc định là mô hình hybrid giữa một DB SQLite và chính filesystem cho việc lưu trữ file.
 
-A few notes:
+Một vài lưu ý:
 
-- **Important:** Please change the sample `xyops01.internal.mycompany.com` hostname to something that actually resolves and is addressable on your network.  **Without this, many features will not work properly.**
-	- Also, you must change the `XYOPS_masters` environment variable to match this, as this defines your conductor "cluster" (in this case a cluster of one).
-- Change the `TZ` environment variable to your local timezone, for proper midnight log rotation and daily stat resets.
-- The `XYOPS_xysat_local` environment variable causes xyOps to launch [xySat](#satellite) in the background, in the same container.  This is so you can start running jobs right away -- it is great for testing and home labs, but *not recommended for production*.
-- The `XYOPS_masters` environment variable is how you define a cluster of multiple conductor servers (comma-separated hostnames).  In this case just set it to the hostname of the primary.
-- If you plan on using the container long term, please make sure to [rotate the secret key](#secret-key-rotation) regularly (e.g. every few months).
-- The `/var/run/docker.sock` bind is optional, and allows xyOps to launch its own containers (i.e. for the [Docker Plugin](plugins.md#docker-plugin), and the [Plugin Marketplace](marketplace.md)).
+- **Quan trọng:** Vui lòng thay đổi hostname mẫu `xyops01.internal.mycompany.com` thành hostname thực tế phân giải được và có thể định địa chỉ được trên mạng của bạn. **Nếu không có điều này, nhiều tính năng sẽ không hoạt động bình thường.**
+	- Ngoài ra, bạn phải thay đổi biến môi trường `XYOPS_masters` để khớp với điều này, vì biến này định nghĩa "cluster" conductor của bạn (trong trường hợp này là một cluster chỉ có một thành viên).
+- Thay đổi biến môi trường `TZ` thành múi giờ địa phương của bạn để xoay vòng log vào nửa đêm và reset số liệu thống kê hàng ngày một cách chính xác.
+- Biến môi trường `XYOPS_xysat_local` khiến PTOps khởi chạy [xySat](#satellite) chạy ngầm trong cùng một container. Điều này giúp bạn có thể chạy các job ngay lập tức -- nó rất tốt cho việc thử nghiệm và lab gia đình, nhưng *không được khuyến nghị cho môi trường production*.
+- Biến môi trường `XYOPS_masters` là cách bạn định nghĩa một cluster gồm nhiều server conductor (các hostname phân tách bằng dấu phẩy). Trong trường hợp này, chỉ cần đặt nó thành hostname của server primary.
+- Nếu bạn có kế hoạch sử dụng container lâu dài, vui lòng đảm bảo [xoay vòng secret key](#secret-key-rotation) thường xuyên (ví dụ: vài tháng một lần).
+- Liên kết `/var/run/docker.sock` là tùy chọn, và cho phép PTOps khởi chạy các container của chính nó (ví dụ: cho [Docker Plugin](plugins.md#docker-plugin), và [Plugin Marketplace](marketplace.md)).
 
-Note that in order to add worker servers, the container needs to be *addressable on your network* by its hostname.  Typically this is done by adding the hostname to your local DNS, Tailscale, or using a `/etc/hosts` file.  See [Adding Servers](servers.md#adding-servers) for more details.
+Lưu ý rằng để thêm các server worker, container cần phải *định địa chỉ được trên mạng của bạn* bằng hostname của nó. Thông thường, điều này được thực hiện bằng cách thêm hostname vào DNS nội bộ, Tailscale hoặc sử dụng file `/etc/hosts`. Xem [Thêm server](servers.md#adding-servers) để biết thêm chi tiết.
 
-### Main Configuration
+### Cấu hình chính
 
-The xyOps main configuration file is located at `/opt/xyops/conf/config.json`, but there are other useful files in the `/opt/xyops/conf` directory as well.  For e.g. if any configuration properties are updated via the UI, they are written to an `/opt/xyops/conf/overrides.json` file.  If you intend to use the Docker container long term, it is best to map the entire `/opt/xyops/conf` directory.  You can do this as a volume, or bind mount it to a host directory (recommended):
+File cấu hình chính của PTOps nằm ở `/opt/xyops/conf/config.json`, nhưng cũng có các file hữu ích khác trong thư mục `/opt/xyops/conf`. Ví dụ: nếu bất kỳ thuộc tính cấu hình nào được cập nhật thông qua UI, chúng sẽ được ghi vào file `/opt/xyops/conf/overrides.json`. Nếu bạn định sử dụng container Docker lâu dài, tốt nhất là map toàn bộ thư mục `/opt/xyops/conf`. Bạn có thể thực hiện việc này dưới dạng volume hoặc bind mount nó vào một thư mục host (khuyến nghị):
 
 ```
 -v ./xyops01-conf:/opt/xyops/conf
 ```
 
-xyOps will automatically copy over all default configuration files on first launch.
+PTOps sẽ tự động sao chép tất cả các file cấu hình mặc định trong lần khởi chạy đầu tiên.
 
-See the [Configuration Guide](config.md) for full details on how to customize the `config.json` file.
+Xem [Hướng dẫn cấu hình](config.md) để biết chi tiết đầy đủ về cách tùy chỉnh file `config.json`.
 
-## Manual Install
+## Cài đặt thủ công
 
-This section covers manually installing xyOps on a server (outside of Docker).
+Phần này bao gồm việc cài đặt PTOps thủ công trên một server (ngoài Docker).
 
-Please note that the xyOps conductor currently only works on POSIX-compliant operating systems, which basically means Unix/Linux and macOS.  You'll also need to have [Node.js](https://nodejs.org/en/download/) pre-installed on your server.  Please note that we **strongly suggest that you install the LTS version of Node.js**.  While xyOps should work on the "current" release channel, LTS is more stable and more widely tested.  See [Node.js Releases](https://nodejs.org/en/about/releases/) for details.
+Vui lòng lưu ý rằng conductor PTOps hiện chỉ hoạt động trên các hệ điều hành tương thích với POSIX, về cơ bản có nghĩa là Unix/Linux và macOS. Bạn cũng sẽ cần cài đặt sẵn [Node.js](https://nodejs.org/en/download/) trên server của mình. Chúng tôi **khuyên bạn nên cài đặt phiên bản LTS của Node.js**. Mặc dù PTOps sẽ hoạt động trên kênh phát hành "current", LTS ổn định hơn và được thử nghiệm rộng rãi hơn. Xem [Các bản phát hành Node.js](https://nodejs.org/en/about/releases/) để biết chi tiết.
 
-xyOps also requires NPM to be preinstalled.  Now, this is typically bundled with and automatically installed with Node.js, but if you install Node.js by hand, you may have to install NPM yourself.  You will likely also need compiler tools (i.e. `apt-get install build-essential python3-setuptools` on Ubuntu).
+PTOps cũng yêu cầu NPM phải được cài đặt sẵn. Thông thường, NPM được đóng gói và tự động cài đặt cùng với Node.js, nhưng nếu bạn cài đặt Node.js thủ công, bạn có thể phải tự cài đặt NPM. Bạn cũng có thể cần các công cụ compiler (ví dụ: `apt-get install build-essential python3-setuptools` trên Ubuntu).
 
-Once you have Node.js and NPM installed, type this as root:
+Sau khi bạn đã cài đặt Node.js và NPM, hãy nhập lệnh này dưới quyền root:
 
 ```sh
 curl -s https://raw.githubusercontent.com/pixlcore/xyops/main/bin/install.js | node
 ```
 
-This will install the latest stable release of xyOps and all of its dependencies under: `/opt/xyops/`
+Thao tác này sẽ cài đặt phiên bản ổn định mới nhất của PTOps và tất cả các dependency của nó dưới thư mục: `/opt/xyops/`
 
-If you'd rather install it manually (or install as a non-root user), here are the raw commands:
+Nếu bạn muốn cài đặt nó thủ công (hoặc cài đặt dưới dạng user không phải root), đây là các lệnh thô:
 
 ```sh
 mkdir -p /opt/xyops && cd /opt/xyops
@@ -116,28 +116,28 @@ node bin/build.js dist
 bin/control.sh start
 ```
 
-Replace `v1.0.0` with the desired xyOps version from the [official release list](https://github.com/pixlcore/xyops/releases), or `main` for the head revision (unstable).
+Thay thế `v1.0.0` bằng phiên bản PTOps mong muốn từ [danh sách phát hành chính thức](https://github.com/pixlcore/xyops/releases), hoặc `main` cho phiên bản head revision (không ổn định).
 
-If you would like xyOps to automatically start itself on server reboot, issue this command:
+Nếu bạn muốn PTOps tự động khởi động khi reboot server, hãy chạy lệnh này:
 
 ```sh
 cd /opt/xyops
 npm run boot
 ```
 
-**For Linux users:** Once you run `npm run boot`, which registers xyOps as a Systemd service, you should always start / stop it using the proper `systemctl` commands.  The service name is `xyops.service`.
+**Đối với người dùng Linux:** Khi bạn chạy `npm run boot` để đăng ký PTOps dưới dạng một dịch vụ Systemd, bạn nên luôn khởi động / dừng nó bằng các lệnh `systemctl` thích hợp. Tên dịch vụ là `xyops.service`.
 
-### Command Line
+### Dòng lệnh (Command Line)
 
-See our [Command Line Guide](cli.md) for controlling the xyOps service via command-line.
+Xem [Hướng dẫn dòng lệnh](cli.md) của chúng tôi để kiểm soát dịch vụ PTOps qua dòng lệnh.
 
-### Adding Conductors Manually
+### Thêm conductor thủ công
 
-When you manually install xyOps, it creates a cluster of one, and promotes itself to primary.  To add backup conductors, follow these instructions.
+Khi bạn cài đặt PTOps thủ công, nó sẽ tạo ra một cluster gồm một thành viên và tự phong nó làm primary. Để thêm các conductor dự phòng, hãy làm theo các hướng dẫn sau.
 
-First, for multi-conductor setups, **you must have shared external storage**.  For live production, we recommend a Hybrid storage setup using Redis or Postgres for JSON data, plus S3 or an S3-compatible service for files.  See [Storage Setup](storage.md) for details.
+Đầu tiên, đối với các thiết lập đa conductor, **bạn phải có bộ lưu trữ ngoài được chia sẻ**. Đối với môi trường production thực tế, chúng tôi khuyên bạn nên thiết lập lưu trữ Hybrid bằng cách sử dụng Redis hoặc Postgres cho dữ liệu JSON, cộng với S3 hoặc dịch vụ tương thích S3 cho các file. Xem [Thiết lập lưu trữ](storage.md) để biết chi tiết.
 
-Once you have external storage setup and working, stop the xyOps service, and edit the `/opt/xyops/conf/masters.json` file:
+Khi bạn đã thiết lập lưu trữ ngoài và hoạt động bình thường, hãy dừng dịch vụ PTOps và chỉnh sửa file `/opt/xyops/conf/masters.json`:
 
 ```json
 {
@@ -147,11 +147,11 @@ Once you have external storage setup and working, stop the xyOps service, and ed
 }
 ```
 
-**Note:** If you are using Docker, this is likely specified via the `XYOPS_masters` environment variable instead (which is split on comma and written out to the `masters.json` file on boot).  So you can just change the environment variable and not have to edit the file manually.
+**Lưu ý:** Nếu bạn đang sử dụng Docker, điều này có thể được chỉ định qua biến môi trường `XYOPS_masters` (biến này được phân tách bằng dấu phẩy và ghi ra file `masters.json` khi khởi động). Vì vậy, bạn chỉ cần thay đổi biến môi trường và không cần chỉnh sửa file thủ công.
 
-Add the new server hostname to the `masters` array in the `masters.json` file (or as a comma-separated list in `XYOPS_masters` for Docker setups).  Remember, both servers need to be able to reach each other via their hostnames.
+Thêm hostname của server mới vào mảng `masters` trong file `masters.json` (hoặc dưới dạng danh sách phân tách bằng dấu phẩy trong `XYOPS_masters` cho các thiết lập Docker). Hãy nhớ rằng cả hai server cần có khả năng tiếp cận nhau qua hostname của chúng.
 
-Then, install the software onto the new server, and copy over the following files before starting the service:
+Sau đó, cài đặt phần mềm lên server mới và sao chép các file sau trước khi khởi động dịch vụ:
 
 ```
 /opt/xyops/conf/config.json
@@ -159,48 +159,48 @@ Then, install the software onto the new server, and copy over the following file
 /opt/xyops/conf/masters.json
 ```
 
-Then finally, start the service on both servers.  They should self-negotiate and one will be promoted to primary after 10 seconds (whichever hostname sorts first alphabetically).
+Cuối cùng, khởi động dịch vụ trên cả hai server. Chúng sẽ tự thương lượng và một server sẽ được thăng cấp làm primary sau 10 giây (hostname nào sắp xếp trước theo bảng chữ cái).
 
-Note that conductor server hostnames **cannot change**.  If they do, you will need to update the `/opt/xyops/conf/masters.json` file on all servers and restart everything (or, if using Docker, change all the `XYOPS_masters` environment variables on all your conductor containers).
+Lưu ý rằng hostname của server conductor **không thể thay đổi**. Nếu thay đổi, bạn sẽ cần cập nhật file `/opt/xyops/conf/masters.json` trên tất cả các server và khởi động lại mọi thứ (hoặc, nếu sử dụng Docker, hãy thay đổi tất cả các biến môi trường `XYOPS_masters` trên tất cả các container conductor của bạn).
 
-For fully transparent auto-failover using a single user-facing hostname, see [Multi-Conductor with Nginx](#multi-conductor-with-nginx) below.
+Để có tính năng tự động failover hoàn toàn trong suốt bằng cách sử dụng một hostname duy nhất hướng tới người dùng, hãy xem mục [Đa conductor với Nginx](#multi-conductor-with-nginx) bên dưới.
 
-### Uninstall
+### Gỡ cài đặt
 
-To uninstall xyOps, simply stop the service and delete the `/opt/xyops` directory.
+Để gỡ cài đặt PTOps, chỉ cần dừng dịch vụ và xóa thư mục `/opt/xyops`.
 
 ```sh
 cd /opt/xyops
 bin/control.sh stop
-npm run unboot # deregister as system startup service
+npm run unboot # hủy đăng ký làm dịch vụ khởi động hệ thống
 rm -rf /opt/xyops
 cd -
 ```
 
-Make sure you [decommission your servers](servers.md#decommissioning-servers) first.
+Đảm bảo rằng bạn đã [ngưng hoạt động các server](servers.md#decommissioning-servers) trước.
 
-## Environment Variables
+## Biến môi trường
 
-xyOps supports a special environment variable syntax, which can specify command-line options as well as override any configuration settings.  The variable name syntax is `XYOPS_key` where `key` is one of several command-line options (see table below) or a JSON configuration property path.  These can come in handy for automating installations, and using container systems.  
+PTOps hỗ trợ cú pháp biến môi trường đặc biệt, có thể chỉ định các tùy chọn dòng lệnh cũng như ghi đè bất kỳ thiết lập cấu hình nào. Cú pháp tên biến là `XYOPS_key` trong đó `key` là một trong số các tùy chọn dòng lệnh (xem bảng bên dưới) hoặc một đường dẫn thuộc tính cấu hình JSON. Những biến này có thể hữu ích cho việc tự động hóa cài đặt và sử dụng các hệ thống container.
 
-For overriding configuration properties by environment variable, you can specify any top-level JSON key from `config.json`, or a *path* to a nested property using double-underscore (`__`) as a path separator.  For boolean properties, you can use `true` or `false` strings, and xyOps will convert them.  Here is an example of some of the possibilities available:
+Để ghi đè các thuộc tính cấu hình bằng biến môi trường, bạn có thể chỉ định bất kỳ key JSON cấp cao nhất nào từ `config.json`, hoặc một *đường dẫn* đến thuộc tính lồng nhau bằng cách sử dụng dấu gạch dưới kép (`__`) làm dấu phân cách đường dẫn. Đối với các thuộc tính boolean, bạn có thể sử dụng chuỗi `true` hoặc `false`, và PTOps sẽ tự động chuyển đổi chúng. Dưới đây là ví dụ về một số khả năng khả dụng:
 
-| Variable | Sample Value | Description |
+| Biến | Giá trị mẫu | Mô tả |
 |----------|--------------|-------------|
-| `XYOPS_foreground` | `true` | Run xyOps in the foreground (no background daemon fork). |
-| `XYOPS_echo` | `true` | Echo the event log to the console (STDOUT), use in conjunction with `XYOPS_foreground`. |
-| `XYOPS_color` | `true` | Echo the event log with color-coded columns, use in conjunction with `XYOPS_echo`. |
-| `XYOPS_base_app_url` | `http://xyops.mycompany.com` | Override the [base_app_url](config.md#base_app_url) configuration property. |
-| `XYOPS_email_from` | `xyops@mycompany.com` | Override the [email_from](config.md#email_from) configuration property. |
-| `XYOPS_WebServer__port` | `80` | Override the `port` property *inside* the [WebServer](config.md#webserver) object. |
-| `XYOPS_WebServer__https_port` | `443` | Override the `https_port` property *inside* the [WebServer](config.md#webserver) object. |
-| `XYOPS_Storage__Filesystem__base_dir` | `/data/xyops` | Override the `base_dir` property *inside* the [Filesystem](config.md#storage-filesystem) object *inside* the [Storage](config.md#storage) object. |
+| `XYOPS_foreground` | `true` | Chạy PTOps ở chế độ foreground (không fork daemon chạy ngầm). |
+| `XYOPS_echo` | `true` | Echo event log ra console (STDOUT), sử dụng kết hợp với `XYOPS_foreground`. |
+| `XYOPS_color` | `true` | Echo event log với các cột được mã hóa màu, sử dụng kết hợp với `XYOPS_echo`. |
+| `XYOPS_base_app_url` | `http://xyops.mycompany.com` | Ghi đè thuộc tính cấu hình [base_app_url](config.md#base_app_url). |
+| `XYOPS_email_from` | `xyops@mycompany.com` | Ghi đè thuộc tính cấu hình [email_from](config.md#email_from). |
+| `XYOPS_WebServer__port` | `80` | Ghi đè thuộc tính `port` *bên trong* object [WebServer](config.md#webserver). |
+| `XYOPS_WebServer__https_port` | `443` | Ghi đè thuộc tính `https_port` *bên trong* object [WebServer](config.md#webserver). |
+| `XYOPS_Storage__Filesystem__base_dir` | `/data/xyops` | Ghi đè thuộc tính `base_dir` *bên trong* object [Filesystem](config.md#storage-filesystem) lồng trong object [Storage](config.md#storage). |
 
-Almost every [configuration property](config.md) can be overridden using this environment variable syntax.  The only exceptions are things like arrays, e.g. [log_columns](config.md#log_columns).
+Hầu như mọi [thuộc tính cấu hình](config.md) đều có thể được ghi đè bằng cú pháp biến môi trường này. Các ngoại lệ duy nhất là các thuộc tính dạng mảng, ví dụ: [log_columns](config.md#log_columns).
 
-## Daily Backups
+## Backup hàng ngày
 
-Here is how you can generate daily backups of critical xyOps data, regardless of your backend storage engine.  First, create an [API Key](api.md#api-keys) and grant it the [bulk_export](privileges.md#bulk_export) privilege (this is required to use the [admin_export_data](api.md#admin_export_data) API).  You can then request a backup using a [curl](https://curl.se/) command like this:
+Dưới đây là cách bạn có thể tạo bản backup hàng ngày cho dữ liệu PTOps quan trọng, bất kể công cụ lưu trữ phụ trợ của bạn là gì. Đầu tiên, hãy tạo một [API Key](api.md#api-keys) và cấp cho nó privilege [bulk_export](privileges.md#bulk_export) (điều này là bắt buộc để sử dụng API [admin_export_data](api.md#admin_export_data)). Sau đó, bạn có thể yêu cầu một bản backup bằng lệnh [curl](https://curl.se/) như thế này:
 
 ```sh
 curl -X POST "https://xyops.mycompany.com/api/app/admin_export_data" \
@@ -208,17 +208,17 @@ curl -X POST "https://xyops.mycompany.com/api/app/admin_export_data" \
 	-d '{"lists":"all","indexes":["tickets"]}' -O -J
 ```
 
-This will save the backup as a `.txt.gz` file in the current directory named using this filename pattern:
+Thao tác này sẽ lưu bản backup dưới dạng file `.txt.gz` trong thư mục hiện tại được đặt tên theo pattern file này:
 
 ```
-xyops-data-export-YYYY-MM-DD-UNIQUEID.txt.gz
+ptops-data-export-YYYY-MM-DD-UNIQUEID.txt.gz
 ```
 
-Please note that this example will only export **critical** data, and is not a full backup (notably absent is job history, alert history, snapshot history, server history, and activity log).  To backup *everything*, change the JSON in the curl request to: `{"lists":"all","indexes":"all","extras":"all"}`.  Note that this can take quite a while and produce a very large file depending on your xyOps database size.  To limit what exactly gets included in the backup, consult the [admin_export_data](api.md#admin_export_data) API docs.
+Vui lòng lưu ý rằng ví dụ này sẽ chỉ export dữ liệu **quan trọng** và không phải là bản backup đầy đủ (đặc biệt thiếu lịch sử job, lịch sử alert, lịch sử snapshot, lịch sử server và log hoạt động). Để backup *mọi thứ*, hãy thay đổi JSON trong yêu cầu curl thành: `{"lists":"all","indexes":"all","extras":"all"}`. Lưu ý rằng việc này có thể mất khá nhiều thời gian và tạo ra một file rất lớn tùy thuộc vào kích thước cơ sở dữ liệu PTOps của bạn. Để giới hạn chính xác những gì được đưa vào bản backup, hãy tham khảo tài liệu API [admin_export_data](api.md#admin_export_data).
 
-### SQLite Backups
+### Backup SQLite
 
-If you are using the stock storage configuration (SQLite + Filesystem), then xyOps will keep 7 days worth of compressed daily SQLite backups by default.  These are mainly for disaster recovery purposes.  You can configure or disable the backups in the [Storage.SQLite](config.md#storage-sqlite) configuration object:
+Nếu bạn đang sử dụng cấu hình lưu trữ mặc định (SQLite + Filesystem), thì PTOps sẽ giữ các bản backup SQLite hàng ngày được nén trong 7 ngày theo mặc định. Các bản backup này chủ yếu phục vụ cho mục đích khôi phục sau sự cố. Bạn có thể cấu hình hoặc tắt tính năng backup trong object cấu hình [Storage.SQLite](config.md#storage-sqlite):
 
 ```json
 "SQLite": {
@@ -244,46 +244,46 @@ If you are using the stock storage configuration (SQLite + Filesystem), then xyO
 }
 ```
 
-Note that SQLite only stores data, not "files", under the default hybrid SQLite + Filesystem configuration.  So these backups are mainly for recovering from critical disaster situations like running out of disk space (where the DB may be corrupted).  They are not "complete" backups, as they do not contain job files, bucket files, ticket attachments, user uploads, etc.
+Lưu ý rằng SQLite chỉ lưu trữ dữ liệu chứ không lưu trữ "file" theo cấu hình hybrid SQLite + Filesystem mặc định. Vì vậy, các bản backup này chủ yếu dùng để khôi phục từ các tình huống thảm họa nghiêm trọng như hết dung lượng ổ đĩa (nơi DB có thể bị hỏng). Chúng không phải là các bản backup "hoàn chỉnh", vì chúng không chứa các file job, file bucket, file đính kèm ticket, file upload của user, v.v.
 
 ## TLS
 
-The xyOps built-in web server ([pixl-server-web](https://github.com/jhuckaby/pixl-server-web)) supports TLS, but you will need a valid certificate for all features to work correctly.  Please read the following guide for setup instructions:
+Web server tích hợp sẵn của PTOps ([pixl-server-web](https://github.com/jhuckaby/pixl-server-web)) hỗ trợ TLS, nhưng bạn sẽ cần một chứng chỉ hợp lệ để tất cả các tính năng hoạt động chính xác. Vui lòng đọc hướng dẫn sau để biết hướng dẫn thiết lập:
 
-[Let's Encrypt / ACME TLS Certificates](https://github.com/jhuckaby/pixl-server-web#lets-encrypt--acme-tls-certificates)
+[Chứng chỉ TLS Let's Encrypt / ACME](https://github.com/jhuckaby/pixl-server-web#lets-encrypt--acme-tls-certificates)
 
-Alternatively, you can setup a proxy to sit in front of xyOps and handle TLS for you (see next section).
+Ngoài ra, bạn có thể thiết lập một proxy đứng trước PTOps và xử lý TLS cho bạn (xem phần tiếp theo).
 
-## Multi-Conductor with Nginx
+## Đa conductor với Nginx
 
-For a load balanced multi-conductor setup with Nginx w/TLS, please read this section.  This is a complex setup, and requires advanced knowledge of all the components used.  Let me recommend our [Enterprise Plan](https://xyops.io/pricing) here, as we can set all this up for you.  Now, the way this configuration works is as follows:
+Để có thiết lập đa conductor tải cân bằng với Nginx kèm TLS, vui lòng đọc phần này. Đây là một thiết lập phức tạp và đòi hỏi kiến thức nâng cao về tất cả các thành phần được sử dụng. Chúng tôi khuyên bạn nên sử dụng [Gói Enterprise](https://xyops.io/pricing) ở đây, vì chúng tôi có thể thiết lập tất cả những điều này cho bạn. Cách hoạt động của cấu hình này như sau:
 
-- [Nginx](https://nginx.org/) sits in front, and handles TLS termination, as well as routing requests to various backends.
-- Nginx handles xyOps multi-conductor using an embedded [Health Check Daemon](https://github.com/pixlcore/xyops-healthcheck) which runs in the same container.
-	- The health check keeps track of which conductor server is primary, and dynamically reconfigures and hot-reloads Nginx as needed.
-	- We maintain our own custom Nginx docker image for this (shown below), or you can [build your own from source](https://github.com/pixlcore/xyops-nginx/blob/main/Dockerfile).
+- [Nginx](https://nginx.org/) đứng trước và xử lý kết thúc TLS, cũng như định tuyến các yêu cầu đến các backend khác nhau.
+- Nginx xử lý đa conductor của PTOps bằng cách sử dụng một [Health Check Daemon](https://github.com/pixlcore/xyops-healthcheck) tích hợp sẵn chạy trong cùng một container.
+	- Trình kiểm tra sức khỏe theo dõi xem server conductor nào là primary, và tự động cấu hình lại cũng như hot-reload Nginx khi cần thiết.
+	- Chúng tôi duy trì image docker Nginx tùy chỉnh của riêng mình cho việc này (hiển thị bên dưới), hoặc bạn có thể [tự build từ mã nguồn](https://github.com/pixlcore/xyops-nginx/blob/main/Dockerfile).
 
-A few prerequisites for this setup:
+Một vài điều kiện tiên quyết cho thiết lập này:
 
-- For multi-conductor setups, **you must have shared external storage**.  For live production, we recommend a Hybrid storage setup using Redis or Postgres for JSON data, plus S3 or an S3-compatible service for files.  See [Storage Setup](storage.md) for details.
-- You will need a custom domain configured and TLS certs created and ready to attach.
-- You have your xyOps configuration file customized and ready to go ([config.json](https://github.com/pixlcore/xyops/blob/main/sample_conf/config.json)) (see below).
+- Đối với các thiết lập đa conductor, **bạn phải có bộ lưu trữ ngoài được chia sẻ**. Đối với môi trường production thực tế, chúng tôi khuyên bạn nên thiết lập lưu trữ Hybrid bằng cách sử dụng Redis hoặc Postgres cho dữ liệu JSON, cộng với S3 hoặc dịch vụ tương thích S3 cho các file. Xem [Thiết lập lưu trữ](storage.md) để biết chi tiết.
+- Bạn sẽ cần một custom domain được cấu hình và các chứng chỉ TLS được tạo sẵn sàng để đính kèm.
+- Bạn đã có file cấu hình PTOps được tùy chỉnh và sẵn sàng hoạt động ([config.json](https://github.com/pixlcore/xyops/blob/main/sample_conf/config.json)) (xem bên dưới).
 
-For the examples below, we'll be using the following domain placeholders:
+Đối với các ví dụ bên dưới, chúng tôi sẽ sử dụng các domain mẫu sau:
 
-- `xyops.mycompany.com` - User-facing domain which should route to Nginx / SSO.
-- `xyops01.internal.mycompany.com` - Internal domain for conductor server #1.
-- `xyops02.internal.mycompany.com` - Internal domain for conductor server #2.
+- `xyops.mycompany.com` - Domain hướng tới user để định tuyến tới Nginx / SSO.
+- `xyops01.internal.mycompany.com` - Domain nội bộ cho server conductor #1.
+- `xyops02.internal.mycompany.com` - Domain nội bộ cho server conductor #2.
 
-The reason why the conductor servers each need their own unique (internal) domain name is because of how the multi-conductor system works.  Each conductor server needs to be individually addressable, and reachable by all of your worker servers in your org.  Worker servers don't know or care about Nginx -- they contact conductors directly, and have their own auto-failover system.  Also, worker servers use a persistent WebSocket connection, and can send a large amount of traffic, depending on how many worker servers you have and how many jobs you run.  For these reasons, it's better to have worker servers connect the conductors directly, especially at production scale.
+Lý do tại sao các server conductor mỗi bên cần hostname (domain nội bộ) duy nhất của riêng chúng là vì cách thức hoạt động của hệ thống đa conductor. Mỗi server conductor cần phải có thể định địa chỉ riêng biệt và có thể tiếp cận được bởi tất cả các server worker trong tổ chức của bạn. Các server worker không biết hoặc quan tâm đến Nginx -- chúng liên hệ trực tiếp với các conductor và có hệ thống tự động failover của riêng chúng. Ngoài ra, các server worker sử dụng một kết nối WebSocket bền bỉ và có thể gửi một lượng lớn lưu lượng truy cập, tùy thuộc vào số lượng server worker bạn có và số lượng job bạn chạy. Vì những lý do này, tốt hơn là để các server worker kết nối trực tiếp với các conductor, đặc biệt là ở quy mô production.
 
-That being said, you *can* configure your worker servers to connect through the Nginx front door if you want.  This can be useful if you have worker servers in another network or out in the wild, but it is not recommended for most setups.  To do this, please see [Overriding The Connect URL](hosting.md#overriding-the-connect-url) in our self-hosting guide.
+Mặc dù vậy, bạn *có thể* cấu hình các server worker của mình kết nối thông qua cổng Nginx phía trước nếu muốn. Điều này có thể hữu ích nếu bạn có các server worker trong một mạng khác hoặc ngoài môi trường công cộng, nhưng nó không được khuyến nghị cho hầu hết các thiết lập. Để làm điều này, vui lòng xem mục [Ghi đè URL kết nối](hosting.md#overriding-the-connect-url) trong hướng dẫn tự host của chúng tôi.
 
-Here is a docker command for running Nginx:
+Dưới đây là lệnh docker để chạy Nginx:
 
 ```sh
 docker run \
-	--detach
+	--detach \
 	--init \
 	--name xyops-nginx \
 	-e XYOPS_masters="xyops01.internal.mycompany.com,xyops02.internal.mycompany.com" \
@@ -294,7 +294,7 @@ docker run \
 	ghcr.io/pixlcore/xyops-nginx:latest
 ```
 
-Here it is as a docker compose file:
+Dưới đây là file docker compose tương ứng:
 
 ```yaml
 services:
@@ -311,12 +311,12 @@ services:
       - "443:443"
 ```
 
-Let's talk about the Nginx setup.  We are pulling in our own Docker image here ([xyops-nginx](https://github.com/pixlcore/xyops-nginx)).  This is a wrapper around the official Nginx docker image, but it includes our [xyOps Health Check](https://github.com/pixlcore/xyops-healthcheck) daemon.  The health check monitors which conductor server is currently primary, and dynamically reconfigures Nginx on-the-fly as needed (so Nginx always routes to the current primary server only).  The image also comes with a fully preconfigured Nginx.  To use this image you will need to provide:
+Hãy nói về thiết lập Nginx. Chúng tôi đang kéo Docker image của riêng mình về đây ([xyops-nginx](https://github.com/pixlcore/xyops-nginx)). Đây là một wrapper xung quanh image docker Nginx chính thức, nhưng nó bao gồm daemon [PTOps Health Check](https://github.com/pixlcore/xyops-healthcheck) của chúng tôi. Trình kiểm tra sức khỏe theo dõi xem server conductor nào hiện là primary, và cấu hình lại Nginx động khi đang hoạt động nếu cần thiết (vì vậy Nginx luôn chỉ định tuyến đến server primary hiện tại). Image cũng đi kèm với một Nginx được cấu hình sẵn hoàn toàn. Để sử dụng image này, bạn sẽ cần cung cấp:
 
-- Your TLS certificate files, named `tls.crt` and `tls.key`, which are bound to `/etc/tls.crt` and `/etc/tls.key`, respectively.
-- The list of xyOps conductor server domain names, as a CSV list in the `XYOPS_masters` environment variable (used by health check).
+- Các file chứng chỉ TLS của bạn, được đặt tên là `tls.crt` và `tls.key`, được bind tương ứng vào `/etc/tls.crt` và `/etc/tls.key`.
+- Danh sách tên domain của các server conductor PTOps dưới dạng danh sách CSV trong biến môi trường `XYOPS_masters` (được sử dụng bởi health check).
 
-Once you have Nginx running, we can fire up the xyOps backend.  This is documented separately as you'll usually want to run these on separate servers.  Here is the multi-conductor configuration as a single Docker run command:
+Khi bạn đã có Nginx chạy, chúng ta có thể khởi động PTOps backend. Điều này được ghi nhận riêng biệt vì bạn thường muốn chạy các server riêng biệt. Dưới đây là cấu hình đa conductor dưới dạng một lệnh Docker run duy nhất:
 
 ```sh
 docker run \
@@ -335,14 +335,14 @@ docker run \
 	ghcr.io/pixlcore/xyops:latest
 ```
 
-And here it is as a docker compose file:
+Và dưới đây là file docker compose tương ứng:
 
 ```yaml
 services:
   xyops1:
     image: ghcr.io/pixlcore/xyops:latest
     container_name: xyops-conductor-01
-    hostname: xyops01.internal.mycompany.com # change this per conductor server
+    hostname: xyops01.internal.mycompany.com # thay đổi thuộc tính này trên mỗi server conductor
     init: true
     environment:
       XYOPS_masters: xyops01.internal.mycompany.com,xyops02.internal.mycompany.com
@@ -356,36 +356,36 @@ services:
       - "5523:5523"
 ```
 
-For additional conductor servers you can simply duplicate the command and change the hostname.
+Đối với các server conductor bổ sung, bạn chỉ cần sao chép lệnh và thay đổi hostname.
 
-A few things to note here:
+Một vài điều cần lưu ý ở đây:
 
-- We're using our official xyOps Docker image, but you can always [build your own from source](https://github.com/pixlcore/xyops/blob/main/Dockerfile).
-- All conductor server hostnames need to be listed in the `XYOPS_masters` environment variable, comma-separated.
-- All conductor servers need to be able to route to each other via their hostnames, so they can self-negotiate and hold elections.
-- The timezone (`TZ`) should be set to your company's main timezone, so things like midnight log rotation and daily stat resets work as expected.
-- The `/var/run/docker.sock` bind allows xyOps to launch its own containers (i.e. for the [Plugin Marketplace](marketplace.md)).
-- The `./xyops01-conf` path should be changed to a location on the host where you want to store the xyOps configuration directory.
-	- xyOps will automatically populate this directory on first container launch.
-	- Each conductor needs a unique directory for config (they cannot be shared).
-	- See the [xyOps Configuration Guide](config.md) for details on how to customize the `config.json` file in this directory.
-- The `./xyops01-logs` path should be changes to a location on the host where you want to store the xyOps logs directory.
+- Chúng tôi đang sử dụng Docker image PTOps chính thức của mình, nhưng bạn luôn có thể [tự build từ mã nguồn](https://github.com/pixlcore/xyops/blob/main/Dockerfile).
+- Tất cả các hostname của server conductor cần phải được liệt kê trong biến môi trường `XYOPS_masters`, phân tách bằng dấu phẩy.
+- Tất cả các server conductor cần phải định tuyến được tới nhau thông qua hostname của chúng, để chúng có thể tự thương lượng và tổ chức bầu cử.
+- Múi giờ (`TZ`) nên được đặt thành múi giờ chính của công ty bạn, để những việc như xoay vòng log vào nửa đêm và reset số liệu thống kê hàng ngày hoạt động như mong đợi.
+- Liên kết `/var/run/docker.sock` cho phép PTOps khởi chạy các container của riêng nó (ví dụ: cho [Plugin Marketplace](marketplace.md)).
+- Đường dẫn `./xyops01-conf` nên được thay đổi thành một vị trí trên host nơi bạn muốn lưu trữ thư mục cấu hình PTOps.
+	- PTOps sẽ tự động điền dữ liệu vào thư mục này trong lần chạy container đầu tiên.
+	- Mỗi conductor cần một thư mục cấu hình duy nhất (chúng không thể dùng chung).
+	- Xem [Hướng dẫn cấu hình PTOps](config.md) để biết chi tiết về cách tùy chỉnh file `config.json` trong thư mục này.
+- Đường dẫn `./xyops01-logs` nên được thay đổi thành một vị trí trên host nơi bạn muốn lưu trữ thư mục log PTOps.
 
-## External Storage
+## Bộ lưu trữ ngoài (External Storage)
 
-For using an external storage system, you have [several to choose from](storage.md).  For live production multi-conductor setups, we currently recommend **Redis + S3** or **Postgres + S3** via the Hybrid storage engine.  The S3 side can be AWS S3 or an S3-compatible service such as MinIO or RustFS.
+Để sử dụng một hệ thống lưu trữ ngoài, bạn có [một số tùy chọn để lựa chọn](storage.md). Đối với các thiết lập đa conductor môi trường production thực tế, hiện tại chúng tôi khuyên dùng **Redis + S3** hoặc **Postgres + S3** thông qua công cụ lưu trữ Hybrid. Phía S3 có thể là AWS S3 hoặc một dịch vụ tương thích S3 như MinIO hoặc RustFS.
 
-For more details, see the [Storage Setup Guide](storage.md).
+Để biết thêm chi tiết, xem [Hướng dẫn thiết lập lưu trữ](storage.md).
 
 ## Satellite
 
-**xyOps Satellite ([xySat](https://github.com/pixlcore/xysat))** is a companion to the xyOps system.  It is both a job runner, and a data collector for server monitoring and alerting.  xySat is designed to be installed on *all* of your servers, so it is lean, mean, and has zero dependencies.
+**PTOps Satellite ([xySat](https://github.com/pixlcore/xysat))** là một người bạn đồng hành của hệ thống PTOps. Nó vừa là một runner job, vừa là một bộ thu thập dữ liệu để monitor server và alert. xySat được thiết kế để cài đặt trên *tất cả* các server của bạn, vì vậy nó rất tinh gọn, mạnh mẽ và không có dependency nào.
 
-For instructions on how to install xySat, see [Adding Servers](servers.md#adding-servers).
+Để biết hướng dẫn về cách cài đặt xySat, xem [Thêm server](servers.md#adding-servers).
 
-### Satellite Configuration
+### Cấu hình Satellite
 
-xySat is configured automatically via the xyOps conductor server.  The [satellite.config](config.md#satellite-config) object is automatically sent to each server after it connects and authenticates, so you can keep a conductor version of the xySat configuration which is auto-synced to all servers.  Here is the default config:
+xySat được cấu hình tự động thông qua server conductor PTOps. Object [satellite.config](config.md#satellite-config) được tự động gửi đến mỗi server sau khi nó kết nối và xác thực, vì vậy bạn có thể giữ một phiên bản cấu hình xySat trên conductor và nó sẽ tự động đồng bộ hóa với tất cả các server. Dưới đây là cấu hình mặc định:
 
 ```json
 { 
@@ -407,57 +407,57 @@ xySat is configured automatically via the xyOps conductor server.  The [satellit
 }
 ```
 
-Here are descriptions of the configuration properties:
+Dưới đây là mô tả của các thuộc tính cấu hình:
 
-| Property Name | Type | Description |
+| Tên thuộc tính | Kiểu | Mô tả |
 |---------------|------|-------------|
-| `port` | Number | Specifies which port the xyOps conductor server will be listening on (default is `5522` for ws:// and `5523` for wss://). |
-| `secure` | Boolean | Set to `true` to use secure WebSocket (wss://) and HTTPS connections. |
-| `socket_opts` | Object | Options to pass to the WebSocket connection (see [WebSocket](https://github.com/websockets/ws/blob/master/doc/ws.md#class-websocket)). |
-| `pid_file` | String | Location of the PID file to ensure two satellites don't run simultaneously. |
-| `log_dir` | String | Location of the log directory, relative to the xySat base dir (`/opt/xyops/satellite`). |
-| `log_filename` | String | This string is the filename pattern used by the core logger (default: `[component].log`); supports log column placeholders like `[component]`. |
-| `log_crashes` | Boolean | This boolean enables capturing uncaught exceptions and crashes in the logger subsystem (default: `true`). |
-| `log_archive_path` | String | This string sets the nightly log archive path pattern (default: `logs/archives/[filename]-[yyyy]-[mm]-[dd].log.gz`). |
-| `log_archive_keep` | String | How many days to keep log archives before auto-deleting the oldest ones. |
-| `temp_dir` | String | Location of temp directory, relative to the base dir (`/opt/xyops/satellite`). |
-| `debug_level` | Number | This number sets the verbosity level for the logger (default: `5`; 1 = quiet, 10 = very verbose). |
-| `child_kill_timeout` | Number | Number of seconds to wait after sending a SIGTERM to follow-up with a SIGKILL. |
-| `monitoring_enabled` | Boolean | Enable or disable the monitoring subsystem (i.e. send monitoring metrics every minute). |
-| `quickmon_enabled` | Boolean | Enable or disable the quick monitors, which send lightweight metrics every second. |
-| `upgrade_timeout_sec` | Number | The number of seconds to allow for upgrades to complete, before reporting an error (default: `60`). |
+| `port` | Số | Chỉ định cổng mà server conductor PTOps sẽ lắng nghe (mặc định là `5522` cho ws:// và `5523` cho wss://). |
+| `secure` | Boolean | Đặt thành `true` để sử dụng các kết nối WebSocket bảo mật (wss://) và HTTPS. |
+| `socket_opts` | Object | Các tùy chọn để chuyển qua kết nối WebSocket (xem [WebSocket](https://github.com/websockets/ws/blob/master/doc/ws.md#class-websocket)). |
+| `pid_file` | Chuỗi | Vị trí của file PID để đảm bảo hai satellite không chạy đồng thời. |
+| `log_dir` | Chuỗi | Vị trí của thư mục log, tương đối với thư mục gốc của xySat (`/opt/xyops/satellite`). |
+| `log_filename` | Chuỗi | Chuỗi này là pattern tên file được sử dụng bởi core logger (mặc định: `[component].log`); hỗ trợ các placeholder cột log như `[component]`. |
+| `log_crashes` | Boolean | Giá trị boolean này cho phép ghi lại các ngoại lệ không được bắt (uncaught exception) và crash trong hệ thống con logger (mặc định: `true`). |
+| `log_archive_path` | Chuỗi | Chuỗi này đặt pattern đường dẫn lưu trữ log hàng đêm (mặc định: `logs/archives/[filename]-[yyyy]-[mm]-[dd].log.gz`). |
+| `log_archive_keep` | Chuỗi | Số ngày giữ lại các file lưu trữ log trước khi tự động xóa các file cũ nhất. |
+| `temp_dir` | Chuỗi | Vị trí của thư mục tạm thời (temp), tương đối với thư mục gốc (`/opt/xyops/satellite`). |
+| `debug_level` | Số | Số này thiết lập mức độ chi tiết của logger (mặc định: `5`; 1 = im lặng, 10 = rất chi tiết). |
+| `child_kill_timeout` | Số | Số giây chờ đợi sau khi gửi SIGTERM trước khi tiếp tục gửi SIGKILL. |
+| `monitoring_enabled` | Boolean | Bật hoặc tắt hệ thống con monitoring (ví dụ: gửi các metric monitoring mỗi phút). |
+| `quickmon_enabled` | Boolean | Bật hoặc tắt các quick monitor, vốn gửi các metric nhẹ mỗi giây. |
+| `upgrade_timeout_sec` | Số | Số giây cho phép hoàn tất việc nâng cấp trước khi báo lỗi (mặc định: `60`). |
 
-### Overriding The Connect URL
+### Ghi đè URL kết nối
 
-When xySat is first installed, it is provided an array of hosts to connect to, which becomes a `hosts` array in the xySat config file on each server.  When xySat starts up, it connects to a *random host* from this array, and figures out which conductor is primary, and reconnects to that host.  If the conductor cluster changes, a new `hosts` array is automatically distributed to all servers by the current conductor.
+Khi xySat được cài đặt lần đầu, nó được cung cấp một mảng các host để kết nối, mảng này trở thành mảng `hosts` trong file config xySat trên mỗi server. Khi xySat khởi động, nó kết nối với một *host ngẫu nhiên* từ mảng này, xác định conductor nào là primary, và kết nối lại với host đó. Nếu cluster conductor thay đổi, một mảng `hosts` mới sẽ tự động được phân phối tới tất cả các server bởi conductor hiện tại.
 
-In certain situations you may need to have xySat connect to a specific conductor host, instead of the default conductor list.  For e.g. you may have servers "out in the wild" and they need to connect through a proxy, or some other kind of complex network topology.  Either way, you can override the usual array of hosts that xySat connects to, and specify a static value instead.
+Trong một số tình huống nhất định, bạn có thể cần xySat kết nối với một host conductor cụ thể, thay vì danh sách conductor mặc định. Ví dụ: bạn có thể có các server ở ngoài môi trường công cộng và chúng cần kết nối qua một proxy, hoặc một loại kiến trúc mạng phức tạp nào khác. Dù bằng cách nào, bạn có thể ghi đè mảng host thông thường mà xySat kết nối tới và thay vào đó chỉ định một giá trị tĩnh.
 
-To do this, add a `host` property into the xySat config as a top-level JSON property, on each server that requires it.  The xySat config file is located at:
+Để làm điều này, hãy thêm thuộc tính `host` vào config xySat dưới dạng thuộc tính JSON cấp cao nhất trên mỗi server yêu cầu điều đó. File config xySat nằm ở:
 
 ```
 /opt/xyops/satellite/config.json
 ```
 
-Note that you should **not** add a `host` property into the [satellite.config](config.md#satellite-config) object on the conductor server, unless you want **all** of your servers to connect to the static host.
+Lưu ý rằng bạn **không nên** thêm thuộc tính `host` vào object [satellite.config](config.md#satellite-config) trên server conductor, trừ khi bạn muốn **tất cả** các server của mình kết nối với host tĩnh đó.
 
-When both `hosts` and `host` exist in the config file, `host` takes precedence.
+Khi cả `hosts` và `host` đều tồn tại trong file config, `host` sẽ được ưu tiên hơn.
 
-### Customizing Managed Keys
+### Tùy chỉnh các key được quản lý (Managed Keys)
 
-By default, the entire satellite configuration object from the primary conductor server is distributed out to all remote servers when they connect, and that configuration block *overwrites* whatever is in their local `/opt/xyops/satellite/config.json` files.  This is by design, so you can maintain a single, central satellite configuration, change it at any time, and have it automatically sync to all your servers.
+Theo mặc định, toàn bộ object cấu hình satellite từ server conductor primary được phân phối ra tất cả các server từ xa khi chúng kết nối, và khối cấu hình đó sẽ *ghi đè* bất kỳ thứ gì có trong file `/opt/xyops/satellite/config.json` cục bộ của chúng. Điều này được thiết kế có ý đồ, để bạn có thể duy trì một cấu hình satellite trung tâm duy nhất, thay đổi nó bất kỳ lúc nào, và để nó tự động đồng bộ hóa với tất cả các server của bạn.
 
-However, if you have a custom setup where you want some of your servers to have varying configurations, this is possible.  On those servers specifically, add a `managed_keys` property into their `/opt/xyops/satellite/config.json` files, and populate this array with all the keys that you want to allow xyOps to "manage" automatically (i.e. which ones you want to allow it to overwrite).  Example:
+Tuy nhiên, nếu bạn có một thiết lập tùy chỉnh mà bạn muốn một số server của mình có cấu hình khác nhau, điều này là có thể. Trên những server cụ thể đó, hãy thêm một thuộc tính `managed_keys` vào file `/opt/xyops/satellite/config.json` của chúng, và điền vào mảng này tất cả các key mà bạn muốn cho phép PTOps tự động "quản lý" (tức là những key nào bạn muốn cho phép nó ghi đè). Ví dụ:
 
 ```json
 "managed_keys": [ "server_id", "auth_token", "hosts" ]
 ```
 
-This would only allow xyOps to overwrite the `server_id`, `auth_token` and `hosts` configuration keys when the server connects.  All the other configuration properties may vary, and will not be touched.  Note that it is important to always allow the `auth_token` property to be overwritten, so you can [rotate the secret key](#secret-key-rotation) from the conductor (rotating the secret key requires all server auth tokens to be regenerated).
+Điều này chỉ cho phép PTOps ghi đè các key cấu hình `server_id`, `auth_token` và `hosts` khi server kết nối. Tất cả các thuộc tính cấu hình khác có thể khác nhau và sẽ không bị chạm vào. Lưu ý rằng một điều quan trọng là luôn cho phép thuộc tính `auth_token` bị ghi đè, để bạn có thể [xoay vòng secret key](#secret-key-rotation) từ conductor (xoay vòng secret key yêu cầu tất cả các token xác thực của server phải được tạo lại).
 
-## Proxy Servers
+## Server Proxy
 
-To send all outbound requests through a proxy (for e.g. web hooks), simply set one or more of the [de-facto standard environment variables](https://curl.se/docs/manpage.html#ENVIRONMENT) used for this purpose:
+Để gửi tất cả các yêu cầu gửi đi (outbound request) thông qua một proxy (ví dụ: đối với webhook), chỉ cần đặt một hoặc nhiều [biến môi trường tiêu chuẩn thực tế](https://curl.se/docs/manpage.html#ENVIRONMENT) được sử dụng cho mục đích này:
 
 ```
 HTTPS_PROXY
@@ -466,23 +466,23 @@ ALL_PROXY
 NO_PROXY
 ```
 
-xyOps will detect these environment variables and automatically configure proxy routing for all outbound requests.  The environment variable names may be upper or lower-case.  The proxy format should be a fully-qualified URL with port number.  To set a single proxy server for handling both HTTP and HTTPS requests, the simplest way is to just set `ALL_PROXY` (usually specified via a plain HTTP URL with port).  Example:
+PTOps sẽ phát hiện các biến môi trường này và tự động cấu hình định tuyến proxy cho tất cả các yêu cầu gửi đi. Tên biến môi trường có thể viết hoa hoặc viết thường. Định dạng proxy phải là một URL đầy đủ có số cổng. Để thiết lập một server proxy duy nhất xử lý cả yêu cầu HTTP và HTTPS, cách đơn giản nhất là chỉ cần thiết lập `ALL_PROXY` (thường được chỉ định qua một URL HTTP thông thường có cổng). Ví dụ:
 
 ```
 ALL_PROXY=http://company-proxy-server.com:8080
 ```
 
-Use the `NO_PROXY` environment variable to specify a comma-separated domain whitelist.  Requests to any of the domains on this list will bypass the proxy and be sent directly.  Example:
+Sử dụng biến môi trường `NO_PROXY` để chỉ định danh sách domain whitelist phân tách bằng dấu phẩy. Các yêu cầu đến bất kỳ domain nào trong danh sách này sẽ bỏ qua proxy và được gửi trực tiếp. Ví dụ:
 
 ```
 NO_PROXY=direct.example.com
 ```
 
-Please note that for proxying HTTPS (SSL) requests, unless you have pre-configured your machines to trust your proxy's local SSL cert, you will have to set the "SSL Cert Bypass" option in your web hooks.
+Vui lòng lưu ý rằng đối với việc proxy các yêu cầu HTTPS (SSL), trừ khi bạn đã cấu hình trước các máy của mình để tin tưởng chứng chỉ SSL cục bộ của proxy, bạn sẽ phải bật tùy chọn "Bỏ qua chứng chỉ SSL" (SSL Cert Bypass) trong các webhook của mình.
 
-The types of proxies supported are:
+Các loại proxy được hỗ trợ là:
 
-| Protocol | Example |
+| Giao thức | Ví dụ |
 |----------|---------|
 | `http` | `http://proxy-server-over-tcp.com:3128` |
 | `https` | `https://proxy-server-over-tls.com:3129` |
@@ -491,46 +491,46 @@ The types of proxies supported are:
 | `socks4` | `socks4://some-socks-proxy.com:9050` |
 | `pac-*` | `pac+http://www.example.com/proxy.pac` |
 
-Make sure to set the environment variables across your server fleet, so things like the [HTTP Request Plugin](plugins.md#http-request-plugin) will also adhere.
+Đảm bảo thiết lập các biến môi trường này trên toàn bộ hệ thống server của bạn, để những thành phần như [HTTP Request Plugin](plugins.md#http-request-plugin) cũng tuân thủ theo.
 
-## Data Migration
+## Di chuyển dữ liệu
 
-To migrate an existing xyOps installation to a brand new server, use the built-in bulk export and import features from the **System** tab, but make sure you copy the configuration directory by hand first.  The bulk export contains xyOps data, but it does **not** replace your server configuration files.
+Để di chuyển một bản cài đặt PTOps hiện có sang một server hoàn toàn mới, hãy sử dụng các tính năng export và import hàng loạt tích hợp sẵn từ tab **System**, nhưng hãy đảm bảo rằng bạn tự sao chép thư mục cấu hình bằng tay trước. Bản export hàng loạt chứa dữ liệu PTOps, nhưng nó **không** thay thế các file cấu hình server của bạn.
 
-Before you import anything on the new server, copy the entire configuration directory from the old conductor:
+Trước khi bạn import bất cứ thứ gì trên server mới, hãy sao chép toàn bộ thư mục cấu hình từ conductor cũ:
 
 ```
 /opt/xyops/conf
 ```
 
-This directory contains your full xyOps configuration, UI configuration overrides, custom email templates, custom UI assets, conductor peer settings, and most importantly, your secret key.  The secret key is normally stored in:
+Thư mục này chứa cấu hình PTOps đầy đủ của bạn, các cấu hình ghi đè UI, các template email tùy chỉnh, tài sản UI tùy chỉnh, các thiết lập conductor peer, và quan trọng nhất là secret key của bạn. Secret key thường được lưu trữ trong:
 
 ```
 /opt/xyops/conf/overrides.json
 ```
 
-**Important:** Your Secret Vault data and API Keys are encrypted using the secret key, and conductor and worker authentication also depends on it.  You must copy the original `secret_key` value to the new server **before** importing data or adding servers.  If the new conductor starts with a different secret key and you import your old data, imported secrets will not decrypt correctly and servers may fail to authenticate.  As long as you copy the entire `/opt/xyops/conf` directory first, your imported Secrets and API Keys should work on the new server.
+**Quan trọng:** Dữ liệu Secret Vault và các API Key của bạn được mã hóa bằng secret key, và việc xác thực conductor cùng worker cũng phụ thuộc vào nó. Bạn phải sao chép giá trị `secret_key` gốc sang server mới **trước khi** import dữ liệu hoặc thêm server. Nếu conductor mới bắt đầu với một secret key khác và bạn import dữ liệu cũ của mình, các secret được import sẽ không được giải mã chính xác và các server có thể không xác thực được. Miễn là bạn sao chép toàn bộ thư mục `/opt/xyops/conf` trước, các Secret và API Key được import của bạn sẽ hoạt động trên server mới.
 
-Here is the recommended process:
+Dưới đây là quy trình được khuyến nghị:
 
-1. On the old xyOps server, go to **System** and click **Export Data**.
-2. For a complete migration, select all storage lists, all database tables, and all extras that you want to preserve.
-3. Install xyOps on the new server, but do not import data yet.
-4. Stop xyOps on the new server if it is already running.
-5. Copy the entire `/opt/xyops/conf` directory from the old server to the new server.
-6. Review the copied configuration and update only server-specific settings, such as hostnames, ports, TLS paths, storage endpoints, or Docker volume paths.
-7. Start xyOps on the new server and confirm that it is running with the copied configuration.
-8. In the new xyOps UI, login using the default admin account, go to **System** and click **Import Data**.
-9. Upload the export archive from the old server.
-10. Verify users, API Keys, Secrets, events, workflows, plugins, buckets, schedules, workers, and uploaded files before retiring the old server.
+1. Trên server PTOps cũ, hãy vào mục **System** và nhấp vào **Export Data**.
+2. Để di chuyển hoàn toàn, hãy chọn tất cả danh sách lưu trữ, tất cả các bảng cơ sở dữ liệu và tất cả các mục bổ sung mà bạn muốn bảo toàn.
+3. Cài đặt PTOps trên server mới, nhưng chưa import dữ liệu vội.
+4. Dừng PTOps trên server mới nếu nó đã chạy.
+5. Sao chép toàn bộ thư mục `/opt/xyops/conf` từ server cũ sang server mới.
+6. Xem lại cấu hình đã sao chép và chỉ cập nhật các thiết lập cụ thể của server, chẳng hạn như hostname, cổng, đường dẫn TLS, endpoint lưu trữ hoặc đường dẫn volume Docker.
+7. Khởi động PTOps trên server mới và xác nhận rằng nó đang chạy với cấu hình đã sao chép.
+8. Trong UI PTOps mới, đăng nhập bằng tài khoản admin mặc định, vào mục **System** và nhấp vào **Import Data**.
+9. Tải lên archive đã export từ server cũ.
+10. Xác minh user, API Key, Secret, event, workflow, plugin, bucket, schedule, worker và các file đã tải lên trước khi cho server cũ ngưng hoạt động.
 
-If you are using Docker, copy the host directory that you bind-mounted to `/opt/xyops/conf`, such as `./xyops01-conf` in the examples above.  If you are using a manual install, copy `/opt/xyops/conf` directly.  Either way, keep a backup of the old server and the export archive until you have fully validated the new conductor.
+Nếu bạn đang sử dụng Docker, hãy sao chép thư mục host mà bạn đã bind-mount vào `/opt/xyops/conf`, chẳng hạn như `./xyops01-conf` trong các ví dụ trên. Nếu bạn đang sử dụng cài đặt thủ công, hãy sao chép trực tiếp `/opt/xyops/conf`. Dù bằng cách nào, hãy giữ một bản backup của server cũ và archive đã export cho đến khi bạn đã xác thực hoàn toàn conductor mới.
 
-## Air-Gapped Mode
+## Chế độ Air-Gapped
 
-xyOps supports air-gapped installs, which prevent it from making unauthorized outbound connections beyond a specified IP range.  You can configure which IP ranges it is allowed to connect to, via whitelist and/or blacklist.  The usual setup is to allow local LAN requests so servers can communicate with each other in your infra.
+PTOps hỗ trợ các cài đặt air-gapped, vốn ngăn nó thực hiện các kết nối gửi đi không được phép vượt quá một dải IP được chỉ định. Bạn có thể cấu hình dải IP nào được phép kết nối thông qua whitelist và/hoặc blacklist. Thiết lập thông thường là cho phép các yêu cầu LAN nội bộ để các server có thể giao tiếp với nhau trong hạ tầng của bạn.
 
-To configure air-gapped mode, use the [airgap](config.md#airgap) section in the main config file.  Example:
+Để cấu hình chế độ air-gapped, hãy sử dụng phần [airgap](config.md#airgap) trong file cấu hình chính. Ví dụ:
 
 ```json
 "airgap": {
@@ -540,108 +540,108 @@ To configure air-gapped mode, use the [airgap](config.md#airgap) section in the 
 }
 ```
 
-Set the `enabled` property to `true` to enable air-gapped mode, and set the `whitelist` and/or `blacklist` arrays to IP addresses or [CIDR blocks](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing).  The default whitelist includes all IPs in the [private range](https://en.wikipedia.org/wiki/Private_network).
+Đặt thuộc tính `enabled` thành `true` để bật chế độ air-gapped, và đặt mảng `whitelist` và/hoặc `blacklist` thành các địa chỉ IP hoặc các [khối CIDR](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing). Whitelist mặc định bao gồm tất cả các IP trong [dải riêng tư](https://en.wikipedia.org/wiki/Private_network).
 
-You will also need to disable the "Show Outdated Version Badges" configuration setting ([client.outdated_badges](config.md#client-outdated_badges)).  This is so xyOps will not attempt to check for outdated software versions (which would require making external requests to GitHub).
+Bạn cũng sẽ cần tắt thiết lập cấu hình "Hiển thị huy hiệu phiên bản cũ" ([client.outdated_badges](config.md#client-outdated_badges)). Điều này là để PTOps không cố gắng kiểm tra các phiên bản phần mềm cũ (việc này đòi hỏi phải gửi các yêu cầu ra bên ngoài tới GitHub).
 
-The air-gapped rules apply to both xyOps itself, and automatically propagate to all connected worker servers, to govern things like the [HTTP Plugin](plugins.md#http-request-plugin).  However, it is important to point out that they do **not** govern your own Plugin code, your own shell scripts, nor marketplace Plugins.
+Các quy tắc air-gapped áp dụng cho cả bản thân PTOps và tự động lan truyền đến tất cả các server worker được kết nối, để kiểm soát những thứ như [HTTP Plugin](plugins.md#http-request-plugin). Tuy nhiên, một điều quan trọng cần chỉ ra là chúng **không** kiểm soát code Plugin của riêng bạn, shell script của riêng bạn, cũng như các Plugin trên marketplace.
 
-For handling air-gapped software upgrades safely, please contact [xyOps Support](mailto:support@pixlcore.com).  As part of the enterprise plan we can send you digitally signed packages with instructions on how to install them.
+Để xử lý việc nâng cấp phần mềm air-gapped một cách an toàn, vui lòng liên hệ với [Hỗ trợ PTOps](mailto:support@pixlcore.com). Như một phần của gói enterprise, chúng tôi có thể gửi cho bạn các gói đã ký kỹ thuật số cùng với hướng dẫn cách cài đặt chúng.
 
-Note that all xyOps documentation is available offline inside the xyOps app.
+Lưu ý rằng all tài liệu PTOps đều có sẵn ngoại tuyến bên trong ứng dụng PTOps.
 
-### Air-Gapped Satellite Installs
+### Cài đặt Satellite trong môi trường Air-Gapped
 
-xyOps supports fully air-gapped server installs and upgrades.  Here is how it works:
+PTOps hỗ trợ cài đặt và nâng cấp server hoàn toàn air-gapped. Cách thức hoạt động như sau:
 
-1. As part of your [enterprise plan](https://xyops.io/pricing), request a signed xySat software package from us.
-2. In your xyOps instance, create a [Storage Bucket](buckets.md) and note the Bucket ID.
-3. Upload the files you received into the bucket.  The filenames will be in this format: `satellite-OS-ARCH.tar.gz`.
-4. Edit your conductor config file, and set the `satellite.bucket` property to the Bucket ID.
-5. Install or upgrade your servers as per usual.
-6. xyOps will use the xySat install packages from the bucket, and not request anything over the internet.
+1. Như một phần trong [gói enterprise](https://xyops.io/pricing) của bạn, hãy yêu cầu chúng tôi cung cấp một gói phần mềm xySat đã ký.
+2. Trong instance PTOps của bạn, tạo một [Storage Bucket](buckets.md) và ghi lại Bucket ID.
+3. Tải các file bạn nhận được lên bucket. Tên file sẽ ở định dạng này: `satellite-OS-ARCH.tar.gz`.
+4. Chỉnh sửa file config conductor của bạn và đặt thuộc tính `satellite.bucket` thành Bucket ID.
+5. Cài đặt hoặc nâng cấp các server của bạn như bình thường.
+6. PTOps sẽ sử dụng các gói cài đặt xySat từ bucket, và không yêu cầu bất kỳ thứ gì qua internet.
 
-For Docker containers, make sure that your local Docker has our images stored locally, so they aren't pulled from the repository.  Our official containers are available at the following locations:
+Đối với các container Docker, hãy đảm bảo rằng Docker cục bộ của bạn đã lưu trữ sẵn các image của chúng tôi, để chúng không bị kéo từ repository về. Các container chính thức của chúng tôi có sẵn tại các vị trí sau:
 
-- **xyOps**: https://github.com/pixlcore/xyops/pkgs/container/xyops
+- **PTOps**: https://github.com/pixlcore/xyops/pkgs/container/xyops
 - **xySat**: https://github.com/pixlcore/xysat/pkgs/container/xysat
 
-## Secret Key Rotation
+## Xoay vòng Secret Key (Secret Key Rotation)
 
-xyOps uses a single secret key on every conductor server. This key encrypts stored secrets, signs temporary UI tokens, and issues authentication tokens for worker servers (xySat). Rotating this key is fully automated and performed from the UI.
+PTOps uses một secret key duy nhất trên mỗi server conductor. Key này mã hóa các secret được lưu trữ, ký các token UI tạm thời và cấp các token xác thực cho các server worker (xySat). Việc xoay vòng key này hoàn toàn tự động và được thực hiện từ UI.
 
-### Overview
+### Tổng quan
 
-- **Secure generation**: A new cryptographically secure key is generated by the primary conductor and is never transmitted in plaintext.
-- **Orchestrated rotation**: The scheduler is paused, queued jobs are flushed, and active jobs are aborted before rotation proceeds.
-- **Seamless re-encryption**: All stored secrets are re-encrypted with the new key.
-- **Re-authentication**: All connected xySat servers are re-authenticated and issued new auth tokens automatically.
-- **Peer distribution**: The new key is distributed to all conductor peers (backup conductors) encrypted using the prior key.
-- **Persistent config**: The new key is written to `/opt/xyops/conf/overrides.json`. The base `config.json` is not modified by design (often mounted read-only in Docker).
-- **Not impacted**: Existing user sessions and API keys remain valid and are not affected by key rotation.
+- **Tạo khóa bảo mật**: Một key mới an toàn về mặt mã hóa được tạo bởi conductor primary và không bao giờ được truyền dưới dạng văn bản rõ (plaintext).
+- **Điều phối xoay vòng**: Scheduler bị tạm dừng, các job trong hàng đợi bị loại bỏ (flush), và các job đang hoạt động bị hủy bỏ (abort) trước khi quá trình xoay vòng tiếp tục.
+- **Tái mã hóa liền mạch**: Tất cả các secret được lưu trữ sẽ được mã hóa lại bằng key mới.
+- **Xác thực lại**: Tất cả các server xySat đang kết nối sẽ được xác thực lại và tự động cấp các token xác thực mới.
+- **Phân phối tới peer**: Key mới được phân phối tới tất cả các peer conductor (các conductor dự phòng) dưới dạng mã hóa bằng key trước đó.
+- **Cấu hình bền vững**: Key mới được ghi vào file `/opt/xyops/conf/overrides.json`. File `config.json` cơ sở không bị sửa đổi theo thiết kế (thường được mount dưới dạng chỉ đọc trong Docker).
+- **Không bị ảnh hưởng**: Các phiên làm việc hiện tại của user và các API key vẫn hợp lệ và không bị ảnh hưởng bởi việc xoay vòng key.
 
-### Pre-Checks
+### Kiểm tra trước
 
-Before starting a rotation, ensure that all conductors and all worker servers are online and healthy:
+Trước khi bắt đầu xoay vòng, hãy đảm bảo rằng tất cả các conductor và tất cả các server worker đều trực tuyến và khỏe mạnh:
 
-- Verify that every conductor is reachable and participating in the cluster.
-- Verify that all worker servers show as online in the Servers list.
+- Xác minh rằng mọi conductor đều có thể tiếp cận được và đang tham gia vào cluster.
+- Xác minh rằng tất cả các server worker đều hiển thị là trực tuyến trong danh sách Server.
 
-If a node is offline during rotation, it will not receive updates automatically. See [Offline Recovery](#offline-recovery) below.
+Nếu một node ngoại tuyến trong quá trình xoay vòng, nó sẽ không nhận được cập nhật tự động. Xem mục [Khôi phục ngoại tuyến](#offline-recovery) bên dưới.
 
-### Rotation Process
+### Quy trình xoay vòng
 
-1. Click on the "System" link in the Admin section in the sidebar, and start Key Rotation.
-2. The system pauses the scheduler, flushes queued jobs, and aborts active jobs.
-3. A new key is generated and used to re-encrypt all secrets.
-4. Connected worker servers are issued new auth tokens.
-5. The new key is securely distributed to all conductor peers.
-6. The key is persisted to `/opt/xyops/conf/overrides.json` on each conductor.
-7. The schedule remains paused until you resume it (click the "Paused" icon in the header).
+1. Nhấp vào liên kết "System" trong phần Admin ở thanh bên, và bắt đầu Xoay vòng Key (Key Rotation).
+2. Hệ thống tạm dừng scheduler, giải phóng các job trong hàng đợi và hủy bỏ các job đang hoạt động.
+3. Một key mới được tạo và sử dụng để mã hóa lại tất cả các secret.
+4. Các server worker đang kết nối được cấp các token xác thực mới.
+5. Key mới được phân phối an toàn đến tất cả các peer conductor.
+6. Key được lưu giữ vào file `/opt/xyops/conf/overrides.json` trên mỗi conductor.
+7. Lịch trình (schedule) vẫn bị tạm dừng cho đến khi bạn tiếp tục nó (nhấp vào biểu tượng "Paused" ở tiêu đề).
 
-No manual edits or restarts are required when all nodes are online.
+Không cần chỉnh sửa thủ công hoặc khởi động lại khi tất cả các node đều trực tuyến.
 
-### Offline Recovery
+### Khôi phục ngoại tuyến
 
-If a server or conductor was offline during the rotation window, you will need to perform the appropriate recovery action.
+Nếu một server hoặc conductor bị ngoại tuyến trong khoảng thời gian xoay vòng, bạn sẽ cần thực hiện hành động khôi phục thích hợp.
 
-#### Re-authenticate an Offline Worker Server
+#### Xác thực lại một server worker ngoại tuyến
 
-If a worker server missed the rotation, you can recover it by deriving a new auth token manually.
+Nếu một server worker bỏ lỡ việc xoay vòng, bạn có thể khôi phục nó bằng cách lấy một token xác thực mới thủ công.
 
-What you need:
+Những gì bạn cần:
 
-- The current secret key from the primary conductor. This is only available on-disk via SSH to the conductor: `/opt/xyops/conf/overrides.json` (`secret_key`). It is not retrievable via API.
-- The offline server's alphanumeric ID (e.g. `smf4j79snhe`). You can find this in the UI on the server history page, or on the server itself in `/opt/xyops/satellite/config.json`.
+- Secret key hiện tại từ conductor primary. Thông tin này chỉ có sẵn trên đĩa thông qua SSH vào conductor: `/opt/xyops/conf/overrides.json` (`secret_key`). Nó không thể lấy được qua API.
+- ID dạng chữ-số của server ngoại tuyến (ví dụ: `smf4j79snhe`). Bạn có thể tìm thấy ID này trong UI trên trang lịch sử server, hoặc trên chính server đó trong `/opt/xyops/satellite/config.json`.
 
-Compute the SHA-256 of the concatenation: `SERVER_ID + SECRET_KEY`, and use the hex digest as the new auth token. Example:
+Tính toán SHA-256 của chuỗi kết hợp: `SERVER_ID + SECRET_KEY`, và sử dụng chuỗi hex digest làm token xác thực mới. Ví dụ:
 
 ```sh
 ## OpenSSL
 printf "%s" "SERVER_IDSECRET_KEY" | openssl dgst -sha256 -r | awk '{print $1}'
 ```
 
-Then edit the satellite config on the worker:
+Sau đó chỉnh sửa cấu hình satellite trên worker:
 
 ```
 /opt/xyops/satellite/config.json
 ```
 
-Set the `auth_token` property to the computed SHA-256 hex string. Save the file -- the satellite will auto-reload and attempt to reconnect within ~30 seconds. Check the satellite logs for troubleshooting.
+Đặt thuộc tính `auth_token` thành chuỗi SHA-256 hex vừa tính toán. Lưu file -- satellite sẽ tự động tải lại và cố gắng kết nối lại trong vòng ~30 giây. Kiểm tra log của satellite để khắc phục sự cố.
 
-#### Update an Offline Conductor
+#### Cập nhật một conductor ngoại tuyến
 
-If a conductor was offline during rotation, SSH to it and update the key by hand:
+If một conductor bị ngoại tuyến trong quá trình xoay vòng, hãy SSH vào nó và cập nhật key bằng tay:
 
-1) Open `/opt/xyops/conf/overrides.json` on the offline conductor.
-2) Set the `secret_key` property to the new key from the primary conductor. If the file lacks `secret_key` (e.g. first rotation), add it.
-3) Save the file and restart the conductor service if needed.
+1) Mở file `/opt/xyops/conf/overrides.json` trên conductor ngoại tuyến.
+2) Đặt thuộc tính `secret_key` thành key mới từ conductor primary. If file thiếu `secret_key` (ví dụ: lần xoay vòng đầu tiên), hãy thêm nó.
+3) Lưu file và khởi động lại dịch vụ conductor nếu cần.
 
-After the update, the conductor will rejoin the cluster with the correct key.
+Sau khi cập nhật, conductor sẽ gia nhập lại cluster với key chính xác.
 
-### Best Practices
+### Thực hành tốt nhất
 
-- Schedule rotations during a maintenance window to tolerate job aborts.
-- Confirm node health beforehand to avoid manual recovery steps.
-- Store the current key securely and restrict SSH access to conductors.
-- Rotate periodically as part of your security program (see [Security Checklist](scaling.md#security-checklist)).
+- Lên lịch xoay vòng trong một khoảng thời gian bảo trì để chấp nhận việc các job bị hủy bỏ.
+- Xác nhận tình trạng sức khỏe của node trước để tránh các bước khôi phục thủ công.
+- Lưu trữ key hiện tại một cách an toàn và hạn chế quyền truy cập SSH vào các conductor.
+- Xoay vòng định kỳ như một phần của chương trình bảo mật của bạn (xem [Danh sách kiểm tra bảo mật](scaling.md#security-checklist)).

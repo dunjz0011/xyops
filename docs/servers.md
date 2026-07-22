@@ -1,93 +1,93 @@
 # Servers
 
-## Overview
+## Tổng Quan
 
-Servers are the worker nodes in a xyOps cluster. Each server runs our lightweight satellite agent (xySat), maintains a persistent WebSocket connection to the conductor, collects monitoring metrics, and executes jobs on demand. A server may be a physical host, virtual machine, or container, and can run Linux, macOS, or Windows.
+Server là các worker node trong cluster PTOps. Mỗi server chạy satellite agent nhẹ của chúng ta (xySat), duy trì kết nối WebSocket liên tục với conductor, thu thập số liệu giám sát, và thực thi job theo yêu cầu. Một server có thể là máy vật lý, máy ảo, hoặc container, và có thể chạy Linux, macOS, hoặc Windows.
 
-This document explains how servers fit into xyOps, how to add and organize them, how events target servers, what you can see on each server's UI page, and how the system scales to large fleets.
+Tài liệu này giải thích server phù hợp với PTOps thế nào, cách thêm và tổ chức chúng, cách event target server, những gì bạn thấy trên trang UI của mỗi server, và cách hệ thống mở rộng cho các fleet lớn.
 
-## Key Points
+## Điểm Chính
 
-- Servers run xySat and act as job runners and metrics collectors.
-- Conductors run the full xyOps stack and coordinate scheduling, routing, storage, and UI.
-- You can add any number of servers and conductors to a cluster; agents maintain live connections and auto-failover across conductors.
-- Servers collect "quick" metrics every second (CPU/Mem/Disk/Net) and minute-level metrics via user-defined monitor plugins. Some metrics are not available on Windows.
+- Server chạy xySat và đóng vai trò job runner và bộ thu thập metrics.
+- Conductor chạy toàn bộ stack PTOps và điều phối scheduling, routing, storage, và UI.
+- Bạn có thể thêm bất kỳ số lượng server và conductor vào cluster; agent duy trì kết nối trực tiếp và tự failover giữa các conductor.
+- Server thu thập metrics "quick" mỗi giây (CPU/Mem/Disk/Net) và metrics cấp phút qua các monitor plugin do người dùng định nghĩa. Một số metrics không có sẵn trên Windows.
 
-## Servers vs. Conductors
+## Server vs. Conductor
 
-- **Server**: A worker node running xySat. It reports host details and metrics, and executes jobs sent by a conductor. Servers may be grouped and targeted by events.
-- **Conductor**: A full xyOps instance (primary or hot standby) that manages the schedule, routes jobs to servers, stores data, and serves the UI/API. A cluster can have multiple conductors for redundancy; one is primary at any time.
+- **Server**: Một worker node chạy xySat. Nó báo cáo chi tiết host và metrics, và thực thi job được gửi từ conductor. Server có thể được nhóm và target bởi event.
+- **Conductor**: Một instance PTOps đầy đủ (primary hoặc hot standby) quản lý schedule, định tuyến job đến server, lưu trữ dữ liệu, và phục vụ UI/API. Một cluster có thể có nhiều conductor để đảm bảo dự phòng; luôn có một conductor là primary tại một thời điểm.
 
-xySat keeps an up-to-date list of all conductors. If a server loses its primary connection, it automatically fails over to a backup and then reconnects to the new primary after election.
+xySat luôn giữ danh sách cập nhật của tất cả conductor. Nếu một server mất kết nối primary, nó tự động failover sang backup và sau đó kết nối lại với primary mới sau khi bầu chọn (election).
 
-## Adding Servers
+## Thêm Server
 
-You can add servers in three ways:
+Bạn có thể thêm server theo ba cách:
 
-1. **Via the UI** (one-line installer)
-	- Go to the Servers tab and click "Add Server…".
-	- Optionally set a label, icon, enabled state, and pick groups (or leave automatic grouping on).
-	- Copy the pre-configured one-line install command for Docker, Linux, macOS or Windows and run it on the target host.
-	- The installer authenticates, installs xySat as a startup service (systemd/launchd/Windows Service), writes the config, and starts the agent.
-	- The server appears immediately in the cluster, begins streaming metrics, and can run jobs.
-2. **Automated bootstrap** (API Key)
-	- For autoscaling or ephemeral hosts, generate an API Key and use your provisioning to call the bootstrap endpoint to fetch a server token and installer command during first boot.
-	- See below for details. You can include this in cloud-init, AMIs, Packer templates, or custom init scripts.
-3. **Manual install**
-	- Install xySat on the host and configure it with your cluster URL and secret key. The secret key is used to generate an auth token. Start the service to join the cluster.
-	- This method is typically only used for development, testing and home labs.
+1. **Qua UI** (bộ cài đặt một dòng lệnh)
+	- Vào tab Servers và nhấn "Add Server…".
+	- Tuỳ chọn đặt label, icon, trạng thái enabled, và chọn group (hoặc để tự động nhóm).
+	- Sao chép lệnh cài đặt một dòng đã cấu hình sẵn cho Docker, Linux, macOS hoặc Windows và chạy nó trên host đích.
+	- Bộ cài đặt sẽ xác thực, cài xySat làm startup service (systemd/launchd/Windows Service), ghi cấu hình, và khởi động agent.
+	- Server xuất hiện ngay trong cluster, bắt đầu truyền metrics, và có thể chạy job.
+2. **Bootstrap tự động** (API Key)
+	- Với autoscaling hoặc host tạm thời (ephemeral), tạo một API Key và dùng hệ thống provisioning của bạn để gọi endpoint bootstrap, lấy server token và lệnh cài đặt trong quá trình khởi động lần đầu.
+	- Xem chi tiết dưới đây. Bạn có thể đưa việc này vào cloud-init, AMI, Packer template, hoặc script khởi động tuỳ chỉnh.
+3. **Cài đặt thủ công**
+	- Cài xySat trên host và cấu hình với URL cluster và secret key của bạn. Secret key được dùng để tạo auth token. Khởi động service để tham gia cluster.
+	- Phương pháp này thường chỉ dùng cho phát triển, testing và home lab.
 
-Notes:
+Lưu ý:
 
-- Server auth tokens do not expire. You can, however, [rotate your secret key](hosting.md#secret-key-rotation) (which regenerates all tokens) from the UI if needed.
-- Software upgrades for xySat are orchestrated from the UI and are designed to avoid interrupting running jobs.
+- Auth token của server không hết hạn. Tuy nhiên, bạn có thể [xoay secret key](hosting.md#secret-key-rotation) (sẽ tạo lại toàn bộ token) từ UI nếu cần.
+- Việc nâng cấp phần mềm xySat được điều phối từ UI và được thiết kế để tránh làm gián đoạn job đang chạy.
 
-### Automated Server Bootstrap
+### Bootstrap Server Tự Động
 
-To automate adding new ephemeral servers to your cluster, follow these steps:
+Để tự động thêm server tạm thời (ephemeral) mới vào cluster, làm theo các bước sau:
 
-First, create a new [API Key](api.md#api-keys) in the UI, and assign it the [add_servers](privileges.md#add_servers) privilege only (remove all the default privileges).  
+Trước tiên, tạo một [API Key](api.md#api-keys) mới trong UI, và chỉ gán cho nó privilege [add_servers](privileges.md#add_servers) (bỏ hết các privilege mặc định khác).
 
-Next, click "Add Server" in the UI and copy the Linux installation command.  Do not enter any server options like label, icon or group.
+Tiếp theo, nhấn "Add Server" trong UI và sao chép lệnh cài đặt Linux. Không nhập bất kỳ tuỳ chọn server nào như label, icon hay group.
 
-Replace the temporary auth token (which expires after 24 hours) with your new API Key (which won't expire).  The token is the value of the `t` query string parameter in the URL.  Example:
+Thay thế auth token tạm thời (hết hạn sau 24 giờ) bằng API Key mới của bạn (không hết hạn). Token là giá trị của query string parameter `t` trong URL. Ví dụ:
 
 ```sh
 curl -s "https://xyops01.mycompany.com/api/app/satellite/install?t=API_KEY_HERE" | sudo sh
 ```
 
-Finally, paste the new command into your server provisioning script, specifically in the first-boot sequence, so it runs on initial startup.
+Cuối cùng, dán lệnh mới vào script provisioning server của bạn, cụ thể là trong chuỗi khởi động lần đầu (first-boot), để nó chạy khi khởi động ban đầu.
 
-Notes:
+Lưu ý:
 
-- Make sure the new server's networking stack is up before running the bootstrap command.
-- After initial download, xySat will install from a local cache and not have to hit the internet for anything (or just use [Air-Gapped Mode](hosting.md#air-gapped-mode)).
-- Make sure your servers have `curl` preinstalled.  Alternatively, you can rewrite the command to use `wget`.
-- In automated mode your server's hostname will dictate which server groups it gets added to.
+- Đảm bảo network stack của server mới đã sẵn sàng trước khi chạy lệnh bootstrap.
+- Sau lần tải đầu tiên, xySat sẽ cài từ cache cục bộ và không cần truy cập internet cho bất cứ thứ gì nữa (hoặc chỉ cần dùng [Air-Gapped Mode](hosting.md#air-gapped-mode)).
+- Đảm bảo server của bạn đã cài sẵn `curl`. Ngoài ra bạn có thể viết lại lệnh để dùng `wget`.
+- Ở chế độ tự động, hostname của server sẽ quyết định nó được thêm vào group server nào.
 
-### Automated Docker Workers
+### Docker Worker Tự Động
 
-To automate adding new Docker based workers to your cluster, follow these steps:
+Để tự động thêm Docker worker mới vào cluster, làm theo các bước sau:
 
-First, create a new [API Key](api.md#api-keys) in the UI, and assign it the [add_servers](privileges.md#add_servers) privilege only (remove all the default privileges).
+Trước tiên, tạo một [API Key](api.md#api-keys) mới trong UI, và chỉ gán cho nó privilege [add_servers](privileges.md#add_servers) (bỏ hết các privilege mặc định khác).
 
-Next, click "Add Server" from the sidebar, select "Docker" as the target platform, and copy the installation command to your clipboard.  Do not enter any server options like label, icon or group.  It will look like this:
+Tiếp theo, nhấn "Add Server" từ sidebar, chọn "Docker" làm platform đích, và sao chép lệnh cài đặt vào clipboard. Không nhập bất kỳ tuỳ chọn server nào như label, icon hay group. Nó sẽ trông như thế này:
 
 ```sh
 docker run --detach --init --restart unless-stopped -v xysat-conf-12345:/etc/xysat -v /var/run/docker.sock:/var/run/docker.sock -e XYSAT_config_file="/etc/xysat/config.json" -e XYOPS_setup="http://YOUR_XYOPS_SERVER:5522/api/app/satellite/config?t=1234567890abcdefghijk" --name "xyops-worker-12345" --hostname "docker-12345" ghcr.io/pixlcore/xysat:latest
 ```
 
-Grab the `XYOPS_setup` environment variable from the install command, and replace the temporary auth token (which expires after 24 hours) with your new API Key (which won't expire).  The token is the value of the `t` query string parameter in the URL.  Example:
+Lấy biến môi trường `XYOPS_setup` từ lệnh cài đặt, và thay thế auth token tạm thời (hết hạn sau 24 giờ) bằng API Key mới của bạn (không hết hạn). Token là giá trị của query string parameter `t` trong URL. Ví dụ:
 
 ```
 http://YOUR_XYOPS_SERVER:5522/api/app/satellite/config?t=YOUR_API_KEY_HERE
 ```
 
-You can now use this to spin up as many Docker workers as you want.  Just specify your new URL with API Key as the `XYOPS_setup` environment variable, and use the official `ghcr.io/pixlcore/xysat:latest` Docker image.
+Bây giờ bạn có thể dùng cái này để tạo bao nhiêu Docker worker tuỳ ý. Chỉ cần chỉ định URL mới kèm API Key làm biến môi trường `XYOPS_setup`, và dùng image Docker chính thức `ghcr.io/pixlcore/xysat:latest`.
 
-Make sure you use a different named volume mount for each server's configuration directory (each server needs its own).
+Đảm bảo bạn dùng named volume mount khác nhau cho thư mục cấu hình của mỗi server (mỗi server cần volume riêng).
 
-Here is an example using Docker Compose:
+Đây là ví dụ dùng Docker Compose:
 
 ```yaml
 services:
@@ -125,128 +125,128 @@ services:
       XYOPS_setup: http://YOUR_XYOPS_SERVER:5522/api/app/satellite/config?t=YOUR_API_KEY_HERE
 ```
 
-All workers can use the same exact `XYOPS_setup` value and API Key.  Each request generates a new unique Server ID and permanent Auth Token, which are stored in the config file.
+Tất cả worker có thể dùng chính xác cùng giá trị `XYOPS_setup` và API Key. Mỗi request tạo ra một Server ID và Auth Token vĩnh viễn duy nhất mới, được lưu trong file cấu hình.
 
-Note that the `XYOPS_setup` bootstrap process is only needed for the first launch of new containers.  If the config file exists, the setup process is silently skipped.
+Lưu ý rằng quy trình bootstrap `XYOPS_setup` chỉ cần thiết cho lần khởi chạy đầu tiên của container mới. Nếu file cấu hình đã tồn tại, quy trình setup sẽ tự động được bỏ qua.
 
-## Groups and Auto-Assignment
+## Group và Tự Động Gán
 
-Servers can belong to one or more groups. Groups are used for organizing the fleet, scoping monitors/alerts, and targeting events.
+Server có thể thuộc một hoặc nhiều group. Group được dùng để tổ chức fleet, khoanh vùng monitor/alert, và target event.
 
-- **Auto-assignment**: Groups can declare a hostname regular expression. When a server comes online (or when its hostname changes), matching groups are applied automatically.
-- **Multiple groups**: Servers can match and join multiple groups.
-- **Manual assignment**: If you manually assign groups to a server, automatic hostname-based matching is disabled for that server. You can re-enable auto-assignment by clearing the manual groups.
-- **Re-evaluation**: Group matches are re-evaluated if a server's hostname changes.
+- **Tự động gán**: Group có thể khai báo một regular expression cho hostname. Khi server kết nối (hoặc khi hostname của nó thay đổi), các group khớp sẽ được áp dụng tự động.
+- **Nhiều group**: Server có thể khớp và tham gia nhiều group.
+- **Gán thủ công**: Nếu bạn gán group thủ công cho một server, việc khớp tự động theo hostname sẽ bị tắt cho server đó. Bạn có thể bật lại tự động gán bằng cách xoá các group thủ công.
+- **Đánh giá lại**: Khớp group được đánh giá lại nếu hostname của server thay đổi.
 
-See [Server Groups](groups.md) for more details on server groups.
+Xem [Server Groups](groups.md) để biết thêm chi tiết về group server.
 
-## Targeting Events at Servers
+## Target Event Vào Server
 
-Events specify targets as a list containing server IDs and/or group IDs. At run time, the scheduler resolves these into the set of currently online, enabled servers, then picks one using the event's selection algorithm (random, round_robin, least_cpu, least_mem, or a monitor-based policy). See [Event.targets](data.md#event-targets) and [Event.algo](data.md#event-algo).
+Event chỉ định target dưới dạng một danh sách chứa server ID và/hoặc group ID. Tại thời điểm chạy, scheduler sẽ phân giải chúng thành tập server đang online, được enable, sau đó chọn một server bằng thuật toán chọn của event (random, round_robin, least_cpu, least_mem, hoặc chính sách dựa trên monitor). Xem [Event.targets](data.md#event-targets) và [Event.algo](data.md#event-algo).
 
-Behavior when servers are offline:
+Hành vi khi server offline:
 
-- **Single-server target**: If the target server is offline, behavior is user-configurable via limits: add a Queue limit to allow queuing; without one, the job fails immediately.
-- **Group target**: Offline servers are ignored; alternate online servers from the group are selected.
+- **Target đơn server**: Nếu server target offline, hành vi có thể cấu hình qua limit: thêm limit Queue để cho phép hàng đợi; nếu không có, job sẽ thất bại ngay lập tức.
+- **Target group**: Server offline bị bỏ qua; các server online khác trong group sẽ được chọn thay.
 
-Alerts can optionally suppress job launches on a specific server, so a server under alert may be excluded from selection until it clears.  This feature is configured at the alert level (see [Alerts](alerts.md) for more details).
+Alert có thể tuỳ chọn ngăn việc khởi chạy job trên một server cụ thể, nên một server đang bị alert có thể bị loại khỏi việc chọn cho đến khi alert đó được clear. Tính năng này được cấu hình ở cấp độ alert (xem [Alerts](alerts.md) để biết thêm chi tiết).
 
 ## Max Jobs Per Server
 
-You can set a *per-server* maximum concurrent job limit.  So for example you can configure some of your underpowered servers to limit the number of jobs they can run concurrently.  This can be configured on the server details page by clicking the "Edit Server" button, or via the [update_server](api.md#update_server) API.  The default is no limit.
+Bạn có thể đặt giới hạn số job đồng thời tối đa *theo từng server*. Ví dụ bạn có thể cấu hình một số server yếu để giới hạn số job chúng có thể chạy đồng thời. Việc này có thể cấu hình trên trang chi tiết server bằng cách nhấn nút "Edit Server", hoặc qua API [update_server](api.md#update_server). Mặc định là không giới hạn.
 
-When a server is maxed out and a new job is starting, the way it works is that the server is "removed" from consideration when the server is being chosen from the event targets.  So any alternate servers with available "slots" will be chosen instead (assuming your event targets have multiple servers or groups).
+Khi một server đã đầy và có job mới cần chạy, cách hoạt động là server đó sẽ bị "loại" khỏi việc xem xét khi chọn server từ target của event. Do đó các server thay thế còn "slot" trống sẽ được chọn thay (giả sử target event của bạn có nhiều server hoặc group).
 
-If no servers are available due to max jobs, the behavior is the same as if the servers were unavailable for other reasons (i.e. servers offline, or blocked due to active alerts, etc.).  If the event has [queuing](limits.md#max-queue-limit) enabled, then the job will automatically queue up until a server becomes available.
+Nếu không có server nào khả dụng do max jobs, hành vi giống như khi server không khả dụng vì lý do khác (ví dụ: server offline, hoặc bị chặn do alert đang active, v.v.). Nếu event có [queuing](limits.md#max-queue-limit) được bật, job sẽ tự động vào hàng đợi cho đến khi có server khả dụng.
 
-You can also set defaults for the max jobs per server at the group level, so you don't have to edit each of your servers individually.  To do this, simply edit the group, and you will see a new "Max Jobs Per Server" field.  If a server is a member of multiple groups, the group with the lowest max jobs per server prevails.
+Bạn cũng có thể đặt giá trị mặc định cho max jobs per server ở cấp độ group, để không phải sửa từng server riêng lẻ. Để làm điều này, chỉ cần sửa group, bạn sẽ thấy trường mới "Max Jobs Per Server". Nếu một server thuộc nhiều group, group có max jobs per server thấp nhất sẽ được ưu tiên áp dụng.
 
-## User Data
+## Dữ Liệu Người Dùng (User Data)
 
-xyOps can store arbitrary data with each server, which is called the "user data".  This is a freeform object stored as JSON, which can contain any data you want (including nested objects / arrays).  The user data is automatically passed to all running jobs on the server (see [Job.serverData](data.md#job-serverdata)), and can also be used for custom event targeting.
+PTOps có thể lưu dữ liệu tuỳ ý cho mỗi server, gọi là "user data". Đây là một object tự do được lưu dưới dạng JSON, có thể chứa bất kỳ dữ liệu bạn muốn (bao gồm object/array lồng nhau). User data được tự động truyền vào tất cả job đang chạy trên server (xem [Job.serverData](data.md#job-serverdata)), và cũng có thể dùng để target event tuỳ chỉnh.
 
-You can add or update the server data in a number of ways:
+Bạn có thể thêm hoặc cập nhật server data theo nhiều cách:
 
-- In the UI, on the server details page, click the "Edit Server" button.
-- By calling the [update_server_data](api.md#update_server_data) API.
-- Inside a running job (i.e. Event Plugin) by outputting a `serverData` object (see [Updating The Server Data](plugins.md#server-data)).
+- Trong UI, trên trang chi tiết server, nhấn nút "Edit Server".
+- Bằng cách gọi API [update_server_data](api.md#update_server_data).
+- Trong một job đang chạy (tức là Event Plugin) bằng cách xuất một object `serverData` (xem [Cập Nhật Server Data](plugins.md#server-data)).
 
-Note that all server data for all active servers is stored in memory on the primary conductor server, so it is best to keep the size reasonable.
+Lưu ý toàn bộ server data cho tất cả server đang active được lưu trong memory trên conductor primary, vì vậy nên giữ kích thước hợp lý.
 
-## Server UI
+## UI Server
 
-Each server has a dedicated page in the xyOps UI showing live and historical state:
+Mỗi server có một trang riêng trong UI PTOps hiển thị trạng thái trực tiếp và lịch sử:
 
-- **Status**: Online/offline badge, label/hostname, IP, OS/arch, CPU details, memory, virtualization, agent version, uptime, and groups.
-- **Quick metrics** (per second): Small rolling graphs for CPU, memory, disk, and network over the last 60 seconds.
-- **Monitors** (per minute): Charts for all user-defined monitors and deltas, with alert overlays.
-- **Processes**: Current process table showing PID / parent / CPU / memory / network, and other metrics for each process.
-- **Connections**: Current network connections showing state, source and dest IPs, and transfer metrics.
-- **Running jobs**: Live jobs executing on the server, including workflow parents/children.
-- **Upcoming jobs**: Predicted jobs scheduled to land on this server (based on event targets and schedule).
-- **Alerts**: Active alerts affecting this server, with links to history.
-- **User Actions**: Take a snapshot, set a watch, edit server details (label, enable/disable, icon, groups), or delete the server.
+- **Status**: Badge online/offline, label/hostname, IP, OS/arch, chi tiết CPU, memory, virtualization, phiên bản agent, uptime, và group.
+- **Metrics nhanh** (mỗi giây): Đồ thị nhỏ cuộn liên tục cho CPU, memory, disk, và network trong 60 giây gần nhất.
+- **Monitors** (mỗi phút): Đồ thị cho tất cả monitor và delta do người dùng định nghĩa, có overlay alert.
+- **Processes**: Bảng process hiện tại hiển thị PID / parent / CPU / memory / network, và các metrics khác cho từng process.
+- **Connections**: Kết nối network hiện tại hiển thị state, IP nguồn và đích, và metrics truyền tải.
+- **Running jobs**: Job đang thực thi trực tiếp trên server, bao gồm cả workflow parent/children.
+- **Upcoming jobs**: Job dự đoán sẽ chạy trên server này (dựa vào target event và schedule).
+- **Alerts**: Alert đang active ảnh hưởng đến server này, kèm link đến lịch sử.
+- **User Actions**: Chụp snapshot, đặt watch, sửa chi tiết server (label, enable/disable, icon, group), hoặc xoá server.
 
-Search the fleet and history from Servers → Search. You can filter by group, OS platform/distro/release/arch, CPU brand/cores, and created/modified ranges.
+Tìm kiếm fleet và lịch sử từ Servers → Search. Bạn có thể filter theo group, OS platform/distro/release/arch, CPU brand/cores, và khoảng thời gian created/modified.
 
-## Snapshots and Watches
+## Snapshots và Watches
 
-Snapshots capture the current state of a server and save it for later inspection and comparison. They're available on the Snapshots area, and when linked from actions or alerts.
+Snapshot chụp lại trạng thái hiện tại của server và lưu để kiểm tra và so sánh sau này. Chúng có sẵn ở khu vực Snapshots, và khi được liên kết từ action hoặc alert.
 
-What a snapshot contains:
+Nội dung một snapshot bao gồm:
 
-- Full process list (ps -ef equivalent), network connections (including listeners), disk mounts, network devices.
-- Host facts: CPU type, core count, max RAM, OS platform/distro/release, uptime, load, etc.
-- The last 60 seconds of "quick" metrics (per-second CPU/Mem/Disk/Net).
-- References to active jobs and relevant alerts at capture time.
+- Danh sách process đầy đủ (tương đương ps -ef), kết nối network (bao gồm cả listener), disk mount, network device.
+- Thông tin host: loại CPU, số core, RAM tối đa, OS platform/distro/release, uptime, load, v.v.
+- 60 giây gần nhất của metrics "quick" (CPU/Mem/Disk/Net theo giây).
+- Tham chiếu đến job đang active và alert liên quan tại thời điểm chụp.
 
-How snapshots are created:
+Cách tạo snapshot:
 
-- Manually: Click "Create Snapshot" on a server page.
-- Actions: Add a Snapshot action to a job or alert; the system can take snapshots when conditions are met.
-- Watch: Start a watch on a server to take a snapshot every minute for a duration (default 5 minutes).
+- Thủ công: Nhấn "Create Snapshot" trên trang server.
+- Actions: Thêm action Snapshot vào một job hoặc alert; hệ thống có thể tự chụp snapshot khi điều kiện thoả.
+- Watch: Bắt đầu watch trên một server để chụp snapshot mỗi phút trong một khoảng thời gian (mặc định 5 phút).
 
-Retention:
+Lưu trữ:
 
-- Snapshots are retained up to a global cap (default 100,000 snaps) and pruned nightly.
+- Snapshot được giữ lại tối đa theo một mức trần toàn hệ thống (mặc định 100.000 snap) và được dọn dẹp mỗi đêm.
 
-See [Snapshots](snapshots.md) for more details.
+Xem [Snapshots](snapshots.md) để biết thêm chi tiết.
 
-## Metrics and Sampling
+## Metrics và Sampling
 
-- Per second ("quick"): CPU, memory, disk, and network; retained in a rolling 60-second in-memory buffer for UI.
-- Per minute (monitors): User-defined monitor plugins run each minute on servers to produce numeric values (or deltas). These feed charts, alerts, and dashboards. See [Monitors](monitors.md).
-- OS differences: Some metrics are not available on Windows.
+- Mỗi giây ("quick"): CPU, memory, disk, và network; được giữ trong buffer bộ nhớ cuộn 60 giây cho UI.
+- Mỗi phút (monitors): Monitor plugin do người dùng định nghĩa chạy mỗi phút trên server để tạo giá trị số (hoặc delta). Chúng cung cấp dữ liệu cho đồ thị, alert, và dashboard. Xem [Monitors](monitors.md).
+- Khác biệt OS: Một số metrics không có sẵn trên Windows.
 
-To avoid thundering herd effects on conductors, each server deterministically staggers its minute collection offset using a hash of its Server ID plus a dynamically computed offset. This spreads submissions evenly across N seconds, which is based on the total number of servers in the cluster.  The quick second metrics also do this, but stagger in milliseconds.
+Để tránh hiệu ứng thundering herd trên conductor, mỗi server tự động lệch thời điểm thu thập phút của mình bằng cách dùng hash của Server ID cộng với một offset được tính động. Điều này trải đều việc gửi dữ liệu trên N giây, dựa trên tổng số server trong cluster. Metrics nhanh theo giây cũng làm vậy, nhưng lệch theo milliseconds.
 
-## Lifecycle and Health
+## Lifecycle và Health
 
-- **Online/offline**: A server is online while its xySat WebSocket is connected. If the socket drops, the server is immediately marked offline. The UI updates in real time.
-- **Running jobs**: Jobs are not aborted immediately when a server goes offline. Instead, conductors wait for `dead_job_timeout` before declaring the job dead and aborting it (default: 120 seconds). See [Configuration](config.md#dead_job_timeout).
-- **Enable/disable**: Disabling a server removes it from job selection but it can remain online and continue reporting metrics.
+- **Online/offline**: Một server online khi WebSocket xySat của nó đang kết nối. Nếu socket bị đứt, server ngay lập tức được đánh dấu offline. UI cập nhật theo thời gian thực.
+- **Running jobs**: Job không bị abort ngay khi server offline. Thay vào đó, conductor chờ `dead_job_timeout` trước khi tuyên bố job đã chết và abort nó (mặc định: 120 giây). Xem [Configuration](config.md#dead_job_timeout).
+- **Enable/disable**: Disable một server sẽ loại nó khỏi việc chọn job nhưng nó vẫn có thể online và tiếp tục báo cáo metrics.
 
-## Scalability
+## Khả Năng Mở Rộng
 
-xyOps is designed for large fleets and has been tested up to hundreds of servers per cluster. For larger clusters:
+PTOps được thiết kế cho các fleet lớn và đã được test lên đến hàng trăm server mỗi cluster. Đối với cluster lớn hơn:
 
-- Deterministic staggering ensures not all servers submit minute and second samples at once; load is spread evenly over a dynamic time window.
-- Conductors should run on strong hardware (CPU/RAM/SSD) for best performance when ingesting and aggregating data, running elections, and serving the UI/API.
-- You can operate multiple conductors (primary + hot standby peers). Agents auto-failover between them; the cluster performs election to select a new primary as needed.
+- Việc lệch thời điểm tự động đảm bảo không phải tất cả server gửi mẫu phút và giây cùng lúc; tải được trải đều trên một khoảng thời gian động.
+- Conductor nên chạy trên phần cứng mạnh (CPU/RAM/SSD) để đạt hiệu năng tốt nhất khi thu nạp và tổng hợp dữ liệu, chạy bầu chọn, và phục vụ UI/API.
+- Bạn có thể vận hành nhiều conductor (primary + hot standby peer). Agent tự động failover giữa chúng; cluster thực hiện bầu chọn để chọn primary mới khi cần.
 
-Also see the [Scaling](scaling.md) guide.
+Xem thêm hướng dẫn [Scaling](scaling.md).
 
-## Decommissioning Servers
+## Ngừng Sử Dụng Server
 
-To retire a server, open its detail page and click the trash can icon:
+Để loại bỏ một server, mở trang chi tiết của nó và nhấn icon thùng rác:
 
-- **Online**: The conductor sends an uninstall command to the agent, which shuts down and removes xySat. You can also optionally delete historical data (server record, metrics, snapshots).
-- **Offline**: You can still delete the server but must opt to delete history, as uninstall requires an active connection.
+- **Online**: Conductor gửi lệnh gỡ cài đặt đến agent, agent sẽ tắt và gỡ xySat. Bạn cũng có thể tuỳ chọn xoá dữ liệu lịch sử (bản ghi server, metrics, snapshots).
+- **Offline**: Bạn vẫn có thể xoá server nhưng phải chọn xoá lịch sử, vì gỡ cài đặt yêu cầu kết nối đang active.
 
-Deletions are permanent and cannot be undone.
+Việc xoá là vĩnh viễn và không thể hoàn tác.
 
-## Related Data and APIs
+## Dữ Liệu và API Liên Quan
 
 - Data: [Server](data.md#server), [ServerMonitorData](data.md#servermonitordata), [Snapshot](data.md#snapshot), [Group](data.md#group).
 - Servers API: [get_active_servers](api.md#get_active_servers), [get_active_server](api.md#get_active_server), [get_server](api.md#get_server), [update_server](api.md#update_server), [delete_server](api.md#delete_server), [watch_server](api.md#watch_server), [create_snapshot](api.md#create_snapshot).
-- Search: [search_servers](api.md#search_servers), server summaries, and snapshots search.
+- Search: [search_servers](api.md#search_servers), tóm tắt server, và search snapshots.

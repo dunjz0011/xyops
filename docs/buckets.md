@@ -1,58 +1,58 @@
 # Buckets
 
-## Overview
+## Tổng Quan
 
-Storage Buckets provide durable, shareable storage for jobs and workflows. A bucket can hold structured JSON data and any number of files. Jobs can fetch from and store to buckets at well-defined points in their lifecycle so outputs from one job are available as inputs to another, even when the jobs are not directly connected in a chain.
+Storage Bucket cung cấp khả năng lưu trữ bền vững, có thể chia sẻ cho job và workflow. Một bucket có thể chứa dữ liệu JSON có cấu trúc và bất kỳ số lượng file nào. Job có thể fetch (lấy) từ bucket và store (lưu) vào bucket tại các điểm xác định trong vòng đời của nó, giúp output của một job trở thành input cho job khác, ngay cả khi các job đó không được kết nối trực tiếp trong một chuỗi.
 
-## Key Points
+## Điểm Chính
 
-- Purpose: Persistent data/files exchange between jobs and workflows.
-- Content types: JSON data object and file collection (zero or more files).
-- Access: Manage via UI and API; controlled by privileges.
-- Job integration: Fetch at job start; store on job completion based on action conditions.
-- Direct links: Files in buckets are downloadable by URL.
+- Mục đích: Trao đổi dữ liệu/file bền vững giữa các job và workflow.
+- Loại nội dung: Đối tượng dữ liệu JSON và bộ sưu tập file (không hoặc nhiều file).
+- Truy cập: Quản lý qua UI và API; kiểm soát bởi privilege.
+- Tích hợp với job: Fetch lúc job bắt đầu; store lúc job hoàn thành dựa trên điều kiện của action.
+- Link trực tiếp: File trong bucket có thể tải xuống qua URL.
 
-See the [Bucket](data.md#bucket) data structure and the [Bucket APIs](api.md#buckets) for full technical details.
+Xem cấu trúc dữ liệu [Bucket](data.md#bucket) và [Bucket API](api.md#buckets) để biết chi tiết kỹ thuật đầy đủ.
 
-## When To Use
+## Khi Nào Nên Dùng
 
-- Cross-job handoff: Pass artifacts from build to deploy, or output from data prep to analysis.
-- Workflows: Share state and files between workflow nodes, even ones that don't have a direct connection.
-- Checkpointing: Persist intermediate results for retries or manual inspection.
-- Shared state: Maintain small JSON documents that multiple jobs can read/update over time.
+- Chuyển giao giữa job: Truyền artifact từ build sang deploy, hoặc output từ chuẩn bị dữ liệu sang phân tích.
+- Workflow: Chia sẻ trạng thái và file giữa các node workflow, ngay cả những node không có kết nối trực tiếp.
+- Checkpointing: Lưu trữ kết quả trung gian để phục vụ retry hoặc kiểm tra thủ công.
+- Trạng thái chia sẻ: Duy trì các document JSON nhỏ mà nhiều job có thể đọc/cập nhật qua thời gian.
 
-## Managing Buckets In The UI
+## Quản Lý Bucket Trên UI
 
-Users with the appropriate privileges can create, edit and delete buckets from the Buckets section of the UI.
+Người dùng có privilege phù hợp có thể tạo, sửa và xoá bucket từ phần Buckets trên UI.
 
-- Create: Provide a title, optional icon/notes; the ID is generated.
-- Edit data: Buckets have a JSON "Data" pane you can edit directly. This is arbitrary user-defined data.
-- Upload files: Drag-and-drop or select multiple files. Existing files with the same normalized name are replaced.
-- Delete files: Remove individual files from the list; deletions are permanent.
-- Download files: Click a file to download via a direct URL. Links use the `files/bucket/...` path.
+- Tạo: Cung cấp tiêu đề, icon/notes tuỳ chọn; ID được tự sinh.
+- Sửa dữ liệu: Bucket có một panel "Data" dạng JSON bạn có thể sửa trực tiếp. Đây là dữ liệu tự do do người dùng định nghĩa.
+- Upload file: Kéo-thả hoặc chọn nhiều file. File đã tồn tại có tên đã chuẩn hoá giống nhau sẽ bị thay thế.
+- Xoá file: Xoá từng file khỏi danh sách; việc xoá là vĩnh viễn.
+- Tải file: Nhấn vào một file để tải xuống qua URL trực tiếp. Link dùng đường dẫn `files/bucket/...`.
 
-Filenames are normalized on upload (lowercased; non-alphanumerics except dashes and periods become underscores). Uploads respect configured limits (max size/count/types) via `client.bucket_upload_settings` and server-side enforcement. See [Configuration](config.md) for details.
+Tên file được chuẩn hoá khi upload (chuyển thành chữ thường; ký tự không phải chữ/số ngoại trừ dấu gạch ngang và chấm sẽ đổi thành dấu gạch dưới). Upload tuân theo các giới hạn đã cấu hình (kích thước/số lượng/loại file tối đa) qua `client.bucket_upload_settings` và được thực thi ở phía server. Xem [Configuration](config.md) để biết chi tiết.
 
-### Required Privileges
+### Privilege Bắt Buộc
 
-- `create_buckets`: Create new buckets.
-- `edit_buckets`: Edit bucket metadata, JSON data, and files.
-- `delete_buckets`: Delete buckets and all contained data/files.
+- `create_buckets`: Tạo bucket mới.
+- `edit_buckets`: Sửa metadata, dữ liệu JSON, và file của bucket.
+- `delete_buckets`: Xoá bucket và toàn bộ dữ liệu/file chứa trong đó.
 
-See [Privileges](privileges.md#buckets) for specifics. Listing and fetching typically requires only a valid session or API Key.
+Xem [Privileges](privileges.md#buckets) để biết chi tiết cụ thể. Việc liệt kê và lấy thông tin thường chỉ cần session hợp lệ hoặc API Key.
 
-## Using Buckets In Jobs
+## Sử Dụng Bucket Trong Job
 
-Buckets integrate with jobs through two action types: [Fetch Bucket](actions.md#fetch-bucket) and [Store Bucket](actions.md#store-bucket). You attach these as job actions with conditions controlling when they run.
+Bucket tích hợp với job qua hai loại action: [Fetch Bucket](actions.md#fetch-bucket) và [Store Bucket](actions.md#store-bucket). Bạn gắn các action này vào job với điều kiện kiểm soát khi nào chúng chạy.
 
-### Fetch At Job Start
+### Fetch Lúc Job Bắt Đầu
 
-Use [Fetch Bucket](actions.md#fetch-bucket) with the `start` condition to pull bucket content into the job's input context before launch:
+Sử dụng [Fetch Bucket](actions.md#fetch-bucket) với điều kiện `start` để lấy nội dung bucket vào context input của job trước khi khởi chạy:
 
-- **Data**: Shallow-merged into the job's `input.data`. Avoid key collisions or namespace your keys deliberately.
-- **Files**: Selected files are added to the job's input file list and staged into the job's temp directory on the remote server before the Plugin starts.
+- **Dữ liệu**: Được shallow-merge vào `input.data` của job. Tránh trùng key hoặc namespace các key của bạn một cách chủ động.
+- **File**: Các file được chọn sẽ được thêm vào danh sách file input của job và được staged vào thư mục temp của job trên server remote trước khi Plugin bắt đầu.
 
-Example (JSON):
+Ví dụ (JSON):
 
 ```json
 {
@@ -65,14 +65,14 @@ Example (JSON):
 }
 ```
 
-### Store On Completion
+### Store Lúc Hoàn Thành
 
-Use [Store Bucket](actions.md#store-bucket) with a completion condition (e.g., `success`, `error`, `complete`) to persist job outputs:
+Sử dụng [Store Bucket](actions.md#store-bucket) với một điều kiện hoàn thành (ví dụ: `success`, `error`, `complete`) để lưu lại output của job:
 
-- **Data**: The job can emit output data which is written into the bucket when `bucket_sync` includes `data`.
-- **Files**: The job's output files can be filtered by `bucket_glob` and stored in the bucket when `bucket_sync` includes `files`.
+- **Dữ liệu**: Job có thể xuất ra output data, được ghi vào bucket khi `bucket_sync` bao gồm `data`.
+- **File**: File output của job có thể được lọc bằng `bucket_glob` và lưu vào bucket khi `bucket_sync` bao gồm `files`.
 
-Example (JSON):
+Ví dụ (JSON):
 
 ```json
 {
@@ -85,45 +85,45 @@ Example (JSON):
 }
 ```
 
-Parameters used by both actions:
+Tham số dùng cho cả hai action:
 
-- `bucket_id`: Target [Bucket.id](data.md#bucket-id).
-- `bucket_sync`: One of `data`, `files`, or `data_and_files` to control what is fetched/stored.
-- `bucket_glob`: Optional glob pattern to filter which files are included (default `*`).
+- `bucket_id`: [Bucket.id](data.md#bucket-id) đích.
+- `bucket_sync`: Một trong `data`, `files`, hoặc `data_and_files` để kiểm soát cái gì được fetch/store.
+- `bucket_glob`: Pattern glob tuỳ chọn để lọc file nào được bao gồm (mặc định `*`).
 
-See [Store Bucket](actions.md#store-bucket) and [Fetch Bucket](actions.md#fetch-bucket) for full action semantics and notes.
+Xem [Store Bucket](actions.md#store-bucket) và [Fetch Bucket](actions.md#fetch-bucket) để biết đầy đủ ngữ nghĩa và ghi chú của action.
 
-**Note:** The job has to explicitly output data and/or files before the Store Bucket action can see them.  See [Output Data](plugins.md#output-data) and [Output Files](plugins.md#output-files) for details.
+**Chú ý:** Job phải chủ động xuất ra dữ liệu và/hoặc file trước khi action Store Bucket có thể nhìn thấy chúng. Xem [Output Data](plugins.md#output-data) và [Output Files](plugins.md#output-files) để biết chi tiết.
 
-## Workflows And Buckets
+## Workflow Và Bucket
 
-Buckets are commonly used in workflows to pass artifacts and state between nodes without a direct connection between them. Attach Fetch/Store actions to the relevant workflow nodes:
+Bucket thường được dùng trong workflow để truyền artifact và trạng thái giữa các node mà không cần kết nối trực tiếp giữa chúng. Gắn action Fetch/Store vào các node workflow liên quan:
 
-- Upstream nodes store outputs to a shared bucket on `success`.
-- Downstream nodes fetch from the same bucket at `start` to receive the data/files as if they were provided by a predecessor.
+- Node phía trên (upstream) lưu output vào một bucket chia sẻ khi `success`.
+- Node phía dưới (downstream) fetch từ cùng bucket đó lúc `start` để nhận dữ liệu/file như thể được cung cấp từ một node trước đó.
 
-This pattern is useful for fan-out/fan-in designs, optional branches, and long-lived shared state between periodic jobs.
+Mẫu này hữu ích cho các thiết kế fan-out/fan-in, các nhánh tuỳ chọn, và trạng thái chia sẻ tồn tại lâu giữa các job định kỳ.
 
-## Downloading Files By URL
+## Tải File Qua URL
 
-Every bucket file includes a `path` (e.g., `files/bucket/<bucket_id>/<hash>/<filename>`). Prepend the app's base URL and a leading slash to download directly from the browser or via HTTP clients. Example:
+Mỗi file trong bucket có một `path` (ví dụ: `files/bucket/<bucket_id>/<hash>/<filename>`). Thêm base URL của app và một dấu `/` ở đầu để tải trực tiếp từ browser hoặc qua HTTP client. Ví dụ:
 
 ```
 GET https://your.xyops.example.com/files/bucket/bme4wi6pg35/bdY8zZ9nKynfFUb4xH6fA/report.csv
 ```
 
-These URLs have built-in authentication and are "stable" (i.e. permalinks) even if the files are replaced in the bucket (however, not if they are deleted and then re-added).
+Các URL này có xác thực tích hợp sẵn và "ổn định" (tức là permalink) ngay cả khi file bị thay thế trong bucket (tuy nhiên, không đúng nếu chúng bị xoá và sau đó được thêm lại).
 
-## Programmatic Access
+## Truy Cập Bằng Chương Trình
 
-Using the [get_bucket](api.md#get_bucket), [write_bucket_data](api.md#write_bucket_data) and [upload_bucket_files](api.md#upload_bucket_files) APIs, you can programmatically read and write bucket data and files at any time, including during a job run.  Here is how to set that up:
+Sử dụng các API [get_bucket](api.md#get_bucket), [write_bucket_data](api.md#write_bucket_data) và [upload_bucket_files](api.md#upload_bucket_files), bạn có thể đọc và ghi dữ liệu/file bucket bằng chương trình tại bất kỳ thời điểm nào, bao gồm cả trong lúc job đang chạy. Cách thiết lập như sau:
 
-- First, create a storage bucket, and save the new [Bucket.id](data.md#bucket-id).
-- Next, create an [API Key](api.md#api-keys), and grant it the [edit_buckets](privileges.md#edit_buckets) privilege.  Save the API key secret when prompted.
-- Then, create a [Secret Vault](secrets.md), and add your API Key and Bucket ID as variables (e.g. `XYOPS_API_KEY` and `XYOPS_BUCKET_ID`).
-- Assign the secret vault to your Event, Category or Plugin (the scope is up to you).
+- Đầu tiên, tạo một storage bucket, và lưu lại [Bucket.id](data.md#bucket-id) mới.
+- Tiếp theo, tạo một [API Key](api.md#api-keys), và cấp cho nó privilege [edit_buckets](privileges.md#edit_buckets). Lưu lại secret của API key khi được nhắc.
+- Sau đó, tạo một [Secret Vault](secrets.md), và thêm API Key cùng Bucket ID của bạn dưới dạng biến (ví dụ `XYOPS_API_KEY` và `XYOPS_BUCKET_ID`).
+- Gán secret vault vào Event, Category hoặc Plugin của bạn (phạm vi tuỳ bạn chọn).
 
-When your job runs, you will now have access to your secret variables, and also a special magic variable called [Job.base_url](data.md#job-base_url) (also available as the `JOB_BASE_URL` environment variable).  Using these variables, you can write bucket data like this:
+Khi job của bạn chạy, bạn sẽ có quyền truy cập vào các biến secret, và cũng có một biến đặc biệt gọi là [Job.base_url](data.md#job-base_url) (còn có sẵn dưới dạng biến môi trường `JOB_BASE_URL`). Sử dụng các biến này, bạn có thể ghi dữ liệu bucket như sau:
 
 ```sh
 #!/bin/sh
@@ -136,7 +136,7 @@ curl -sS "$API_URL" \
   -d "$JSON_PAYLOAD" >/dev/null
 ```
 
-And read it back like this:
+Và đọc lại như sau:
 
 ```sh
 #!/bin/sh
@@ -146,19 +146,19 @@ RESPONSE=$(curl -sS -H "X-API-Key: $XYOPS_API_KEY" "$API_URL")
 echo "Response: $RESPONSE"
 ```
 
-The [write_bucket_data](api.md#write_bucket_data) API is designed to be rugged, and can easily handle getting bombarded with many jobs hitting it at once.  It uses locking to ensure the bucket data doesn't get corrupted.  Also, each request performs a "shallow merge" write into the data, so multiple "clients" (events / workflows) can read/write different properties in the same bucket at the same time.
+API [write_bucket_data](api.md#write_bucket_data) được thiết kế bền vững, và có thể dễ dàng xử lý khi bị nhiều job gọi vào cùng lúc. Nó sử dụng locking để đảm bảo dữ liệu bucket không bị hỏng. Ngoài ra, mỗi request thực hiện một "shallow merge" khi ghi vào dữ liệu, nên nhiều "client" (event/workflow) có thể đọc/ghi các thuộc tính khác nhau trong cùng một bucket vào cùng thời điểm.
 
-Of course, you can get similar functionality using the [Store Bucket](actions.md#store-bucket) and [Fetch Bucket](actions.md#fetch-bucket) actions, but this way you have complete control over when the data is read and written, and you're not limited to the start and completion of the job.
+Tất nhiên, bạn có thể đạt được chức năng tương tự bằng action [Store Bucket](actions.md#store-bucket) và [Fetch Bucket](actions.md#fetch-bucket), nhưng theo cách này bạn có toàn quyền kiểm soát khi nào dữ liệu được đọc và ghi, và bạn không bị giới hạn ở lúc bắt đầu và hoàn thành của job.
 
-## Tips
+## Lưu Ý
 
-- **Namespacing**: Use distinct keys in bucket JSON to avoid shallow-merge collisions with job input.
-- **Size discipline**: Prefer buckets for modest artifacts; large datasets may be better handled via external storage and referenced by URL.
-- **Cleanup**: Consider lifecycle practices (e.g., replace/rotate files) to keep buckets tidy and within limits.
+- **Namespace hoá**: Sử dụng key riêng biệt trong JSON của bucket để tránh trùng lặp shallow-merge với input của job.
+- **Kỷ luật về kích thước**: Ưu tiên dùng bucket cho artifact có kích thước vừa phải; dataset lớn có thể xử lý tốt hơn qua external storage và tham chiếu bằng URL.
+- **Dọn dẹp**: Xem xét các thực hành quản lý vòng đời (ví dụ: thay thế/xoay vòng file) để giữ bucket gọn gàng và trong giới hạn.
 
-## See Also
+## Xem Thêm
 
-- Data structures: [Bucket](data.md#bucket)
-- APIs: [Buckets](api.md#buckets)
-- Actions: [Store Bucket](actions.md#store-bucket), [Fetch Bucket](actions.md#fetch-bucket)
-- Privileges: [Buckets](privileges.md#buckets)
+- Cấu trúc dữ liệu: [Bucket](data.md#bucket)
+- API: [Buckets](api.md#buckets)
+- Action: [Store Bucket](actions.md#store-bucket), [Fetch Bucket](actions.md#fetch-bucket)
+- Privilege: [Buckets](privileges.md#buckets)

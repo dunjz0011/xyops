@@ -21,7 +21,7 @@ var Tools = require('pixl-tools');
 var mkdirp = Tools.mkdirp;
 var glob = Tools.glob;
 
-var request = new Request( "xyOps Build Tool" );
+var request = new Request( "PTOps Build Tool" );
 request.setTimeout( 30 * 1000 );
 request.setFollow( 5 );
 request.setAutoError( true );
@@ -294,7 +294,8 @@ var bundleCompress = exports.bundleCompress = function bundleCompress( args, cal
 		var files = [];
 		
 		files_raw.replace( /\b(src|href)\=[\"\']([^\"\']+)[\"\']/ig, function(m_all, m_g1, m_g2) {
-			files.push( path.join(html_dir, m_g2) );
+			var file_path = m_g2.replace( /[?#].*$/, '' );
+			files.push( path.join(html_dir, file_path) );
 		} );
 		
 		if (files.length) {

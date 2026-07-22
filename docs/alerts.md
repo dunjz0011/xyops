@@ -1,139 +1,139 @@
 # Alerts
 
-## Overview
+## Tổng Quan
 
-Alerts evaluate live server data and trigger actions when conditions are met. In xyOps, an alert is defined once (the "definition") and may fire many times across servers (each firing is an "invocation"). Alerts are evaluated every minute on the conductor using the most recent [ServerMonitorData](data.md#servermonitordata) collected from each server.
+Alert đánh giá dữ liệu server thời gian thực và kích hoạt action khi điều kiện được đáp ứng. Trong PTOps, một alert được định nghĩa một lần (là "definition") và có thể kích hoạt nhiều lần trên các server (mỗi lần kích hoạt là một "invocation"). Alert được đánh giá mỗi phút trên conductor sử dụng [ServerMonitorData](data.md#servermonitordata) gần nhất được thu thập từ mỗi server.
 
-Use alerts to detect system conditions (e.g., high CPU, low memory, disk full, job spikes), notify teams, attach context via snapshots, open tickets, run jobs, and optionally limit or abort jobs on affected servers.
+Dùng alert để phát hiện các điều kiện hệ thống (ví dụ CPU cao, ít bộ nhớ, đầy đĩa, tăng vọt job), thông báo cho team, gắn context qua snapshot, mở ticket, chạy job, và tuỳ chọn giới hạn hoặc hủy job trên các server bị ảnh hưởng.
 
-## Concepts
+## Khái Niệm
 
-- **Definition:** The configuration that specifies the trigger condition and actions.
-- **Invocation:** A single firing instance against a server. Stored in the database and visible in the Alerts view.
-- **Evaluation cadence:** Once per minute per server, alongside monitor sampling.
-- **Scope:** By server group. Leave blank to apply to all groups.
-- **Warm-up / cool-down:** Optionally require N consecutive true evaluations before firing, and N consecutive false evaluations before clearing.
-- **Actions:** Execute on alert fired and/or cleared. Actions can be defined on the alert, augmented by groups, and extended with universal defaults.
-- **Job control:** Optionally prevent new jobs from launching while active, or even abort all running jobs when the alert fires.
+- **Definition:** Cấu hình chỉ định điều kiện kích hoạt và action.
+- **Invocation:** Một lần kích hoạt riêng lẻ đối với một server. Được lưu trong database và hiển thị trong view Alerts.
+- **Nhịp đánh giá:** Mỗi phút một lần cho mỗi server, cùng với việc lấy mẫu monitor.
+- **Phạm vi:** Theo server group. Để trống để áp dụng cho tất cả group.
+- **Warm-up / cool-down:** Tuỳ chọn yêu cầu N lần đánh giá đúng liên tiếp trước khi kích hoạt, và N lần đánh giá sai liên tiếp trước khi xoá.
+- **Actions:** Thực thi khi alert kích hoạt và/hoặc được xoá. Action có thể định nghĩa trên alert, được bổ sung bởi group, và mở rộng với giá trị mặc định toàn hệ thống.
+- **Kiểm soát job:** Tuỳ chọn ngăn job mới khởi chạy khi đang kích hoạt, hoặc thậm chí hủy tất cả job đang chạy khi alert kích hoạt.
 
-## How Alerts Are Evaluated
+## Cách Alert Được Đánh Giá
 
-Per incoming minute of server data:
+Mỗi phút dữ liệu server đến:
 
-1. xyOps evaluates each enabled alert definition whose group scope matches the server.
-2. The alert's expression (JavaScript format) runs against the current [ServerMonitorData](data.md#servermonitordata) snapshot.
-3. If the expression returns true, the alert's internal sample counter increments. If false and previously incremented, the counter decrements toward zero.
-4. When the counter first reaches the max samples, an invocation is created and actions run. When the counter subsequently returns to zero, the invocation is cleared and cleared actions run.
+1. PTOps đánh giá từng alert definition đang bật mà phạm vi group của nó khớp với server.
+2. Expression của alert (định dạng JavaScript) chạy trên ảnh chụp [ServerMonitorData](data.md#servermonitordata) hiện tại.
+3. Nếu expression trả về true, bộ đếm mẫu nội bộ của alert tăng lên. Nếu false và trước đó đã tăng, bộ đếm giảm về không.
+4. Khi bộ đếm đầu tiên đạt số mẫu tối đa, một invocation được tạo và action chạy. Khi bộ đếm sau đó trở về không, invocation được xoá và action xoá chạy.
 
-Notes:
+Lưu ý:
 
-- Expressions compile ahead of time; syntax errors are rejected at create/update time and in the Test dialog/API.
-- The alert message is re-evaluated each minute while active, so macros reflect current server values.
-- Active invocations are kept fresh as data arrives. Stale invocations are automatically expired if no updates are seen (e.g., server goes offline).
+- Expression được biên dịch trước; lỗi cú pháp bị từ chối lúc tạo/cập nhật và trong dialog/API Test.
+- Message của alert được đánh giá lại mỗi phút khi đang kích hoạt, nên macro phản ánh giá trị server hiện tại.
+- Invocation đang kích hoạt được giữ mới khi dữ liệu đến. Invocation cũ tự động hết hạn nếu không thấy cập nhật (ví dụ server offline).
 
-## Alert Expressions
+## Alert Expression
 
-An alert expression is evaluated using the [xyOps Expression Format](xyexp.md), with the current [ServerMonitorData](data.md#servermonitordata) as context. Common entry points include:
+Một alert expression được đánh giá dùng [Định Dạng Expression của PTOps](xyexp.md), với [ServerMonitorData](data.md#servermonitordata) hiện tại làm context. Các điểm truy cập phổ biến bao gồm:
 
-- `cpu`: CPU stats and hardware information.
-- `memory`: Total/available memory, etc.
-- `load`: 1/5/15 minute load averages.
-- `monitors`: Values from configured monitors (absolute values).
-- `deltas`: Computed deltas for counter-style monitors since the last sample (per minute by default).
-- `jobs`: Running job count for the server.
+- `cpu`: Số liệu CPU và thông tin phần cứng.
+- `memory`: Tổng/khả dụng bộ nhớ, v.v.
+- `load`: Load average trung bình 1/5/15 phút.
+- `monitors`: Giá trị từ các monitor đã cấu hình (giá trị tuyệt đối).
+- `deltas`: Delta được tính cho monitor dạng counter kể từ mẫu trước (mỗi phút theo mặc định).
+- `jobs`: Số lượng job đang chạy trên server.
 
-Example:
+Ví dụ:
 
 ```js
 monitors.load_avg >= (cpu.cores + 1)
 ```
 
-This fires if the 1-minute load average is greater than or equal to the number of CPU cores plus one.
+Điều này kích hoạt nếu load average 1 phút lớn hơn hoặc bằng số lõi CPU cộng một.
 
-Delta example (for counter-style monitors):
+Ví dụ delta (cho monitor dạng counter):
 
 ```js
 deltas.os_bytes_out_sec >= 33554432
 ```
 
-Useful helper functions available in expressions and message macros:
+Các hàm hỗ trợ hữu ích có sẵn trong expression và macro message:
 
 - `min(a, b)`, `max(a, b)`
 - `integer(x)`, `float(x)`
-- `bytes(x)` renders human-readable bytes
-- `number(x)` renders localized numbers
-- `pct(x)` renders a percentage
-- `stringify(obj)` JSON stringifies a value
-- `find(array, key, substr)` filters array items where `item[key]` includes `substr`
+- `bytes(x)` hiển thị byte dễ đọc
+- `number(x)` hiển thị số đã địa phương hoá
+- `pct(x)` hiển thị phần trăm
+- `stringify(obj)` chuyển giá trị thành chuỗi JSON
+- `find(array, key, substr)` lọc phần tử mảng mà `item[key]` chứa `substr`
 
-See [xyOps Expression Format](xyexp.md) for more details.
+Xem [Định Dạng Expression của PTOps](xyexp.md) để biết thêm chi tiết.
 
-Tips:
+Mẹo:
 
-- Use `monitors.MONITORID` for absolute values and `deltas.MONITORID` for per-minute rates when the monitor represents a counter.
-- Guard against missing values with sensible defaults, e.g. `integer(monitors.foo || 0) > 10`.
+- Dùng `monitors.MONITORID` cho giá trị tuyệt đối và `deltas.MONITORID` cho tốc độ mỗi phút khi monitor đại diện cho một counter.
+- Đề phòng giá trị thiếu bằng cách dùng giá trị mặc định hợp lý, ví dụ `integer(monitors.foo || 0) > 10`.
 
-## Alert Messages
+## Alert Message
 
-The alert message is a string with `{{ ... }}` macros evaluated against the same [ServerMonitorData](data.md#servermonitordata) context used for expressions. This lets you include formatted, contextual details in notifications, tickets and logs.
+Message của alert là một chuỗi với macro `{{ ... }}` được đánh giá trên cùng context [ServerMonitorData](data.md#servermonitordata) dùng cho expression. Điều này cho phép bạn đưa thông tin chi tiết đã định dạng, theo context vào thông báo, ticket và log.
 
-Example:
+Ví dụ:
 
 ```
 CPU load average is too high: {{float(monitors.load_avg)}} ({{cpu.cores}} CPU cores)
 ```
 
-All helper functions listed under Alert Expressions are also available inside macros. Any object-valued macro is JSON stringified.
+Tất cả hàm hỗ trợ được liệt kê dưới Alert Expression cũng có sẵn trong macro. Bất kỳ macro có giá trị object nào sẽ được chuyển thành chuỗi JSON.
 
-Additional variables are injected when actions run (used mainly in templates):
+Các biến bổ sung được chèn vào khi action chạy (chủ yếu dùng trong template):
 
-- `def`: The alert definition object (`def.title`, `def.notes`, etc.).
-- `alert`: The alert invocation object (`alert.id`, `alert.message`, etc.).
-- `nice_*`: Friendly strings for host, IP, CPU, OS, memory, uptime, groups, notes, etc.
-- `links`: `server_url` and `alert_url` direct links.
+- `def`: Đối tượng alert definition (`def.title`, `def.notes`, v.v.).
+- `alert`: Đối tượng alert invocation (`alert.id`, `alert.message`, v.v.).
+- `nice_*`: Chuỗi thân thiện cho host, IP, CPU, OS, memory, uptime, group, notes, v.v.
+- `links`: Link trực tiếp `server_url` và `alert_url`.
 
-## Creating and Editing Alerts
+## Tạo và Sửa Alert
 
-Click on "Alert Setup" in the sidebar. Creating and editing requires appropriate privileges. The form collects:
+Nhấn vào "Alert Setup" ở sidebar. Việc tạo và sửa yêu cầu privilege phù hợp. Form thu thập:
 
-- **Title**: Display name for the alert.
-- **Status**: Enable/disable notifications and actions.
-- **Icon**: Optional Material Design Icon for the alert.
-- **Server Groups**: One or more groups where the alert applies. Leave blank for all groups.
-- **Expression**: Trigger condition evaluated each minute. Use the Server Data Explorer to discover paths.
-- **Message**: Text with `{{macros}}` for dynamic context. Evaluated on fire and each minute while active.
-- **Samples**: Consecutive minutes that must evaluate true to fire; also used as cool-down to clear.
-- **Overlay**: Optional monitor to overlay alert annotations on charts.
-- **Job Limit**: While active, prevent new jobs from starting on the server.
-- **Job Abort**: When fired, abort all running jobs on the server.
-- **Alert Actions**: Optional actions to run on `alert_new` and/or `alert_cleared`.
-- **Notes**: Optional text included in emails and other notifications.
+- **Title**: Tên hiển thị cho alert.
+- **Status**: Bật/tắt thông báo và action.
+- **Icon**: Material Design Icon tuỳ chọn cho alert.
+- **Server Groups**: Một hoặc nhiều group nơi alert áp dụng. Để trống cho tất cả group.
+- **Expression**: Điều kiện kích hoạt được đánh giá mỗi phút. Dùng Server Data Explorer để khám phá các đường dẫn.
+- **Message**: Văn bản với macro `{{macro}}` cho context động. Được đánh giá khi kích hoạt và mỗi phút khi đang kích hoạt.
+- **Samples**: Số phút liên tiếp phải đánh giá đúng để kích hoạt; cũng dùng làm cool-down để xoá.
+- **Overlay**: Monitor tuỳ chọn để phủ chú thích alert lên biểu đồ.
+- **Job Limit**: Khi đang kích hoạt, ngăn job mới khởi chạy trên server.
+- **Job Abort**: Khi kích hoạt, hủy tất cả job đang chạy trên server.
+- **Alert Actions**: Action tuỳ chọn để chạy khi `alert_new` và/hoặc `alert_cleared`.
+- **Notes**: Văn bản tuỳ chọn được đưa vào email và các thông báo khác.
 
-Testing: Use the "Test..." button to evaluate the current Expression and Message against a selected live server. The dialog shows whether it would trigger right now and previews the computed message.
+Kiểm tra: Dùng nút "Test..." để đánh giá Expression và Message hiện tại trên một server thực đã chọn. Dialog hiển thị liệu nó có kích hoạt ngay bây giờ không và xem trước message đã tính toán.
 
-## Actions on Fire and Clear
+## Action Khi Kích Hoạt và Xoá
 
-When an alert fires (`alert_new`) and when it clears (`alert_cleared`), xyOps executes actions in parallel from three sources, deduplicated by type/target:
+Khi một alert kích hoạt (`alert_new`) và khi nó được xoá (`alert_cleared`), PTOps thực thi action song song từ ba nguồn, loại bỏ trùng lặp theo loại/target:
 
-- **Alert actions**: Configured on the alert definition itself.
-- **Group actions**: Each matching server group can contribute actions.
-- **Universal actions**: From `config.json` → `alert_universal_actions` (defaults to a `snapshot` on `alert_new`).
+- **Action của alert**: Cấu hình trên chính alert definition.
+- **Action của group**: Mỗi server group khớp có thể góp thêm action.
+- **Action toàn hệ thống**: Từ `config.json` → `alert_universal_actions` (mặc định là một `snapshot` khi `alert_new`).
 
-Supported action types in alerts:
+Các loại action được hỗ trợ trong alert:
 
-- **Email**: To specified users and/or custom addresses.
-- **Channel**: Fire a notification channel (a preset bundle like users, web hooks, etc.).
-- **Run Job**: Start a job by event with optional parameters.
-- **Create Ticket**: Open or update a ticket tied to the alert.
-- **Web Hook**: Fire a preconfigured outbound web hook with templated payload.
-- **Plugin**: Run a custom plugin with arguments.
-- **Snapshot**: Capture a point-in-time server snapshot. Note: a snapshot is included by default via universal actions.
+- **Email**: Đến các user chỉ định và/hoặc địa chỉ tuỳ chỉnh.
+- **Channel**: Kích hoạt một notification channel (một bó có sẵn như user, web hook, v.v.).
+- **Run Job**: Khởi chạy một job theo event với tham số tuỳ chọn.
+- **Create Ticket**: Mở hoặc cập nhật một ticket gắn với alert.
+- **Web Hook**: Kích hoạt một web hook gửi ra đã cấu hình sẵn với payload dạng template.
+- **Plugin**: Chạy một plugin tuỳ chỉnh với tham số.
+- **Snapshot**: Chụp ảnh trạng thái server tại một thời điểm. Lưu ý: một snapshot được bao gồm theo mặc định qua action toàn hệ thống.
 
-Action conditions are either `alert_new` or `alert_cleared`. You can attach multiple actions for either condition.
+Điều kiện action là `alert_new` hoặc `alert_cleared`. Bạn có thể gắn nhiều action cho mỗi điều kiện.
 
-### Universal Alert Actions
+### Action Toàn Hệ Thống Cho Alert
 
-Using the [alert_universal_actions](config.md#alert_universal_actions) configuration object, you can add custom actions that should always run for all alerts (when the alert fires and/or when it clears).  By default, xyOps ships with the [Snapshot](actions.md#snapshot) action on all `alert_new` conditions:
+Dùng đối tượng cấu hình [alert_universal_actions](config.md#alert_universal_actions), bạn có thể thêm action tuỳ chỉnh nên luôn chạy cho tất cả alert (khi alert kích hoạt và/hoặc khi nó xoá). Theo mặc định, PTOps đi kèm action [Snapshot](actions.md#snapshot) trên tất cả điều kiện `alert_new`:
 
 ```json
 "alert_universal_actions": [
@@ -146,20 +146,20 @@ Using the [alert_universal_actions](config.md#alert_universal_actions) configura
 ]
 ```
 
-Add as many universal actions as you like to this array.  Just remember that the `condition` property needs to be either `alert_new` or `alert_cleared` for alerts.
+Thêm bao nhiêu action toàn hệ thống bạn muốn vào mảng này. Chỉ cần nhớ rằng thuộc tính `condition` cần là `alert_new` hoặc `alert_cleared` cho alert.
 
-## Job Control During Alerts
+## Kiểm Soát Job Trong Khi Alert Kích Hoạt
 
-- **Limit Jobs**: While the alert is active on a server, that server is excluded from job scheduling (prevents new jobs from launching there). Workflow parent jobs are exempt from this restriction.
-- **Abort Jobs**: When the alert fires, all running jobs on the affected server are aborted immediately.
+- **Limit Jobs**: Khi alert đang kích hoạt trên một server, server đó bị loại khỏi việc lập lịch job (ngăn job mới khởi chạy ở đó). Job cha của workflow được miễn trừ khỏi giới hạn này.
+- **Abort Jobs**: Khi alert kích hoạt, tất cả job đang chạy trên server bị ảnh hưởng sẽ bị hủy ngay lập tức.
 
-Both are optional, independent toggles on the alert definition.
+Cả hai đều là tuỳ chọn độc lập trên alert definition.
 
-## Examples
+## Ví Dụ
 
-The default setup includes several alert examples:
+Cài đặt mặc định bao gồm một số ví dụ alert:
 
-| Alert Title      | Expression                                 | Message |
+| Tiêu Đề Alert     | Expression                                 | Message |
 |------------------|--------------------------------------------|---------|
 | High CPU Load    | `monitors.load_avg >= (cpu.cores + 1)`     | CPU load average is too high: `{{float(monitors.load_avg)}}` (`{{cpu.cores}}` CPU cores) |
 | Low Memory       | `memory.available < (memory.total * 0.05)` | Less than 5% of total memory is available (`{{bytes(memory.available)}}` of `{{bytes(memory.total)}}`) |
@@ -167,41 +167,41 @@ The default setup includes several alert examples:
 | Disk Full        | `monitors.disk_usage_root >= 90`           | Root filesystem is `{{pct(monitors.disk_usage_root)}}` full. |
 | High Active Jobs | `monitors.active_jobs >= 50`               | Active job count is too high: `{{number(monitors.active_jobs)}}` |
 
-## Viewing and Searching Alerts
+## Xem và Tìm Kiếm Alert
 
-- **Active alerts**: Shown in the header counter and the Alerts tab. Each includes the evaluated message, server context, snapshot link and related jobs/tickets.
-- **Timelines**: If `monitor_id` is set, alert annotations appear on the corresponding monitor chart.
-- **History search**: Search for historical alerts on the "Alerts" page.
+- **Alert đang kích hoạt**: Hiển thị ở bộ đếm header và tab Alerts. Mỗi cái bao gồm message đã đánh giá, context server, link snapshot và job/ticket liên quan.
+- **Timeline**: Nếu `monitor_id` được đặt, chú thích alert hiển thị trên biểu đồ monitor tương ứng.
+- **Tìm kiếm lịch sử**: Tìm alert lịch sử trên trang "Alerts".
 
-## API Summary
+## Tóm Tắt API
 
-See [Alerts](api.md#alerts) for full details. Highlights:
+Xem [Alerts](api.md#alerts) để biết chi tiết đầy đủ. Điểm chính:
 
-- `get_alerts`: List all alert definitions.
-- `get_alert`: Fetch a single definition by ID.
-- `create_alert` / `update_alert` / `delete_alert`: Manage definitions.
-- `test_alert`: Compile and evaluate an expression/message against a server.
-- `search_alerts`: Query historical and active alert invocations.
+- `get_alerts`: Liệt kê tất cả alert definition.
+- `get_alert`: Lấy một definition duy nhất theo ID.
+- `create_alert` / `update_alert` / `delete_alert`: Quản lý definition.
+- `test_alert`: Biên dịch và đánh giá một expression/message trên một server.
+- `search_alerts`: Truy vấn invocation alert lịch sử và đang kích hoạt.
 
-## Best Practices
+## Thực Hành Tốt Nhất
 
-- Tune `samples` to balance noise and responsiveness. For spiky metrics, require multiple samples.
-- Prefer relative thresholds when available (e.g., compare load to `cpu.cores`).
-- Use `bytes()`/`pct()`/`number()` to produce readable messages in notifications.
-- Overlay alerts on monitors users already watch to provide context.
-- Use group-level alert actions for standard responses (e.g., page an on-call channel) and keep per-alert actions focused on specifics.
-- Consider limiting jobs for conditions that would degrade runtime reliability (e.g., disk full, high I/O wait).
+- Điều chỉnh `samples` để cân bằng giữa nhiễu và độ nhạy phản hồi. Đối với số liệu dao động mạnh, yêu cầu nhiều mẫu hơn.
+- Ưu tiên ngưỡng tương đối khi có thể (ví dụ so sánh load với `cpu.cores`).
+- Dùng `bytes()`/`pct()`/`number()` để tạo message dễ đọc trong thông báo.
+- Phủ alert lên các monitor mà user đã theo dõi để cung cấp context.
+- Dùng action alert cấp group cho phản hồi chuẩn (ví dụ page cho on-call channel) và giữ action riêng cho từng alert tập trung vào chi tiết cụ thể.
+- Xem xét giới hạn job cho các điều kiện có thể làm giảm độ tin cậy runtime (ví dụ đầy đĩa, I/O wait cao).
 
 ## Privileges
 
-- Create: [create_alerts](privileges.md#create_alerts)
-- Edit/Test: [edit_alerts](privileges.md#edit_alerts)
-- Delete: [delete_alerts](privileges.md#delete_alerts)
+- Tạo: [create_alerts](privileges.md#create_alerts)
+- Sửa/Test: [edit_alerts](privileges.md#edit_alerts)
+- Xóa: [delete_alerts](privileges.md#delete_alerts)
 
-Users without these privileges can still read definitions and view active alerts with a valid session or API Key.
+Người dùng không có các privilege này vẫn có thể đọc definition và xem alert đang kích hoạt với session hoặc API Key hợp lệ.
 
-## See Also
+## Xem Thêm
 
-- Data structures: [Alert](data.md#alert) and [AlertInvocation](data.md#alertinvocation)
+- Cấu trúc dữ liệu: [Alert](data.md#alert) và [AlertInvocation](data.md#alertinvocation)
 - API: [Alerts](api.md#alerts)
-- Monitoring data context: [ServerMonitorData](data.md#servermonitordata)
+- Context dữ liệu giám sát: [ServerMonitorData](data.md#servermonitordata)

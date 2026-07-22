@@ -3322,7 +3322,7 @@ Page.Job = class Job extends Page.PageUtils {
 		
 		var link = document.createElement("a");
 		link.href = URL.createObjectURL(blob);
-		link.download = "xyops-job-meta-log-" + this.job.id + '.csv';
+		link.download = "ptops-job-meta-log-" + this.job.id + '.csv';
 		
 		document.body.appendChild(link);
 		link.click();
@@ -3350,7 +3350,7 @@ Page.Job = class Job extends Page.PageUtils {
 		
 		var link = document.createElement("a");
 		link.href = URL.createObjectURL(blob);
-		link.download = "xyops-job-" + this.job.id + '.json';
+		link.download = "ptops-job-" + this.job.id + '.json';
 		
 		document.body.appendChild(link);
 		link.click();

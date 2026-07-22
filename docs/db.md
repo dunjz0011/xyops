@@ -1,151 +1,151 @@
 # Database
 
-This document describes the xyOps database schema. It lists every index (table), all indexed columns, and the dedicated sorters used for ordering results.
+Tài liệu này mô tả schema database của PTOps. Nó liệt kê mọi index (bảng), toàn bộ các cột được đánh index, và các sorter chuyên dụng dùng để sắp xếp kết quả.
 
-## Overview
+## Tổng Quan
 
-xyOps uses [Unbase](https://github.com/jhuckaby/pixl-server-unbase) which sits on top of [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage) and its [Indexer](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md) subsystem. Records are stored as JSON in a key/value backend (SQLite by default), and Unbase builds searchable indexes and sorters from configured field definitions. Queries support both simple "field:words" and a structured [PxQL](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#pxql-queries) syntax.
+PTOps sử dụng [Unbase](https://github.com/jhuckaby/pixl-server-unbase), nằm trên [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage) và hệ thống con [Indexer](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md) của nó. Bản ghi được lưu dưới dạng JSON trong một backend key/value (mặc định là SQLite), và Unbase xây dựng các index và sorter có thể tìm kiếm được từ các định nghĩa field đã cấu hình. Truy vấn hỗ trợ cả cú pháp đơn giản "field:words" và cú pháp cấu trúc [PxQL](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#pxql-queries).
 
-Notes:
+Ghi chú:
 
-- Type refers to the indexer type: word (default full-text/word), number, or date. Unless specified, a field is a word index.
-- Date/number fields may be stored with reduced precision for performance (e.g., divided by 3600 to index hour-level time buckets).
+- Type đề cập đến kiểu indexer: word (mặc định, full-text/theo từ), number, hoặc date. Trừ khi được chỉ định khác, một field sẽ là word index.
+- Các field date/number có thể được lưu với độ chính xác giảm để tăng hiệu năng (ví dụ chia cho 3600 để index theo cụm giờ).
 
 ## Jobs
 
-Completed job records (see [Job](data.md#job)).
+Bản ghi job đã hoàn thành (xem [Job](data.md#job)).
 
-Indexed Columns:
+Các Cột Được Index:
 
 | Column ID | Source | Type | Description |
 |-----------|--------|------|-------------|
-| `code` | [Job.code](data.md#job-code) | Word | Result code for the job (0 success, non-zero failure; special values like `warning`, `critical`, `abort`). |
-| `date` | [Job.completed](data.md#job-completed) | Number | Completion timestamp indexed at hour precision. |
-| `source` | [Job.source](data.md#job-source) | Word | Launch source (scheduler, plugin, key, user, action, alert, workflow). |
-| `tags` | [Job.tags](data.md#event-tags) | Word | Tags assigned to the job. |
-| `event` | [Job.event](data.md#job-event) | Word | Event ID that spawned the job. |
-| `category` | [Job.category](data.md#event-category) | Word | Event category ID copied into the job. |
-| `plugin` | [Event.plugin](data.md#event-plugin) | Word | Plugin ID that executed the job. |
-| `server` | [Job.server](data.md#job-server) | Word | Server ID selected to run the job. |
-| `groups` | [Job.groups](data.md#job-groups) | Word | Server group IDs copied into the job. |
-| `workflow` | [Job.workflow](data.md#job-workflow) | Word | When part of a workflow, the workflow event ID. |
-| `tickets` | [Job](data.md#job-tickets) | Word | Linked ticket IDs associated with the job. |
+| `code` | [Job.code](data.md#job-code) | Word | Mã kết quả của job (0 là thành công, khác 0 là thất bại; các giá trị đặc biệt như `warning`, `critical`, `abort`). |
+| `date` | [Job.completed](data.md#job-completed) | Number | Timestamp hoàn thành, được index ở độ chính xác giờ. |
+| `source` | [Job.source](data.md#job-source) | Word | Nguồn khởi chạy (scheduler, plugin, key, user, action, alert, workflow). |
+| `tags` | [Job.tags](data.md#event-tags) | Word | Các tag được gán cho job. |
+| `event` | [Job.event](data.md#job-event) | Word | ID event đã tạo ra job. |
+| `category` | [Job.category](data.md#event-category) | Word | ID category của event, được sao chép vào job. |
+| `plugin` | [Event.plugin](data.md#event-plugin) | Word | ID plugin đã thực thi job. |
+| `server` | [Job.server](data.md#job-server) | Word | ID server được chọn để chạy job. |
+| `groups` | [Job.groups](data.md#job-groups) | Word | Các ID group server, được sao chép vào job. |
+| `workflow` | [Job.workflow](data.md#job-workflow) | Word | Khi là một phần của workflow, ID event của workflow. |
+| `tickets` | [Job](data.md#job-tickets) | Word | Các ID ticket liên kết với job. |
 
 Sorters:
 
 | Sorter ID | Source | Type | Description |
 |-----------|--------|------|-------------|
-| `completed` | [Job.completed](data.md#job-completed) | Number | Sort by job completion timestamp. |
-| `elapsed` | [Job.elapsed](data.md#job-elapsed) | Number | Sort by job elapsed duration (seconds). |
+| `completed` | [Job.completed](data.md#job-completed) | Number | Sắp xếp theo timestamp hoàn thành của job. |
+| `elapsed` | [Job.elapsed](data.md#job-elapsed) | Number | Sắp xếp theo thời lượng chạy job (giây). |
 
 ## Alerts
 
-Alert invocation records (see [AlertInvocation](data.md#alertinvocation)).
+Bản ghi lần kích hoạt alert (xem [AlertInvocation](data.md#alertinvocation)).
 
-Indexed Columns:
+Các Cột Được Index:
 
 | Column ID | Source | Type | Description |
 |-----------|--------|------|-------------|
-| `active` | [AlertInvocation.active](data.md#alertinvocation-active) | Word | Whether the alert is currently active (`true` or `false`). |
-| `alert` | [AlertInvocation.alert](data.md#alertinvocation-alert) | Word | Alert definition ID. |
-| `groups` | [AlertInvocation.groups](data.md#alertinvocation-groups) | Word | Groups the server belongs to. |
-| `server` | [AlertInvocation.server](data.md#alertinvocation-server) | Word | Server ID associated with the invocation. |
-| `start` | [AlertInvocation.date](data.md#alertinvocation-date) | Number | Start timestamp indexed at hour precision. |
-| `end` | [AlertInvocation.modified](data.md#alertinvocation-modified) | Number | Last modified time indexed at hour precision. |
-| `jobs` | [AlertInvocation.jobs](data.md#alertinvocation-jobs) | Word | Related job IDs. |
-| `tickets` | [AlertInvocation.tickets](data.md#alertinvocation-tickets) | Word | Related ticket IDs. |
+| `active` | [AlertInvocation.active](data.md#alertinvocation-active) | Word | Alert có đang hoạt động hay không (`true` hoặc `false`). |
+| `alert` | [AlertInvocation.alert](data.md#alertinvocation-alert) | Word | ID định nghĩa alert. |
+| `groups` | [AlertInvocation.groups](data.md#alertinvocation-groups) | Word | Các group mà server thuộc về. |
+| `server` | [AlertInvocation.server](data.md#alertinvocation-server) | Word | ID server liên kết với lần kích hoạt. |
+| `start` | [AlertInvocation.date](data.md#alertinvocation-date) | Number | Timestamp bắt đầu, được index ở độ chính xác giờ. |
+| `end` | [AlertInvocation.modified](data.md#alertinvocation-modified) | Number | Thời gian sửa đổi cuối, được index ở độ chính xác giờ. |
+| `jobs` | [AlertInvocation.jobs](data.md#alertinvocation-jobs) | Word | Các ID job liên quan. |
+| `tickets` | [AlertInvocation.tickets](data.md#alertinvocation-tickets) | Word | Các ID ticket liên quan. |
 
 ## Snapshots
 
-Server and group snapshot records (see [Snapshot](data.md#snapshot)).
+Bản ghi snapshot của server và group (xem [Snapshot](data.md#snapshot)).
 
-Indexed Columns:
+Các Cột Được Index:
 
 | Column ID | Source | Type | Description |
 |-----------|--------|------|-------------|
-| `type` | [Snapshot.type](data.md#snapshot-type) | Word | Snapshot type: `server` or `group`. |
-| `source` | [Snapshot.source](data.md#snapshot-source) | Word | Snapshot origin: `alert`, `watch`, `user`, or `job`. |
-| `server` | [Snapshot.server](data.md#snapshot-server) | Word | Server ID for server snapshots. |
-| `groups` | [Snapshot.groups](data.md#snapshot-groups) | Word | Groups associated at the time of the snapshot. |
-| `date` | [Snapshot.date](data.md#snapshot-date) | Number | Snapshot timestamp indexed at hour precision. |
-| `alerts` | [Snapshot.alerts](data.md#snapshot-alerts) | Word | Active alert invocation IDs at snapshot time. |
-| `jobs` | [Snapshot.jobs](data.md#snapshot-jobs) | Word | Active job IDs at snapshot time. |
+| `type` | [Snapshot.type](data.md#snapshot-type) | Word | Loại snapshot: `server` hoặc `group`. |
+| `source` | [Snapshot.source](data.md#snapshot-source) | Word | Nguồn gốc snapshot: `alert`, `watch`, `user`, hoặc `job`. |
+| `server` | [Snapshot.server](data.md#snapshot-server) | Word | ID server cho snapshot cấp độ server. |
+| `groups` | [Snapshot.groups](data.md#snapshot-groups) | Word | Các group liên kết vào thời điểm chụp snapshot. |
+| `date` | [Snapshot.date](data.md#snapshot-date) | Number | Timestamp snapshot, được index ở độ chính xác giờ. |
+| `alerts` | [Snapshot.alerts](data.md#snapshot-alerts) | Word | Các ID lần kích hoạt alert đang hoạt động vào thời điểm chụp snapshot. |
+| `jobs` | [Snapshot.jobs](data.md#snapshot-jobs) | Word | Các ID job đang hoạt động vào thời điểm chụp snapshot. |
 
 ## Servers
 
-Server records (see [Server](data.md#server)).
+Bản ghi server (xem [Server](data.md#server)).
 
-Indexed Columns:
+Các Cột Được Index:
 
 | Column ID | Source | Type | Description |
 |-----------|--------|------|-------------|
-| `groups` | [Server.groups](data.md#server-groups) | Word | Group IDs (master list enabled). |
-| `created` | [Server.created](data.md#server-created) | Number | Created timestamp indexed at hour precision. |
-| `modified` | [Server.modified](data.md#server-modified) | Number | Last modified timestamp indexed at hour precision. |
-| `keywords` | [Server.keywords](data.md#server-keywords) | Word | Search keywords (min 1, max 64 chars per word). |
-| `os_platform` | [Server.info.os.platform](data.md#server-info) | Word | OS platform (filtered alphanumeric; master list/labels). |
-| `os_distro` | [Server.info.os.distro](data.md#server-info) | Word | OS distribution (filtered alphanumeric; master list/labels). |
-| `os_release` | [Server.info.os.release](data.md#server-info) | Word | OS release/version (filtered alphanumeric; master list/labels). |
-| `os_arch` | [Server.info.os.arch](data.md#server-info) | Word | CPU architecture (filtered alphanumeric; master list/labels). |
-| `cpu_virt` | [Server.info.virt.vendor](data.md#server-info) | Word | Virtualization vendor (filtered alphanumeric; master list/labels). |
-| `cpu_brand` | [Server.info.cpu.combo](data.md#server-info) | Word | CPU vendor/brand (filtered alphanumeric; master list/labels). |
-| `cpu_cores` | [Server.info.cpu.cores](data.md#server-info) | Word | CPU core count (filtered alphanumeric; master list/labels). |
+| `groups` | [Server.groups](data.md#server-groups) | Word | Các ID group (bật master list). |
+| `created` | [Server.created](data.md#server-created) | Number | Timestamp tạo, được index ở độ chính xác giờ. |
+| `modified` | [Server.modified](data.md#server-modified) | Number | Timestamp sửa đổi cuối, được index ở độ chính xác giờ. |
+| `keywords` | [Server.keywords](data.md#server-keywords) | Word | Từ khoá tìm kiếm (tối thiểu 1, tối đa 64 ký tự mỗi từ). |
+| `os_platform` | [Server.info.os.platform](data.md#server-info) | Word | Nền tảng OS (đã lọc alphanumeric; master list/labels). |
+| `os_distro` | [Server.info.os.distro](data.md#server-info) | Word | Bản phân phối OS (đã lọc alphanumeric; master list/labels). |
+| `os_release` | [Server.info.os.release](data.md#server-info) | Word | Phiên bản/release OS (đã lọc alphanumeric; master list/labels). |
+| `os_arch` | [Server.info.os.arch](data.md#server-info) | Word | Kiến trúc CPU (đã lọc alphanumeric; master list/labels). |
+| `cpu_virt` | [Server.info.virt.vendor](data.md#server-info) | Word | Nhà cung cấp virtualization (đã lọc alphanumeric; master list/labels). |
+| `cpu_brand` | [Server.info.cpu.combo](data.md#server-info) | Word | Nhà cung cấp/thương hiệu CPU (đã lọc alphanumeric; master list/labels). |
+| `cpu_cores` | [Server.info.cpu.cores](data.md#server-info) | Word | Số core CPU (đã lọc alphanumeric; master list/labels). |
 
 ## Activity
 
-User/system activity log (see [Activity](data.md#activity)).
+Log hoạt động của user/hệ thống (xem [Activity](data.md#activity)).
 
-Indexed Columns:
+Các Cột Được Index:
 
 | Column ID | Source | Type | Description |
 |-----------|--------|------|-------------|
-| `action` | [Activity.action](data.md#activity-action) | Word | Activity action identifier. |
-| `keywords` | [Activity.keywords](data.md#activity-keywords) | Word | Keywords for search (IDs, usernames, IPs). |
-| `date` | [Activity.epoch](data.md#activity-epoch) | Number | Activity timestamp indexed at hour precision. |
+| `action` | [Activity.action](data.md#activity-action) | Word | Định danh hành động của hoạt động. |
+| `keywords` | [Activity.keywords](data.md#activity-keywords) | Word | Từ khoá tìm kiếm (ID, username, IP). |
+| `date` | [Activity.epoch](data.md#activity-epoch) | Number | Timestamp hoạt động, được index ở độ chính xác giờ. |
 
 ## Tickets
 
-Ticket records (see [Ticket](data.md#ticket)).
+Bản ghi ticket (xem [Ticket](data.md#ticket)).
 
-Indexed Columns:
+Các Cột Được Index:
 
 | Column ID | Source | Type | Description |
 |-----------|--------|------|-------------|
-| `type` | [Ticket.type](data.md#ticket-type) | Word | Ticket type (`issue`, `feature`, `change`, `maintenance`, `question`, `other`). |
-| `num` | [Ticket.num](data.md#ticket-num) | Number | Auto-assigned ticket number. |
-| `status` | [Ticket.status](data.md#ticket-status) | Word | Ticket status (`open`, `closed`, `draft`). |
-| `category` | [Ticket.category](data.md#ticket-category) | Word | Category ID. |
-| `username` | [Ticket.username](data.md#ticket-username) | Word | Creator username (filtered alphanumeric). |
-| `assignees` | [Ticket.assignees](data.md#ticket-assignees) | Word | Assigned users (filtered alphanumeric array). |
-| `cc` | [Ticket.cc](data.md#ticket-cc) | Word | Users CC’d (filtered alphanumeric array). |
-| `jobs` | [Ticket](data.md#ticket) | Word | Related job IDs. |
-| `tags` | [Ticket.tags](data.md#ticket-tags) | Word | Tag IDs (master list enabled). |
-| `created` | [Ticket.created](data.md#ticket-created) | Number | Created timestamp indexed at hour precision. |
-| `modified` | [Ticket.modified](data.md#ticket-modified) | Number | Last modified timestamp indexed at hour precision. |
-| `due` | [Ticket.due](data.md#ticket-due) | Date | Due date. |
-| `server` | [Ticket.server](data.md#ticket-server) | Word | Associated server ID. |
-| `subject` | [Ticket.subject](data.md#ticket-subject) | Word | Short summary (FTS; stemming enabled). |
-| `body` | [Ticket.body](data.md#ticket-body) | Word | Full-text search across username, subject and body (markdown filtered; stemming enabled). |
-| `changes` | [Ticket.changes](data.md#ticket-changes) | Word | Full-text search across change log content (markdown filtered; stemming enabled). |
+| `type` | [Ticket.type](data.md#ticket-type) | Word | Loại ticket (`issue`, `feature`, `change`, `maintenance`, `question`, `other`). |
+| `num` | [Ticket.num](data.md#ticket-num) | Number | Số ticket được gán tự động. |
+| `status` | [Ticket.status](data.md#ticket-status) | Word | Trạng thái ticket (`open`, `closed`, `draft`). |
+| `category` | [Ticket.category](data.md#ticket-category) | Word | ID category. |
+| `username` | [Ticket.username](data.md#ticket-username) | Word | Username người tạo (đã lọc alphanumeric). |
+| `assignees` | [Ticket.assignees](data.md#ticket-assignees) | Word | Người được giao (mảng đã lọc alphanumeric). |
+| `cc` | [Ticket.cc](data.md#ticket-cc) | Word | Người dùng được CC (mảng đã lọc alphanumeric). |
+| `jobs` | [Ticket](data.md#ticket) | Word | Các ID job liên quan. |
+| `tags` | [Ticket.tags](data.md#ticket-tags) | Word | Các ID tag (bật master list). |
+| `created` | [Ticket.created](data.md#ticket-created) | Number | Timestamp tạo, được index ở độ chính xác giờ. |
+| `modified` | [Ticket.modified](data.md#ticket-modified) | Number | Timestamp sửa đổi cuối, được index ở độ chính xác giờ. |
+| `due` | [Ticket.due](data.md#ticket-due) | Date | Ngày hết hạn. |
+| `server` | [Ticket.server](data.md#ticket-server) | Word | ID server liên kết. |
+| `subject` | [Ticket.subject](data.md#ticket-subject) | Word | Tóm tắt ngắn (FTS; bật stemming). |
+| `body` | [Ticket.body](data.md#ticket-body) | Word | Tìm kiếm full-text trên username, subject và body (đã lọc markdown; bật stemming). |
+| `changes` | [Ticket.changes](data.md#ticket-changes) | Word | Tìm kiếm full-text trên nội dung change log (đã lọc markdown; bật stemming). |
 
 Sorters:
 
 | Sorter ID | Source | Type | Description |
 |-----------|--------|------|-------------|
-| `num` | [Ticket.num](data.md#ticket-num) | Number | Sort by ticket number. |
-| `modified` | [Ticket.modified](data.md#ticket-modified) | Number | Sort by last modified timestamp. |
+| `num` | [Ticket.num](data.md#ticket-num) | Number | Sắp xếp theo số ticket. |
+| `modified` | [Ticket.modified](data.md#ticket-modified) | Number | Sắp xếp theo timestamp sửa đổi cuối. |
 
-## Column Properties
+## Thuộc Tính Cột
 
-These are the common field properties supported by the indexer (see Indexer docs for full details):
+Đây là các thuộc tính field chung được indexer hỗ trợ (xem tài liệu Indexer để biết chi tiết đầy đủ):
 
-- `id`: The column ID used in searches (e.g., `status:open`).
-- `source`: Slash-delimited path to the source data field (can reference nested properties or multiple sources for FTS).
-- `type`: Index type for the field or sorter. Omit for word indexes; may be `number` or `date` for fields, and `number` or `string` for sorters.
-- `divide`: For numbers, divides the value before indexing. For dates, common value `3600` indexes at hour precision to improve performance.
-- `min_word_length` / `max_word_length`: Bounds for token length in word indexes.
-- `use_remove_words`: Toggle custom remove-word list.
-- `use_stemmer`: Enable Porter stemming for word indexes.
-- `filter`: Apply a filter prior to indexing (e.g., `alphanum`, `alphanum_array`, `markdown`).
-- `master_list`: Maintain a master list of unique indexed values for quick summaries.
-- `master_labels`: Maintain a master list of unique raw values (before filtering).
+- `id`: ID cột dùng trong tìm kiếm (ví dụ `status:open`).
+- `source`: Đường dẫn phân tách bằng slash đến field dữ liệu nguồn (có thể tham chiếu các thuộc tính lồng nhau hoặc nhiều nguồn cho FTS).
+- `type`: Kiểu index cho field hoặc sorter. Bỏ qua nếu là word index; có thể là `number` hoặc `date` cho field, và `number` hoặc `string` cho sorter.
+- `divide`: Với number, chia giá trị trước khi index. Với date, giá trị phổ biến `3600` để index ở độ chính xác giờ nhằm cải thiện hiệu năng.
+- `min_word_length` / `max_word_length`: Giới hạn độ dài token trong word index.
+- `use_remove_words`: Bật/tắt danh sách từ loại bỏ tuỳ chỉnh.
+- `use_stemmer`: Bật Porter stemming cho word index.
+- `filter`: Áp dụng một filter trước khi index (ví dụ `alphanum`, `alphanum_array`, `markdown`).
+- `master_list`: Duy trì một danh sách chủ (master list) các giá trị được index duy nhất để tổng hợp nhanh.
+- `master_labels`: Duy trì một danh sách chủ các giá trị thô duy nhất (trước khi lọc).

@@ -1,64 +1,64 @@
-# Development
+# Phát Triển
 
-## Overview
+## Tổng Quan
 
-xyOps runs as a component in the [pixl-server](https://github.com/jhuckaby/pixl-server) framework.  It is highly recommended to read and understand that module and its component system before attempting to work on xyOps.  The following server components are also used:
+PTOps chạy như một thành phần trong framework [pixl-server](https://github.com/jhuckaby/pixl-server). Rất nên đọc và hiểu module này cùng hệ thống component của nó trước khi bắt tay vào phát triển PTOps. Các component server sau đây cũng được sử dụng:
 
-| Module Name | Description | License |
+| Tên Module | Mô Tả | License |
 |-------------|-------------|---------|
-| [pixl-server-api](https://github.com/jhuckaby/pixl-server-api) | A REST API component for the pixl-server framework. | MIT |
-| [pixl-server-debug](https://github.com/jhuckaby/pixl-server-debug) | An easy way to debug your pixl-server app using Chrome Dev Tools. | MIT |
-| [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage) | A key/value/list storage component for the pixl-server framework. | MIT |
-| [pixl-server-user](https://github.com/jhuckaby/pixl-server-user) | A basic user login system for the pixl-server framework. | MIT |
-| [pixl-server-web](https://github.com/jhuckaby/pixl-server-web) | A web server component for the pixl-server framework. | MIT |
-| [pixl-server-unbase](https://github.com/jhuckaby/pixl-server-unbase) | A database component for the pixl-server framework. | MIT |
+| [pixl-server-api](https://github.com/jhuckaby/pixl-server-api) | Component REST API cho framework pixl-server. | MIT |
+| [pixl-server-debug](https://github.com/jhuckaby/pixl-server-debug) | Cách dễ dàng để debug app pixl-server bằng Chrome Dev Tools. | MIT |
+| [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage) | Component lưu trữ key/value/list cho framework pixl-server. | MIT |
+| [pixl-server-user](https://github.com/jhuckaby/pixl-server-user) | Hệ thống đăng nhập người dùng cơ bản cho framework pixl-server. | MIT |
+| [pixl-server-web](https://github.com/jhuckaby/pixl-server-web) | Component web server cho framework pixl-server. | MIT |
+| [pixl-server-unbase](https://github.com/jhuckaby/pixl-server-unbase) | Component database cho framework pixl-server. | MIT |
 
-In addition, xyOps uses the following server-side PixlCore utility modules:
+Ngoài ra, PTOps sử dụng các module tiện ích PixlCore phía server sau:
 
-| Module Name | Description | License |
+| Tên Module | Mô Tả | License |
 |-------------|-------------|---------|
-| [pixl-acl](https://github.com/jhuckaby/pixl-acl) | A simple but fast implementation of IPv4 and IPv6 ACL filtering. | MIT |
-| [pixl-args](https://github.com/jhuckaby/pixl-args) | A simple module for parsing command line arguments. | MIT |
-| [pixl-boot](https://github.com/jhuckaby/pixl-boot) | Register your service to launch on server startup (Linux / macOS). | MIT |
-| [pixl-chart](https://github.com/jhuckaby/pixl-chart) | A simple time series chart renderer using HTML5 Canvas. | MIT |
-| [pixl-class-util](https://github.com/pixlcore/class-util) | Helper functions for extending classes with mixins and more. | MIT |
-| [pixl-cli](https://github.com/jhuckaby/pixl-cli) | Tools for building command-line apps for Node.js. | MIT |
-| [pixl-config](https://github.com/jhuckaby/pixl-config) | A simple JSON configuration loader. | MIT |
-| [pixl-json-stream](https://github.com/jhuckaby/pixl-json-stream) | Provides an easy API for sending and receiving JSON records over standard streams (pipes or sockets). | MIT |
-| [pixl-logger](https://github.com/jhuckaby/pixl-logger) | A simple logging class which generates bracket delimited log columns. | MIT |
-| [pixl-mail](https://github.com/jhuckaby/pixl-mail) | A very simple class for sending e-mail via SMTP. | MIT |
-| [pixl-perf](https://github.com/jhuckaby/pixl-perf) | A simple, high precision performance tracking system. | MIT |
-| [pixl-request](https://github.com/jhuckaby/pixl-request) | A very simple module for making HTTP requests. | MIT |
-| [pixl-tools](https://github.com/jhuckaby/pixl-tools) | A set of miscellaneous utility functions for Node.js. | MIT |
-| [pixl-unit](https://github.com/jhuckaby/pixl-unit) | A very simple unit test runner for Node.js. | MIT |
+| [pixl-acl](https://github.com/jhuckaby/pixl-acl) | Một cách triển khai đơn giản nhưng nhanh cho lọc ACL IPv4 và IPv6. | MIT |
+| [pixl-args](https://github.com/jhuckaby/pixl-args) | Module đơn giản để parse tham số dòng lệnh. | MIT |
+| [pixl-boot](https://github.com/jhuckaby/pixl-boot) | Đăng ký dịch vụ của bạn để khởi chạy khi server bật (Linux / macOS). | MIT |
+| [pixl-chart](https://github.com/jhuckaby/pixl-chart) | Một renderer biểu đồ chuỗi thời gian đơn giản dùng HTML5 Canvas. | MIT |
+| [pixl-class-util](https://github.com/pixlcore/class-util) | Các hàm hỗ trợ để mở rộng class bằng mixin và hơn thế nữa. | MIT |
+| [pixl-cli](https://github.com/jhuckaby/pixl-cli) | Công cụ để xây dựng app dòng lệnh cho Node.js. | MIT |
+| [pixl-config](https://github.com/jhuckaby/pixl-config) | Bộ tải cấu hình JSON đơn giản. | MIT |
+| [pixl-json-stream](https://github.com/jhuckaby/pixl-json-stream) | Cung cấp API dễ dùng để gửi và nhận các record JSON qua standard stream (pipe hoặc socket). | MIT |
+| [pixl-logger](https://github.com/jhuckaby/pixl-logger) | Class logging đơn giản tạo ra các cột log dạng ngăn cách bằng dấu ngoặc. | MIT |
+| [pixl-mail](https://github.com/jhuckaby/pixl-mail) | Class rất đơn giản để gửi email qua SMTP. | MIT |
+| [pixl-perf](https://github.com/jhuckaby/pixl-perf) | Hệ thống theo dõi hiệu năng đơn giản, độ chính xác cao. | MIT |
+| [pixl-request](https://github.com/jhuckaby/pixl-request) | Module rất đơn giản để thực hiện HTTP request. | MIT |
+| [pixl-tools](https://github.com/jhuckaby/pixl-tools) | Bộ các hàm tiện ích linh tinh cho Node.js. | MIT |
+| [pixl-unit](https://github.com/jhuckaby/pixl-unit) | Bộ chạy unit test rất đơn giản cho Node.js. | MIT |
 
-For the client-side, the xyOps web application is built on the [pixl-xyapp](https://github.com/pixlcore/pixl-xyapp) HTML5/CSS/JavaScript framework:
+Về phía client, ứng dụng web PTOps được xây dựng trên framework HTML5/CSS/JavaScript [pixl-xyapp](https://github.com/pixlcore/pixl-xyapp):
 
-| Module Name | Description | License |
+| Tên Module | Mô Tả | License |
 |-------------|-------------|---------|
-| [pixl-xyapp](https://github.com/pixlcore/pixl-xyapp) | A client-side JavaScript framework, designed to be a base for web applications. | MIT |
+| [pixl-xyapp](https://github.com/pixlcore/pixl-xyapp) | Framework JavaScript phía client, được thiết kế làm nền tảng cho ứng dụng web. | MIT |
 
-## Installing Dev Tools
+## Cài Đặt Công Cụ Dev
 
-xyOps contains some compiled binary dependencies (namely [better-sqlite3](https://npmjs.com/package/better-sqlite3)), so if a precompiled binary cannot be found by for your exact arch, it may need to be compiled from source.  To that end, you may need:
+PTOps chứa một số dependency nhị phân được biên dịch sẵn (cụ thể là [better-sqlite3](https://npmjs.com/package/better-sqlite3)), nên nếu không tìm thấy binary biên dịch sẵn cho đúng kiến trúc (arch) của bạn, nó có thể cần được biên dịch từ source. Để làm điều đó, bạn có thể cần:
 
-For Debian (Ubuntu) OSes:
+Với hệ điều hành Debian (Ubuntu):
 
 ```sh
 apt-get install build-essential python3-setuptools
 ```
 
-For RedHat (Fedora / CentOS):
+Với RedHat (Fedora / CentOS):
 
 ```sh
 yum install gcc-c++ make
 ```
 
-For macOS, download [Apple's Xcode](https://developer.apple.com/xcode/download/), and then install the [command-line tools](https://developer.apple.com/downloads/).
+Với macOS, tải [Apple's Xcode](https://developer.apple.com/xcode/download/), sau đó cài [command-line tools](https://developer.apple.com/downloads/).
 
-## Manual Installation
+## Cài Đặt Thủ Công
 
-Here is how you can download the very latest xyOps dev build and install it manually (may contain bugs!):
+Đây là cách bạn có thể tải bản dev build mới nhất của PTOps và cài đặt thủ công (có thể chứa bug!):
 
 ```sh
 git clone https://github.com/pixlcore/xyops.git
@@ -67,9 +67,9 @@ npm install
 node bin/build.js dev
 ```
 
-Passing `dev` to the build script means it will keep all JS and CSS unobfuscated (original source served as separate files).
+Truyền `dev` vào build script nghĩa là nó sẽ giữ toàn bộ JS và CSS không bị obfuscate (source gốc được phục vụ dưới dạng các file riêng biệt).
 
-I highly recommend placing the following `.gitignore` file at the base of the project, if you plan on committing changes and sending pull requests:
+Mình khuyến nghị mạnh mẽ nên đặt file `.gitignore` sau ở gốc project, nếu bạn định commit thay đổi và gửi pull request:
 
 ```
 .gitignore
@@ -94,60 +94,60 @@ htdocs/codemirror
 sample_conf/masters.json
 ```
 
-## Starting in Debug Mode
+## Khởi Chạy Ở Chế Độ Debug
 
-To start xyOps in debug mode, issue the following command:
+Để khởi chạy PTOps ở chế độ debug, thực hiện lệnh sau:
 
 ```
 ./bin/debug.sh
 ```
 
-This will launch the service without forking a daemon process, and echo the entire debug log contents to the console.  This is great for debugging server-side issues.  Beware of file permissions if you run as a non-root user.  Hit Ctrl-C twice to shut down the service when in this mode.
+Lệnh này sẽ khởi chạy dịch vụ mà không fork ra một daemon process, và echo toàn bộ nội dung debug log ra console. Rất hữu ích để debug các vấn đề phía server. Cẩn thận với quyền file nếu bạn chạy với user không phải root. Nhấn Ctrl-C hai lần để tắt dịch vụ khi ở chế độ này.
 
-Also, you can customize which log categories are echoed by specifying a space-separated list as a single CLI argument, like this:
+Ngoài ra, bạn có thể tuỳ chỉnh những category log nào được echo ra bằng cách chỉ định một danh sách ngăn cách bởi khoảng trắng, dưới dạng một CLI argument duy nhất, như sau:
 
 ```sh
-./bin/debug.sh "xyOps Transaction Error API Unbase Action Comm Job Workflow Maint Multi Scheduler SSO"
+./bin/debug.sh "PTOps Transaction Error API Unbase Action Comm Job Workflow Maint Multi Scheduler SSO"
 ```
 
-This is useful for muting extremely loud components like `Storage` and `WebServer`.
+Điều này hữu ích để tắt tiếng các component quá ồn ào như `Storage` và `WebServer`.
 
 ## REPL
 
-By default the xyOps `debug.sh` script starts a [REPL](https://nodejs.org/api/repl.html) in the console, so you can type in live JavaScript and have it execute inside the xyOps process.  You also have access to the following globals:
+Theo mặc định, script `debug.sh` của PTOps khởi chạy một [REPL](https://nodejs.org/api/repl.html) trong console, để bạn có thể nhập JavaScript sống và thực thi nó trong process PTOps. Bạn cũng có quyền truy cập các biến global sau:
 
-| Global | Description |
+| Global | Mô Tả |
 |--------|-------------|
-| `server` | The current global [pixl-server](https://github.com/jhuckaby/pixl-server) instance. |
-| `cli` | The [pixl-cli](https://github.com/jhuckaby/pixl-cli) global, which contains a variety of utility functions. |
-| `xyOps` | The main xyOps server component.  This is also aliased to `xy`. |
-| `Storage` | The [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage) server component. |
-| `Unbase` | The [pixl-server-unbase](https://github.com/jhuckaby/pixl-server-unbase) server component. |
-| `WebServer` | The [pixl-server-web](https://github.com/jhuckaby/pixl-server-web) server component. |
-| `API` | The [pixl-server-api](https://github.com/jhuckaby/pixl-server-api) server component. |
-| `User` | The [pixl-server-user](https://github.com/jhuckaby/pixl-server-user) server component. |
-| `Debug` | The [pixl-server-debug](https://github.com/jhuckaby/pixl-server-debug) server component. |
+| `server` | Instance [pixl-server](https://github.com/jhuckaby/pixl-server) toàn cục hiện tại. |
+| `cli` | Global [pixl-cli](https://github.com/jhuckaby/pixl-cli), chứa nhiều hàm tiện ích khác nhau. |
+| `PTOps` | Component server chính của PTOps. Cũng có alias là `xy`. |
+| `Storage` | Component server [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage). |
+| `Unbase` | Component server [pixl-server-unbase](https://github.com/jhuckaby/pixl-server-unbase). |
+| `WebServer` | Component server [pixl-server-web](https://github.com/jhuckaby/pixl-server-web). |
+| `API` | Component server [pixl-server-api](https://github.com/jhuckaby/pixl-server-api). |
+| `User` | Component server [pixl-server-user](https://github.com/jhuckaby/pixl-server-user). |
+| `Debug` | Component server [pixl-server-debug](https://github.com/jhuckaby/pixl-server-debug). |
 
-You also have access to the following REPL commands (use a leading dot to activate):
+Bạn cũng có quyền truy cập các lệnh REPL sau (dùng dấu chấm ở đầu để kích hoạt):
 
-| Command | Description |
+| Lệnh | Mô Tả |
 |---------|-------------|
-| `.echo` | Add or remove echo categories, e.g. `.echo add Storage WebServer`. |
-| `.notify` | Send a notification to all users, e.g. `.notify HI THERE`.  Includes a random sound effect! |
+| `.echo` | Thêm hoặc xoá category echo, ví dụ `.echo add Storage WebServer`. |
+| `.notify` | Gửi thông báo cho tất cả người dùng, ví dụ `.notify HI THERE`. Kèm hiệu ứng âm thanh ngẫu nhiên! |
 
-## Running Unit Tests
+## Chạy Unit Test
 
-xyOps comes with a full unit test suite, which runs via the [pixl-unit](https://github.com/jhuckaby/pixl-unit) module (which should be installed automatically).  To run the unit tests, make sure xyOps isn't already running, and type:
+PTOps đi kèm một bộ unit test đầy đủ, chạy qua module [pixl-unit](https://github.com/jhuckaby/pixl-unit) (sẽ được tự động cài đặt). Để chạy unit test, đảm bảo PTOps chưa chạy sẵn, và nhập:
 
 ```
 npm test
 ```
 
-If any tests fail, please open a [GitHub Issue](https://github.com/pixlcore/xyops/issues) and include any relevant unit test logs, which can be found in `./test/logs/`.
+Nếu có test nào fail, hãy mở [GitHub Issue](https://github.com/pixlcore/xyops/issues) và kèm theo log unit test liên quan, có thể tìm thấy tại `./test/logs/`.
 
-## Self-Signed Certificates
+## Chứng Chỉ Tự Ký (Self-Signed)
 
-Here is how to create a self-signed and trusted TLS certificate you can use with xyOps for developing locally.  First, create a temporary config file (`san.cnf`):
+Đây là cách tạo một chứng chỉ TLS tự ký và được tin cậy, bạn có thể dùng với PTOps để phát triển cục bộ. Đầu tiên, tạo file config tạm (`san.cnf`):
 
 ```
 [req]
@@ -167,37 +167,37 @@ subjectAltName = @alt_names
 DNS.1 = localhost
 ```
 
-Then run this command:
+Sau đó chạy lệnh này:
 
 ```sh
 openssl req -x509 -newkey rsa:2048 -nodes -keyout tls.key -out tls.crt -days 365 -config san.cnf
 ```
 
-Then, follow the instructions below for your development platform.
+Sau đó, làm theo hướng dẫn dưới đây cho platform phát triển của bạn.
 
-### Windows Cert Trust
+### Tin Cậy Chứng Chỉ Trên Windows
 
-1. Press Windows + R, type `certmgr.msc`, and press Enter.
-2. In the left panel, expand: **Trusted Root Certification Authorities** → **Certificates**.
-3. Right-click **Certificates**, then choose: **All Tasks → Import...**
-4. Browse to your `tls.crt` file.
-5. Choose "Place all certificates in the following store" → make sure it's set to **Trusted Root Certification Authorities**.
-6. Finish and confirm any security prompt.
+1. Nhấn Windows + R, gõ `certmgr.msc`, và nhấn Enter.
+2. Ở panel bên trái, mở rộng: **Trusted Root Certification Authorities** → **Certificates**.
+3. Nhấn phải vào **Certificates**, sau đó chọn: **All Tasks → Import...**
+4. Duyệt tới file `tls.crt` của bạn.
+5. Chọn "Place all certificates in the following store" → đảm bảo nó được đặt là **Trusted Root Certification Authorities**.
+6. Hoàn tất và xác nhận bất kỳ cảnh báo bảo mật nào.
 
-### macOS Cert Trust
+### Tin Cậy Chứng Chỉ Trên macOS
 
-1. Open the **Keychain Access** app.
-2. In the left sidebar, select **System** under **Keychains**.
-3. Select **Certificates** under **Category**.
-4. From the top menu, choose **File → Import Items...**
-5. Select your `tls.crt` file, confirm import into the System keychain.
-6. You will be prompted for your macOS password to authorize the change.
-7. After importing, double-click the certificate entry.
-8. In the popup window, expand the **Trust** section.
-9. Set "When using this certificate" to **Always Trust**.
-10. Close the window, and enter your password again if prompted.
+1. Mở app **Keychain Access**.
+2. Ở sidebar bên trái, chọn **System** trong **Keychains**.
+3. Chọn **Certificates** trong **Category**.
+4. Từ menu trên cùng, chọn **File → Import Items...**
+5. Chọn file `tls.crt` của bạn, xác nhận import vào keychain System.
+6. Bạn sẽ được yêu cầu nhập mật khẩu macOS để cho phép thay đổi.
+7. Sau khi import, double-click vào entry chứng chỉ.
+8. Trong popup, mở rộng phần **Trust**.
+9. Đặt "When using this certificate" thành **Always Trust**.
+10. Đóng cửa sổ, và nhập lại mật khẩu nếu được yêu cầu.
 
-### Linux Cert Trust
+### Tin Cậy Chứng Chỉ Trên Linux
 
 **Debian/Ubuntu:**
 
@@ -209,15 +209,15 @@ Then, follow the instructions below for your development platform.
 1. `sudo cp tls.crt /etc/pki/ca-trust/source/anchors/xyops.crt`
 2. `sudo update-ca-trust extract`
 
-**Note:** This does not affect Firefox unless it's configured to use system trust (by default it has its own CA store).
+**Lưu ý:** Điều này không ảnh hưởng đến Firefox trừ khi nó được cấu hình để dùng system trust (theo mặc định nó có CA store riêng).
 
-### Move to xyOps
+### Chuyển Vào PTOps
 
-Move the cert files to this location for xyOps to use:
+Chuyển các file cert vào vị trí này để PTOps sử dụng:
 
 ```sh
 mv tls.crt /opt/xyops/conf/
 mv tls.key /opt/xyops/conf/
 ```
 
-You can now delete the `san.cnf` file.  It is only used temporarily during the cert creation process.
+Bây giờ bạn có thể xoá file `san.cnf`. Nó chỉ được dùng tạm thời trong quá trình tạo cert.

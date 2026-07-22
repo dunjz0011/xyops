@@ -2,13 +2,13 @@
 
 ## Overview
 
-This document details the xyOps REST API and API Key system.  All API calls expect JSON as input (unless they are simple HTTP GETs), and will return JSON as output.  The main API endpoint is:
+Tài liệu này trình bày chi tiết về hệ thống REST API và API Key của PTOps. Tất cả các lệnh gọi API đều mong đợi JSON làm đầu vào (trừ khi chúng là HTTP GETs đơn giản) và sẽ trả về JSON dưới dạng đầu ra. Điểm cuối (endpoint) API chính là:
 
 ```
 https://SERVER/api/app/NAME/v1
 ```
 
-Replace `NAME` with the specific API function you are calling (see below for list).  All requests should be HTTP GET or HTTP POST as the API dictates, and should be directed at your xyOps primary server.  Example URL:
+Thay thế `NAME` bằng hàm API cụ thể mà bạn đang gọi (xem danh sách bên dưới). Tất cả các yêu cầu nên là HTTP GET hoặc HTTP POST theo chỉ định của API và nên được hướng tới primary server PTOps của bạn. URL ví dụ:
 
 ```
 http://sample.west.xyops.io/api/app/search_jobs/v1
@@ -16,19 +16,19 @@ http://sample.west.xyops.io/api/app/search_jobs/v1
 
 ## API Keys
 
-API Keys allow you to register external applications or services to use the REST API.  These can be thought of as special user accounts specifically for applications.  Each API key can be granted a specific set of privileges.
+API Keys cho phép bạn đăng ký các ứng dụng hoặc dịch vụ bên ngoài để sử dụng REST API. Chúng có thể được coi là các tài khoản người dùng đặc biệt dành riêng cho các ứng dụng. Mỗi API key có thể được cấp một tập hợp các đặc quyền cụ thể.
 
-To create an API Key, you must first be an administrator level user.  Login to the xyOps UI, proceed to the **API Keys** tab, and click the "Add API Key..." button.  Fill out the form and click the "Create Key" button at the bottom of the page.
+Để tạo một API Key, trước tiên bạn phải là người dùng cấp quản trị viên (administrator). Đăng nhập vào PTOps UI, tiến đến tab **API Keys** và nhấp vào nút "Add API Key...". Điền vào biểu mẫu và nhấp vào nút "Create Key" ở cuối trang.
 
-API Keys are randomly generated alphanumeric strings, and are 24 characters in length by default.  They **are** case sensitive.  Example:
+API Keys là các chuỗi chữ và số được tạo ngẫu nhiên và mặc định có độ dài 24 ký tự. Chúng **có** phân biệt chữ hoa chữ thường. Ví dụ:
 
 ```
 muJm8T6QSzqQzuO6MvbOdtlB
 ```
 
-You must include a valid API Key with every API request.  There are three ways to do this: include a `X-API-Key` HTTP request header, an `api_key` query string parameter, or an `api_key` JSON property.
+Bạn phải bao gồm một API Key hợp lệ trong mỗi yêu cầu API. Có ba cách để thực hiện việc này: bao gồm một HTTP request header `X-API-Key`, một tham số query string `api_key`, hoặc một thuộc tính JSON `api_key`.
 
-Here is a raw HTTP request showing all three methods of passing the API Key (only one of these is required):
+Dưới đây là một HTTP request thô hiển thị cả ba phương pháp truyền API Key (chỉ yêu cầu một trong số các phương pháp này):
 
 ```
 GET /api/app/search_jobs/v1?api_key=muJm8T6QSzqQzuO6MvbOdtlB HTTP/1.1
@@ -41,7 +41,7 @@ Content-Type: application/json
 
 ## Standard Response Format
 
-Regardless of the specific API call you requested, all responses will be in JSON format, and include at the very least a `code` property.  This will be set to `0` upon success, or any other value if an error occurred.  In the event of an error, a `description` property will also be included, containing the error message itself.  Individual API calls may include additional properties, but these two are standard fare in all cases.  Example successful response:
+Bất kể lệnh gọi API cụ thể mà bạn đã yêu cầu là gì, tất cả các phản hồi (responses) sẽ ở định dạng JSON và bao gồm ít nhất một thuộc tính `code`. Thuộc tính này sẽ được đặt thành `0` khi thành công, hoặc bất kỳ giá trị nào khác nếu có lỗi xảy ra. Trong trường hợp xảy ra lỗi, một thuộc tính `description` cũng sẽ được bao gồm, chứa chính thông báo lỗi. Các lệnh gọi API riêng lẻ có thể bao gồm các thuộc tính bổ sung, nhưng hai thuộc tính này là tiêu chuẩn trong tất cả các trường hợp. Ví dụ về phản hồi thành công:
 
 ```json
 {
@@ -49,7 +49,7 @@ Regardless of the specific API call you requested, all responses will be in JSON
 }
 ```
 
-Example error response:
+Ví dụ về phản hồi lỗi:
 
 ```json
 {
@@ -60,9 +60,9 @@ Example error response:
 
 ## Alerts
 
-Alert APIs manage alert definitions. Use these endpoints to list, fetch, create, update, and delete alerts that evaluate monitor data and trigger actions (email, web hooks, snapshots, and more). Alerts run on the conductor and evaluate incoming monitor samples from servers; results appear in monitoring views and the activity log. Editing alerts typically requires appropriate privileges; read operations only require a valid session or API Key.
+Các API alert quản lý các định nghĩa alert. Sử dụng các endpoint này để liệt kê, tìm nạp, tạo, cập nhật và xóa các alert đánh giá dữ liệu monitor và kích hoạt các action (email, web hooks, snapshots, và hơn thế nữa). Các alert chạy trên conductor và đánh giá các mẫu monitor đến từ các server; kết quả xuất hiện trong các dạng xem giám sát và nhật ký hoạt động. Việc chỉnh sửa các alert thường yêu cầu các đặc quyền thích hợp; các hoạt động đọc chỉ yêu cầu một session hợp lệ hoặc API Key.
 
-See [Alerts](alerts.md) for details on the xyOps alert system.
+Xem [Alerts](alerts.md) để biết thêm chi tiết về hệ thống alert của PTOps.
 
 ### get_alerts
 
@@ -70,9 +70,9 @@ See [Alerts](alerts.md) for details on the xyOps alert system.
 GET /api/app/get_alerts/v1
 ```
 
-This fetches all the current alert definitions.  No input parameters are defined.  No specific privilege is required, besides a valid user session or API Key.
+Hàm này tìm nạp tất cả các định nghĩa alert hiện tại. Không có tham số đầu vào nào được định nghĩa. Không yêu cầu đặc quyền cụ thể nào, ngoài một user session hợp lệ hoặc API Key.
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing all alerts, and a `list` object containing list metadata (e.g. `length` for total rows without pagination). Example response:
+Ngoài [Standard Response Format](#standard-response-format), hàm này sẽ bao gồm một mảng `rows` chứa tất cả các alert, và một đối tượng `list` chứa siêu dữ liệu danh sách (ví dụ: `length` cho tổng số hàng mà không phân trang). Phản hồi ví dụ:
 
 ```json
 {
@@ -99,9 +99,9 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this API will also include a `rows` array containing information about every alert definition, and a `list` object containing list metadata.
+Ngoài [Standard Response Format](#standard-response-format), API này cũng sẽ bao gồm một mảng `rows` chứa thông tin về mọi định nghĩa alert, và một đối tượng `list` chứa siêu dữ liệu danh sách.
 
-See [Alert](data.md#alert) for details on the properties on each alert.
+Xem [Alert](data.md#alert) để biết thêm chi tiết về các thuộc tính trên mỗi alert.
 
 ### get_alert
 
@@ -109,13 +109,13 @@ See [Alert](data.md#alert) for details on the properties on each alert.
 GET /api/app/get_alert/v1
 ```
 
-This fetches a single alert definition given its ID. No specific privilege is required, besides a valid user session or API Key.  Both a HTTP GET with query string parameters and a HTTP POST with JSON are allowed.  The input parameters are as follows:
+Hàm này tìm nạp một định nghĩa alert duy nhất dựa trên ID của nó. Không yêu cầu đặc quyền cụ thể nào, ngoài một user session hợp lệ hoặc API Key. Cả HTTP GET với các tham số query string và HTTP POST với JSON đều được cho phép. Các tham số đầu vào như sau:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the alert to fetch. |
+| `id` | String | **(Required)** ID chữ và số của alert cần tìm nạp. |
 
-Here is an example request:
+Dưới đây là một yêu cầu ví dụ:
 
 ```json
 {
@@ -123,7 +123,7 @@ Here is an example request:
 }
 ```
 
-And an example response:
+Và một phản hồi ví dụ:
 
 ```json
 {
@@ -147,9 +147,9 @@ And an example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this API will also include an `alert` object containing information about the requested alert.
+Ngoài [Standard Response Format](#standard-response-format), API này cũng sẽ bao gồm một đối tượng `alert` chứa thông tin về alert được yêu cầu.
 
-See [Alert](data.md#alert) for details on the alert properties.
+Xem [Alert](data.md#alert) để biết thêm chi tiết về các thuộc tính của alert.
 
 ### create_alert
 
@@ -157,7 +157,7 @@ See [Alert](data.md#alert) for details on the alert properties.
 POST /api/app/create_alert/v1
 ```
 
-This creates a new alert definition.  The [create_alerts](privileges.md#create_alerts) privilege is required, as well as a valid user session or API Key.   The request must be sent as an HTTP POST with a JSON body.  See [Alert](data.md#alert) for details on the input properties.  The `id`, `username`, `created` and `modified` properties may be omitted, as they are automatically generated.  Here is an example request:
+Hàm này tạo một định nghĩa alert mới. Yêu cầu đặc quyền [create_alerts](privileges.md#create_alerts), cũng như một user session hợp lệ hoặc API Key. Yêu cầu phải được gửi dưới dạng HTTP POST với nội dung JSON. Xem [Alert](data.md#alert) để biết chi tiết về các thuộc tính đầu vào. Các thuộc tính `id`, `username`, `created` và `modified` có thể được bỏ qua, vì chúng được tạo tự động. Dưới đây là một yêu cầu ví dụ:
 
 ```json
 {
@@ -174,7 +174,7 @@ This creates a new alert definition.  The [create_alerts](privileges.md#create_a
 }
 ```
 
-And an example response:
+Và một phản hồi ví dụ:
 
 ```json
 {
@@ -183,9 +183,9 @@ And an example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this API will also include an `alert` object containing the alert that was just created (including all the auto-generated properties).
+Ngoài [Standard Response Format](#standard-response-format), API này cũng sẽ bao gồm một đối tượng `alert` chứa alert vừa được tạo (bao gồm tất cả các thuộc tính được tạo tự động).
 
-See [Alert](data.md#alert) for details on the alert properties.
+Xem [Alert](data.md#alert) để biết thêm chi tiết về các thuộc tính của alert.
 
 ### update_alert
 
@@ -193,7 +193,7 @@ See [Alert](data.md#alert) for details on the alert properties.
 POST /api/app/update_alert/v1
 ```
 
-This updates an existing alert definition, specified by its ID.  The [edit_alerts](privileges.md#edit_alerts) privilege is required, as well as a valid user session or API Key.  The request must be sent as an HTTP POST with a JSON body.  See [Alert](data.md#alert) for details on the input properties.  The request is "shallow-merged" into the existing alert, so you can provide a sparse set of properties to update.  Here is an example request:
+Hàm này cập nhật một định nghĩa alert hiện có, được chỉ định bởi ID của nó. Yêu cầu đặc quyền [edit_alerts](privileges.md#edit_alerts), cũng như một user session hợp lệ hoặc API Key. Yêu cầu phải được gửi dưới dạng HTTP POST với nội dung JSON. Xem [Alert](data.md#alert) để biết chi tiết về các thuộc tính đầu vào. Yêu cầu được hợp nhất nông ("shallow-merged") vào alert hiện có, vì vậy bạn có thể cung cấp một tập hợp thưa thớt các thuộc tính để cập nhật. Dưới đây là một yêu cầu ví dụ:
 
 ```json
 {
@@ -203,7 +203,7 @@ This updates an existing alert definition, specified by its ID.  The [edit_alert
 }
 ```
 
-And an example response:
+Và một phản hồi ví dụ:
 
 ```json
 {
@@ -211,7 +211,7 @@ And an example response:
 }
 ```
 
-The above example would update the `title` and `expression` of the alert with ID `load_avg_high`.  The other properties in the alert will not be touched (except for `modified` which is always updated, and some other internal properties).
+Ví dụ trên sẽ cập nhật `title` và `expression` của alert có ID `load_avg_high`. Các thuộc tính khác trong alert sẽ không bị thay đổi (ngoại trừ `modified` luôn được cập nhật, và một số thuộc tính nội bộ khác).
 
 ### test_alert
 
@@ -219,15 +219,15 @@ The above example would update the `title` and `expression` of the alert with ID
 POST /api/app/test_alert/v1
 ```
 
-This tests an alert configuration, specifically the `expression` and `message` properties, against a specified server.  It tests both the syntax of the properties by pre-compiling them, and it also evaluates them against the specified server data, so you can see if the alert would fire given current conditions.  The [edit_alerts](privileges.md#edit_alerts) privilege is required, as well as a valid user session or API Key.  The request must be sent as an HTTP POST with a JSON body.  The input parameters are as follows:
+Hàm này kiểm tra cấu hình của một alert, cụ thể là các thuộc tính `expression` và `message`, đối với một server được chỉ định. Nó kiểm tra cả cú pháp của các thuộc tính bằng cách biên dịch trước chúng, và nó cũng đánh giá chúng dựa trên dữ liệu server được chỉ định, để bạn có thể xem liệu alert có kích hoạt dựa trên các điều kiện hiện tại hay không. Yêu cầu đặc quyền [edit_alerts](privileges.md#edit_alerts), cũng như một user session hợp lệ hoặc API Key. Yêu cầu phải được gửi dưới dạng HTTP POST với nội dung JSON. Các tham số đầu vào như sau:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `server` | String | **(Required)** The alphanumeric ID of the server to test the expression and message on. |
-| `expression` | String | **(Required)** The alert expression to test. |
-| `message` | String | **(Required)** The alert message to test. |
+| `server` | String | **(Required)** ID chữ và số của server để kiểm tra expression và message. |
+| `expression` | String | **(Required)** Expression của alert cần kiểm tra. |
+| `message` | String | **(Required)** Message của alert cần kiểm tra. |
 
-Here is an example request:
+Dưới đây là một yêu cầu ví dụ:
 
 ```json
 {
@@ -237,7 +237,7 @@ Here is an example request:
 }
 ```
 
-And an example response:
+Và một phản hồi ví dụ:
 
 ```json
 {
@@ -247,7 +247,7 @@ And an example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this API will also include a `result` boolean indicating whether the alert would fire given the current server data, and a `message` string containing the evaluated message.
+Ngoài [Standard Response Format](#standard-response-format), API này cũng sẽ bao gồm một boolean `result` cho biết liệu alert có kích hoạt với dữ liệu server hiện tại hay không, và một chuỗi `message` chứa message đã được đánh giá.
 
 ### delete_alert
 
@@ -255,13 +255,13 @@ In addition to the [Standard Response Format](#standard-response-format), this A
 POST /api/app/delete_alert/v1
 ```
 
-This deletes an alert definition, specified by its ID. The [delete_alerts](privileges.md#delete_alerts) privilege is required, as well as a valid user session or API Key. The request must be sent as an HTTP POST with a JSON body. The input parameters are as follows:
+Hàm này xóa một định nghĩa alert, được chỉ định bởi ID của nó. Yêu cầu đặc quyền [delete_alerts](privileges.md#delete_alerts), cũng như một user session hợp lệ hoặc API Key. Yêu cầu phải được gửi dưới dạng HTTP POST với nội dung JSON. Các tham số đầu vào như sau:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the alert to delete. |
+| `id` | String | **(Required)** ID chữ và số của alert cần xóa. |
 
-Here is an example request:
+Dưới đây là một yêu cầu ví dụ:
 
 ```json
 {
@@ -269,7 +269,7 @@ Here is an example request:
 }
 ```
 
-And an example response:
+Và một phản hồi ví dụ:
 
 ```json
 {
@@ -277,13 +277,13 @@ And an example response:
 }
 ```
 
-Deletions are permanent and cannot be undone.
+Việc xóa là vĩnh viễn và không thể hoàn tác.
 
 ## Buckets
 
-A storage bucket is a logical container for storing files, for use in events and workflows. Buckets can hold an arbitrary number of files, and JSON data.
+Storage bucket là một thùng chứa logic để lưu trữ các tệp, để sử dụng trong các event và workflow. Các bucket có thể chứa một số lượng tệp tùy ý và dữ liệu JSON.
 
-Bucket APIs define and manage buckets, their metadata, data blobs and file lists. Use them to list, fetch, create, update, and delete buckets; and to upload/download/delete files associated with a bucket. Jobs and workflows can read and write bucket content at runtime (e.g., exchange inputs/outputs). Metadata operations typically require create/edit/delete privileges; listing and fetching only require a valid session or API Key.
+Các API bucket định nghĩa và quản lý các bucket, siêu dữ liệu, các blob dữ liệu và danh sách tệp của chúng. Sử dụng chúng để liệt kê, tìm nạp, tạo, cập nhật và xóa các bucket; và để tải lên/tải xuống/xóa các tệp liên kết với một bucket. Các job và workflow có thể đọc và ghi nội dung bucket trong thời gian chạy (ví dụ: trao đổi đầu vào/đầu ra). Các hoạt động siêu dữ liệu thường yêu cầu các đặc quyền tạo/chỉnh sửa/xóa; việc liệt kê và tìm nạp chỉ yêu cầu một session hợp lệ hoặc API Key.
 
 ### get_buckets
 
@@ -291,9 +291,9 @@ Bucket APIs define and manage buckets, their metadata, data blobs and file lists
 GET /api/app/get_buckets/v1
 ```
 
-This fetches all the current storage bucket definitions (sans actual data and files).  No input parameters are defined.  No specific privilege is required, besides a valid user session or API Key.
+Hàm này tìm nạp tất cả các định nghĩa storage bucket hiện tại (không bao gồm dữ liệu và tệp thực tế). Không có tham số đầu vào nào được định nghĩa. Không yêu cầu đặc quyền cụ thể nào, ngoài một user session hợp lệ hoặc API Key.
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing all buckets, and a `list` object containing list metadata (e.g. `length` for total rows without pagination). Example response:
+Ngoài [Standard Response Format](#standard-response-format), hàm này sẽ bao gồm một mảng `rows` chứa tất cả các bucket, và một đối tượng `list` chứa siêu dữ liệu danh sách (ví dụ: `length` cho tổng số hàng mà không phân trang). Phản hồi ví dụ:
 
 ```json
 {
@@ -315,9 +315,9 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this API will also include a `rows` array containing information about every bucket definition, and a `list` object containing list metadata.
+Ngoài [Standard Response Format](#standard-response-format), API này cũng sẽ bao gồm một mảng `rows` chứa thông tin về mọi định nghĩa bucket, và một đối tượng `list` chứa siêu dữ liệu danh sách.
 
-See [Bucket](data.md#bucket) for details on the properties on each bucket.
+Xem [Bucket](data.md#bucket) để biết thêm chi tiết về các thuộc tính trên mỗi bucket.
 
 ### get_bucket
 
@@ -325,13 +325,13 @@ See [Bucket](data.md#bucket) for details on the properties on each bucket.
 GET /api/app/get_bucket/v1
 ```
 
-This retrieves the definition of a specific storage bucket, including its data and file list.  No specific privilege is required, besides a valid user session or API Key.  Here are the input parameters:
+Hàm này lấy định nghĩa của một storage bucket cụ thể, bao gồm dữ liệu và danh sách tệp của nó. Không yêu cầu đặc quyền cụ thể nào, ngoài một user session hợp lệ hoặc API Key. Dưới đây là các tham số đầu vào:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the bucket to retrieve. |
+| `id` | String | **(Required)** ID chữ và số của bucket cần lấy. |
 
-And here is an example response:
+Và dưới đây là một phản hồi ví dụ:
 
 ```json
 {
@@ -363,7 +363,7 @@ And here is an example response:
 }
 ```
 
-See [Bucket](data.md#bucket) for details on the properties in the `bucket` object.  The `data` object will be populated with the bucket data, which is all user-defined.  The `files` array is a list of all the files in the bucket, if any.  To download a file, use the `path` property, prepended with the app's base URL (and a slash).
+Xem [Bucket](data.md#bucket) để biết thêm chi tiết về các thuộc tính trong đối tượng `bucket`. Đối tượng `data` sẽ được điền bằng dữ liệu của bucket, tất cả đều do người dùng định nghĩa. Mảng `files` là danh sách tất cả các tệp trong bucket, nếu có. Để tải xuống một tệp, hãy sử dụng thuộc tính `path`, thêm vào phía trước với base URL của ứng dụng (và một dấu gạch chéo).
 
 ### create_bucket
 
@@ -371,7 +371,7 @@ See [Bucket](data.md#bucket) for details on the properties in the `bucket` objec
 POST /api/app/create_bucket/v1
 ```
 
-This creates a new storage bucket.  The [create_buckets](privileges.md#create_buckets) privilege is required, as well as a valid user session or API Key.   The request must be sent as an HTTP POST with a JSON body.  See [Bucket](data.md#bucket) for details on the input properties.  The `id`, `username`, `created` and `modified` properties may be omitted, as they are automatically generated.  Here is an example request:
+Hàm này tạo một storage bucket mới. Yêu cầu đặc quyền [create_buckets](privileges.md#create_buckets), cũng như một user session hợp lệ hoặc API Key. Yêu cầu phải được gửi dưới dạng HTTP POST với nội dung JSON. Xem [Bucket](data.md#bucket) để biết chi tiết về các thuộc tính đầu vào. Các thuộc tính `id`, `username`, `created` và `modified` có thể được bỏ qua, vì chúng được tạo tự động. Dưới đây là một yêu cầu ví dụ:
 
 ```json
 {
@@ -385,7 +385,7 @@ This creates a new storage bucket.  The [create_buckets](privileges.md#create_bu
 }
 ```
 
-And an example response:
+Và một phản hồi ví dụ:
 
 ```json
 {
@@ -394,11 +394,11 @@ And an example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this API will also include a `bucket` object containing the bucket that was just created (including all the auto-generated properties).
+Ngoài [Standard Response Format](#standard-response-format), API này cũng sẽ bao gồm một đối tượng `bucket` chứa bucket vừa được tạo (bao gồm tất cả các thuộc tính được tạo tự động).
 
-As you can see in the above example, you can specify the user-defined bucket data along with the creation of the bucket itself.  Bucket files, however, need to be uploaded separately (see [upload_bucket_files](#upload_bucket_files)).
+Như bạn có thể thấy trong ví dụ trên, bạn có thể chỉ định dữ liệu bucket do người dùng định nghĩa cùng với việc tạo chính bucket đó. Tuy nhiên, các tệp bucket cần được tải lên riêng biệt (xem [upload_bucket_files](#upload_bucket_files)).
 
-See [Bucket](data.md#bucket) for details on the bucket properties.
+Xem [Bucket](data.md#bucket) để biết thêm chi tiết về các thuộc tính của bucket.
 
 ### update_bucket
 
@@ -406,7 +406,7 @@ See [Bucket](data.md#bucket) for details on the bucket properties.
 POST /api/app/update_bucket/v1
 ```
 
-This updates an existing storage bucket, specified by its ID.  The [edit_buckets](privileges.md#edit_buckets) privilege is required, as well as a valid user session or API Key.  The request must be sent as an HTTP POST with a JSON body.  See [Bucket](data.md#bucket) for details on the input properties.  The request is "shallow-merged" into the existing bucket, so you can provide a sparse set of properties to update.  Here is an example request:
+Hàm này cập nhật một storage bucket hiện có, được chỉ định bởi ID của nó. Yêu cầu đặc quyền [edit_buckets](privileges.md#edit_buckets), cũng như một user session hợp lệ hoặc API Key. Yêu cầu phải được gửi dưới dạng HTTP POST với nội dung JSON. Xem [Bucket](data.md#bucket) để biết chi tiết về các thuộc tính đầu vào. Yêu cầu được hợp nhất nông ("shallow-merged") vào bucket hiện có, vì vậy bạn có thể cung cấp một tập hợp thưa thớt các thuộc tính để cập nhật. Dưới đây là một yêu cầu ví dụ:
 
 ```json
 {
@@ -418,7 +418,7 @@ This updates an existing storage bucket, specified by its ID.  The [edit_buckets
 }
 ```
 
-And an example response:
+Và một phản hồi ví dụ:
 
 ```json
 {
@@ -426,7 +426,7 @@ And an example response:
 }
 ```
 
-The above example would update the `title` and `data` of the bucket with ID `bme4wi6pg35`.  The other properties in the bucket will not be touched (except for `modified` which is always updated, and some other internal properties).
+Ví dụ trên sẽ cập nhật `title` và `data` của bucket có ID `bme4wi6pg35`. Các thuộc tính khác trong bucket sẽ không bị thay đổi (ngoại trừ `modified` luôn được cập nhật, và một số thuộc tính nội bộ khác).
 
 ### delete_bucket
 
@@ -434,13 +434,13 @@ The above example would update the `title` and `data` of the bucket with ID `bme
 POST /api/app/delete_bucket/v1
 ```
 
-This deletes a storage bucket, including all data and files, specified by its ID. The [delete_buckets](privileges.md#delete_buckets) privilege is required, as well as a valid user session or API Key. The request must be sent as an HTTP POST with a JSON body. The input parameters are as follows:
+Hàm này xóa một storage bucket, bao gồm tất cả dữ liệu và tệp, được chỉ định bởi ID của nó. Yêu cầu đặc quyền [delete_buckets](privileges.md#delete_buckets), cũng như một user session hợp lệ hoặc API Key. Yêu cầu phải được gửi dưới dạng HTTP POST với nội dung JSON. Các tham số đầu vào như sau:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the bucket to delete. |
+| `id` | String | **(Required)** ID chữ và số của bucket cần xóa. |
 
-Here is an example request:
+Dưới đây là một yêu cầu ví dụ:
 
 ```json
 {
@@ -448,7 +448,7 @@ Here is an example request:
 }
 ```
 
-And an example response:
+Và một phản hồi ví dụ:
 
 ```json
 {
@@ -456,7 +456,7 @@ And an example response:
 }
 ```
 
-Deletions are permanent and cannot be undone.
+Việc xóa là vĩnh viễn và không thể hoàn tác.
 
 ### write_bucket_data
 
@@ -464,15 +464,15 @@ Deletions are permanent and cannot be undone.
 POST /api/app/write_bucket_data/v1
 ```
 
-This API allows you to write bucket data into a storage bucket.  The [edit_buckets](privileges.md#edit_buckets) privilege is required, as well as a valid user session or API Key.  The input parameters are as follows:
+API này cho phép bạn ghi dữ liệu bucket vào một storage bucket. Yêu cầu đặc quyền [edit_buckets](privileges.md#edit_buckets), cũng như một user session hợp lệ hoặc API Key. Các tham số đầu vào như sau:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the bucket to write data to. |
-| `data` | Object | **(Required)** The data object to shallow-merge into the bucket data. |
-| `fetch` | Boolean | Optional flag requesting the entire data object be returned in the API response. |
+| `id` | String | **(Required)** ID chữ và số của bucket để ghi dữ liệu vào. |
+| `data` | Object | **(Required)** Đối tượng dữ liệu để hợp nhất nông vào dữ liệu bucket. |
+| `fetch` | Boolean | Cờ tùy chọn yêu cầu toàn bộ đối tượng dữ liệu được trả về trong phản hồi API. |
 
-Here is an example request:
+Dưới đây là một yêu cầu ví dụ:
 
 ```json
 {
@@ -482,7 +482,7 @@ Here is an example request:
 }
 ```
 
-And an example response:
+Và một phản hồi ví dụ:
 
 ```json
 {
@@ -491,9 +491,9 @@ And an example response:
 }
 ```
 
-Notably, data passed to this API is *shallow-merged* into the bucket data.  In this way multiple "clients" can read/write data to the same bucket without affecting each other (as long as they use unique property names).  Locking is used to ensure only one read/write operation occurs at a time.  If multiple clients write the same property names the latter prevails.
+Đáng chú ý, dữ liệu được truyền tới API này được *hợp nhất nông* vào dữ liệu bucket. Bằng cách này, nhiều "client" có thể đọc/ghi dữ liệu vào cùng một bucket mà không ảnh hưởng lẫn nhau (miễn là họ sử dụng các tên thuộc tính duy nhất). Khóa (locking) được sử dụng để đảm bảo chỉ có một hoạt động đọc/ghi diễn ra tại một thời điểm. Nếu nhiều client ghi cùng một tên thuộc tính, tên ghi sau sẽ được ưu tiên.
 
-This API is designed to be called from within jobs (i.e. Event Plugin scripts), so it does not update the bucket record itself, nor log a user transaction.
+API này được thiết kế để được gọi từ bên trong các job (nghĩa là các script Event Plugin), vì vậy nó không tự cập nhật bản ghi bucket, cũng như không ghi nhật ký một giao dịch của người dùng.
 
 ### upload_bucket_files
 
@@ -501,17 +501,17 @@ This API is designed to be called from within jobs (i.e. Event Plugin scripts), 
 POST /api/app/upload_bucket_files/v1
 ```
 
-This API allows you to upload files into a storage bucket.  Unlike most of the other APIs, this one handles files, so it requires a `multipart/form-data` style request.  The parameters should be actual HTTP POST parameters, rather than JSON keys.  The [edit_buckets](privileges.md#edit_buckets) privilege is required, as well as a valid user session or API Key.  The input parameters are as follows:
+API này cho phép bạn tải tệp lên một storage bucket. Không giống như hầu hết các API khác, API này xử lý các tệp, vì vậy nó yêu cầu một yêu cầu kiểu `multipart/form-data`. Các tham số phải là các tham số HTTP POST thực tế, thay vì các khóa JSON. Yêu cầu đặc quyền [edit_buckets](privileges.md#edit_buckets), cũng như một user session hợp lệ hoặc API Key. Các tham số đầu vào như sau:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the bucket to upload files to. |
+| `id` | String | **(Required)** ID chữ và số của bucket để tải tệp lên. |
 
-The file properties are automatically set based on the user files themselves, including the filename, file size, etc.  The `id` parameter is used to specify the target bucket for the upload.
+Các thuộc tính tệp được tự động thiết lập dựa trên chính các tệp của người dùng, bao gồm tên tệp, kích thước tệp, v.v. Tham số `id` được sử dụng để chỉ định bucket đích cho quá trình tải lên.
 
-Note that bucket files are automatically added or replaced based on their normalized filenames.  Normalization involves converting anything other than alphanumerics, dashes and periods to underscores, and converting the filename to lowercase.
+Lưu ý rằng các tệp bucket được tự động thêm hoặc thay thế dựa trên tên tệp chuẩn hóa của chúng. Việc chuẩn hóa liên quan đến việc chuyển đổi bất kỳ thứ gì khác ngoài chữ và số, dấu gạch ngang và dấu chấm thành dấu gạch dưới, và chuyển đổi tên tệp thành chữ thường.
 
-This API is designed to be called from within jobs (i.e. Event Plugin scripts), so it does not update the bucket record itself, nor log a user transaction.
+API này được thiết kế để được gọi từ bên trong các job (nghĩa là các script Event Plugin), vì vậy nó không tự cập nhật bản ghi bucket, cũng như không ghi nhật ký một giao dịch của người dùng.
 
 ### delete_bucket_file
 
@@ -519,14 +519,14 @@ This API is designed to be called from within jobs (i.e. Event Plugin scripts), 
 POST /api/app/delete_bucket_file/v1
 ```
 
-This API deletes a file from a storage bucket. The [edit_buckets](privileges.md#edit_buckets) privilege is required, as well as a valid user session or API Key. The request must be sent as an HTTP POST with a JSON body. The input parameters are as follows:
+API này xóa một tệp khỏi một storage bucket. Yêu cầu đặc quyền [edit_buckets](privileges.md#edit_buckets), cũng như một user session hợp lệ hoặc API Key. Yêu cầu phải được gửi dưới dạng HTTP POST với nội dung JSON. Các tham số đầu vào như sau:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the bucket to delete the file from. |
-| `filename` | String | **(Required)** The normalized filename of the file to delete. |
+| `id` | String | **(Required)** ID chữ và số của bucket để xóa tệp khỏi. |
+| `filename` | String | **(Required)** Tên tệp chuẩn hóa của tệp cần xóa. |
 	
-Here is an example request:
+Dưới đây là một yêu cầu ví dụ:
 
 ```json
 {
@@ -535,7 +535,7 @@ Here is an example request:
 }
 ```
 
-And an example response:
+Và một phản hồi ví dụ:
 
 ```json
 {
@@ -543,7 +543,7 @@ And an example response:
 }
 ```
 
-Deletions are permanent and cannot be undone.
+Việc xóa là vĩnh viễn và không thể hoàn tác.
 
 ### empty_bucket
 
@@ -551,15 +551,15 @@ Deletions are permanent and cannot be undone.
 POST /api/app/empty_bucket/v1
 ```
 
-This API empties a bucket, meaning it will delete all files and/or data, but leave the bucket itself intact.  The [edit_buckets](privileges.md#edit_buckets) privilege is required, as well as a valid user session or API Key.  The input parameters are as follows:
+API này làm trống một bucket, nghĩa là nó sẽ xóa tất cả các tệp và/hoặc dữ liệu, nhưng để nguyên bản thân bucket. Yêu cầu đặc quyền [edit_buckets](privileges.md#edit_buckets), cũng như một user session hợp lệ hoặc API Key. Các tham số đầu vào như sau:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the bucket to empty. |
-| `files` | Boolean | **(Required)** Set to `true` to delete all files from the bucket. |
-| `data` | Boolean | **(Required)** Set to `true` to delete all data from the bucket. |
+| `id` | String | **(Required)** ID chữ và số của bucket cần làm trống. |
+| `files` | Boolean | **(Required)** Đặt thành `true` để xóa tất cả các tệp khỏi bucket. |
+| `data` | Boolean | **(Required)** Đặt thành `true` để xóa tất cả dữ liệu khỏi bucket. |
 	
-Here is an example request:
+Dưới đây là một yêu cầu ví dụ:
 
 ```json
 {
@@ -569,7 +569,7 @@ Here is an example request:
 }
 ```
 
-And an example response:
+Và một phản hồi ví dụ:
 
 ```json
 {
@@ -577,11 +577,11 @@ And an example response:
 }
 ```
 
-Emptying is permanent and cannot be undone.
+Việc làm trống là vĩnh viễn và không thể hoàn tác.
 
 ## Categories
 
-Category APIs organize events into logical groups for navigation, access control and search. Use them to list, fetch, create, update, reorder, and delete categories. Assigning an event to a category affects user visibility (via roles) and search filtering. Editing categories typically requires privileges; reading only requires a valid session or API Key.
+Các API category sắp xếp các event thành các nhóm logic để điều hướng, kiểm soát truy cập và tìm kiếm. Sử dụng chúng để liệt kê, tìm nạp, tạo, cập nhật, sắp xếp lại và xóa các category. Việc gán một event cho một category ảnh hưởng đến khả năng hiển thị của người dùng (thông qua các vai trò) và việc lọc tìm kiếm. Việc chỉnh sửa các category thường yêu cầu các đặc quyền; việc đọc chỉ yêu cầu một session hợp lệ hoặc API Key.
 
 ### get_categories
 
@@ -589,9 +589,9 @@ Category APIs organize events into logical groups for navigation, access control
 GET /api/app/get_categories/v1
 ```
 
-Fetch all category definitions. No input parameters are required. No specific privilege is required beyond a valid user session or API Key. In addition to the [Standard Response Format](#standard-response-format), the response includes a `rows` array of categories and a `list` object with summary metadata. The `list.length` value is the total number of categories (without pagination).
+Tìm nạp tất cả các định nghĩa category. Không yêu cầu tham số đầu vào nào. Không yêu cầu đặc quyền cụ thể nào ngoài một user session hợp lệ hoặc API Key. Ngoài [Standard Response Format](#standard-response-format), phản hồi bao gồm một mảng `rows` gồm các category và một đối tượng `list` với siêu dữ liệu tóm tắt. Giá trị `list.length` là tổng số category (mà không phân trang).
 
-Example response:
+Phản hồi ví dụ:
 
 ```json
 {
@@ -618,21 +618,20 @@ Example response:
 }
 ```
 
-See [Category](data.md#category) for details on category properties.
-
+Xem [Category](data.md#category) để biết thêm chi tiết về các thuộc tính của category.
 ### get_category
 
 ```
 GET /api/app/get_category/v1
 ```
 
-Fetch a single category definition by ID. No specific privilege is required beyond a valid user session or API Key. Both HTTP GET with query string parameters and HTTP POST with JSON are accepted. Parameters:
+Lấy thông tin định nghĩa của một category thông qua ID. Không yêu cầu quyền đặc biệt nào ngoài việc có một phiên đăng nhập hợp lệ hoặc API Key. Cả HTTP GET với các tham số chuỗi truy vấn (query string parameters) và HTTP POST với JSON đều được chấp nhận. Các tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the category to fetch. |
+| `id` | String | **(Bắt buộc)** ID chữ và số của category cần lấy. |
 
-Example request:
+Yêu cầu ví dụ:
 
 ```json
 {
@@ -640,7 +639,7 @@ Example request:
 }
 ```
 
-Example response:
+Phản hồi ví dụ:
 
 ```json
 {
@@ -663,7 +662,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `category` property containing the requested category definition.  See [Category](data.md#category) for details on category properties.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi sẽ bao gồm một thuộc tính `category` chứa thông tin định nghĩa của category được yêu cầu. Xem [Category](data.md#category) để biết chi tiết về các thuộc tính của category.
 
 ### create_category
 
@@ -671,9 +670,9 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 POST /api/app/create_category/v1
 ```
 
-Create a new category. Requires the [create_categories](privileges.md#create_categories) privilege and category-level access to the specified ID (for category-limited accounts), plus a valid user session or API Key. Send as HTTP POST with JSON. See [Category](data.md#category) for property details. The `id` may be omitted and will be auto-generated; `username`, `created`, `modified`, `revision`, and `sort_order` are set by the server.
+Tạo một category mới. Yêu cầu quyền [create_categories](privileges.md#create_categories) và quyền truy cập ở cấp độ category đối với ID được chỉ định (đối với các tài khoản bị giới hạn category), cùng với một phiên đăng nhập hợp lệ hoặc API Key. Gửi dưới dạng HTTP POST với JSON. Xem [Category](data.md#category) để biết chi tiết về thuộc tính. Tham số `id` có thể bị bỏ qua và sẽ được tự động tạo; `username`, `created`, `modified`, `revision`, và `sort_order` được thiết lập bởi server.
 
-Example request:
+Yêu cầu ví dụ:
 
 ```json
 {
@@ -687,7 +686,7 @@ Example request:
 }
 ```
 
-Example response:
+Phản hồi ví dụ:
 
 ```json
 {
@@ -696,12 +695,12 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `category` property containing the full category object including auto-generated fields.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi sẽ bao gồm một thuộc tính `category` chứa toàn bộ đối tượng category bao gồm cả các trường được tự động tạo.
 
-Notes:
+Ghi chú:
 
-- The server validates [Limits](data.md#limit) and [Actions](data.md#action).
-- `sort_order` is automatically assigned at the end of the current list.
+- server sẽ xác thực các [Limits](data.md#limit) và [Actions](data.md#action).
+- `sort_order` được tự động gán ở cuối danh sách hiện tại.
 
 ### update_category
 
@@ -709,16 +708,16 @@ Notes:
 POST /api/app/update_category/v1
 ```
 
-Update an existing category by ID. Requires the [edit_categories](privileges.md#edit_categories) privilege and category-level access to the specified ID (for category-limited accounts), plus a valid user session or API Key. Send as HTTP POST with JSON. The request is shallow-merged into the existing category, so you can provide a sparse set of properties to update. The server updates `modified` and increments `revision` automatically.
+Cập nhật một category hiện có thông qua ID. Yêu cầu quyền [edit_categories](privileges.md#edit_categories) và quyền truy cập ở cấp độ category đối với ID được chỉ định (đối với các tài khoản bị giới hạn category), cùng với một phiên đăng nhập hợp lệ hoặc API Key. Gửi dưới dạng HTTP POST với JSON. Yêu cầu này sẽ được hợp nhất nông (shallow-merged) vào category hiện có, do đó bạn có thể cung cấp một tập hợp các thuộc tính thưa thớt để cập nhật. server sẽ cập nhật `modified` và tự động tăng `revision`.
 
-Parameters:
+Các tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The category ID to update. |
-| (Other) | Various | Any updatable [Category](data.md#category) fields (e.g. `title`, `enabled`, `color`, `notes`, `limits`, `actions`). |
+| `id` | String | **(Bắt buộc)** ID category cần cập nhật. |
+| (Other) | Various | Bất kỳ trường [Category](data.md#category) nào có thể cập nhật (ví dụ: `title`, `enabled`, `color`, `notes`, `limits`, `actions`). |
 
-Example request:
+Yêu cầu ví dụ:
 
 ```json
 {
@@ -728,7 +727,7 @@ Example request:
 }
 ```
 
-Example response:
+Phản hồi ví dụ:
 
 ```json
 {
@@ -736,7 +735,7 @@ Example response:
 }
 ```
 
-See [Limit](data.md#limit) and [Action](data.md#action) for nested structures.
+Xem [Limit](data.md#limit) và [Action](data.md#action) để biết các cấu trúc lồng nhau.
 
 ### delete_category
 
@@ -744,15 +743,15 @@ See [Limit](data.md#limit) and [Action](data.md#action) for nested structures.
 POST /api/app/delete_category/v1
 ```
 
-Delete an existing category by ID. Requires the [delete_categories](privileges.md#delete_categories) privilege and category-level access to the specified ID (for category-limited accounts), plus a valid user session or API Key. Deletion is blocked if any [Events](data.md#event) are assigned to the category.
+Xóa một category hiện có thông qua ID. Yêu cầu quyền [delete_categories](privileges.md#delete_categories) và quyền truy cập ở cấp độ category đối với ID được chỉ định (đối với các tài khoản bị giới hạn category), cùng với một phiên đăng nhập hợp lệ hoặc API Key. Việc xóa sẽ bị chặn nếu có bất kỳ [Events](data.md#event) nào được gán cho category đó.
 
-Parameters:
+Các tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The category ID to delete. |
+| `id` | String | **(Bắt buộc)** ID category cần xóa. |
 
-Example request:
+Yêu cầu ví dụ:
 
 ```json
 {
@@ -760,7 +759,7 @@ Example request:
 }
 ```
 
-Example response:
+Phản hồi ví dụ:
 
 ```json
 {
@@ -768,7 +767,7 @@ Example response:
 }
 ```
 
-Deletions are permanent and cannot be undone.
+Việc xóa là vĩnh viễn và không thể hoàn tác.
 
 ### multi_update_category
 
@@ -776,15 +775,15 @@ Deletions are permanent and cannot be undone.
 POST /api/app/multi_update_category/v1
 ```
 
-Update multiple categories in a single call. This endpoint is intended for updating `sort_order` only (e.g., after drag-and-drop reordering in the UI). Requires the [edit_categories](privileges.md#edit_categories) privilege and category-level access to all categories (`*`), plus a valid user session or API Key.
+Cập nhật nhiều category trong một lệnh gọi duy nhất. Endpoint này chỉ dành cho việc cập nhật `sort_order` (ví dụ: sau khi kéo thả sắp xếp lại trên giao diện người dùng). Yêu cầu quyền [edit_categories](privileges.md#edit_categories) và quyền truy cập ở cấp độ category đối với tất cả category (`*`), cùng với một phiên đăng nhập hợp lệ hoặc API Key.
 
-Parameters:
+Các tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `items` | Array(Object) | **(Required)** Array of objects, each with an `id` and the new `sort_order`. |
+| `items` | Array(Object) | **(Bắt buộc)** Mảng các đối tượng, mỗi đối tượng có một `id` và một `sort_order` mới. |
 
-Example request:
+Yêu cầu ví dụ:
 
 ```json
 {
@@ -795,7 +794,7 @@ Example request:
 }
 ```
 
-Example response:
+Phản hồi ví dụ:
 
 ```json
 {
@@ -803,16 +802,16 @@ Example response:
 }
 ```
 
-Notes:
+Ghi chú:
 
-- Only `sort_order` is updated by this endpoint.
-- `modified` and `revision` are not updated by design for multi-updates of sort order.
+- Chỉ `sort_order` được cập nhật bởi endpoint này.
+- `modified` và `revision` được thiết kế là không cập nhật cho thao tác multi-updates của sort order.
 
 
 
 ## Channels
 
-Channel APIs manage notification channels (e.g., email lists, user mentions, optional web hook or follow-up job). Use them to list, fetch, create, update, and delete channels that alerts or actions can target. Channels centralize how notifications are delivered so events and alerts can reference them by ID. Editing channels requires privileges; listing and fetching require a valid session or API Key.
+Channel APIs quản lý các channel thông báo (ví dụ: danh sách email, nhắc đến người dùng, web hook tùy chọn hoặc job tiếp nối). Sử dụng chúng để liệt kê, lấy, tạo, cập nhật và xóa các channel mà các alerts hoặc actions có thể nhắm tới. Các channels tập trung hóa cách các thông báo được phân phối để các events và alerts có thể tham chiếu chúng thông qua ID. Việc chỉnh sửa các channels yêu cầu các quyền; việc liệt kê và lấy thông tin yêu cầu một phiên hợp lệ hoặc API Key.
 
 ### get_channels
 
@@ -820,11 +819,11 @@ Channel APIs manage notification channels (e.g., email lists, user mentions, opt
 GET /api/app/get_channels/v1
 ```
 
-Fetch all notification channel definitions. No input parameters are required. No specific privilege is required beyond a valid user session or API Key.
+Lấy tất cả các định nghĩa notification channel. Không yêu cầu tham số đầu vào nào. Không yêu cầu quyền đặc biệt nào ngoài một phiên người dùng hợp lệ hoặc API Key.
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing all channels, and a `list` object containing list metadata (e.g. `length` for total rows without pagination).
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này sẽ bao gồm một mảng `rows` chứa tất cả các channels, và một đối tượng `list` chứa siêu dữ liệu danh sách (ví dụ: `length` cho tổng số hàng mà không phân trang).
 
-Example response:
+Phản hồi ví dụ:
 
 ```json
 {
@@ -853,7 +852,7 @@ Example response:
 }
 ```
 
-See [Channel](data.md#channel) for details on channel properties.
+Xem [Channel](data.md#channel) để biết chi tiết về các thuộc tính channel.
 
 ### get_channel
 
@@ -861,15 +860,15 @@ See [Channel](data.md#channel) for details on channel properties.
 GET /api/app/get_channel/v1
 ```
 
-Fetch a single channel definition by ID. No specific privilege is required beyond a valid user session or API Key. Both HTTP GET with query string parameters and HTTP POST with JSON are accepted.
+Lấy một định nghĩa channel duy nhất bằng ID. Không yêu cầu đặc quyền nào ngoài một phiên người dùng hợp lệ hoặc API Key. Chấp nhận cả HTTP GET với các tham số query string và HTTP POST với JSON.
 
-Parameters:
+Các tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the channel to fetch. |
+| `id` | String | **(Bắt buộc)** ID chữ và số của channel cần lấy. |
 
-Example request:
+Yêu cầu ví dụ:
 
 ```json
 {
@@ -877,7 +876,7 @@ Example request:
 }
 ```
 
-Example response:
+Phản hồi ví dụ:
 
 ```json
 {
@@ -902,9 +901,9 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `channel` object containing the requested channel.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi sẽ bao gồm một đối tượng `channel` chứa channel được yêu cầu.
 
-See [Channel](data.md#channel) for details on channel properties.
+Xem [Channel](data.md#channel) để biết chi tiết về các thuộc tính channel.
 
 ### create_channel
 
@@ -912,9 +911,9 @@ See [Channel](data.md#channel) for details on channel properties.
 POST /api/app/create_channel/v1
 ```
 
-Create a new notification channel. Requires the [create_channels](privileges.md#create_channels) privilege, plus a valid user session or API Key. Send as HTTP POST with JSON. See [Channel](data.md#channel) for property details. The `id` may be omitted and will be auto-generated; `username`, `created`, `modified`, and `revision` are set by the server.
+Tạo một notification channel mới. Yêu cầu đặc quyền [create_channels](privileges.md#create_channels), cùng với một phiên người dùng hợp lệ hoặc API Key. Gửi bằng HTTP POST với JSON. Xem chi tiết thuộc tính tại [Channel](data.md#channel). `id` có thể được bỏ qua và sẽ được tự động tạo; `username`, `created`, `modified`, và `revision` được thiết lập bởi server.
 
-Example request:
+Yêu cầu ví dụ:
 
 ```json
 {
@@ -931,7 +930,7 @@ Example request:
 }
 ```
 
-Example response:
+Phản hồi ví dụ:
 
 ```json
 {
@@ -940,7 +939,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `channel` object containing the newly created channel.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi sẽ bao gồm một đối tượng `channel` chứa channel mới được tạo.
 
 ### update_channel
 
@@ -948,16 +947,16 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 POST /api/app/update_channel/v1
 ```
 
-Update an existing channel by ID. Requires the [edit_channels](privileges.md#edit_channels) privilege, plus a valid user session or API Key. Send as HTTP POST with JSON. The request is shallow-merged into the existing channel, so you can provide a sparse set of properties to update. The server updates `modified` and increments `revision` automatically.
+Cập nhật một channel hiện có thông qua ID. Yêu cầu đặc quyền [edit_channels](privileges.md#edit_channels), cùng với một phiên người dùng hợp lệ hoặc API Key. Gửi qua HTTP POST với JSON. Yêu cầu này được hợp nhất nông vào channel hiện có, vì vậy bạn có thể cung cấp một tập hợp các thuộc tính thưa thớt để cập nhật. Server sẽ tự động cập nhật `modified` và tăng `revision`.
 
-Parameters:
+Các tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The channel ID to update. |
-| (Other) | Various | Any updatable [Channel](data.md#channel) fields (e.g. `title`, `enabled`, `users`, `email`, `web_hook`, `run_event`, `sound`, `icon`, `max_per_day`, `notes`). |
+| `id` | String | **(Bắt buộc)** ID channel cần cập nhật. |
+| (Other) | Various | Bất kỳ trường [Channel](data.md#channel) nào có thể cập nhật (ví dụ: `title`, `enabled`, `users`, `email`, `web_hook`, `run_event`, `sound`, `icon`, `max_per_day`, `notes`). |
 
-Example request:
+Yêu cầu ví dụ:
 
 ```json
 {
@@ -967,7 +966,7 @@ Example request:
 }
 ```
 
-Example response:
+Phản hồi ví dụ:
 
 ```json
 {
@@ -981,15 +980,15 @@ Example response:
 POST /api/app/delete_channel/v1
 ```
 
-Delete an existing channel by ID. Requires the [delete_channels](privileges.md#delete_channels) privilege, plus a valid user session or API Key.
+Xóa một channel hiện có bằng ID. Yêu cầu đặc quyền [delete_channels](privileges.md#delete_channels), cùng với một phiên người dùng hợp lệ hoặc API Key.
 
-Parameters:
+Các tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The channel ID to delete. |
+| `id` | String | **(Bắt buộc)** ID channel cần xóa. |
 
-Example request:
+Yêu cầu ví dụ:
 
 ```json
 {
@@ -997,7 +996,7 @@ Example request:
 }
 ```
 
-Example response:
+Phản hồi ví dụ:
 
 ```json
 {
@@ -1005,13 +1004,13 @@ Example response:
 }
 ```
 
-Deletions are permanent and cannot be undone.
+Các thao tác xóa là vĩnh viễn và không thể hoàn tác.
 
 
 
 ## Events
 
-Event APIs define jobs to run (what, when, and how). Use them to list, fetch, create, update, delete events, and to trigger runs immediately. Events reference plugins, categories, secrets, schedules/triggers and actions; creating or editing events enforces parameter validation and user privileges. Running events launches jobs on target servers based on the scheduler and routing configuration.
+Event APIs định nghĩa các jobs cần chạy (cái gì, khi nào, và như thế nào). Sử dụng chúng để liệt kê, lấy, tạo, cập nhật, xóa các events, và để kích hoạt chạy ngay lập tức. Các events tham chiếu đến các plugins, categories, secrets, schedules/triggers và actions; việc tạo hoặc chỉnh sửa các events sẽ thực thi việc xác thực tham số và các đặc quyền của người dùng. Việc chạy events sẽ khởi chạy các jobs trên các servers đích dựa trên cấu hình scheduler và định tuyến.
 
 ### get_events
 
@@ -1019,9 +1018,9 @@ Event APIs define jobs to run (what, when, and how). Use them to list, fetch, cr
 GET /api/app/get_events/v1
 ```
 
-Fetch all event definitions, or optionally filter the results. No specific privilege is required beyond a valid user session or API Key.
+Lấy tất cả các định nghĩa event, hoặc có tùy chọn lọc các kết quả. Không yêu cầu quyền đặc biệt nào ngoài một phiên người dùng hợp lệ hoặc API Key.
 
-By default all events are returned.  To limit the results to specific criteria, specify any top-level [Event](data.md#event) properties as GET or POST parameters.  Here is an example request which fetches all enabled events that are using built-in Shell Plugin:
+Mặc định, tất cả các events được trả về. Để giới hạn các kết quả theo các tiêu chí cụ thể, hãy chỉ định bất kỳ thuộc tính [Event](data.md#event) cấp cao nhất nào dưới dạng các tham số GET hoặc POST. Đây là một ví dụ về yêu cầu sẽ lấy tất cả các events đã bật đang sử dụng Shell Plugin có sẵn:
 
 ```json
 {
@@ -1030,9 +1029,9 @@ By default all events are returned.  To limit the results to specific criteria, 
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing all events, and a `list` object containing list metadata (e.g. `length` for total rows without pagination).  The `list.length` response property always reflects the total event count, regardless of filtering.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này sẽ bao gồm một mảng `rows` chứa tất cả các events, và một đối tượng `list` chứa siêu dữ liệu danh sách (ví dụ: `length` đối với tổng số hàng mà không phân trang). Thuộc tính phản hồi `list.length` luôn phản ánh tổng số event, bất kể có lọc hay không.
 
-Example response:
+Phản hồi ví dụ:
 
 ```json
 {
@@ -1069,7 +1068,7 @@ Example response:
 }
 ```
 
-See [Event](data.md#event) for details on event properties.
+Xem [Event](data.md#event) để biết chi tiết về các thuộc tính event.
 
 ### get_event
 
@@ -1077,15 +1076,15 @@ See [Event](data.md#event) for details on event properties.
 GET /api/app/get_event/v1
 ```
 
-Fetch a single event definition by ID. No specific privilege is required beyond a valid user session or API Key. Both HTTP GET with query string parameters and HTTP POST with JSON are accepted.
+Lấy một định nghĩa event duy nhất bằng ID. Không yêu cầu quyền đặc biệt nào ngoài một phiên người dùng hợp lệ hoặc API Key. Cả HTTP GET với các tham số query string và HTTP POST với JSON đều được chấp nhận.
 
-Parameters:
+Các tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the event to fetch. |
+| `id` | String | **(Bắt buộc)** ID chữ và số của event cần lấy. |
 
-Example request:
+Yêu cầu ví dụ:
 
 ```json
 {
@@ -1093,7 +1092,7 @@ Example request:
 }
 ```
 
-Example response:
+Phản hồi ví dụ:
 
 ```json
 {
@@ -1104,9 +1103,9 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include an `event` object containing the requested event, a `jobs` array of currently running jobs for the event, and a `queued` number indicating the count of queued jobs.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi sẽ bao gồm một đối tượng `event` chứa event được yêu cầu, một mảng `jobs` chứa các jobs hiện đang chạy cho event đó, và một số `queued` cho biết số lượng jobs đang xếp hàng đợi.
 
-See [Event](data.md#event) for details on event properties, and [Job](data.md#job) for job properties.
+Xem [Event](data.md#event) để biết chi tiết về các thuộc tính event, và [Job](data.md#job) để biết các thuộc tính job.
 
 ### get_event_history
 
@@ -1114,19 +1113,19 @@ See [Event](data.md#event) for details on event properties, and [Job](data.md#jo
 GET /api/app/get_event_history/v1
 ```
 
-Fetch the revision history for a specific event from the activity log. Requires a valid user session or API Key, and category/target access to the event.
+Lấy lịch sử sửa đổi (revision history) cho một event cụ thể từ nhật ký hoạt động. Yêu cầu một phiên người dùng hợp lệ hoặc API Key, và quyền truy cập category/target vào event.
 
-Parameters:
+Các tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The event ID to fetch history for. |
-| `offset` | Number | Optional row offset for pagination. Defaults to `0`. |
-| `limit` | Number | Optional row limit for pagination. Defaults to `1`. |
-| `sort_by` | String | Optional sort field. Defaults to `_id`. |
-| `sort_dir` | Number | Optional sort direction. Use `-1` for descending (default) or `1` for ascending. |
+| `id` | String | **(Bắt buộc)** ID event cần lấy lịch sử. |
+| `offset` | Number | Tùy chọn row offset để phân trang. Mặc định là `0`. |
+| `limit` | Number | Tùy chọn row limit để phân trang. Mặc định là `1`. |
+| `sort_by` | String | Tùy chọn trường để sắp xếp. Mặc định là `_id`. |
+| `sort_dir` | Number | Tùy chọn hướng sắp xếp. Sử dụng `-1` cho giảm dần (mặc định) hoặc `1` cho tăng dần. |
 
-Example request:
+Yêu cầu ví dụ:
 
 ```json
 {
@@ -1136,7 +1135,7 @@ Example request:
 }
 ```
 
-Example response:
+Phản hồi ví dụ:
 
 ```json
 {
@@ -1149,7 +1148,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array of activity records related to the event, and a `list` object with pagination metadata.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này sẽ bao gồm một mảng `rows` chứa các bản ghi hoạt động liên quan đến event, và một đối tượng `list` chứa siêu dữ liệu phân trang.
 
 ### create_event
 
@@ -1157,15 +1156,15 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 POST /api/app/create_event/v1
 ```
 
-Create a new event. Requires the [create_events](privileges.md#create_events) privilege, plus category/target access for the event, and a valid user session or API Key. Send as HTTP POST with JSON. See [Event](data.md#event) for property details. The `id` may be omitted and will be auto-generated; `username`, `created`, and `modified` are set by the server.
+Tạo một event mới. Yêu cầu đặc quyền [create_events](privileges.md#create_events), cộng thêm quyền truy cập category/target cho event, và một phiên người dùng hợp lệ hoặc API Key. Gửi bằng HTTP POST với JSON. Xem [Event](data.md#event) để biết chi tiết thuộc tính. `id` có thể được bỏ qua và sẽ tự động được tạo; `username`, `created`, và `modified` được thiết lập bởi server.
 
-Notes:
+Ghi chú:
 
-- For non-workflow events, `targets` and `plugin` are required.
-- For workflow events (`type: "workflow"`), the server sets `plugin` to `_workflow` and requires a `workflow` object; `targets` are not required.
-- Locked plugin/event parameters are enforced for non-admins and required fields are validated.
+- Đối với các events không phải workflow, các `targets` và `plugin` là bắt buộc.
+- Đối với các workflow events (`type: "workflow"`), server thiết lập `plugin` thành `_workflow` và yêu cầu một đối tượng `workflow`; các `targets` là không bắt buộc.
+- Các tham số plugin/event bị khóa sẽ được thực thi đối với những người không phải là quản trị viên (non-admins) và các trường bắt buộc sẽ được xác thực.
 
-Example request (non-workflow event):
+Yêu cầu ví dụ (non-workflow event):
 
 ```json
 {
@@ -1179,7 +1178,7 @@ Example request (non-workflow event):
 }
 ```
 
-Example response:
+Phản hồi ví dụ:
 
 ```json
 {
@@ -1188,7 +1187,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include an `event` object containing the newly created event.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi sẽ bao gồm một đối tượng `event` chứa event mới được tạo.
 
 ### update_event
 
@@ -1196,21 +1195,21 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 POST /api/app/update_event/v1
 ```
 
-Update an existing event by ID. Requires the [edit_events](privileges.md#edit_events) privilege, plus category/target access to the event, and a valid user session or API Key. Send as HTTP POST with JSON. The request is shallow-merged into the existing event, so you can provide a sparse set of properties to update. The server updates `modified` and increments `revision` automatically.
+Cập nhật một event hiện có bằng ID. Yêu cầu quyền [edit_events](privileges.md#edit_events), cộng thêm quyền truy cập category/target vào event, và một phiên người dùng hợp lệ hoặc API Key. Gửi qua HTTP POST với JSON. Yêu cầu này được hợp nhất nông vào event hiện có, vì vậy bạn có thể cung cấp một tập hợp các thuộc tính thưa thớt để cập nhật. Server sẽ tự động cập nhật `modified` và tăng `revision`.
 
-Parameters:
+Các tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The event ID to update. |
-| (Other) | Various | Any updatable [Event](data.md#event) fields (e.g. `title`, `enabled`, `category`, `targets`, `algo`, `plugin`, `params`, `triggers`, `limits`, `actions`, `notes`). |
+| `id` | String | **(Bắt buộc)** ID event cần cập nhật. |
+| (Other) | Various | Bất kỳ trường [Event](data.md#event) nào có thể cập nhật (ví dụ: `title`, `enabled`, `category`, `targets`, `algo`, `plugin`, `params`, `triggers`, `limits`, `actions`, `notes`). |
 
-Special behavior:
+Hành vi đặc biệt:
 
-- Non-admins have locked plugin/event parameters enforced; required fields must be present.
-- You can update per-event state by passing `update_state` as an object of key/value pairs. These are stored in event state and removed from the event record itself.
+- Đối với người dùng không phải admin (non-admins), các tham số plugin/event bị khóa sẽ được thực thi; các trường bắt buộc phải có mặt.
+- Bạn có thể cập nhật trạng thái trên mỗi event (per-event state) bằng cách truyền `update_state` dưới dạng một đối tượng gồm các cặp khóa/giá trị (key/value pairs). Chúng được lưu trữ trong trạng thái event (event state) và bị xóa khỏi bản thân bản ghi event.
 
-Example request:
+Yêu cầu ví dụ:
 
 ```json
 {
@@ -1221,7 +1220,7 @@ Example request:
 }
 ```
 
-Example response:
+Phản hồi ví dụ:
 
 ```json
 {
@@ -1230,26 +1229,25 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include an `event` object containing the updated event.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này sẽ bao gồm một đối tượng `event` chứa event đã được cập nhật.
 
-The `update_state` is used to reset the event's time cursor for [Catch-Up](triggers.md#catch-up) mode.
-
+`update_state` được sử dụng để thiết lập lại con trỏ thời gian (time cursor) của event đối với chế độ [Catch-Up](triggers.md#catch-up).
 ### delete_event
 
 ```
 POST /api/app/delete_event/v1
 ```
 
-Delete an existing event by ID. Requires the [delete_events](privileges.md#delete_events) privilege, plus category/target access to the event, and a valid user session or API Key. Deletion is blocked if any jobs are active for the event. You may optionally request deletion of all historical jobs for the event.
+Xóa một event đã có theo ID. Yêu cầu quyền [delete_events](privileges.md#delete_events), cộng với quyền truy cập category/target vào event, và một phiên người dùng hoặc API Key hợp lệ. Việc xóa sẽ bị chặn nếu có bất kỳ job nào đang hoạt động cho event. Bạn có thể tùy chọn yêu cầu xóa tất cả lịch sử job của event.
 
-Parameters:
+Các tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The event ID to delete. |
-| `delete_jobs` | Boolean | Optional. If `true`, delete all historical jobs for the event (performed in background). |
+| `id` | String | **(Bắt buộc)** ID của event cần xóa. |
+| `delete_jobs` | Boolean | Tùy chọn. Nếu `true`, xóa tất cả lịch sử job của event (thực hiện ở chế độ nền). |
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -1258,7 +1256,7 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -1266,7 +1264,7 @@ Example response:
 }
 ```
 
-Deletions are permanent and cannot be undone.
+Việc xóa là vĩnh viễn và không thể hoàn tác.
 
 ### run_event
 
@@ -1274,38 +1272,38 @@ Deletions are permanent and cannot be undone.
 POST /api/app/run_event/v1
 ```
 
-Run an event on demand with optional overrides and optional file uploads. Requires the [run_jobs](privileges.md#run_jobs) privilege, plus category/target access to the event, and a valid user session or API Key.
+Chạy một event theo yêu cầu với các ghi đè tùy chọn và tải lên tệp tùy chọn. Yêu cầu quyền [run_jobs](privileges.md#run_jobs), cộng với quyền truy cập category/target vào event, và một phiên người dùng hoặc API Key hợp lệ.
 
-Manual run rules:
+Quy tắc chạy thủ công:
 
-- The event must have an enabled `manual` trigger, unless you pass `test: true`.
-- Disabled events cannot be run unless you pass `test: true`.
+- Event phải có một trigger `manual` được bật, trừ khi bạn truyền `test: true`.
+- Các event bị vô hiệu hóa không thể được chạy trừ khi bạn truyền `test: true`.
 
-Input formats:
+Các định dạng đầu vào:
 
-- Pure JSON: Send `Content-Type: application/json` with a JSON body.
-- Multipart form-data (for file uploads): Send `Content-Type: multipart/form-data` and include a `json` field containing the full JSON payload (as a string), plus one or more file fields. All uploaded files are attached to `input.files` for the job.
+- JSON thuần: Gửi `Content-Type: application/json` với phần body là JSON.
+- Multipart form-data (để tải lên tệp): Gửi `Content-Type: multipart/form-data` và bao gồm trường `json` chứa toàn bộ payload JSON (dưới dạng chuỗi), cộng với một hoặc nhiều trường tệp. Tất cả các tệp được tải lên sẽ được đính kèm vào `input.files` cho job.
 
-Parameters (core):
+Các tham số (cốt lõi):
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | The event ID to run. One of `id` or `title` is required. |
-| `title` | String | The event title to run (alternative to `id`). |
-| `params` | Object | Optional overrides for [Event.params](data.md#event-params). Missing keys fall back to the event's saved params. |
-| `input` | Object | Optional input object; may include `data` and/or `files` (see [Job.input](data.md#job-input)). Uploaded files are appended to `input.files`. |
-| `test` | Boolean | If `true`, bypasses manual-trigger and enabled checks and marks the job as a test. |
-| `tags` | Array | Optionally override tags set in the event.  Specify one or more [Tag.id](data.md#tag-id)s in the array. |
+| `id` | String | ID của event để chạy. Bắt buộc một trong hai `id` hoặc `title`. |
+| `title` | String | Tiêu đề của event để chạy (thay thế cho `id`). |
+| `params` | Object | Các ghi đè tùy chọn cho [Event.params](data.md#event-params). Các khóa bị thiếu sẽ trở về các params đã lưu của event. |
+| `input` | Object | Đối tượng đầu vào tùy chọn; có thể bao gồm `data` và/hoặc `files` (xem [Job.input](data.md#job-input)). Các tệp được tải lên sẽ được nối vào `input.files`. |
+| `test` | Boolean | Nếu `true`, bỏ qua các kiểm tra kích hoạt thủ công và được bật, và đánh dấu job là test. |
+| `tags` | Array | Tùy chọn ghi đè các tag được thiết lập trong event. Chỉ định một hoặc nhiều [Tag.id](data.md#tag-id) trong mảng. |
 
-Additional behaviors:
+Các hành vi bổ sung:
 
-- Any properties from the event are overridable here.  See the [Event](data.md#event) data structure for details.
-- Nested keys using `parent/child` can be supplied as flat parameters (e.g. `params/foo=bar`).
-- When using multipart uploads, the `json` field should contain the exact JSON you would otherwise POST.
-- If the `post_data` query parameter is present, all raw POST fields are placed under `post_data` instead of being merged (advanced usage).
-- Non-admins have locked plugin/event parameters enforced; required fields must be present.
+- Bất kỳ thuộc tính nào từ event đều có thể được ghi đè ở đây. Xem cấu trúc dữ liệu [Event](data.md#event) để biết thêm chi tiết.
+- Các khóa lồng nhau sử dụng `parent/child` có thể được cung cấp dưới dạng các tham số phẳng (ví dụ: `params/foo=bar`).
+- Khi sử dụng tải lên multipart, trường `json` phải chứa chính xác JSON mà bạn sẽ POST.
+- Nếu tham số truy vấn `post_data` hiện diện, tất cả các trường POST thô sẽ được đặt dưới `post_data` thay vì được hợp nhất (cách sử dụng nâng cao).
+- Những người không phải quản trị viên sẽ bị áp dụng các tham số plugin/event đã khóa; các trường bắt buộc phải có.
 
-Example: JSON POST (no files)
+Ví dụ: POST JSON (không có tệp)
 
 ```json
 {
@@ -1315,7 +1313,7 @@ Example: JSON POST (no files)
 }
 ```
 
-Example: multipart/form-data with files
+Ví dụ: multipart/form-data có tệp
 
 ```
 POST /api/app/run_event/v1
@@ -1338,7 +1336,7 @@ hello world
 ------XYZ--
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -1347,7 +1345,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include an `id` property containing the newly created [Job.id](data.md#job-id).
+Ngoài [Định dạng Response Tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một thuộc tính `id` chứa [Job.id](data.md#job-id) mới được tạo.
 
 ### magic
 
@@ -1355,13 +1353,13 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 GET /api/app/magic/v1/TOKEN
 ```
 
-Start a job using a "Magic Link".  This is a unique URL with an embedded cryptographic token, which is keyed to fire off a specific event via a special magic trigger.  This API does not require a user session or API key -- the authentication is built right into the URL.  Any parameters passed to the API, either via query string parameters or POST parameters, are passed directly into the job as event parameters.
+Bắt đầu một job sử dụng "Magic Link". Đây là một URL duy nhất với một token mã hóa được nhúng, được định cấu hình để kích hoạt một event cụ thể thông qua một trigger magic đặc biệt. API này không yêu cầu phiên người dùng hoặc API Key -- xác thực được xây dựng ngay vào URL. Bất kỳ tham số nào được truyền cho API, qua tham số chuỗi truy vấn hoặc tham số POST, đều được truyền trực tiếp vào job dưới dạng các tham số event.
 
-Any "administrator locked" event or plugin parameters cannot be overridden by this API.
+Bất kỳ tham số event hoặc plugin nào bị "khóa bởi quản trị viên" đều không thể bị ghi đè bởi API này.
 
-See [Magic Link Trigger](triggers.md#magic-link) for more details.
+Xem [Magic Link Trigger](triggers.md#magic-link) để biết thêm chi tiết.
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -1371,7 +1369,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include an `id` property containing the newly created [Job.id](data.md#job-id), and a special "stream token" in a property named `stream`.  This token can be provided to the [stream_job](#stream_job) API to stream job updates via [Server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events).
+Ngoài [Định dạng Response Tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một thuộc tính `id` chứa [Job.id](data.md#job-id) mới được tạo, và một "stream token" đặc biệt trong thuộc tính tên là `stream`. Token này có thể được cung cấp cho API [stream_job](#stream_job) để stream các cập nhật job thông qua [Server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events).
 
 ### form
 
@@ -1379,17 +1377,17 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 GET /api/app/form/v1/TOKEN
 ```
 
-This API is part of the [Magic Link](triggers.md#magic-link) system, and designed to be used in a browser.  It renders a standalone page that presents the user with a form to fire off a job for the linked event.  If the event contains any parameters, those form fields are displayed as well.  If the event allows file uploads, the user can do that as well.  When the job is started, updates are streamed live to the page so the user can track their job progress.  When the job completes, the page renders the job results, output files and data if any, and user content if provided.
+API này là một phần của hệ thống [Magic Link](triggers.md#magic-link), và được thiết kế để sử dụng trong trình duyệt. Nó hiển thị một trang độc lập cung cấp cho người dùng một biểu mẫu để kích hoạt job cho event được liên kết. Nếu event chứa bất kỳ tham số nào, các trường biểu mẫu đó cũng được hiển thị. Nếu event cho phép tải lên tệp, người dùng cũng có thể làm điều đó. Khi job được bắt đầu, các cập nhật được stream trực tiếp đến trang để người dùng có thể theo dõi tiến trình job của họ. Khi job hoàn tất, trang sẽ hiển thị kết quả job, các tệp và dữ liệu đầu ra nếu có, và nội dung của người dùng nếu được cung cấp.
 
-See [Magic Link Trigger](triggers.md#magic-link) for more details.
+Xem [Magic Link Trigger](triggers.md#magic-link) để biết thêm chi tiết.
 
-The response to this API is a full HTML presentation containing the event parameter form fields for the user to fill out, as well as a file upload field if supported by the event.  Submitting the from triggers a call to [magic](#magic), followed by a call to [stream_job](#stream_job) to stream real-time job updates to the landing page.
+Response của API này là một bản trình bày HTML đầy đủ chứa các trường biểu mẫu tham số event để người dùng điền vào, cũng như một trường tải lên tệp nếu được event hỗ trợ. Việc gửi biểu mẫu sẽ kích hoạt một lệnh gọi tới [magic](#magic), theo sau là một lệnh gọi tới [stream_job](#stream_job) để stream các cập nhật job theo thời gian thực đến trang đích.
 
-**Note**: File uploads are supported by events by default, unless you add a [Max File Limit](limits.md#max-file-limit).  Setting the limit amount to `0` will disable file uploads entirely.
+**Lưu ý**: Việc tải lên tệp được các event hỗ trợ theo mặc định, trừ khi bạn thêm [Giới hạn tệp tối đa](limits.md#max-file-limit). Thiết lập lượng giới hạn bằng `0` sẽ vô hiệu hóa hoàn toàn việc tải lên tệp.
 
 ## Files
 
-File APIs upload user files, attach files to running jobs, upload job input files before launch, serve files, and delete files associated with a job. These endpoints are designed for both browser uploads and programmatic use; most require only a valid session or API Key, while job-specific operations may require additional privileges.
+Các API tệp sẽ tải lên các tệp người dùng, đính kèm tệp vào các job đang chạy, tải lên các tệp đầu vào của job trước khi khởi chạy, phục vụ tệp và xóa tệp được liên kết với một job. Các endpoint này được thiết kế cho cả việc tải lên từ trình duyệt và sử dụng qua lập trình; hầu hết chỉ yêu cầu một phiên hợp lệ hoặc API Key, trong khi các thao tác cụ thể cho job có thể yêu cầu các đặc quyền bổ sung.
 
 ### upload_files
 
@@ -1397,18 +1395,18 @@ File APIs upload user files, attach files to running jobs, upload job input file
 POST /api/app/upload_files/v1
 ```
 
-Upload one or more files for the authenticated user. This is a general-purpose upload endpoint (not tied to any specific job). Requires a valid user session or API Key. Use `multipart/form-data` with one or more file fields.
+Tải lên một hoặc nhiều tệp cho người dùng đã xác thực. Đây là một endpoint tải lên có mục đích chung (không gắn với bất kỳ job cụ thể nào). Yêu cầu một phiên người dùng hoặc API Key hợp lệ. Sử dụng `multipart/form-data` với một hoặc nhiều trường tệp.
 
-Notes:
+Ghi chú:
 
-- Files are stored under a user-specific path and automatically expire per server configuration (see [file_expiration](config.md#file_expiration)).
-- All file paths will contain a unique cryptographic hash, rendering the URLs undiscoverable.
-- This API is used by the graphing library to provide links to chart snapshot images.
-- HTTP POST field names are arbitrary; all files in the request are processed.
+- Các tệp được lưu trữ dưới một đường dẫn cụ thể của người dùng và tự động hết hạn theo cấu hình server (xem [file_expiration](config.md#file_expiration)).
+- Tất cả các đường dẫn tệp sẽ chứa một mã băm mật mã duy nhất, làm cho các URL không thể bị phát hiện.
+- API này được thư viện vẽ biểu đồ sử dụng để cung cấp các liên kết đến các hình ảnh snapshot của biểu đồ.
+- Tên trường POST HTTP là tùy ý; tất cả các tệp trong request đều được xử lý.
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `urls` array of absolute URLs for the uploaded files.
+Ngoài [Định dạng Response Tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một mảng `urls` chứa các URL tuyệt đối cho các tệp đã tải lên.
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -1425,24 +1423,24 @@ Example response:
 POST /api/app/upload_job_file/v1
 ```
 
-Upload a file and associate it with a running job. This endpoint is primarily used by the satellite agent (xySat), and is not designed for external use. Requires authentication via one of three methods below and `multipart/form-data` with a single file field named `file1`.
+Tải lên một tệp và liên kết nó với một job đang chạy. Endpoint này chủ yếu được tác nhân vệ tinh (xySat) sử dụng, và không được thiết kế cho mục đích sử dụng bên ngoài. Yêu cầu xác thực thông qua một trong ba phương thức bên dưới và `multipart/form-data` với một trường tệp duy nhất tên là `file1`.
 
-Authentication methods:
+Các phương thức xác thực:
 
-- API Key: Provide a valid API key via standard mechanisms (e.g., `X-API-Key` header or `api_key` param). For convenience, you may also pass it in an `auth` parameter.
-- Server token: Provide `server` (Server ID) and `auth` (a server token). The satellite computes this token; it's verified by the primary.
-- Job token: Provide `auth` computed for the job. The satellite computes this token; it's verified by the primary.
+- API Key: Cung cấp API Key hợp lệ thông qua các cơ chế tiêu chuẩn (ví dụ: header `X-API-Key` hoặc tham số `api_key`). Để thuận tiện, bạn cũng có thể truyền nó trong tham số `auth`.
+- Token server: Cung cấp `server` (ID của Server) và `auth` (một token server). Vệ tinh tính toán token này; nó được xác minh bởi server chính.
+- Token job: Cung cấp `auth` được tính toán cho job. Vệ tinh tính toán token này; nó được xác minh bởi server chính.
 
-Parameters (form + query):
+Các tham số (form + query):
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The running [Job.id](data.md#job-id). |
-| `auth` | String | **(Required)** Authentication token or API key (see above). |
-| `server` | String | Optional. Required only for the server token method. |
-| `file1` | File | **(Required)** The uploaded file content (multipart field name must be `file1`). |
+| `id` | String | **(Bắt buộc)** [Job.id](data.md#job-id) đang chạy. |
+| `auth` | String | **(Bắt buộc)** Token xác thực hoặc API Key (xem bên trên). |
+| `server` | String | Tùy chọn. Chỉ bắt buộc đối với phương thức token server. |
+| `file1` | File | **(Bắt buộc)** Nội dung tệp được tải lên (tên trường multipart phải là `file1`). |
 
-Example multipart request (pseudocode):
+Ví dụ request multipart (mã giả):
 
 ```
 POST /api/app/upload_job_file/v1?id=jabc123def&auth=...&server=main
@@ -1456,7 +1454,7 @@ hello
 ------XYZ--
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -1466,7 +1464,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `key` (storage path) and `size` (bytes). You can later fetch the file with `GET /{key}` relative to your base URL (see [file](#file)).
+Ngoài [Định dạng Response Tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một `key` (đường dẫn lưu trữ) và `size` (byte). Bạn có thể tìm nạp tệp sau đó bằng `GET /{key}` tương đối so với URL cơ sở của bạn (xem [file](#file)).
 
 ### delete_job_file
 
@@ -1474,16 +1472,16 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 POST /api/app/delete_job_file/v1
 ```
 
-Delete a file previously attached to a job. Requires a valid session or API Key with the [delete_jobs](privileges.md#delete_jobs) privilege, and category/target access to the job's event. Supports HTTP POST with JSON, or HTTP GET with query parameters.
+Xóa một tệp đã được đính kèm trước đó vào một job. Yêu cầu một phiên hợp lệ hoặc API Key với quyền [delete_jobs](privileges.md#delete_jobs), và quyền truy cập category/target vào event của job. Hỗ trợ HTTP POST với JSON, hoặc HTTP GET với các tham số truy vấn.
 
-Parameters:
+Các tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The [Job.id](data.md#job-id). |
-| `path` | String | **(Required)** The exact storage path of the file to delete.  Must be a file attached to the specified job. |
+| `id` | String | **(Bắt buộc)** [Job.id](data.md#job-id). |
+| `path` | String | **(Bắt buộc)** Đường dẫn lưu trữ chính xác của tệp cần xóa. Phải là một tệp được đính kèm vào job được chỉ định. |
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -1492,7 +1490,7 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -1500,7 +1498,7 @@ Example response:
 }
 ```
 
-The file is removed from storage and the job's `files` list.  To be clear, this API does not allow file deletion given any arbitrary storage path.  The specified `path` must be registered as a file inside the given job object, or else the API returns an error.
+Tệp sẽ bị xóa khỏi bộ nhớ và danh sách `files` của job. Để làm rõ, API này không cho phép xóa tệp với bất kỳ đường dẫn lưu trữ ngẫu nhiên nào. Tham số `path` được chỉ định phải được đăng ký dưới dạng một tệp trong đối tượng job được cung cấp, nếu không API sẽ trả về lỗi.
 
 ### upload_job_input_files
 
@@ -1508,16 +1506,16 @@ The file is removed from storage and the job's `files` list.  To be clear, this 
 POST /api/app/upload_job_input_files/v1
 ```
 
-Upload one or more files intended as input to a job before it starts (e.g., from the Run Event dialog). Requires a valid session or API Key with the [run_jobs](privileges.md#run_jobs) privilege. Use `multipart/form-data` with one or more file fields.
+Tải lên một hoặc nhiều tệp dự kiến làm đầu vào cho một job trước khi nó bắt đầu (ví dụ: từ hộp thoại Run Event). Yêu cầu một phiên hợp lệ hoặc API Key với quyền [run_jobs](privileges.md#run_jobs). Sử dụng `multipart/form-data` với một hoặc nhiều trường tệp.
 
-Notes:
+Ghi chú:
 
-- Files automatically expire per [client.job_upload_settings.user_file_expiration](config.md#client-job_upload_settings) in server configuration.
-- The response provides metadata that can be supplied to `run_event` under `input.files`.
+- Các tệp tự động hết hạn theo cấu hình [client.job_upload_settings.user_file_expiration](config.md#client-job_upload_settings) trên server.
+- Response cung cấp siêu dữ liệu có thể được cung cấp cho `run_event` dưới mục `input.files`.
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `files` array with metadata for each uploaded file.
+Ngoài [Định dạng Response Tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một mảng `files` với siêu dữ liệu cho mỗi tệp đã tải lên.
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -1536,7 +1534,7 @@ Example response:
 }
 ```
 
-See [Job.files](data.md#job-files) for how these are consumed by jobs.
+Xem [Job.files](data.md#job-files) để biết cách các tệp này được sử dụng bởi các job.
 
 ### file
 
@@ -1545,31 +1543,31 @@ GET /files/...
 GET /api/app/file/v1?path=...
 ```
 
-Serve a file from storage. This is a binary/streaming endpoint (not JSON). It supports full GET, HEAD, conditional requests via `ETag` and `If-Modified-Since`, and HTTP Range requests for partial content. You can access files by direct path under `/files/...`, or via `GET /api/app/file/v1?path=...`.
+Phục vụ một tệp từ bộ nhớ. Đây là một endpoint nhị phân/stream (không phải JSON). Nó hỗ trợ toàn bộ GET, HEAD, các request có điều kiện thông qua `ETag` và `If-Modified-Since`, và các request HTTP Range cho nội dung một phần. Bạn có thể truy cập các tệp bằng đường dẫn trực tiếp dưới `/files/...`, hoặc thông qua `GET /api/app/file/v1?path=...`.
 
-Parameters (query):
+Các tham số (truy vấn):
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `path` | String | When using `/api/app/file/v1`, the relative storage path under `files/` to serve. |
-| `download` | String | Optional. If set, forces download. Use `1` to download with the original filename, or supply a custom filename. |
+| `path` | String | Khi sử dụng `/api/app/file/v1`, đường dẫn lưu trữ tương đối dưới `files/` để phục vụ. |
+| `download` | String | Tùy chọn. Nếu được đặt, buộc phải tải xuống. Sử dụng `1` để tải xuống với tên tệp gốc, hoặc cung cấp tên tệp tùy chỉnh. |
 
-Behavior:
+Hành vi:
 
-- When content type is or contains `text/html`, downloads are enforced unless `download` is specified, to prevent HTML rendering in the browser.
-- Range requests return `206 Partial Content` with `Content-Range` and `Content-Length` headers.
-- HEAD requests return headers only, and may return `304 Not Modified` if applicable.
+- Khi loại nội dung là hoặc có chứa `text/html`, việc tải xuống bị bắt buộc trừ khi `download` được chỉ định, để ngăn chặn việc hiển thị HTML trong trình duyệt.
+- Các request Range trả về `206 Partial Content` với các header `Content-Range` và `Content-Length`.
+- Các request HEAD chỉ trả về các header, và có thể trả về `304 Not Modified` nếu có thể áp dụng.
 
-Examples:
+Ví dụ:
 
-- Direct URL: `GET https://example.xyops.io/files/admin/report.csv`
-- API form: `GET https://example.xyops.io/api/app/file/v1?path=admin/report.csv&download=1`
+- URL trực tiếp: `GET https://example.xyops.io/files/admin/report.csv`
+- Định dạng API: `GET https://example.xyops.io/api/app/file/v1?path=admin/report.csv&download=1`
 
 
 
 ## Groups
 
-Group APIs manage server groups used for organizing infrastructure, routing jobs, targeting monitor plugins, and access control. Use them to list, fetch, create, update, and delete groups. Groups influence where jobs and monitors run, and factor into user access restrictions and search filters. Editing groups requires privileges; reading requires a valid session or API Key.
+Các API group quản lý các server group được sử dụng để tổ chức cơ sở hạ tầng, định tuyến các job, nhắm mục tiêu các plugin monitor, và kiểm soát truy cập. Sử dụng chúng để liệt kê, lấy, tạo, cập nhật và xóa các group. Các group ảnh hưởng đến nơi các job và monitor chạy, và là yếu tố để áp dụng các hạn chế truy cập của người dùng cũng như bộ lọc tìm kiếm. Chỉnh sửa group yêu cầu có quyền; đọc yêu cầu phiên hợp lệ hoặc API Key.
 
 ### get_groups
 
@@ -1577,11 +1575,11 @@ Group APIs manage server groups used for organizing infrastructure, routing jobs
 GET /api/app/get_groups/v1
 ```
 
-Fetch all server groups. No input parameters are required. No specific privilege is required beyond a valid user session or API Key.
+Tìm nạp tất cả các server group. Không yêu cầu tham số đầu vào nào. Không yêu cầu đặc quyền cụ thể nào ngoài một phiên người dùng hoặc API Key hợp lệ.
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing all groups, and a `list` object containing list metadata (e.g. `length` for total rows without pagination).
+Ngoài [Định dạng Response Tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một mảng `rows` chứa tất cả các group, và một đối tượng `list` chứa siêu dữ liệu danh sách (ví dụ: `length` cho tổng số hàng không có phân trang).
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -1603,7 +1601,7 @@ Example response:
 }
 ```
 
-See [Group](data.md#group) for details on group properties.
+Xem [Group](data.md#group) để biết chi tiết về các thuộc tính của group.
 
 ### get_group
 
@@ -1611,15 +1609,15 @@ See [Group](data.md#group) for details on group properties.
 GET /api/app/get_group/v1
 ```
 
-Fetch a single group definition by ID. No specific privilege is required beyond a valid user session or API Key. Both HTTP GET with query string parameters and HTTP POST with JSON are accepted.
+Tìm nạp định nghĩa một group duy nhất theo ID. Không yêu cầu đặc quyền cụ thể nào ngoài một phiên người dùng hoặc API Key hợp lệ. Cả HTTP GET với các tham số chuỗi truy vấn và HTTP POST với JSON đều được chấp nhận.
 
-Parameters:
+Các tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the group to fetch. |
+| `id` | String | **(Bắt buộc)** ID chữ và số của group cần tìm nạp. |
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -1627,7 +1625,7 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -1645,9 +1643,9 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `group` object containing the requested group.
+Ngoài [Định dạng Response Tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một đối tượng `group` chứa group được yêu cầu.
 
-See [Group](data.md#group) for details on group properties.
+Xem [Group](data.md#group) để biết chi tiết về các thuộc tính của group.
 
 ### create_group
 
@@ -1655,17 +1653,17 @@ See [Group](data.md#group) for details on group properties.
 POST /api/app/create_group/v1
 ```
 
-Create a new server group. Requires the [create_groups](privileges.md#create_groups) privilege and group-level access to the specified ID, plus a valid user session or API Key. Send as HTTP POST with JSON. See [Group](data.md#group) for property details. The `id` may be omitted and will be auto-generated; `username`, `created`, `modified`, `revision`, and `sort_order` are set by the server.
+Tạo một server group mới. Yêu cầu quyền [create_groups](privileges.md#create_groups) và quyền truy cập cấp group vào ID được chỉ định, cộng với một phiên người dùng hoặc API Key hợp lệ. Gửi dưới dạng HTTP POST với JSON. Xem [Group](data.md#group) để biết chi tiết về thuộc tính. Thuộc tính `id` có thể bị bỏ qua và sẽ được tạo tự động; `username`, `created`, `modified`, `revision`, và `sort_order` do server thiết lập.
 
-Parameters (required fields):
+Các tham số (trường bắt buộc):
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `title` | String | **(Required)** Visual name for the group. |
-| `hostname_match` | String | **(Required)** A regular expression string used to auto-match servers to the group. |
-| (Other) | Various | Any other [Group](data.md#group) fields (e.g. `title`, `hostname_match`, `icon`, `notes`, `alert_actions`). |
+| `title` | String | **(Bắt buộc)** Tên hiển thị của group. |
+| `hostname_match` | String | **(Bắt buộc)** Một chuỗi biểu thức chính quy được sử dụng để tự động khớp các server với group. |
+| (Other) | Various | Bất kỳ trường [Group](data.md#group) nào khác (ví dụ: `title`, `hostname_match`, `icon`, `notes`, `alert_actions`). |
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -1675,7 +1673,7 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -1684,12 +1682,12 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `group` object containing the newly created group.
+Ngoài [Định dạng Response Tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một đối tượng `group` chứa group mới được tạo.
 
-Notes:
+Ghi chú:
 
-- Group alert actions are validated (see [Action](data.md#action)) via `alert_actions`.
-- `sort_order` is automatically assigned at the end of the current list.
+- Các alert action của group sẽ được xác thực (xem [Action](data.md#action)) thông qua `alert_actions`.
+- `sort_order` được tự động chỉ định ở cuối danh sách hiện tại.
 
 ### update_group
 
@@ -1697,16 +1695,16 @@ Notes:
 POST /api/app/update_group/v1
 ```
 
-Update an existing group by ID. Requires the [edit_groups](privileges.md#edit_groups) privilege and group-level access to the specified ID, plus a valid user session or API Key. Send as HTTP POST with JSON. The request is shallow-merged into the existing group, so you can provide a sparse set of properties to update. The server updates `modified` and increments `revision` automatically.
+Cập nhật một group đã có theo ID. Yêu cầu quyền [edit_groups](privileges.md#edit_groups) và quyền truy cập cấp group vào ID được chỉ định, cộng với một phiên người dùng hoặc API Key hợp lệ. Gửi dưới dạng HTTP POST với JSON. Request sẽ được hợp nhất nông vào group hiện có, vì vậy bạn có thể cung cấp một tập hợp thưa thớt các thuộc tính cần cập nhật. Server tự động cập nhật `modified` và tăng `revision`.
 
-Parameters:
+Các tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The group ID to update. |
-| (Other) | Various | Any updatable [Group](data.md#group) fields (e.g. `title`, `hostname_match`, `icon`, `notes`, `alert_actions`). |
+| `id` | String | **(Bắt buộc)** ID group cần cập nhật. |
+| (Other) | Various | Bất kỳ trường [Group](data.md#group) nào có thể cập nhật (ví dụ: `title`, `hostname_match`, `icon`, `notes`, `alert_actions`). |
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -1716,7 +1714,7 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -1730,15 +1728,15 @@ Example response:
 POST /api/app/delete_group/v1
 ```
 
-Delete an existing group by ID. Requires the [delete_groups](privileges.md#delete_groups) privilege and group-level access to the specified ID, plus a valid user session or API Key.
+Xóa một group đã có theo ID. Yêu cầu quyền [delete_groups](privileges.md#delete_groups) và quyền truy cập cấp group vào ID được chỉ định, cộng với một phiên người dùng hoặc API Key hợp lệ.
 
-Parameters:
+Các tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The group ID to delete. |
+| `id` | String | **(Bắt buộc)** ID group cần xóa. |
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -1746,7 +1744,7 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -1754,7 +1752,7 @@ Example response:
 }
 ```
 
-Deletions are permanent and cannot be undone.
+Việc xóa là vĩnh viễn và không thể hoàn tác.
 
 ### multi_update_group
 
@@ -1762,15 +1760,15 @@ Deletions are permanent and cannot be undone.
 POST /api/app/multi_update_group/v1
 ```
 
-Update multiple groups in a single call. This endpoint is intended for updating `sort_order` only (e.g., after drag-and-drop reordering in the UI). Requires the [edit_groups](privileges.md#edit_groups) privilege and group-level access to all groups (`*`), plus a valid user session or API Key.
+Cập nhật nhiều group trong một lệnh gọi duy nhất. Endpoint này chỉ dành cho việc cập nhật `sort_order` (ví dụ: sau khi kéo thả sắp xếp lại trong giao diện người dùng). Yêu cầu quyền [edit_groups](privileges.md#edit_groups) và quyền truy cập cấp group vào tất cả các group (`*`), cộng với một phiên người dùng hoặc API Key hợp lệ.
 
-Parameters:
+Các tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `items` | Array(Object) | **(Required)** Array of objects, each with an `id` and the new `sort_order`. |
+| `items` | Array(Object) | **(Bắt buộc)** Mảng các đối tượng, mỗi đối tượng có `id` và `sort_order` mới. |
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -1781,7 +1779,7 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -1789,10 +1787,10 @@ Example response:
 }
 ```
 
-Notes:
+Ghi chú:
 
-- Only `sort_order` is updated by this endpoint.
-- `modified` and `revision` are not updated by design for multi-updates of sort order.
+- Chỉ `sort_order` được cập nhật bởi endpoint này.
+- `modified` và `revision` không được cập nhật theo thiết kế đối với thao tác multi-update cho thứ tự sắp xếp.
 
 ### watch_group
 
@@ -1800,16 +1798,16 @@ Notes:
 POST /api/app/watch_group/v1
 ```
 
-Start or stop a watch on a group, which takes a snapshot once per minute for a specified duration. Requires the [create_snapshots](privileges.md#create_snapshots) privilege and a valid user session or API Key. Supports HTTP POST with JSON, or HTTP GET with query parameters.
+Bắt đầu hoặc dừng việc theo dõi một group, việc này sẽ chụp snapshot một lần mỗi phút trong khoảng thời gian được chỉ định. Yêu cầu quyền [create_snapshots](privileges.md#create_snapshots) và một phiên người dùng hoặc API Key hợp lệ. Hỗ trợ HTTP POST với JSON, hoặc HTTP GET với các tham số truy vấn.
 
-Parameters:
+Các tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The group ID to watch. |
-| `duration` | Number | **(Required)** Duration in seconds. Set to `0` to cancel an existing watch. |
+| `id` | String | **(Bắt buộc)** ID group cần theo dõi. |
+| `duration` | Number | **(Bắt buộc)** Khoảng thời gian tính bằng giây. Đặt thành `0` để hủy một lượt theo dõi hiện tại. |
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -1818,7 +1816,7 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -1826,7 +1824,7 @@ Example response:
 }
 ```
 
-See [Snapshots](snapshots.md) for more details.
+Xem [Snapshots](snapshots.md) để biết thêm chi tiết.
 
 ### create_group_snapshot
 
@@ -1834,15 +1832,15 @@ See [Snapshots](snapshots.md) for more details.
 POST /api/app/create_group_snapshot/v1
 ```
 
-Create a snapshot for the specified group using the most recent server data. Requires the [create_snapshots](privileges.md#create_snapshots) privilege and a valid user session or API Key. Supports HTTP POST with JSON, or HTTP GET with query parameters.
+Tạo một snapshot cho group được chỉ định bằng cách sử dụng dữ liệu server gần đây nhất. Yêu cầu quyền [create_snapshots](privileges.md#create_snapshots) và một phiên người dùng hoặc API Key hợp lệ. Hỗ trợ HTTP POST với JSON, hoặc HTTP GET với các tham số truy vấn.
 
-Parameters:
+Các tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `group` | String | **(Required)** The group ID for which to create a snapshot. |
+| `group` | String | **(Bắt buộc)** ID group mà snapshot sẽ được tạo. |
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -1850,7 +1848,7 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -1859,15 +1857,13 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include an `id` property containing the new [GroupSnapshot.id](data.md#groupsnapshot-id).
+Ngoài [Định dạng Response Tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một thuộc tính `id` chứa [GroupSnapshot.id](data.md#groupsnapshot-id) mới.
 
-See [Snapshots](snapshots.md) for more details.
-
-
+Xem [Snapshots](snapshots.md) để biết thêm chi tiết.
 
 ## Jobs
 
-Job APIs provide visibility and control over job executions. Use them to search, fetch details, watch progress, stream or fetch logs/files, and manage lifecycle (e.g., abort). Jobs are created by running events or workflows; job data includes parameters, inputs (data/files), outputs and result codes. Access is constrained by category/group permissions and specific job privileges.
+Job API cung cấp khả năng quan sát và kiểm soát quá trình thực thi job. Sử dụng chúng để tìm kiếm, lấy thông tin chi tiết, theo dõi tiến độ, phát trực tuyến (stream) hoặc tải xuống log/file và quản lý vòng đời (ví dụ: hủy bỏ). Các job được tạo bằng cách chạy event hoặc workflow; dữ liệu job bao gồm parameter, đầu vào (dữ liệu/file), đầu ra và mã kết quả. Quyền truy cập bị giới hạn bởi quyền của category/group và đặc quyền của từng job.
 
 ### get_active_jobs
 
@@ -1875,21 +1871,21 @@ Job APIs provide visibility and control over job executions. Use them to search,
 GET /api/app/get_active_jobs/v1
 ```
 
-Fetch active jobs with optional filters, pagination and sorting. Active jobs include states such as `queued`, `ready`, `active`, and `finishing`. Requires a valid user session or API Key.
+Lấy các job đang hoạt động (active job) với bộ lọc, phân trang và sắp xếp tùy chọn. Active job bao gồm các trạng thái như `queued`, `ready`, `active` và `finishing`. Yêu cầu phiên người dùng hoặc API Key hợp lệ.
 
-Parameters:
+Parameter:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `offset` | Number | Optional row offset. Defaults to `0`. |
-| `limit` | Number | Optional row limit. Defaults to all matching rows. |
-| `sort_by` | String | Optional sort field. Defaults to `started`. |
-| `sort_dir` | Number | Optional sort direction. Use `-1` for descending (default) or `1` for ascending. |
-| other filters | Various | Optional job property filters (e.g., `state`, `event`, `server`, `workflow.job`). |
+| `offset` | Number | Tùy chọn row offset. Mặc định là `0`. |
+| `limit` | Number | Tùy chọn row limit. Mặc định là tất cả các hàng phù hợp. |
+| `sort_by` | String | Tùy chọn trường sắp xếp. Mặc định là `started`. |
+| `sort_dir` | Number | Tùy chọn hướng sắp xếp. Sử dụng `-1` cho giảm dần (mặc định) hoặc `1` cho tăng dần. |
+| other filters | Various | Tùy chọn bộ lọc thuộc tính job (ví dụ: `state`, `event`, `server`, `workflow.job`). |
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing the matching active jobs, and a `list` object containing list metadata (e.g. `length` for total rows without pagination).
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này sẽ bao gồm một mảng `rows` chứa các active job phù hợp và một đối tượng `list` chứa siêu dữ liệu danh sách (ví dụ: `length` cho tổng số hàng mà không cần phân trang).
 
-Example response:
+Ví dụ phản hồi:
 
 ```json
 {
@@ -1899,7 +1895,7 @@ Example response:
 }
 ```
 
-See [Job](data.md#job) for job properties.
+Xem [Job](data.md#job) để biết các thuộc tính của job.
 
 ### get_active_job_summary
 
@@ -1907,11 +1903,11 @@ See [Job](data.md#job) for job properties.
 GET /api/app/get_active_job_summary/v1
 ```
 
-Summarize active jobs by event, grouped by state, source, and targets. Accepts the same optional filters as [get_active_jobs](#get_active_jobs). Requires a valid user session or API Key.
+Tóm tắt các active job theo event, được nhóm theo trạng thái, nguồn và mục tiêu. Chấp nhận các bộ lọc tùy chọn giống như [get_active_jobs](#get_active_jobs). Yêu cầu phiên người dùng hoặc API Key hợp lệ.
 
-In addition to the [Standard Response Format](#standard-response-format), this will include an `events` object keyed by [Event.id](data.md#event-id), each containing `states`, `sources`, and `targets` counters.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này sẽ bao gồm một đối tượng `events` được khóa bằng [Event.id](data.md#event-id), mỗi đối tượng chứa các bộ đếm `states`, `sources` và `targets`.
 
-Example response:
+Ví dụ phản hồi:
 
 ```json
 {
@@ -1933,11 +1929,11 @@ Example response:
 GET /api/app/get_workflow_job_summary/v1
 ```
 
-Summarize workflow jobs by node for a given workflow context (e.g., a particular top-level workflow job). Accepts the same optional filters as [get_active_jobs](#get_active_jobs). Requires a valid user session or API Key.
+Tóm tắt các workflow job theo node cho một bối cảnh workflow nhất định (ví dụ: một workflow job cấp cao nhất cụ thể). Chấp nhận các bộ lọc tùy chọn giống như [get_active_jobs](#get_active_jobs). Yêu cầu phiên người dùng hoặc API Key hợp lệ.
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `nodes` object keyed by workflow node ID with counts of matching active jobs per node.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này sẽ bao gồm một đối tượng `nodes` được khóa bằng workflow node ID với số lượng các active job phù hợp trên mỗi node.
 
-Example response:
+Ví dụ phản hồi:
 
 ```json
 {
@@ -1946,7 +1942,7 @@ Example response:
 }
 ```
 
-This API is used in the UI to summarize (count) queued jobs per workflow node.
+API này được sử dụng trong giao diện người dùng để tóm tắt (đếm) các job đã xếp hàng (queued) trên mỗi workflow node.
 
 ### get_job
 
@@ -1954,22 +1950,22 @@ This API is used in the UI to summarize (count) queued jobs per workflow node.
 GET /api/app/get_job/v1
 ```
 
-Fetch a single job's details, running or completed. Requires a valid user session or API Key, and category/target access to the job's event. Both HTTP GET with query string parameters and HTTP POST with JSON are accepted.
+Lấy thông tin chi tiết của một job duy nhất, đang chạy hoặc đã hoàn thành. Yêu cầu phiên người dùng hoặc API Key hợp lệ, và quyền truy cập category/target vào event của job. Cả HTTP GET với parameter chuỗi truy vấn (query string) và HTTP POST với JSON đều được chấp nhận.
 
-Parameters:
+Parameter:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The [Job.id](data.md#job-id) to fetch. |
-| `remove` | Array | Optional array of property names to exclude from the returned job object (e.g., heavy fields). |
+| `id` | String | **(Bắt buộc)** [Job.id](data.md#job-id) cần lấy. |
+| `remove` | Array | Mảng tùy chọn các tên thuộc tính để loại trừ khỏi đối tượng job được trả về (ví dụ: các trường nặng). |
 
-Example request:
+Ví dụ request:
 
 ```json
 { "id": "jabc123def" }
 ```
 
-Example response:
+Ví dụ phản hồi:
 
 ```json
 {
@@ -1979,9 +1975,9 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `job` object containing the requested job, and a `token` string used for viewing/downloading the job log (see [view_job_log](#view_job_log) and [download_job_log](#download_job_log)).
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này sẽ bao gồm một đối tượng `job` chứa job được yêu cầu và một chuỗi `token` được sử dụng để xem/tải xuống job log (xem [view_job_log](#view_job_log) và [download_job_log](#download_job_log)).
 
-See [Job](data.md#job) for details on the job object.
+Xem [Job](data.md#job) để biết chi tiết về đối tượng job.
 
 ### get_jobs
 
@@ -1989,16 +1985,16 @@ See [Job](data.md#job) for details on the job object.
 POST /api/app/get_jobs/v1
 ```
 
-Fetch multiple jobs (running or completed) by IDs. Requires a valid user session or API Key.
+Lấy nhiều job (đang chạy hoặc đã hoàn thành) theo ID. Yêu cầu phiên người dùng hoặc API Key hợp lệ.
 
-Parameters:
+Parameter:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `ids` | Array(String) | **(Required)** Array of [Job.id](data.md#job-id) values. |
-| `verbose` | Boolean | Optional. If `true`, includes heavy fields; otherwise they are pruned. |
+| `ids` | Array(String) | **(Bắt buộc)** Mảng các giá trị [Job.id](data.md#job-id). |
+| `verbose` | Boolean | Tùy chọn. Nếu `true`, bao gồm các trường nặng; nếu không chúng sẽ bị cắt bỏ. |
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -2007,7 +2003,7 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ phản hồi:
 
 ```json
 {
@@ -2019,10 +2015,10 @@ Example response:
 }
 ```
 
-Notes:
+Ghi chú:
 
-- When `verbose` is not set, the following heavy fields are removed: `actions`, `activity`, `html`, `limits`, `procs`, `conns`, `table`, `timelines`, `input`, `data`, `files`.
-- See [Job](data.md#job) for details on the job object.
+- Khi `verbose` không được đặt, các trường nặng sau đây sẽ bị loại bỏ: `actions`, `activity`, `html`, `limits`, `procs`, `conns`, `table`, `timelines`, `input`, `data`, `files`.
+- Xem [Job](data.md#job) để biết chi tiết về đối tượng job.
 
 ### get_job_log
 
@@ -2030,18 +2026,18 @@ Notes:
 GET /api/app/get_job_log/v1
 ```
 
-Stream a job's log as plain text. Requires a valid user session (session auth).
+Phát trực tuyến (stream) job log dưới dạng văn bản thuần túy (plain text). Yêu cầu phiên người dùng hợp lệ (xác thực phiên).
 
-Parameters:
+Parameter:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The [Job.id](data.md#job-id). |
+| `id` | String | **(Bắt buộc)** [Job.id](data.md#job-id). |
 
-Response:
+Phản hồi:
 
-- Returns HTTP `200 OK` with `Content-Type: text/plain; charset=utf-8`. For archived logs it may include `Content-Encoding: gzip`.
-- Returns `204 No Content` if no log is available.
+- Trả về HTTP `200 OK` với `Content-Type: text/plain; charset=utf-8`. Đối với các log đã lưu trữ, nó có thể bao gồm `Content-Encoding: gzip`.
+- Trả về `204 No Content` nếu không có log nào.
 
 ### view_job_log
 
@@ -2049,19 +2045,19 @@ Response:
 GET /api/app/view_job_log/v1?id=JOB_ID&t=TOKEN
 ```
 
-View a job's log (plain text) via token authentication. This is useful for shareable links. Obtain the `t` token from [get_job](#get_job) response.
+Xem job log (văn bản thuần túy) thông qua xác thực token. Điều này hữu ích cho các liên kết có thể chia sẻ. Lấy token `t` từ phản hồi của [get_job](#get_job).
 
-Parameters (query):
+Parameter (truy vấn):
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The [Job.id](data.md#job-id). |
-| `t` | String | **(Required)** The download token from [get_job](#get_job). |
+| `id` | String | **(Bắt buộc)** [Job.id](data.md#job-id). |
+| `t` | String | **(Bắt buộc)** Token tải xuống từ [get_job](#get_job). |
 
-Response:
+Phản hồi:
 
-- Returns HTTP `200 OK` with `Content-Type: text/plain; charset=utf-8`. For archived logs it may include `Content-Encoding: gzip`.
-- Returns `404 Not Found` if no log is available, or `403 Forbidden` if the token is invalid.
+- Trả về HTTP `200 OK` với `Content-Type: text/plain; charset=utf-8`. Đối với các log đã lưu trữ, nó có thể bao gồm `Content-Encoding: gzip`.
+- Trả về `404 Not Found` nếu không có log nào, hoặc `403 Forbidden` nếu token không hợp lệ.
 
 ### download_job_log
 
@@ -2069,19 +2065,19 @@ Response:
 GET /api/app/download_job_log/v1?id=JOB_ID&t=TOKEN
 ```
 
-Download a job's log as a file via token authentication. Obtain the `t` token from [get_job](#get_job) response.
+Tải xuống job log dưới dạng file thông qua xác thực token. Lấy token `t` từ phản hồi của [get_job](#get_job).
 
-Parameters (query):
+Parameter (truy vấn):
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The [Job.id](data.md#job-id). |
-| `t` | String | **(Required)** The download token from [get_job](#get_job). |
+| `id` | String | **(Bắt buộc)** [Job.id](data.md#job-id). |
+| `t` | String | **(Bắt buộc)** Token tải xuống từ [get_job](#get_job). |
 
-Response:
+Phản hồi:
 
-- Returns HTTP `200 OK` with `Content-Type: text/plain; charset=utf-8` and a `Content-Disposition` suggesting a filename. For archived logs it may include `Content-Encoding: gzip`.
-- Returns `404 Not Found` if no log is available, or `403 Forbidden` if the token is invalid.
+- Trả về HTTP `200 OK` với `Content-Type: text/plain; charset=utf-8` và `Content-Disposition` đề xuất tên file. Đối với log đã lưu trữ, nó có thể bao gồm `Content-Encoding: gzip`.
+- Trả về `404 Not Found` nếu không có log nào, hoặc `403 Forbidden` nếu token không hợp lệ.
 
 ### tail_live_job_log
 
@@ -2089,16 +2085,16 @@ Response:
 GET /api/app/tail_live_job_log/v1
 ```
 
-Return a tail chunk of a live job's log (end-aligned ~32KB) to prime the real-time log viewer. Requires a valid user session or API Key, and the job must be active.
+Trả về phần cuối (tail chunk) của job log đang chạy (căn chỉnh cuối ~32KB) để chuẩn bị cho trình xem log thời gian thực. Yêu cầu phiên người dùng hoặc API Key hợp lệ, và job phải đang active.
 
-Parameters:
+Parameter:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The [Job.id](data.md#job-id). |
-| `bytes` | Number | Optional. Approximate number of bytes to return from the end. Defaults to `32678` (32K). |
+| `id` | String | **(Bắt buộc)** [Job.id](data.md#job-id). |
+| `bytes` | Number | Tùy chọn. Số byte gần đúng để trả về từ cuối. Mặc định là `32678` (32K). |
 
-Example response:
+Ví dụ phản hồi:
 
 ```json
 {
@@ -2107,7 +2103,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `text` string containing the tail of the live log. If the job is not active, `text` will be empty.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này sẽ bao gồm một chuỗi `text` chứa phần cuối của log đang trực tiếp (live log). Nếu job không active, `text` sẽ rỗng.
 
 ### stream_job
 
@@ -2115,16 +2111,16 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 GET /api/app/stream_job/v1
 ```
 
-Stream live job updates via [Server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events).
+Phát trực tuyến các bản cập nhật job trực tiếp thông qua [Server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events).
 
-Parameters:
+Parameter:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The [Job.id](data.md#job-id). |
-| `token` | String | Optional | A special auth token used by the [magic](#magic) API to stream jobs for the magic landing pages. |
+| `id` | String | **(Bắt buộc)** [Job.id](data.md#job-id). |
+| `token` | String | Optional | Token xác thực đặc biệt được sử dụng bởi API [magic](#magic) để stream job cho các magic landing page. |
 
-The response will be streamed using [Server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events).  The first update will include a JSON document containing the [Job.id](data.md#job.id), followed by multiple updates as the job runs, with a final update when the job completes.  Here is an example raw streaming response (many intermediate updates omitted for brevity):
+Phản hồi sẽ được phát trực tuyến bằng [Server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events). Bản cập nhật đầu tiên sẽ bao gồm một tài liệu JSON chứa [Job.id](data.md#job.id), tiếp theo là nhiều bản cập nhật khi job chạy, với một bản cập nhật cuối cùng khi job hoàn thành. Dưới đây là ví dụ về phản hồi phát trực tuyến thô (nhiều bản cập nhật trung gian được bỏ qua cho ngắn gọn):
 
 ```
 HTTP/1.1 200 OK
@@ -2154,11 +2150,11 @@ event: end
 data: {}
 ```
 
-The stream will always start with a `start` event, and an empty data record.
+Luồng (stream) sẽ luôn bắt đầu với một sự kiện `start` và một bản ghi dữ liệu rỗng.
 
-The intermediate updates include relevant job properties that frequently change or were updated (e.g. [Job.progress](data.md#job-progress), [Job.cpu](data.md#job-cpu), [Job.mem](data.md#job-mem), etc.).  The final update is sent once the job completes, and it includes properties such as [Job.code](data.md#job-code), [Job.description](data.md#job-description) and [Job.elapsed](data.md#job-elapsed).  It also includes the job's output [Job.data](data.md#job-data) and [Job.files](data.md#job-files) if applicable.
+Các bản cập nhật trung gian bao gồm các thuộc tính job có liên quan thường xuyên thay đổi hoặc đã được cập nhật (ví dụ: [Job.progress](data.md#job-progress), [Job.cpu](data.md#job-cpu), [Job.mem](data.md#job-mem), v.v.). Bản cập nhật cuối cùng được gửi sau khi job hoàn thành và nó bao gồm các thuộc tính như [Job.code](data.md#job-code), [Job.description](data.md#job-description) và [Job.elapsed](data.md#job-elapsed). Nó cũng bao gồm đầu ra của job [Job.data](data.md#job-data) và [Job.files](data.md#job-files) nếu có.
 
-After all updates are complete, a final `end` event is sent (with an empty data record).
+Sau khi tất cả các bản cập nhật hoàn tất, một sự kiện `end` cuối cùng sẽ được gửi (với một bản ghi dữ liệu rỗng).
 
 ### update_job
 
@@ -2166,22 +2162,22 @@ After all updates are complete, a final `end` event is sent (with an empty data 
 POST /api/app/update_job/v1
 ```
 
-Admin-only. Update a running or completed job. This is a powerful API intended for administrative corrections and metadata updates. Requires the [admin](privileges.md#admin) privilege.
+Chỉ dành cho Admin. Cập nhật một job đang chạy hoặc đã hoàn thành. Đây là một API mạnh mẽ dành cho các chỉnh sửa quản trị và cập nhật siêu dữ liệu. Yêu cầu đặc quyền [admin](privileges.md#admin).
 
-Parameters:
+Parameter:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The [Job.id](data.md#job-id). |
-| (Other) | Various | Any writable job fields to update. Running jobs are updated in-memory; completed jobs are updated in storage. |
+| `id` | String | **(Bắt buộc)** [Job.id](data.md#job-id). |
+| (Other) | Various | Bất kỳ trường job nào có thể ghi để cập nhật. Các job đang chạy được cập nhật trong bộ nhớ (in-memory); các job đã hoàn thành được cập nhật trong bộ lưu trữ. |
 
-Example response:
+Ví dụ phản hồi:
 
 ```json
 { "code": 0 }
 ```
 
-Use with care. This can alter persisted job history.
+Sử dụng cẩn thận. Điều này có thể làm thay đổi lịch sử job đã được lưu trữ.
 
 ### resume_job
 
@@ -2189,25 +2185,25 @@ Use with care. This can alter persisted job history.
 POST /api/app/resume_job/v1
 ```
 
-Resume a suspended active job. Requires the [run_jobs](privileges.md#run_jobs) privilege and a valid session or API Key, plus category/target access to the job's event. The job must be active and currently suspended.
+Tiếp tục (resume) một active job đang bị treo (suspended). Yêu cầu đặc quyền [run_jobs](privileges.md#run_jobs) và phiên người dùng hoặc API Key hợp lệ, cộng với quyền truy cập category/target vào event của job. Job phải đang active và hiện đang bị treo.
 
-Parameters:
+Parameter:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The [Job.id](data.md#job-id). |
-| `params` | Object | Optional. User parameters to merge into the job's `params` when resuming. |
-| `redirect` | String | Optional. For a suspended workflow sub-job, set this to a workflow Event or Job [Node ID](data.md#workflownode-id) to jump to after resume processing continues. |
+| `id` | String | **(Bắt buộc)** [Job.id](data.md#job-id). |
+| `params` | Object | Tùy chọn. Các parameter người dùng để hợp nhất vào `params` của job khi tiếp tục. |
+| `redirect` | String | Tùy chọn. Đối với workflow sub-job đang bị treo, hãy đặt giá trị này thành workflow Event hoặc Job [Node ID](data.md#workflownode-id) để chuyển đến sau khi quá trình tiếp tục được xử lý. |
 
-Behavior:
+Hành vi:
 
-- Fails if the job is not active or not suspended.
-- Records suspension metadata (duration, resumed at/by, IPs, user agent) in the job's suspend action details for audit.
-- If provided, merges `params` into current job parameters upon resume.  This is used to collect user parameters in the UI at resume time.
-- If provided, `redirect` customizes the parent workflow's next step after the sub-job resumes.  Instead of following the normal matching output wires from the suspended node, the workflow will launch the selected Event or Job node directly.
-- The UI only presents the resume redirect selector when resuming a workflow sub-job that was suspended at the end of the job, such as from an `On Complete`, `On Success`, `On Any Error`, or tag actions.  It is not shown for jobs suspended at the start of the job, such as from an `On Start` action.
+- Thất bại nếu job không active hoặc không bị treo.
+- Ghi lại siêu dữ liệu treo (thời lượng, tiếp tục lúc/bởi, IP, user agent) trong chi tiết hành động suspend của job để kiểm toán.
+- Nếu được cung cấp, hợp nhất các `params` vào các parameter job hiện tại khi tiếp tục. Tính năng này được sử dụng để thu thập các parameter của người dùng trong giao diện người dùng vào thời điểm tiếp tục.
+- Nếu được cung cấp, `redirect` sẽ tùy chỉnh bước tiếp theo của workflow cha sau khi sub-job tiếp tục. Thay vì đi theo các dây đầu ra phù hợp thông thường từ node bị treo, workflow sẽ khởi chạy trực tiếp Event hoặc Job node đã chọn.
+- Giao diện người dùng chỉ hiển thị bộ chọn chuyển hướng (redirect) tiếp tục khi tiếp tục một workflow sub-job bị treo khi kết thúc job, chẳng hạn như từ một `On Complete`, `On Success`, `On Any Error` hoặc các hành động của tag. Nó không được hiển thị cho các job bị treo khi bắt đầu job, chẳng hạn như từ hành động `On Start`.
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -2217,7 +2213,7 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ phản hồi:
 
 ```json
 { "code": 0 }
@@ -2229,15 +2225,15 @@ Example response:
 POST /api/app/job_skip_delay/v1
 ```
 
-Skip the current delay period for an active job. Requires the [run_jobs](privileges.md#run_jobs) privilege and a valid session or API Key, plus category/target access to the job's event. The job must be active and currently waiting in a delay state, such as `start_delay` or `retry_delay`.
+Bỏ qua khoảng thời gian trễ hiện tại đối với một active job. Yêu cầu đặc quyền [run_jobs](privileges.md#run_jobs) và phiên người dùng hoặc API Key hợp lệ, cộng với quyền truy cập category/target vào event của job. Job phải đang active và hiện đang chờ ở trạng thái trễ (delay state), chẳng hạn như `start_delay` hoặc `retry_delay`.
 
-Parameters:
+Parameter:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The [Job.id](data.md#job-id). |
+| `id` | String | **(Bắt buộc)** [Job.id](data.md#job-id). |
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -2245,18 +2241,18 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ phản hồi:
 
 ```json
 { "code": 0 }
 ```
 
-Behavior:
+Hành vi:
 
-- Fails if the job is not active.
-- Fails if the job is not currently waiting on a delay.
-- Records a meta log entry on the job noting that the delay was manually skipped.
-- The job's delay deadline is moved to the current time, allowing normal scheduling to continue immediately.
+- Thất bại nếu job không active.
+- Thất bại nếu job hiện không phải đang chờ trễ.
+- Ghi lại một mục meta log trên job lưu ý rằng thời gian trễ đã được bỏ qua thủ công.
+- Thời hạn trễ của job được chuyển đến thời điểm hiện tại, cho phép việc lập lịch trình bình thường tiếp tục ngay lập tức.
 
 ### job_toggle_notify_me
 
@@ -2264,15 +2260,15 @@ Behavior:
 POST /api/app/job_toggle_notify_me/v1
 ```
 
-Toggle a completion notification e-mail for the current user on an active job. Requires a valid user session (with an email address set).
+Bật/tắt email thông báo hoàn thành cho người dùng hiện tại trên một active job. Yêu cầu phiên người dùng hợp lệ (có thiết lập địa chỉ email).
 
-Parameters:
+Parameter:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The [Job.id](data.md#job-id). |
+| `id` | String | **(Bắt buộc)** [Job.id](data.md#job-id). |
 
-Example response:
+Ví dụ phản hồi:
 
 ```json
 {
@@ -2281,7 +2277,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include an `enabled` boolean indicating the new toggle state.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này sẽ bao gồm một boolean `enabled` cho biết trạng thái bật/tắt (toggle) mới.
 
 ### manage_job_tags
 
@@ -2289,16 +2285,16 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 POST /api/app/manage_job_tags/v1
 ```
 
-Replace the tags on a completed job. Requires the [tag_jobs](privileges.md#tag_jobs) privilege and a valid session or API Key. Cannot be used on running jobs.
+Thay thế các tag trên một job đã hoàn thành. Yêu cầu đặc quyền [tag_jobs](privileges.md#tag_jobs) và phiên hoặc API Key hợp lệ. Không thể được sử dụng trên các job đang chạy.
 
-Parameters:
+Parameter:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The [Job.id](data.md#job-id). |
-| `tags` | Array(String) | **(Required)** Full replacement list of tags for the job. |
+| `id` | String | **(Bắt buộc)** [Job.id](data.md#job-id). |
+| `tags` | Array(String) | **(Bắt buộc)** Danh sách thay thế đầy đủ các tag cho job. |
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -2307,15 +2303,15 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ phản hồi:
 
 ```json
 { "code": 0 }
 ```
 
-Notes:
+Ghi chú:
 
-- The job's activity log is appended to with a summary of tag changes.
+- Nhật ký activity của job được nối thêm phần tóm tắt các thay đổi tag.
 
 ### abort_job
 
@@ -2323,15 +2319,15 @@ Notes:
 POST /api/app/abort_job/v1
 ```
 
-Abort a running job. Requires the [abort_jobs](privileges.md#abort_jobs) privilege and a valid session or API Key, plus category/target access to the job's event.
+Hủy bỏ một job đang chạy. Yêu cầu đặc quyền [abort_jobs](privileges.md#abort_jobs) và phiên người dùng hoặc API Key hợp lệ, cộng với quyền truy cập category/target vào event của job.
 
-Parameters:
+Parameter:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The [Job.id](data.md#job-id). |
+| `id` | String | **(Bắt buộc)** [Job.id](data.md#job-id). |
 
-Example response:
+Ví dụ phản hồi:
 
 ```json
 { "code": 0 }
@@ -2343,21 +2339,21 @@ Example response:
 POST /api/app/delete_job/v1
 ```
 
-Delete a completed job, including logs and files. Requires the [delete_jobs](privileges.md#delete_jobs) privilege and a valid session or API Key, plus category/target access. Cannot delete active jobs.
+Xóa một job đã hoàn thành, bao gồm log và file. Yêu cầu đặc quyền [delete_jobs](privileges.md#delete_jobs) và phiên hoặc API Key hợp lệ, cộng với quyền truy cập category/target. Không thể xóa các active job.
 
-Parameters:
+Parameter:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The [Job.id](data.md#job-id). |
+| `id` | String | **(Bắt buộc)** [Job.id](data.md#job-id). |
 
-Example response:
+Ví dụ phản hồi:
 
 ```json
 { "code": 0 }
 ```
 
-Deletions are permanent and cannot be undone.
+Việc xóa là vĩnh viễn và không thể hoàn tác.
 
 ### flush_event_queue
 
@@ -2365,15 +2361,15 @@ Deletions are permanent and cannot be undone.
 POST /api/app/flush_event_queue/v1
 ```
 
-Flush all queued jobs for an event without triggering completion actions. Requires the [abort_jobs](privileges.md#abort_jobs) privilege and a valid session or API Key.
+Xóa (flush) tất cả các job đang xếp hàng đợi (queued) cho một event mà không kích hoạt các hành động hoàn thành. Yêu cầu đặc quyền [abort_jobs](privileges.md#abort_jobs) và phiên người dùng hoặc API Key hợp lệ.
 
-Parameters:
+Parameter:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The [Event.id](data.md#event-id) whose queue to flush. |
+| `id` | String | **(Bắt buộc)** [Event.id](data.md#event-id) có hàng đợi cần xóa (flush). |
 
-Example response:
+Ví dụ phản hồi:
 
 ```json
 {
@@ -2382,13 +2378,13 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `count` property indicating how many queued jobs were removed.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này sẽ bao gồm một thuộc tính `count` cho biết có bao nhiêu queued job đã bị xóa.
 
 
 
 ## Monitors
 
-Monitor APIs manage the definitions of server-side metrics collectors and their output format. Use them to list, fetch, create, update, and delete monitors. Monitors run via agents on servers (xySat) and feed time-series data and alerts. Reading monitor data requires a valid session or API Key; editing definitions requires privileges.
+Monitor API quản lý các định nghĩa về bộ thu thập số liệu (metrics) phía server và định dạng đầu ra của chúng. Sử dụng chúng để liệt kê, lấy dữ liệu, tạo, cập nhật và xóa monitor. Các monitor chạy thông qua các agent trên server (xySat) và cung cấp dữ liệu chuỗi thời gian (time-series) cùng với các alert. Việc đọc dữ liệu monitor yêu cầu phiên hoặc API Key hợp lệ; việc chỉnh sửa định nghĩa yêu cầu các đặc quyền.
 
 ### get_monitors
 
@@ -2396,11 +2392,11 @@ Monitor APIs manage the definitions of server-side metrics collectors and their 
 GET /api/app/get_monitors/v1
 ```
 
-Fetch all monitor definitions. No input parameters are required. No specific privilege is required beyond a valid user session or API Key.
+Lấy tất cả các định nghĩa monitor. Không cần parameter đầu vào. Không yêu cầu đặc quyền cụ thể nào ngoài phiên người dùng hoặc API Key hợp lệ.
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing all monitors, and a `list` object containing list metadata (e.g. `length` for total rows without pagination).
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này sẽ bao gồm một mảng `rows` chứa tất cả các monitor và một đối tượng `list` chứa siêu dữ liệu danh sách (ví dụ: `length` cho tổng số hàng mà không cần phân trang).
 
-Example response:
+Ví dụ phản hồi:
 
 ```json
 {
@@ -2427,7 +2423,7 @@ Example response:
 }
 ```
 
-See [Monitor](data.md#monitor) for details on monitor properties.
+Xem [Monitor](data.md#monitor) để biết chi tiết về các thuộc tính của monitor.
 
 ### get_monitor
 
@@ -2435,15 +2431,15 @@ See [Monitor](data.md#monitor) for details on monitor properties.
 GET /api/app/get_monitor/v1
 ```
 
-Fetch a single monitor definition by ID. No specific privilege is required beyond a valid user session or API Key. HTTP POST with JSON is also accepted.
+Lấy một định nghĩa monitor duy nhất theo ID. Không yêu cầu đặc quyền cụ thể nào ngoài phiên người dùng hoặc API Key hợp lệ. HTTP POST với JSON cũng được chấp nhận.
 
-Parameters:
+Parameter:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the monitor to fetch. |
+| `id` | String | **(Bắt buộc)** ID chữ và số của monitor cần lấy. |
 
-Example response:
+Ví dụ phản hồi:
 
 ```json
 {
@@ -2466,25 +2462,24 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `monitor` object containing the requested monitor.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này sẽ bao gồm một đối tượng `monitor` chứa monitor được yêu cầu.
 
-See [Monitor](data.md#monitor) for details on monitor properties.
-
+Xem [Monitor](data.md#monitor) để biết chi tiết về các thuộc tính của monitor.
 ### create_monitor
 
 ```
 POST /api/app/create_monitor/v1
 ```
 
-Create a new monitor. Requires the [create_monitors](privileges.md#create_monitors) privilege and a valid user session or API Key. Send as HTTP POST with JSON. See [Monitor](data.md#monitor) for property details. The `id` may be omitted and will be auto-generated; `username`, `created`, `modified`, `revision`, and `sort_order` are set by the server.
+Tạo một monitor mới. Yêu cầu quyền [create_monitors](privileges.md#create_monitors) và một user session hoặc API Key hợp lệ. Gửi dưới dạng HTTP POST với JSON. Xem [Monitor](data.md#monitor) để biết chi tiết thuộc tính. Có thể bỏ qua `id` và nó sẽ được tự động tạo; `username`, `created`, `modified`, `revision`, và `sort_order` được thiết lập bởi server.
 
-Validation and behavior:
+Xác thực và hành vi:
 
-- The `source` expression is validated; syntax errors are rejected.
-- If `data_match` is provided, it must compile as a valid regular expression.
-- `sort_order` is automatically assigned at the end of the current list.
+- Biểu thức `source` được xác thực; lỗi cú pháp bị từ chối.
+- Nếu `data_match` được cung cấp, nó phải được biên dịch thành một biểu thức chính quy hợp lệ.
+- `sort_order` được tự động gán ở cuối danh sách hiện tại.
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -2498,7 +2493,7 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -2507,7 +2502,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `monitor` object containing the newly created monitor.
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một đối tượng `monitor` chứa monitor mới được tạo.
 
 ### update_monitor
 
@@ -2515,21 +2510,21 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 POST /api/app/update_monitor/v1
 ```
 
-Update an existing monitor by ID. Requires the [edit_monitors](privileges.md#edit_monitors) privilege and a valid user session or API Key. Send as HTTP POST with JSON. The request is shallow-merged into the existing monitor, so you can provide a sparse set of properties to update. The server updates `modified` and increments `revision` automatically.
+Cập nhật một monitor hiện có bằng ID. Yêu cầu quyền [edit_monitors](privileges.md#edit_monitors) và một user session hoặc API Key hợp lệ. Gửi dưới dạng HTTP POST với JSON. Request được gộp nông (shallow-merged) vào monitor hiện tại, vì vậy bạn có thể cung cấp một tập hợp thưa thớt (sparse set) các thuộc tính để cập nhật. Server cập nhật `modified` và tăng `revision` tự động.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The monitor ID to update. |
-| (Other) | Various | Any updatable [Monitor](data.md#monitor) fields (e.g. `title`, `source`, `data_type`, `suffix`, `display`, `min_vert_scale`, `groups`, `icon`, `notes`). |
+| `id` | String | **(Bắt buộc)** ID của monitor để cập nhật. |
+| (Other) | Various | Bất kỳ trường [Monitor](data.md#monitor) nào có thể cập nhật (ví dụ: `title`, `source`, `data_type`, `suffix`, `display`, `min_vert_scale`, `groups`, `icon`, `notes`). |
 
-Validation and behavior:
+Xác thực và hành vi:
 
-- If `source` is included, it is validated; syntax errors are rejected.
-- If `data_match` is included, it must compile as a valid regular expression.
+- Nếu `source` được bao gồm, nó sẽ được xác thực; lỗi cú pháp bị từ chối.
+- Nếu `data_match` được bao gồm, nó phải được biên dịch thành một biểu thức chính quy hợp lệ.
 
-Example response:
+Ví dụ response:
 
 ```json
 { "code": 0 }
@@ -2541,18 +2536,18 @@ Example response:
 POST /api/app/test_monitor/v1
 ```
 
-Test a monitor configuration (expression and optional `data_match`) against a specific server's current data. Requires the [edit_monitors](privileges.md#edit_monitors) privilege and a valid user session or API Key. Send as HTTP POST with JSON.
+Kiểm tra cấu hình monitor (biểu thức và `data_match` tùy chọn) đối với dữ liệu hiện tại của một server cụ thể. Yêu cầu quyền [edit_monitors](privileges.md#edit_monitors) và một user session hoặc API Key hợp lệ. Gửi dưới dạng HTTP POST với JSON.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `server` | String | **(Required)** The [Server.id](data.md#server-id) to test against. |
-| `source` | String | **(Required)** The [Monitor.source](data.md#monitor-source) expression to evaluate. |
-| `data_type` | String | **(Required)** One of `integer`, `float`, `bytes`, `seconds`, or `milliseconds`. |
-| `data_match` | String | Optional JavaScript regular expression string to extract a value from text. |
+| `server` | String | **(Bắt buộc)** [Server.id](data.md#server-id) để kiểm tra đối chiếu. |
+| `source` | String | **(Bắt buộc)** Biểu thức [Monitor.source](data.md#monitor-source) để đánh giá. |
+| `data_type` | String | **(Bắt buộc)** Một trong các giá trị `integer`, `float`, `bytes`, `seconds`, hoặc `milliseconds`. |
+| `data_match` | String | Chuỗi biểu thức chính quy JavaScript tùy chọn để trích xuất một giá trị từ văn bản. |
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -2562,7 +2557,7 @@ Example request:
 }
 ```
 
-Example responses:
+Ví dụ responses:
 
 ```json
 { "code": 0, "value": 37.5 }
@@ -2572,7 +2567,7 @@ Example responses:
 { "code": 0, "fail": true }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include either a `value` property containing the computed numeric result, or `fail: true` if the expression could not be evaluated.
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một thuộc tính `value` chứa kết quả số được tính toán, hoặc `fail: true` nếu biểu thức không thể được đánh giá.
 
 ### delete_monitor
 
@@ -2580,21 +2575,21 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 POST /api/app/delete_monitor/v1
 ```
 
-Delete an existing monitor by ID. Requires the [delete_monitors](privileges.md#delete_monitors) privilege and a valid user session or API Key.
+Xóa một monitor hiện có bằng ID. Yêu cầu quyền [delete_monitors](privileges.md#delete_monitors) và một user session hoặc API Key hợp lệ.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The monitor ID to delete. |
+| `id` | String | **(Bắt buộc)** ID của monitor để xóa. |
 
-Example response:
+Ví dụ response:
 
 ```json
 { "code": 0 }
 ```
 
-Deletions are permanent and cannot be undone.
+Việc xóa là vĩnh viễn và không thể hoàn tác.
 
 ### multi_update_monitor
 
@@ -2602,15 +2597,15 @@ Deletions are permanent and cannot be undone.
 POST /api/app/multi_update_monitor/v1
 ```
 
-Update multiple monitors in a single call. This endpoint is intended for updating `sort_order` only (e.g., after drag-and-drop reordering in the UI). Requires the [edit_monitors](privileges.md#edit_monitors) privilege and a valid user session or API Key.
+Cập nhật nhiều monitor trong một lần gọi. Endpoint này được dự định chỉ dùng để cập nhật `sort_order` (ví dụ: sau khi sắp xếp lại bằng cách kéo và thả trong UI). Yêu cầu quyền [edit_monitors](privileges.md#edit_monitors) và một user session hoặc API Key hợp lệ.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `items` | Array(Object) | **(Required)** Array of objects, each with an `id` and the new `sort_order`. |
+| `items` | Array(Object) | **(Bắt buộc)** Mảng các đối tượng, mỗi đối tượng có một `id` và `sort_order` mới. |
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -2621,16 +2616,16 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 { "code": 0 }
 ```
 
-Notes:
+Ghi chú:
 
-- Only `sort_order` is updated by this endpoint.
-- `modified` and `revision` are not updated by design for multi-updates of sort order.
+- Chỉ `sort_order` được cập nhật bởi endpoint này.
+- `modified` và `revision` không được cập nhật theo thiết kế cho việc cập nhật nhiều lần của thứ tự sắp xếp.
 
 ### get_quickmon_data
 
@@ -2638,16 +2633,16 @@ Notes:
 GET /api/app/get_quickmon_data/v1
 ```
 
-Fetch the current [QuickMonData](data.md#quickmondata) snapshots for servers (last 60 seconds). No specific privilege is required beyond a valid user session or API Key. Useful for dashboards.
+Lấy các snapshot [QuickMonData](data.md#quickmondata) hiện tại cho các server (60 giây trước). Không yêu cầu quyền cụ thể ngoài một user session hoặc API Key hợp lệ. Hữu ích cho các bảng điều khiển (dashboards).
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `server` | String | Optional. Limit results to a single [Server.id](data.md#server-id). |
-| `group` | String | Optional. Limit results to servers in a specific [Group.id](data.md#group-id). |
+| `server` | String | Tùy chọn. Giới hạn kết quả ở một [Server.id](data.md#server-id) duy nhất. |
+| `group` | String | Tùy chọn. Giới hạn kết quả ở các server trong một [Group.id](data.md#group-id) cụ thể. |
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -2658,9 +2653,9 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `servers` object keyed by server ID, each value being an array of QuickMon entries.
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một đối tượng `servers` được định danh bằng ID server, mỗi giá trị là một mảng các mục QuickMon.
 
-See [QuickMon](monitors.md#quickmon) for more details on these types of real-time monitors.
+Xem [QuickMon](monitors.md#quickmon) để biết thêm chi tiết về các loại monitor thời gian thực này.
 
 ### get_latest_monitor_data
 
@@ -2668,17 +2663,17 @@ See [QuickMon](monitors.md#quickmon) for more details on these types of real-tim
 GET /api/app/get_latest_monitor_data/v1
 ```
 
-Fetch the latest timeline entries for a specific system on a server, along with the server's current data snapshot. Requires a valid user session or API Key.
+Lấy các mục timeline mới nhất cho một hệ thống (system) cụ thể trên một server, cùng với snapshot dữ liệu hiện tại của server. Yêu cầu một user session hoặc API Key hợp lệ.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `server` | String | **(Required)** The [Server.id](data.md#server-id). |
-| `sys` | String | **(Required)** The timeline system ID to query (e.g., `hourly`, `daily`, `monthly` or `yearly`). |
-| `limit` | Number | **(Required)** The number of timeline entries to return. |
+| `server` | String | **(Bắt buộc)** [Server.id](data.md#server-id). |
+| `sys` | String | **(Bắt buộc)** ID của hệ thống timeline để truy vấn (ví dụ: `hourly`, `daily`, `monthly` hoặc `yearly`). |
+| `limit` | Number | **(Bắt buộc)** Số lượng các mục timeline để trả về. |
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -2688,9 +2683,9 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing [ServerTimelineData](data.md#servertimelinedata) entries, and a `data` object containing the server's current [ServerMonitorData](data.md#servermonitordata).
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một mảng `rows` chứa các mục [ServerTimelineData](data.md#servertimelinedata), và một đối tượng `data` chứa [ServerMonitorData](data.md#servermonitordata) hiện tại của server.
 
-See [Monitors](monitors.md) for more details on the monitoring subsystem.
+Xem [Monitors](monitors.md) để biết thêm chi tiết về hệ thống phụ monitoring.
 
 ### get_historical_monitor_data
 
@@ -2698,18 +2693,18 @@ See [Monitors](monitors.md) for more details on the monitoring subsystem.
 GET /api/app/get_historical_monitor_data/v1
 ```
 
-Fetch historical timeline entries for a specific server. Requires a valid user session or API Key.
+Lấy các mục timeline lịch sử cho một server cụ thể. Yêu cầu một user session hoặc API Key hợp lệ.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `server` | String | **(Required)** The [Server.id](data.md#server-id). |
-| `sys` | String | **(Required)** The timeline system ID to query (e.g., `hourly`, `daily`, `monthly` or `yearly`). |
-| `date` | Number | **(Required)** Unix timestamp (seconds) specifying the start of the range of data to fetch. |
-| `limit` | Number | **(Required)** The number of timeline entries to return. |
+| `server` | String | **(Bắt buộc)** [Server.id](data.md#server-id). |
+| `sys` | String | **(Bắt buộc)** ID của hệ thống timeline để truy vấn (ví dụ: `hourly`, `daily`, `monthly` hoặc `yearly`). |
+| `date` | Number | **(Bắt buộc)** Dấu thời gian Unix (giây) chỉ định thời điểm bắt đầu của phạm vi dữ liệu để lấy. |
+| `limit` | Number | **(Bắt buộc)** Số lượng các mục timeline để trả về. |
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -2718,15 +2713,15 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing the historical [ServerTimelineData](data.md#servertimelinedata) entries.
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một mảng `rows` chứa các mục [ServerTimelineData](data.md#servertimelinedata) lịch sử.
 
-See [Monitors](monitors.md) for more details on the monitoring subsystem.
+Xem [Monitors](monitors.md) để biết thêm chi tiết về hệ thống phụ monitoring.
 
 
 
 ## Plugins
 
-Plugin APIs manage extensions that implement custom behavior in xyOps (event runners, monitors, actions, and scheduler triggers). Use them to list, fetch, create, update, and delete plugins. Plugins encapsulate executables and parameters and can receive secrets; they are referenced by events and the monitoring system. Creating/updating plugins requires privileges; list/fetch requires a valid session or API Key.
+Các API plugin quản lý các phần mở rộng triển khai hành vi tùy chỉnh trong PTOps (trình chạy event, monitor, action, và scheduler trigger). Sử dụng chúng để liệt kê, lấy, tạo, cập nhật, và xóa các plugin. Các plugin đóng gói các tệp thực thi và tham số và có thể nhận secret; chúng được tham chiếu bởi các event và hệ thống monitor. Việc tạo/cập nhật plugin yêu cầu các quyền; việc liệt kê/lấy yêu cầu một user session hoặc API Key hợp lệ.
 
 ### get_plugins
 
@@ -2734,11 +2729,11 @@ Plugin APIs manage extensions that implement custom behavior in xyOps (event run
 GET /api/app/get_plugins/v1
 ```
 
-Fetch all plugin definitions. No specific privilege is required, besides a valid user session or API Key.
+Lấy tất cả các định nghĩa plugin. Không yêu cầu quyền cụ thể, bên cạnh một user session hoặc API Key hợp lệ.
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing all plugins, and a `list` object containing list metadata (e.g. `length` for total rows without pagination).
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một mảng `rows` chứa tất cả các plugin, và một đối tượng `list` chứa siêu dữ liệu danh sách (ví dụ: `length` cho tổng số hàng không có phân trang).
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -2764,7 +2759,7 @@ Example response:
 }
 ```
 
-See [Plugin](data.md#plugin) for details on the plugin object and all its properties.
+Xem [Plugin](data.md#plugin) để biết chi tiết về đối tượng plugin và tất cả các thuộc tính của nó.
 
 ### get_plugin
 
@@ -2772,21 +2767,21 @@ See [Plugin](data.md#plugin) for details on the plugin object and all its proper
 GET /api/app/get_plugin/v1
 ```
 
-Fetch a single plugin definition by ID. No specific privilege is required, besides a valid user session or API Key. Both a HTTP GET with query string parameters and a HTTP POST with JSON are allowed.
+Lấy một định nghĩa plugin duy nhất bằng ID. Không yêu cầu quyền cụ thể, bên cạnh một user session hoặc API Key hợp lệ. Cả HTTP GET với các tham số chuỗi truy vấn và HTTP POST với JSON đều được cho phép.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the plugin to fetch. |
+| `id` | String | **(Bắt buộc)** ID chữ và số của plugin để lấy. |
 
-Example request:
+Ví dụ request:
 
 ```json
 { "id": "shellplug" }
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -2809,9 +2804,9 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `plugin` object containing the requested plugin.
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một đối tượng `plugin` chứa plugin được yêu cầu.
 
-See [Plugin](data.md#plugin) for details on the plugin properties.
+Xem [Plugin](data.md#plugin) để biết chi tiết về các thuộc tính của plugin.
 
 ### create_plugin
 
@@ -2819,11 +2814,11 @@ See [Plugin](data.md#plugin) for details on the plugin properties.
 POST /api/app/create_plugin/v1
 ```
 
-Create a new plugin definition. The [create_plugins](privileges.md#create_plugins) privilege is required, as well as a valid user session or API Key. The request must be sent as an HTTP POST with a JSON body.
+Tạo một định nghĩa plugin mới. Yêu cầu quyền [create_plugins](privileges.md#create_plugins), cũng như một user session hoặc API Key hợp lệ. Request phải được gửi dưới dạng HTTP POST với nội dung JSON.
 
-See [Plugin](data.md#plugin) for details on the input properties. The `id`, `username`, `created`, `modified` and `revision` properties may be omitted, as they are automatically generated (a unique `id` will be assigned if omitted, and the initial `revision` will be set to `1`). The `type` property must be one of: `event`, `monitor`, `action`, or `scheduler`. If you include [Plugin.params](data.md#plugin-params), they must follow the documented schema and will be validated.
+Xem [Plugin](data.md#plugin) để biết chi tiết về các thuộc tính đầu vào. Các thuộc tính `id`, `username`, `created`, `modified` và `revision` có thể được bỏ qua, vì chúng được tạo tự động (một `id` duy nhất sẽ được gán nếu bỏ qua, và `revision` ban đầu sẽ được đặt thành `1`). Thuộc tính `type` phải là một trong: `event`, `monitor`, `action`, hoặc `scheduler`. Nếu bạn bao gồm [Plugin.params](data.md#plugin-params), chúng phải tuân theo schema đã được tài liệu hóa và sẽ được xác thực.
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -2838,7 +2833,7 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -2847,7 +2842,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `plugin` object containing the plugin that was just created (including all the auto-generated properties).
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một đối tượng `plugin` chứa plugin vừa được tạo (bao gồm tất cả các thuộc tính được tạo tự động).
 
 ### update_plugin
 
@@ -2855,18 +2850,18 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 POST /api/app/update_plugin/v1
 ```
 
-Update an existing plugin definition, specified by its ID. The [edit_plugins](privileges.md#edit_plugins) privilege is required, as well as a valid user session or API Key. The request must be sent as an HTTP POST with a JSON body.
+Cập nhật một định nghĩa plugin hiện có, được chỉ định bằng ID của nó. Yêu cầu quyền [edit_plugins](privileges.md#edit_plugins), cũng như một user session hoặc API Key hợp lệ. Request phải được gửi dưới dạng HTTP POST với nội dung JSON.
 
-See [Plugin](data.md#plugin) for details on the input properties. The request is shallow-merged into the existing plugin, so you can provide a sparse set of properties to update. The `modified` timestamp is updated automatically, and the `revision` is incremented.
+Xem [Plugin](data.md#plugin) để biết chi tiết về các thuộc tính đầu vào. Request được gộp nông (shallow-merged) vào plugin hiện có, vì vậy bạn có thể cung cấp một tập hợp thưa thớt các thuộc tính để cập nhật. Dấu thời gian `modified` được cập nhật tự động, và `revision` được tăng lên.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the plugin to update. |
-| (Other) | Various | Any updatable [Plugin](data.md#plugin) fields (e.g. `title`, `enabled`, `type`, `command`, `script`, `params`, `groups`, `format`, `uid`, `gid`, `kill`, `icon`, `notes`). |
+| `id` | String | **(Bắt buộc)** ID chữ và số của plugin để cập nhật. |
+| (Other) | Various | Bất kỳ trường [Plugin](data.md#plugin) nào có thể cập nhật (ví dụ: `title`, `enabled`, `type`, `command`, `script`, `params`, `groups`, `format`, `uid`, `gid`, `kill`, `icon`, `notes`). |
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -2876,13 +2871,13 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 { "code": 0 }
 ```
 
-The above example would update the `title` and `enabled` properties of the plugin with ID `shellplug`. Other properties will not be touched (aside from `modified` and `revision`, which are updated automatically).
+Ví dụ trên sẽ cập nhật các thuộc tính `title` và `enabled` của plugin với ID `shellplug`. Các thuộc tính khác sẽ không bị chạm tới (ngoại trừ `modified` và `revision`, được cập nhật tự động).
 
 ### delete_plugin
 
@@ -2890,21 +2885,21 @@ The above example would update the `title` and `enabled` properties of the plugi
 POST /api/app/delete_plugin/v1
 ```
 
-Delete an existing plugin definition, specified by its ID. The [delete_plugins](privileges.md#delete_plugins) privilege is required, as well as a valid user session or API Key. The request must be sent as an HTTP POST with a JSON body.
+Xóa một định nghĩa plugin hiện có, được chỉ định bằng ID của nó. Yêu cầu quyền [delete_plugins](privileges.md#delete_plugins), cũng như một user session hoặc API Key hợp lệ. Request phải được gửi dưới dạng HTTP POST với nội dung JSON.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the plugin to delete. |
+| `id` | String | **(Bắt buộc)** ID chữ và số của plugin để xóa. |
 
-Example request:
+Ví dụ request:
 
 ```json
 { "id": "shellplug" }
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 { "code": 0 }
@@ -2915,7 +2910,7 @@ Example response:
 
 ## Roles
 
-Role APIs define collections of privileges and optional category/group constraints that can be assigned to users. Use them to list, fetch, create, update, and delete roles. Roles simplify permission management across teams. Editing roles requires admin privileges; listing and fetching requires a valid session or API Key.
+Các API role (vai trò) định nghĩa các tập hợp quyền và các ràng buộc category/group tùy chọn có thể được gán cho người dùng. Sử dụng chúng để liệt kê, lấy, tạo, cập nhật, và xóa các role. Role đơn giản hóa việc quản lý quyền giữa các nhóm (teams). Việc chỉnh sửa role yêu cầu quyền admin; việc liệt kê và lấy yêu cầu một user session hoặc API Key hợp lệ.
 
 ### get_roles
 
@@ -2923,11 +2918,11 @@ Role APIs define collections of privileges and optional category/group constrain
 GET /api/app/get_roles/v1
 ```
 
-Fetch all user role definitions. No specific privilege is required, besides a valid user session or API Key.
+Lấy tất cả các định nghĩa user role. Không yêu cầu quyền cụ thể, bên cạnh một user session hoặc API Key hợp lệ.
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing all roles, and a `list` object containing list metadata (e.g. `length` for total rows without pagination).
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một mảng `rows` chứa tất cả các role, và một đối tượng `list` chứa siêu dữ liệu danh sách (ví dụ: `length` cho tổng số hàng không có phân trang).
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -2956,7 +2951,7 @@ Example response:
 }
 ```
 
-See [Role](data.md#role) for details on the role object and its properties.
+Xem [Role](data.md#role) để biết chi tiết về đối tượng role và các thuộc tính của nó.
 
 ### get_role
 
@@ -2964,21 +2959,21 @@ See [Role](data.md#role) for details on the role object and its properties.
 GET /api/app/get_role/v1
 ```
 
-Fetch a single role definition by ID. No specific privilege is required, besides a valid user session or API Key. Both a HTTP GET with query string parameters and a HTTP POST with JSON are allowed.
+Lấy một định nghĩa role duy nhất bằng ID. Không yêu cầu quyền cụ thể, bên cạnh một user session hoặc API Key hợp lệ. Cả HTTP GET với các tham số chuỗi truy vấn và HTTP POST với JSON đều được cho phép.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the role to fetch. |
+| `id` | String | **(Bắt buộc)** ID chữ và số của role để lấy. |
 
-Example request:
+Ví dụ request:
 
 ```json
 { "id": "all" }
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -3004,9 +2999,9 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `role` object containing the requested role.
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một đối tượng `role` chứa role được yêu cầu.
 
-See [Role](data.md#role) for details on the role properties.
+Xem [Role](data.md#role) để biết chi tiết về các thuộc tính của role.
 
 ### create_role
 
@@ -3014,11 +3009,11 @@ See [Role](data.md#role) for details on the role properties.
 POST /api/app/create_role/v1
 ```
 
-Create a new user role. The [create_roles](privileges.md#create_roles) privilege is required, as well as a valid user session or API Key. The request must be sent as an HTTP POST with a JSON body.
+Tạo một user role mới. Yêu cầu quyền [create_roles](privileges.md#create_roles), cũng như một user session hoặc API Key hợp lệ. Request phải được gửi dưới dạng HTTP POST với nội dung JSON.
 
-See [Role](data.md#role) for details on the input properties. The `id`, `username`, `created`, `modified` and `revision` properties may be omitted, as they are automatically generated (a unique `id` will be assigned if omitted, and the initial `revision` will be set to `1`). If omitted, `privileges` defaults to an empty object, and `categories`/`groups` default to empty arrays.
+Xem [Role](data.md#role) để biết chi tiết về các thuộc tính đầu vào. Các thuộc tính `id`, `username`, `created`, `modified` và `revision` có thể được bỏ qua, vì chúng được tạo tự động (một `id` duy nhất sẽ được gán nếu bỏ qua, và `revision` ban đầu sẽ được đặt thành `1`). Nếu bỏ qua, `privileges` mặc định là một đối tượng trống, và `categories`/`groups` mặc định là các mảng trống.
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -3035,7 +3030,7 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 {
@@ -3044,7 +3039,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `role` object containing the role that was just created (including all the auto-generated properties).
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một đối tượng `role` chứa role vừa được tạo (bao gồm tất cả các thuộc tính được tạo tự động).
 
 ### update_role
 
@@ -3052,18 +3047,18 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 POST /api/app/update_role/v1
 ```
 
-Update an existing user role, specified by its ID. The [edit_roles](privileges.md#edit_roles) privilege is required, as well as a valid user session or API Key. The request must be sent as an HTTP POST with a JSON body.
+Cập nhật một user role hiện có, được chỉ định bằng ID của nó. Yêu cầu quyền [edit_roles](privileges.md#edit_roles), cũng như một user session hoặc API Key hợp lệ. Request phải được gửi dưới dạng HTTP POST với nội dung JSON.
 
-See [Role](data.md#role) for details on the input properties. The request is shallow-merged into the existing role, so you can provide a sparse set of properties to update. The `modified` timestamp is updated automatically, and the `revision` is incremented.
+Xem [Role](data.md#role) để biết chi tiết về các thuộc tính đầu vào. Request được gộp nông (shallow-merged) vào role hiện có, vì vậy bạn có thể cung cấp một tập hợp thưa thớt các thuộc tính để cập nhật. Dấu thời gian `modified` được cập nhật tự động, và `revision` được tăng lên.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the role to update. |
-| (Other) | Various | Any updatable [Role](data.md#role) fields (e.g. `title`, `enabled`, `categories`, `groups`, `privileges`, `icon`, `notes`). |
+| `id` | String | **(Bắt buộc)** ID chữ và số của role để cập nhật. |
+| (Other) | Various | Bất kỳ trường [Role](data.md#role) nào có thể cập nhật (ví dụ: `title`, `enabled`, `categories`, `groups`, `privileges`, `icon`, `notes`). |
 
-Example request:
+Ví dụ request:
 
 ```json
 {
@@ -3074,27 +3069,26 @@ Example request:
 }
 ```
 
-Example response:
+Ví dụ response:
 
 ```json
 { "code": 0 }
 ```
 
-The above example would update the `title`, `categories` and `enabled` properties of the role with ID `operators`. Other properties will not be modified (aside from `modified` and `revision`, which are updated automatically).
-
+Ví dụ trên sẽ cập nhật các thuộc tính `title`, `categories` và `enabled` của role với ID `operators`. Các thuộc tính khác sẽ không bị sửa đổi (ngoại trừ `modified` và `revision`, được cập nhật tự động).
 ### delete_role
 
 ```
 POST /api/app/delete_role/v1
 ```
 
-Delete an existing user role, specified by its ID. The [delete_roles](privileges.md#delete_roles) privilege is required, as well as a valid user session or API Key. The request must be sent as an HTTP POST with a JSON body.
+Xoá một user role hiện có, được chỉ định bằng ID của nó. Cần có quyền [delete_roles](privileges.md#delete_roles), cũng như một user session hợp lệ hoặc API Key. Yêu cầu phải được gửi dưới dạng HTTP POST với nội dung JSON.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the role to delete. |
+| `id` | String | **(Bắt buộc)** ID chữ và số của role cần xoá. |
 
 Example request:
 
@@ -3113,7 +3107,7 @@ Example response:
 
 ## Search
 
-Search APIs provide read-only querying over indexed datasets (jobs, servers, alerts, snapshots, activity, and stats). Use them to paginate through results, retrieve summaries, and filter by fields. Results are automatically scoped by the caller's category/group access. Some endpoints (e.g., activity) are admin-only; others require only a valid session or API Key.
+Các search API cung cấp tính năng truy vấn chỉ đọc trên các tập dữ liệu được lập chỉ mục (jobs, servers, alerts, snapshots, activity và stats). Sử dụng chúng để phân trang qua các kết quả, lấy bản tóm tắt và lọc theo các trường. Kết quả được tự động giới hạn bởi quyền truy cập category/group của người gọi. Một số endpoint (ví dụ: activity) chỉ dành cho admin; những endpoint khác chỉ yêu cầu session hợp lệ hoặc API Key.
 
 ### search_jobs
 
@@ -3121,52 +3115,52 @@ Search APIs provide read-only querying over indexed datasets (jobs, servers, ale
 GET /api/app/search_jobs/v1
 ```
 
-Search completed jobs. Requires a valid user session or API Key. Results are automatically filtered by the caller's category and group access rights.
+Tìm kiếm các jobs đã hoàn thành. Yêu cầu một user session hợp lệ hoặc API Key. Kết quả được tự động lọc theo quyền truy cập category và group của người gọi.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `query` | String | Optional. [Unbase-style search query](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries). Defaults to `*` if omitted. |
-| `offset` | Number | Optional. Zero-based row offset for pagination. Defaults to `0`. |
-| `limit` | Number | Optional. Number of rows to return. Defaults to `1`. |
-| `sort_by` | String | Optional. Field to sort by. Defaults to `completed`. |
-| `sort_dir` | Number | Optional. Sort direction: `1` for ascending or `-1` for descending. Defaults to `-1`. |
-| `verbose` | Boolean | Optional. If `true`, include verbose job fields (`actions`, `activity`, `input`, `files`, etc.). Defaults to `false` (i.e. these are pruned). |
-| `select` | Array | Optional.  If included, will only return the [Job](data.md#job) properties specified in the array, e.g. `["id", "files"]`.  Overrides `verbose`. |
+| `query` | String | Tuỳ chọn. [Truy vấn tìm kiếm kiểu Unbase](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries). Mặc định là `*` nếu bị bỏ qua. |
+| `offset` | Number | Tuỳ chọn. Độ dịch dòng (zero-based) để phân trang. Mặc định là `0`. |
+| `limit` | Number | Tuỳ chọn. Số hàng để trả về. Mặc định là `1`. |
+| `sort_by` | String | Tuỳ chọn. Trường để sắp xếp. Mặc định là `completed`. |
+| `sort_dir` | Number | Tuỳ chọn. Hướng sắp xếp: `1` cho tăng dần hoặc `-1` cho giảm dần. Mặc định là `-1`. |
+| `verbose` | Boolean | Tuỳ chọn. Nếu `true`, bao gồm các trường job chi tiết (`actions`, `activity`, `input`, `files`, v.v.). Mặc định là `false` (tức là chúng bị cắt bỏ). |
+| `select` | Array | Tuỳ chọn.  Nếu được bao gồm, sẽ chỉ trả về các thuộc tính [Job](data.md#job) được chỉ định trong mảng, ví dụ: `["id", "files"]`.  Ghi đè `verbose`. |
 
-For formatting the `query` you can use a GitHub-style [simple query format](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries), or the more advanced [PxQL format](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#pxql-queries).  See the [Jobs Database Table](db.dm#jobs) schema for the available columns you can search on.
+Để định dạng `query`, bạn có thể sử dụng [định dạng truy vấn đơn giản](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries) kiểu GitHub hoặc [định dạng PxQL](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#pxql-queries) nâng cao hơn.  Xem schema của [Jobs Database Table](db.dm#jobs) để biết các cột khả dụng bạn có thể tìm kiếm.
 
-Query examples for the `query` parameter:
+Các ví dụ truy vấn cho tham số `query`:
 
-- `tags:_success`: All successful jobs. Successful jobs are tagged with the hidden `_success` system tag.
-- `tags:_error`: All failed jobs for any reason. Failed jobs are tagged with the hidden `_error` system tag.
-- `tags:_files`: All jobs with input or output files.
-- `code:warning`: All jobs with a code of `warning`.
-- `code:critical`: All jobs with a code of `critical`.
-- `code:abort`: All aborted jobs.
-- `event:emk5piv8f6j2n49y`: Jobs for a specific event by its [Event.id](data.md#event-id).
-- `category:general`: Jobs for a specific category by its [Category.id](data.md#category-id).
-- `tags:important`: Jobs tagged with a user tag by its [Tag.id](data.md#tag-id).
-- `source:scheduler`: Jobs started by a specific source (see [Job.source](data.md#job-source)).
-- `source:workflow`: All workflow sub-jobs.
-- `plugin:shellplug`: Jobs using a specific Plugin by its [Plugin.id](data.md#plugin-id).
-- `plugin:_workflow`: Special Plugin ID to search for all workflows.
-- `server:smkee2akcswxcapy`: Jobs that ran on a specific server by its [Server.id](data.md#server-id).
-- `groups:main`: Jobs that ran on a server in a group by its [Group.id](data.md#group-id).
+- `tags:_success`: Tất cả các jobs thành công. Các jobs thành công được gắn tag hệ thống ẩn `_success`.
+- `tags:_error`: Tất cả các jobs thất bại vì bất kỳ lý do gì. Các jobs thất bại được gắn tag hệ thống ẩn `_error`.
+- `tags:_files`: Tất cả các jobs có input hoặc output files.
+- `code:warning`: Tất cả các jobs có code là `warning`.
+- `code:critical`: Tất cả các jobs có code là `critical`.
+- `code:abort`: Tất cả các jobs bị huỷ.
+- `event:emk5piv8f6j2n49y`: Các jobs cho một event cụ thể bằng [Event.id](data.md#event-id) của nó.
+- `category:general`: Các jobs cho một category cụ thể bằng [Category.id](data.md#category-id) của nó.
+- `tags:important`: Các jobs được gắn tag user tag bằng [Tag.id](data.md#tag-id) của nó.
+- `source:scheduler`: Các jobs được bắt đầu bởi một source cụ thể (xem [Job.source](data.md#job-source)).
+- `source:workflow`: Tất cả các workflow sub-jobs.
+- `plugin:shellplug`: Các jobs sử dụng một Plugin cụ thể bằng [Plugin.id](data.md#plugin-id) của nó.
+- `plugin:_workflow`: Plugin ID đặc biệt để tìm kiếm tất cả các workflows.
+- `server:smkee2akcswxcapy`: Các jobs đã chạy trên một server cụ thể bằng [Server.id](data.md#server-id) của nó.
+- `groups:main`: Các jobs đã chạy trên một server trong một group bằng [Group.id](data.md#group-id) của nó.
 
-Multiple columns can be queried by separating them with spaces. For example, `tags:_error category:general` requires both clauses to match. For multi-word columns like `tags`, you can match multiple values by separating them with spaces, e.g. `tags:flag important` (requires both tags). For an OR list on a single column, use a pipe separator, e.g. `tags:flag|important`.
+Nhiều cột có thể được truy vấn bằng cách tách chúng bằng khoảng trắng. Ví dụ, `tags:_error category:general` yêu cầu cả hai mệnh đề phải khớp. Đối với các cột nhiều từ như `tags`, bạn có thể khớp nhiều giá trị bằng cách phân tách chúng bằng dấu cách, ví dụ: `tags:flag important` (yêu cầu cả hai tags). Đối với danh sách OR trên một cột duy nhất, hãy sử dụng dấu gạch đứng để phân tách, ví dụ: `tags:flag|important`.
 
-Date and number fields (like `date`) accept:
+Các trường ngày và số (như `date`) chấp nhận:
 
-- Unix timestamp in seconds (quantized to the nearest hour internally), e.g. `1768430906`.
-- A date in `YYYY-MM-DD` (quantized to midnight in the local server time zone).
-- `today` (midnight in the local server time zone).
-- `now` (current local server time).
+- Unix timestamp tính bằng giây (được lượng tử hoá làm tròn tới giờ gần nhất trong nội bộ), ví dụ: `1768430906`.
+- Một ngày ở định dạng `YYYY-MM-DD` (được lượng tử hoá thành nửa đêm theo múi giờ server cục bộ).
+- `today` (nửa đêm theo múi giờ server cục bộ).
+- `now` (giờ server cục bộ hiện tại).
 
-Example date range for all jobs in the year 2025: `date:>=2025-01-01 date:<2026-01-01`.
+Ví dụ về khoảng ngày cho tất cả các jobs trong năm 2025: `date:>=2025-01-01 date:<2026-01-01`.
 
-Sorting: use `sort_by=completed` to sort by job completion time (not quantized), or `sort_by=elapsed` to sort by elapsed time. Set `sort_dir=1` for ascending or `sort_dir=-1` for descending. To find the longest running jobs, set `query=*`, `sort_by=elapsed`, and `sort_dir=-1`.
+Sắp xếp: sử dụng `sort_by=completed` để sắp xếp theo thời gian hoàn thành job (không lượng tử hoá) hoặc `sort_by=elapsed` để sắp xếp theo thời gian đã trôi qua. Đặt `sort_dir=1` cho tăng dần hoặc `sort_dir=-1` cho giảm dần. Để tìm các jobs chạy lâu nhất, hãy đặt `query=*`, `sort_by=elapsed`, và `sort_dir=-1`.
 
 Example response:
 
@@ -3189,7 +3183,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing [Job](data.md#job) records, and a `list` object containing list metadata (e.g. `length` for total rows without pagination). When `verbose` is not set, large fields are pruned from the job records.
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một mảng `rows` chứa các bản ghi [Job](data.md#job) và một đối tượng `list` chứa siêu dữ liệu danh sách (ví dụ: `length` cho tổng số hàng mà không cần phân trang). Khi `verbose` không được thiết lập, các trường lớn sẽ bị cắt bỏ khỏi các bản ghi job.
 
 ### search_servers
 
@@ -3197,37 +3191,37 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 GET /api/app/search_servers/v1
 ```
 
-Search historical server records. Requires a valid user session or API Key.
+Tìm kiếm các bản ghi server lịch sử. Yêu cầu một user session hợp lệ hoặc API Key.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `query` | String | Optional. [Unbase-style search query](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries). Defaults to `*`. |
-| `offset` | Number | Optional. Zero-based row offset for pagination. Defaults to `0`. |
-| `limit` | Number | Optional. Number of rows to return. Defaults to `1`. |
-| `sort_by` | String | Optional. Field to sort by. Defaults to `_id`. |
-| `sort_dir` | Number | Optional. Sort direction: `1` for ascending or `-1` for descending. Defaults to `-1`. |
+| `query` | String | Tuỳ chọn. [Truy vấn tìm kiếm kiểu Unbase](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries). Mặc định là `*`. |
+| `offset` | Number | Tuỳ chọn. Độ dịch dòng (zero-based) để phân trang. Mặc định là `0`. |
+| `limit` | Number | Tuỳ chọn. Số hàng để trả về. Mặc định là `1`. |
+| `sort_by` | String | Tuỳ chọn. Trường để sắp xếp. Mặc định là `_id`. |
+| `sort_dir` | Number | Tuỳ chọn. Hướng sắp xếp: `1` cho tăng dần hoặc `-1` cho giảm dần. Mặc định là `-1`. |
 
-For formatting the `query` you can use a GitHub-style [simple query format](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries), or the more advanced [PxQL format](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#pxql-queries).  See the [Servers Database Table](db.dm#servers) schema for the available columns you can search on.
+Để định dạng `query`, bạn có thể sử dụng [định dạng truy vấn đơn giản](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries) kiểu GitHub hoặc [định dạng PxQL](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#pxql-queries) nâng cao hơn.  Xem schema của [Servers Database Table](db.dm#servers) để biết các cột khả dụng bạn có thể tìm kiếm.
 
-Query examples for the `query` parameter:
+Các ví dụ truy vấn cho tham số `query`:
 
-- `web` or `keywords:web`: Search the default keywords field.
-- `groups:main`: Servers in a specific group by its [Group.id](data.md#group-id).
-- `os_platform:linux`: Servers on a given OS platform.
-- `os_distro:ubuntu`: Servers running a specific OS distribution.
-- `os_release:22_04`: Servers running a specific OS release.
-- `os_arch:x86_64`: Servers with a specific CPU architecture.
-- `cpu_virt:kvm`: Servers running under a specific virtualization vendor.
-- `cpu_brand:intel`: Servers with a specific CPU brand string.
-- `cpu_cores:8`: Servers with a specific core count.
-- `created:>=2025-01-01 created:<2026-01-01`: Servers created in 2025.
-- `modified:>=today`: Servers modified today (last modified or last contact).
+- `web` hoặc `keywords:web`: Tìm kiếm trường keywords mặc định.
+- `groups:main`: Các servers trong một group cụ thể bằng [Group.id](data.md#group-id) của nó.
+- `os_platform:linux`: Các servers trên một OS platform nhất định.
+- `os_distro:ubuntu`: Các servers chạy một OS distribution cụ thể.
+- `os_release:22_04`: Các servers chạy một OS release cụ thể.
+- `os_arch:x86_64`: Các servers có một kiến trúc CPU cụ thể.
+- `cpu_virt:kvm`: Các servers chạy dưới một nhà cung cấp ảo hoá cụ thể.
+- `cpu_brand:intel`: Các servers có một chuỗi thương hiệu CPU cụ thể.
+- `cpu_cores:8`: Các servers có một số lượng core cụ thể.
+- `created:>=2025-01-01 created:<2026-01-01`: Các servers được tạo vào năm 2025.
+- `modified:>=today`: Các servers được sửa đổi hôm nay (lần sửa đổi cuối cùng hoặc liên lạc cuối cùng).
 
-You can combine columns with spaces for AND logic, e.g. `groups:main os_distro:ubuntu`. Use `|` for OR on a single column, e.g. `os_platform:linux|windows`.
+Bạn có thể kết hợp các cột với khoảng trắng cho logic AND, ví dụ: `groups:main os_distro:ubuntu`. Sử dụng `|` cho OR trên một cột duy nhất, ví dụ: `os_platform:linux|windows`.
 
-Date and number fields (like `created` and `modified`) accept Unix timestamps, `YYYY-MM-DD`, `today`, and `now`, and are quantized to the nearest hour internally.
+Các trường ngày và số (như `created` và `modified`) chấp nhận Unix timestamps, `YYYY-MM-DD`, `today`, và `now`, và được lượng tử hoá làm tròn tới giờ gần nhất trong nội bộ.
 
 Example response:
 
@@ -3239,7 +3233,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing [Server](data.md#server) records, and a `list` object containing list metadata.
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một mảng `rows` chứa các bản ghi [Server](data.md#server) và một đối tượng `list` chứa siêu dữ liệu danh sách.
 
 ### search_alerts
 
@@ -3247,32 +3241,32 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 GET /api/app/search_alerts/v1
 ```
 
-Search historical or active alert invocations. Requires a valid user session or API Key.
+Tìm kiếm các lệnh gọi alert đang hoạt động hoặc lịch sử. Yêu cầu một user session hợp lệ hoặc API Key.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `query` | String | Optional. [Unbase-style search query](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries). Defaults to `*`. |
-| `offset` | Number | Optional. Zero-based row offset for pagination. Defaults to `0`. |
-| `limit` | Number | Optional. Number of rows to return. Defaults to `1`. |
-| `sort_by` | String | Optional. Field to sort by. Defaults to `_id`. |
-| `sort_dir` | Number | Optional. Sort direction: `1` for ascending or `-1` for descending. Defaults to `-1`. |
+| `query` | String | Tuỳ chọn. [Truy vấn tìm kiếm kiểu Unbase](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries). Mặc định là `*`. |
+| `offset` | Number | Tuỳ chọn. Độ dịch dòng (zero-based) để phân trang. Mặc định là `0`. |
+| `limit` | Number | Tuỳ chọn. Số hàng để trả về. Mặc định là `1`. |
+| `sort_by` | String | Tuỳ chọn. Trường để sắp xếp. Mặc định là `_id`. |
+| `sort_dir` | Number | Tuỳ chọn. Hướng sắp xếp: `1` cho tăng dần hoặc `-1` cho giảm dần. Mặc định là `-1`. |
 
-For formatting the `query` you can use a GitHub-style [simple query format](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries), or the more advanced [PxQL format](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#pxql-queries).  See the [Alerts Database Table](db.dm#alerts) schema for the available columns you can search on.
+Để định dạng `query`, bạn có thể sử dụng [định dạng truy vấn đơn giản](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries) kiểu GitHub hoặc [định dạng PxQL](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#pxql-queries) nâng cao hơn.  Xem schema của [Alerts Database Table](db.dm#alerts) để biết các cột khả dụng bạn có thể tìm kiếm.
 
-Query examples for the `query` parameter:
+Các ví dụ truy vấn cho tham số `query`:
 
-- `active:true`: All active alert invocations.
-- `alert:al12345`: Invocations for a specific alert definition by its [Alert.id](data.md#alert-id).
-- `server:smkee2akcswxcapy`: Invocations for a specific server by its [Server.id](data.md#server-id).
-- `groups:main`: Invocations for servers in a specific group by its [Group.id](data.md#group-id).
-- `jobs:jabc123`: Invocations related to a specific job by its [Job.id](data.md#job-id).
-- `tickets:tmgpmoorz6p`: Invocations related to a specific ticket by its [Ticket.id](data.md#ticket-id).
-- `start:>=2025-01-01 start:<2026-01-01`: Alerts that fired in 2025.
-- `end:>=today`: Alerts cleared today.
+- `active:true`: Tất cả các lệnh gọi alert đang hoạt động.
+- `alert:al12345`: Các lệnh gọi cho một định nghĩa alert cụ thể bằng [Alert.id](data.md#alert-id) của nó.
+- `server:smkee2akcswxcapy`: Các lệnh gọi cho một server cụ thể bằng [Server.id](data.md#server-id) của nó.
+- `groups:main`: Các lệnh gọi cho các servers trong một group cụ thể bằng [Group.id](data.md#group-id) của nó.
+- `jobs:jabc123`: Các lệnh gọi liên quan đến một job cụ thể bằng [Job.id](data.md#job-id) của nó.
+- `tickets:tmgpmoorz6p`: Các lệnh gọi liên quan đến một ticket cụ thể bằng [Ticket.id](data.md#ticket-id) của nó.
+- `start:>=2025-01-01 start:<2026-01-01`: Các alerts đã kích hoạt vào năm 2025.
+- `end:>=today`: Các alerts đã xoá hôm nay.
 
-Date and number fields (like `start` and `end`) accept Unix timestamps, `YYYY-MM-DD`, `today`, and `now`, and are quantized to the nearest hour internally.
+Các trường ngày và số (như `start` và `end`) chấp nhận Unix timestamps, `YYYY-MM-DD`, `today`, và `now`, và được lượng tử hoá làm tròn tới giờ gần nhất trong nội bộ.
 
 Example response:
 
@@ -3284,7 +3278,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing [AlertInvocation](data.md#alertinvocation) records, and a `list` object containing list metadata.
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một mảng `rows` chứa các bản ghi [AlertInvocation](data.md#alertinvocation) và một đối tượng `list` chứa siêu dữ liệu danh sách.
 
 ### search_snapshots
 
@@ -3292,36 +3286,36 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 GET /api/app/search_snapshots/v1
 ```
 
-Search server snapshots (individual servers or group snapshots). Requires a valid user session or API Key.
+Tìm kiếm các snapshots của server (các snapshots cho server đơn lẻ hoặc cho group). Yêu cầu một user session hợp lệ hoặc API Key.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `query` | String | Optional. [Unbase-style search query](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries). Defaults to `*`. |
-| `offset` | Number | Optional. Zero-based row offset for pagination. Defaults to `0`. |
-| `limit` | Number | Optional. Number of rows to return. Defaults to `1`. |
-| `sort_by` | String | Optional. Field to sort by. Defaults to `_id`. |
-| `sort_dir` | Number | Optional. Sort direction: `1` for ascending or `-1` for descending. Defaults to `-1`. |
-| `verbose` | Boolean | Optional. If `true`, include heavy nested fields (e.g., `data.processes`, `data.mounts`, group keys). Defaults to `false` (these are pruned). |
+| `query` | String | Tuỳ chọn. [Truy vấn tìm kiếm kiểu Unbase](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries). Mặc định là `*`. |
+| `offset` | Number | Tuỳ chọn. Độ dịch dòng (zero-based) để phân trang. Mặc định là `0`. |
+| `limit` | Number | Tuỳ chọn. Số hàng để trả về. Mặc định là `1`. |
+| `sort_by` | String | Tuỳ chọn. Trường để sắp xếp. Mặc định là `_id`. |
+| `sort_dir` | Number | Tuỳ chọn. Hướng sắp xếp: `1` cho tăng dần hoặc `-1` cho giảm dần. Mặc định là `-1`. |
+| `verbose` | Boolean | Tuỳ chọn. Nếu `true`, bao gồm các trường lồng nhau nặng (ví dụ: `data.processes`, `data.mounts`, group keys). Mặc định là `false` (những trường này bị cắt bỏ). |
 
-For formatting the `query` you can use a GitHub-style [simple query format](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries), or the more advanced [PxQL format](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#pxql-queries).  See the [Snapshots Database Table](db.dm#snapshots) schema for the available columns you can search on.
+Để định dạng `query`, bạn có thể sử dụng [định dạng truy vấn đơn giản](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries) kiểu GitHub hoặc [định dạng PxQL](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#pxql-queries) nâng cao hơn.  Xem schema của [Snapshots Database Table](db.dm#snapshots) để biết các cột khả dụng bạn có thể tìm kiếm.
 
-Query examples for the `query` parameter:
+Các ví dụ truy vấn cho tham số `query`:
 
-- `type:server`: Server snapshots only.
-- `type:group`: Group snapshots only.
-- `source:alert`: Snapshots created by alert actions.
-- `source:watch`: Snapshots created by watches.
-- `source:user`: Snapshots created manually by users.
-- `source:job`: Snapshots created by job actions.
-- `server:smkee2akcswxcapy`: Snapshots for a specific server by its [Server.id](data.md#server-id).
-- `groups:main`: Group snapshots for a specific group by its [Group.id](data.md#group-id).
-- `alerts:al12345`: Snapshots that captured a specific alert invocation by its [AlertInvocation.id](data.md#alertinvocation-id).
-- `jobs:jabc123`: Snapshots that captured a specific job by its [Job.id](data.md#job-id).
-- `date:>=2025-01-01 date:<2026-01-01`: Snapshots captured in 2025.
+- `type:server`: Chỉ các server snapshots.
+- `type:group`: Chỉ các group snapshots.
+- `source:alert`: Các snapshots được tạo bởi alert actions.
+- `source:watch`: Các snapshots được tạo bởi watches.
+- `source:user`: Các snapshots được tạo thủ công bởi users.
+- `source:job`: Các snapshots được tạo bởi job actions.
+- `server:smkee2akcswxcapy`: Các snapshots cho một server cụ thể bằng [Server.id](data.md#server-id) của nó.
+- `groups:main`: Group snapshots cho một group cụ thể bằng [Group.id](data.md#group-id) của nó.
+- `alerts:al12345`: Các snapshots đã chụp một lệnh gọi alert cụ thể bằng [AlertInvocation.id](data.md#alertinvocation-id) của nó.
+- `jobs:jabc123`: Các snapshots đã chụp một job cụ thể bằng [Job.id](data.md#job-id) của nó.
+- `date:>=2025-01-01 date:<2026-01-01`: Các snapshots được chụp trong năm 2025.
 
-Date and number fields (like `date`) accept Unix timestamps, `YYYY-MM-DD`, `today`, and `now`, and are quantized to the nearest hour internally.
+Các trường ngày và số (như `date`) chấp nhận Unix timestamps, `YYYY-MM-DD`, `today`, và `now`, và được lượng tử hoá làm tròn tới giờ gần nhất trong nội bộ.
 
 Example response:
 
@@ -3333,7 +3327,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing [Snapshot](data.md#snapshot) records, and a `list` object containing list metadata. When `verbose` is not set, large fields are pruned from the snapshot records.
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một mảng `rows` chứa các bản ghi [Snapshot](data.md#snapshot) và một đối tượng `list` chứa siêu dữ liệu danh sách. Khi `verbose` không được thiết lập, các trường lớn sẽ bị cắt bỏ khỏi các bản ghi snapshot.
 
 ### search_tickets
 
@@ -3341,22 +3335,22 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 GET /api/app/search_tickets/v1
 ```
 
-Search tickets using the Unbase query syntax. Requires a valid user session or API Key.
+Tìm kiếm các tickets bằng cú pháp truy vấn Unbase. Yêu cầu một user session hợp lệ hoặc API Key.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `query` | String | Optional. [Unbase-style search query](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries). Defaults to `*`. |
-| `offset` | Number | Optional. Zero-based row offset for pagination. Defaults to `0`. |
-| `limit` | Number | Optional. Number of rows to return. Defaults to `1`. |
-| `sort_by` | String | Optional. Field to sort by. Defaults to `_id`. |
-| `sort_dir` | Number | Optional. Sort direction: `1` for ascending or `-1` for descending. Defaults to `-1`. |
-| `compact` | Boolean | Optional. If `true` (or `1`), omit `body` and replace `changes` with its count for lighter payloads. |
+| `query` | String | Tuỳ chọn. [Truy vấn tìm kiếm kiểu Unbase](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries). Mặc định là `*`. |
+| `offset` | Number | Tuỳ chọn. Độ dịch dòng (zero-based) để phân trang. Mặc định là `0`. |
+| `limit` | Number | Tuỳ chọn. Số hàng để trả về. Mặc định là `1`. |
+| `sort_by` | String | Tuỳ chọn. Trường để sắp xếp. Mặc định là `_id`. |
+| `sort_dir` | Number | Tuỳ chọn. Hướng sắp xếp: `1` cho tăng dần hoặc `-1` cho giảm dần. Mặc định là `-1`. |
+| `compact` | Boolean | Tuỳ chọn. Nếu `true` (hoặc `1`), bỏ qua `body` và thay thế `changes` bằng số lượng của nó để có payload nhẹ hơn. |
 
-For formatting the `query` you can use a GitHub-style [simple query format](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries), or the more advanced [PxQL format](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#pxql-queries).  See the [Tickets Database Table](db.dm#tickets) schema for the available columns you can search on.
+Để định dạng `query`, bạn có thể sử dụng [định dạng truy vấn đơn giản](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries) kiểu GitHub hoặc [định dạng PxQL](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#pxql-queries) nâng cao hơn.  Xem schema của [Tickets Database Table](db.dm#tickets) để biết các cột khả dụng bạn có thể tìm kiếm.
 
-See [Tickets → Searching](tickets.md#searching) for search query examples.
+Xem [Tickets → Searching](tickets.md#searching) cho các ví dụ truy vấn tìm kiếm.
 
 Example response (compact):
 
@@ -3370,7 +3364,7 @@ Example response (compact):
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes a `rows` array of [Ticket](data.md#ticket) records and a `list` object with list metadata (e.g., `length` for total rows without pagination). When `compact` is set, `body` is omitted and `changes` is the count of changes.
+Ngoài [Standard Response Format](#standard-response-format), nó bao gồm một mảng `rows` gồm các bản ghi [Ticket](data.md#ticket) và một đối tượng `list` với siêu dữ liệu danh sách (ví dụ: `length` cho tổng số hàng mà không cần phân trang). Khi `compact` được thiết lập, `body` bị bỏ qua và `changes` là số lượng các thay đổi.
 
 ### search_activity
 
@@ -3378,29 +3372,29 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 GET /api/app/search_activity/v1
 ```
 
-Search the activity (audit) log. Admin only. Requires a valid administrator session or API Key with admin privileges.
+Tìm kiếm nhật ký activity (kiểm toán). Chỉ dành cho admin. Yêu cầu một session administrator hợp lệ hoặc API Key có quyền admin.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `query` | String | Optional. [Unbase-style search query](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries). Defaults to `*`. |
-| `offset` | Number | Optional. Zero-based row offset for pagination. Defaults to `0`. |
-| `limit` | Number | Optional. Number of rows to return. Defaults to `1`. |
-| `sort_by` | String | Optional. Field to sort by. Defaults to `_id`. |
-| `sort_dir` | Number | Optional. Sort direction: `1` for ascending or `-1` for descending. Defaults to `-1`. |
+| `query` | String | Tuỳ chọn. [Truy vấn tìm kiếm kiểu Unbase](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries). Mặc định là `*`. |
+| `offset` | Number | Tuỳ chọn. Độ dịch dòng (zero-based) để phân trang. Mặc định là `0`. |
+| `limit` | Number | Tuỳ chọn. Số hàng để trả về. Mặc định là `1`. |
+| `sort_by` | String | Tuỳ chọn. Trường để sắp xếp. Mặc định là `_id`. |
+| `sort_dir` | Number | Tuỳ chọn. Hướng sắp xếp: `1` cho tăng dần hoặc `-1` cho giảm dần. Mặc định là `-1`. |
 
-For formatting the `query` you can use a GitHub-style [simple query format](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries), or the more advanced [PxQL format](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#pxql-queries).  See the [Activity Database Table](db.dm#activity) schema for the available columns you can search on.
+Để định dạng `query`, bạn có thể sử dụng [định dạng truy vấn đơn giản](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries) kiểu GitHub hoặc [định dạng PxQL](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#pxql-queries) nâng cao hơn.  Xem schema của [Activity Database Table](db.dm#activity) để biết các cột khả dụng bạn có thể tìm kiếm.
 
-Query examples for the `query` parameter:
+Các ví dụ truy vấn cho tham số `query`:
 
-- `action:job_error`: Activity items for a specific action (see [Activity.action](data.md#activity-action)).
-- `action:alert_new|alert_cleared`: Activity items matching multiple actions.
-- `keywords:admin`: Activity items that mention a specific username or ID.
-- `date:>=2025-01-01 date:<2026-01-01`: Activity in 2025.
-- `date:>=today`: Activity logged today.
+- `action:job_error`: Các mục activity cho một action cụ thể (xem [Activity.action](data.md#activity-action)).
+- `action:alert_new|alert_cleared`: Các mục activity khớp với nhiều actions.
+- `keywords:admin`: Các mục activity đề cập đến một username hoặc ID cụ thể.
+- `date:>=2025-01-01 date:<2026-01-01`: Activity vào năm 2025.
+- `date:>=today`: Activity được ghi lại hôm nay.
 
-The activity index exposes only three searchable columns: `action`, `keywords`, and `date`. Date and number fields (like `date`) accept Unix timestamps, `YYYY-MM-DD`, `today`, and `now`, and are quantized to the nearest hour internally.
+Chỉ mục activity chỉ tiết lộ ba cột có thể tìm kiếm: `action`, `keywords`, và `date`. Các trường ngày và số (như `date`) chấp nhận Unix timestamps, `YYYY-MM-DD`, `today`, và `now`, và được lượng tử hoá làm tròn tới giờ gần nhất trong nội bộ.
 
 Example response:
 
@@ -3412,7 +3406,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing [Activity](data.md#activity) records, and a `list` object containing list metadata. When available, each activity record will also include a computed `useragent` string derived from the original `headers.user-agent`.
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một mảng `rows` chứa các bản ghi [Activity](data.md#activity), và một đối tượng `list` chứa siêu dữ liệu danh sách. Khi có sẵn, mỗi bản ghi activity cũng sẽ bao gồm một chuỗi `useragent` được tính toán dựa trên `headers.user-agent` ban đầu.
 
 ### search_revision_history
 
@@ -3420,18 +3414,18 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 GET /api/app/search_revision_history/v1
 ```
 
-Search the activity log for revision history related to a specific data type (e.g., events, plugins, roles). Requires a valid user session or API Key.
+Tìm kiếm nhật ký activity cho lịch sử sửa đổi (revision history) liên quan đến một kiểu dữ liệu cụ thể (ví dụ: events, plugins, roles). Yêu cầu một user session hợp lệ hoặc API Key.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `type` | String | **(Required)** The data type to filter by. One of: `alerts`, `categories`, `channels`, `events`, `groups`, `monitors`, `plugins`, `tags`, `web_hooks`, `buckets`, `secrets`, `tickets`, `roles`. |
-| `query` | String | Optional. Additional Unbase-style search terms to AND with the type filter. |
-| `offset` | Number | Optional. Zero-based row offset for pagination. Defaults to `0`. |
-| `limit` | Number | Optional. Number of rows to return. Defaults to `1`. |
-| `sort_by` | String | Optional. Field to sort by. Defaults to `_id`. |
-| `sort_dir` | Number | Optional. Sort direction: `1` for ascending or `-1` for descending. Defaults to `-1`. |
+| `type` | String | **(Bắt buộc)** Kiểu dữ liệu để lọc theo. Một trong các: `alerts`, `categories`, `channels`, `events`, `groups`, `monitors`, `plugins`, `tags`, `web_hooks`, `buckets`, `secrets`, `tickets`, `roles`. |
+| `query` | String | Tuỳ chọn. Các thuật ngữ tìm kiếm kiểu Unbase bổ sung để thực hiện phép AND với bộ lọc type. |
+| `offset` | Number | Tuỳ chọn. Độ dịch dòng (zero-based) để phân trang. Mặc định là `0`. |
+| `limit` | Number | Tuỳ chọn. Số hàng để trả về. Mặc định là `1`. |
+| `sort_by` | String | Tuỳ chọn. Trường để sắp xếp. Mặc định là `_id`. |
+| `sort_dir` | Number | Tuỳ chọn. Hướng sắp xếp: `1` cho tăng dần hoặc `-1` cho giảm dần. Mặc định là `-1`. |
 
 Example response:
 
@@ -3443,7 +3437,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing [Activity](data.md#activity) records matching the selected type, and a `list` object containing list metadata. For security, these records have certain network details removed (e.g., IPs and raw headers).
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một mảng `rows` chứa các bản ghi [Activity](data.md#activity) khớp với kiểu đã chọn, và một đối tượng `list` chứa siêu dữ liệu danh sách. Vì lý do bảo mật, các bản ghi này đã bị xoá một số chi tiết mạng (ví dụ: IPs và raw headers).
 
 ### search_stat_history
 
@@ -3451,17 +3445,17 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 GET /api/app/search_stat_history/v1
 ```
 
-Fetch daily snapshots from the system stats history. These are counters incremented throughout the day, and used to display the "Job History Day Graph" and "Alert History Day Graph" swatch grids, among other things.  The API requires a valid user session or API Key.
+Lấy các snapshots hàng ngày từ system stats history. Đây là các bộ đếm được tăng lên trong suốt cả ngày, và được sử dụng để hiển thị các biểu đồ lưới màu (swatch grids) "Job History Day Graph" và "Alert History Day Graph", cùng với những thứ khác. API yêu cầu một user session hợp lệ hoặc API Key.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `offset` | Number | Optional. Zero-based day offset for pagination. Defaults to `0`. |
-| `limit` | Number | Optional. Number of days to return. Defaults to `1`. |
-| `path` | String | Optional. Dot-path into the stats object to return a subset (e.g., `daily.jobs`). |
-| `key_prefix` | String | Optional. If set and the selected node is an object, include only keys beginning with this prefix. |
-| `current_day` | Boolean | Optional. If `true`, append in-progress counters for the current day as an extra item. |
+| `offset` | Number | Tuỳ chọn. Độ dịch ngày (zero-based) để phân trang. Mặc định là `0`. |
+| `limit` | Number | Tuỳ chọn. Số ngày để trả về. Mặc định là `1`. |
+| `path` | String | Tuỳ chọn. Đường dẫn có dấu chấm (dot-path) vào đối tượng stats để trả về một tập con (ví dụ: `daily.jobs`). |
+| `key_prefix` | String | Tuỳ chọn. Nếu được thiết lập và node đã chọn là một đối tượng, chỉ bao gồm các key bắt đầu bằng tiền tố này. |
+| `current_day` | Boolean | Tuỳ chọn. Nếu `true`, nối thêm các bộ đếm đang diễn ra cho ngày hiện tại dưới dạng một mục bổ sung. |
 
 Example response:
 
@@ -3479,7 +3473,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include an `items` array containing per-day records with `epoch`, human-readable `date`, and the selected `data` subtree, plus a `list` object containing list metadata.
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một mảng `items` chứa các bản ghi theo ngày với `epoch`, `date` con người có thể đọc được, và cây con `data` đã chọn, cộng với một đối tượng `list` chứa siêu dữ liệu danh sách.
 
 ### bulk_search_export
 
@@ -3487,21 +3481,21 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 GET /api/app/bulk_search_export/v1
 ```
 
-Stream a bulk export of search results for any database index to the client. Requires a valid user session or API Key. Results are scoped by the caller's category and group access in the same way as the search APIs. The response is a streamed file, not JSON.
+Truyền một bản xuất hàng loạt (bulk export) các kết quả tìm kiếm cho bất kỳ database index nào tới client. Yêu cầu một user session hợp lệ hoặc API Key. Kết quả được giới hạn bởi quyền truy cập category và group của người gọi giống như với các search APIs. Phản hồi là một streamed file, không phải JSON.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `index` | String | **(Required)** Database index ID to query. Supported indexes are `jobs`, `tickets`, `servers`, `alerts`, `snapshots`, and `activity`. |
-| `query` | String | Optional search query. Defaults to `*`. The query format depends on the selected index. |
-| `columns` | Array(String) or String | **(Required)** Column IDs to include in the export, in the desired order. For HTTP GET query strings, pass a comma-separated list. |
-| `sort_by` | String | Optional. Sorter ID for the index. Defaults to `_id`. |
-| `sort_dir` | Number | Optional. Sort direction: `1` for ascending or `-1` for descending. Defaults to `-1`. |
-| `format` | String | **(Required)** Output format: `csv`, `tsv`, or `ndjson`. |
-| `compress` | Boolean | Optional. If set to any true value, the response is gzip-compressed. For HTTP GET query strings, use `compress=1`. |
+| `index` | String | **(Bắt buộc)** Database index ID để truy vấn. Các indexes được hỗ trợ là `jobs`, `tickets`, `servers`, `alerts`, `snapshots`, và `activity`. |
+| `query` | String | Truy vấn tìm kiếm tuỳ chọn. Mặc định là `*`. Định dạng truy vấn phụ thuộc vào index đã chọn. |
+| `columns` | Array(String) or String | **(Bắt buộc)** Các IDs của cột để đưa vào bản xuất, theo thứ tự mong muốn. Đối với các HTTP GET query strings, truyền một danh sách được phân tách bằng dấu phẩy. |
+| `sort_by` | String | Tuỳ chọn. Sorter ID cho index. Mặc định là `_id`. |
+| `sort_dir` | Number | Tuỳ chọn. Hướng sắp xếp: `1` cho tăng dần hoặc `-1` cho giảm dần. Mặc định là `-1`. |
+| `format` | String | **(Bắt buộc)** Định dạng đầu ra: `csv`, `tsv`, hoặc `ndjson`. |
+| `compress` | Boolean | Tuỳ chọn. Nếu được thiết lập thành bất kỳ giá trị true nào, phản hồi sẽ được nén gzip. Đối với HTTP GET query strings, sử dụng `compress=1`. |
 
-Query syntax and examples are documented in the search APIs for each index:
+Cú pháp truy vấn và các ví dụ được ghi lại trong các search APIs cho mỗi index:
 
 - [search_jobs](#search_jobs)
 - [search_tickets](#search_tickets)
@@ -3510,7 +3504,7 @@ Query syntax and examples are documented in the search APIs for each index:
 - [search_snapshots](#search_snapshots)
 - [search_activity](#search_activity)
 
-For searchable fields and index definitions, see [Database](db.md).
+Đối với các trường có thể tìm kiếm và các định nghĩa index, hãy xem [Database](db.md).
 
 Example request:
 
@@ -3518,7 +3512,7 @@ Example request:
 GET /api/app/bulk_search_export/v1?index=jobs&query=tags:_error&columns=id,event,category,plugin,completed,code&sort_by=completed&sort_dir=-1&format=csv&compress=1
 ```
 
-Response: `200 OK` with a streamed file. CSV and TSV responses include a header row using the configured column titles. NDJSON responses include one JSON object per line with only the requested columns. A UTF-8 BOM is always prepended for spreadsheet compatibility. If `compress` is enabled, the response is gzip and the filename will end with `.gz`.
+Response: `200 OK` với một streamed file. Các phản hồi CSV và TSV bao gồm một hàng tiêu đề sử dụng các tiêu đề cột đã được cấu hình. Các phản hồi NDJSON bao gồm một đối tượng JSON trên mỗi dòng với chỉ các cột được yêu cầu. Một UTF-8 BOM luôn được thêm vào phía trước để tương thích với bảng tính. Nếu `compress` được bật, phản hồi là gzip và tên tệp sẽ kết thúc bằng `.gz`.
 
 
 
@@ -3528,23 +3522,23 @@ Response: `200 OK` with a streamed file. CSV and TSV responses include a header 
 GET /api/app/marketplace/v1
 ```
 
-Search listings and fetch detailed product information from the [xyOps Marketplace](marketplace.md).  The marketplace data exists only on GitHub, so this will trigger an external request, but the data is cached locally after the first fetch (default TTL is 1 hour).  The API has three different modes, triggered by different parameters:
+Tìm kiếm các danh sách và lấy thông tin chi tiết về sản phẩm từ [PTOps Marketplace](marketplace.md). Dữ liệu marketplace chỉ tồn tại trên GitHub, vì vậy điều này sẽ kích hoạt một yêu cầu bên ngoài, nhưng dữ liệu sẽ được lưu vào bộ nhớ cache cục bộ sau lần tìm nạp đầu tiên (TTL mặc định là 1 giờ). API có ba chế độ khác nhau, được kích hoạt bởi các tham số khác nhau:
 
-**Search Listings:**
+**Tìm kiếm danh sách:**
 
-The default action of the API is to search the marketplace for plugins.  The following parameters are used for search:
+Hành động mặc định của API là tìm kiếm trên marketplace cho các plugins. Các tham số sau được sử dụng cho tìm kiếm:
 
 | Parameter Name | Description |
 |----------------|-------------|
-| `query` | Optional keywords, matches case-insensitively against various product properties (title, description, tags, license, etc.). |
-| `type` | Optionally limit results to one specific type, e.g. `plugin`. |
-| `license` | Optionally limit results to one specific license, e.g. `mit` (case-insensitive). |
-| `tags` | Optionally limit results to one or more tags, comma separated and case-insensitive.  All must match to be included. |
-| `requires` | Optionally limit results to one or more requirements, comma separated and case-insensitive.  All must match to be included. |
-| `sort_by` | Which property to sort by (property value needs to be a string, e.g. `title`). |
-| `sort_dir` | Which direction to sort (`1` is ascending, `-1` is descending). |
-| `offset` | Pagination offset into the matched result set. |
-| `limit` | Maximum number of rows to return at once. |
+| `query` | Từ khoá tuỳ chọn, khớp không phân biệt chữ hoa chữ thường với các thuộc tính sản phẩm khác nhau (title, description, tags, license, v.v.). |
+| `type` | Tuỳ chọn giới hạn kết quả ở một loại cụ thể, ví dụ: `plugin`. |
+| `license` | Tuỳ chọn giới hạn kết quả ở một giấy phép cụ thể, ví dụ: `mit` (không phân biệt chữ hoa chữ thường). |
+| `tags` | Tuỳ chọn giới hạn kết quả ở một hoặc nhiều tags, được phân tách bằng dấu phẩy và không phân biệt chữ hoa chữ thường. Tất cả đều phải khớp để được đưa vào. |
+| `requires` | Tuỳ chọn giới hạn kết quả ở một hoặc nhiều yêu cầu, được phân tách bằng dấu phẩy và không phân biệt chữ hoa chữ thường. Tất cả đều phải khớp để được đưa vào. |
+| `sort_by` | Thuộc tính dùng để sắp xếp (giá trị thuộc tính cần phải là một chuỗi, ví dụ: `title`). |
+| `sort_dir` | Hướng sắp xếp (`1` là tăng dần, `-1` là giảm dần). |
+| `offset` | Độ phân trang đối với tập kết quả phù hợp. |
+| `limit` | Số hàng tối đa để trả về cùng lúc. |
 
 Example:
 
@@ -3576,11 +3570,11 @@ Response:
 }
 ```
 
-The `list.length` is the total number of matched rows before pagination chop.
+`list.length` là tổng số hàng phù hợp trước khi cắt giảm phân trang.
 
-**Fetch Metadata:**
+**Lấy Metadata:**
 
-Fetch general marketplace metadata, specifically all the unique product types, requirements, tags, and licenses.  To use this mode, set the `fields` query string parameter to any true value.  Example:
+Lấy siêu dữ liệu chung của marketplace, cụ thể là tất cả các loại sản phẩm độc nhất, các requirements, tags và licenses. Để sử dụng chế độ này, hãy thiết lập tham số chuỗi truy vấn `fields` thành bất kỳ giá trị true nào. Ví dụ:
 
 ```
 GET /api/app/marketplace/v1?fields=1
@@ -3600,11 +3594,11 @@ Response:
 }
 ```
 
-**Get Product Details:**
+**Lấy chi tiết sản phẩm:**
 
-Fetch product details about a specific product (and optionally version).  You can fetch the product README (in markdown format), the product data (in [XYPDF](xypdf.md) format), or the product logo image (in binary PNG format).  To activate this mode, specify the `id` of the product, and optionally a `version`.  If the version is omitted the latest version is used.  Examples:
+Lấy thông tin chi tiết sản phẩm về một sản phẩm cụ thể (và có thể là phiên bản). Bạn có thể lấy tệp README của sản phẩm (ở định dạng markdown), dữ liệu sản phẩm (ở định dạng [XYPDF](xypdf.md)) hoặc hình ảnh logo sản phẩm (ở định dạng nhị phân PNG). Để kích hoạt chế độ này, hãy chỉ định `id` của sản phẩm và tuỳ chọn một `version`. Nếu phiên bản bị bỏ qua, phiên bản mới nhất sẽ được sử dụng. Ví dụ:
 
-Fetch README: `GET /api/app/marketplace/v1?id=pixlcore/xyplug-bluesky&readme=1`
+Lấy README: `GET /api/app/marketplace/v1?id=pixlcore/xyplug-bluesky&readme=1`
 
 Response:
 
@@ -3617,7 +3611,7 @@ Response:
 }
 ```
 
-Fetch Data: `GET /api/app/marketplace/v1?id=pixlcore/xyplug-bluesky&data=1`
+Lấy dữ liệu: `GET /api/app/marketplace/v1?id=pixlcore/xyplug-bluesky&data=1`
 
 Response:
 
@@ -3630,21 +3624,21 @@ Response:
 }
 ```
 
-Fetch Logo: `GET /api/app/marketplace/v1?id=pixlcore/xyplug-bluesky&logo=1`
+Lấy logo: `GET /api/app/marketplace/v1?id=pixlcore/xyplug-bluesky&logo=1`
 
-(The response is binary in this case.)
+(Phản hồi là dạng nhị phân trong trường hợp này.)
 
 ## Secrets
 
-Secrets are passed to jobs as environment variables when access is granted via any of the following metadata lists on the secret:
+Các secrets được truyền cho jobs dưới dạng các biến môi trường khi quyền truy cập được cấp thông qua bất kỳ danh sách siêu dữ liệu (metadata lists) nào sau đây trên secret:
 
-- `events`: Grant to specific [Event.id](data.md#event-id) jobs.
-- `categories`: Grant to all events in selected [Category.id](data.md#category-id)s.
-- `plugins`: Grant to specific [Plugin.id](data.md#plugin-id) jobs when these plugins are launched.
+- `events`: Cấp cho các jobs [Event.id](data.md#event-id) cụ thể.
+- `categories`: Cấp cho tất cả các events trong [Category.id](data.md#category-id) đã chọn.
+- `plugins`: Cấp cho các jobs của [Plugin.id](data.md#plugin-id) cụ thể khi các plugins này được khởi chạy.
 
-Jobs automatically receive the variables without calling any API; the system decrypts and injects them at launch time. Variable names follow POSIX environment rules and are listed in [Secret.names](data.md#secret-names). To view or edit values in the UI, an administrator can use [decrypt_secret](#decrypt_secret); accesses are recorded in the activity log.
+Jobs tự động nhận các biến mà không cần gọi bất kỳ API nào; hệ thống sẽ giải mã và tiêm chúng vào thời điểm khởi chạy. Tên biến tuân theo các quy tắc môi trường POSIX và được liệt kê trong [Secret.names](data.md#secret-names). Để xem hoặc chỉnh sửa giá trị trong UI, administrator có thể sử dụng [decrypt_secret](#decrypt_secret); các lần truy cập được ghi lại trong nhật ký activity.
 
-Web hooks can expand secret variables using template syntax like `{{ secrets.VAR_NAME }}` when the secret grants access via the `web_hooks` list. See [Secret.web_hooks](data.md#secret-web_hooks).
+Các web hooks có thể mở rộng các biến secret bằng cách sử dụng cú pháp mẫu (template syntax) như `{{ secrets.VAR_NAME }}` khi secret cấp quyền truy cập thông qua danh sách `web_hooks`. Xem [Secret.web_hooks](data.md#secret-web_hooks).
 
 ### get_secrets
 
@@ -3652,9 +3646,9 @@ Web hooks can expand secret variables using template syntax like `{{ secrets.VAR
 GET /api/app/get_secrets/v1
 ```
 
-Fetch all secret metadata. No specific privilege is required, besides a valid user session or API Key. Note that this returns only secret metadata; the actual secret variable data is stored separately and encrypted.
+Lấy tất cả metadata của secret. Không yêu cầu quyền đặc biệt nào, ngoại trừ một user session hợp lệ hoặc API Key. Lưu ý rằng API này chỉ trả về metadata của secret; dữ liệu biến secret thực tế được lưu trữ riêng và mã hoá.
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing all secrets, and a `list` object containing list metadata (e.g. `length` for total rows without pagination).
+Ngoài [Standard Response Format](#standard-response-format), nó sẽ bao gồm một mảng `rows` chứa tất cả các secrets, và một đối tượng `list` chứa siêu dữ liệu danh sách (ví dụ: `length` cho tổng số hàng mà không cần phân trang).
 
 Example response:
 
@@ -3683,21 +3677,20 @@ Example response:
 }
 ```
 
-See [Secret](data.md#secret) for details on the secret object and its properties. The actual encrypted data structure is described under [Secret.fields](data.md#secret-fields).
-
+Xem [Secret](data.md#secret) để biết chi tiết về đối tượng secret và các thuộc tính của nó. Cấu trúc dữ liệu mã hoá thực tế được mô tả trong [Secret.fields](data.md#secret-fields).
 ### get_secret
 
 ```
 GET /api/app/get_secret/v1
 ```
 
-Fetch a single secret's metadata by ID. No specific privilege is required, besides a valid user session or API Key. Both a HTTP GET with query string parameters and a HTTP POST with JSON are allowed. This returns only metadata; not the encrypted variable values.
+Lấy siêu dữ liệu của một secret thông qua ID. Không yêu cầu đặc quyền cụ thể nào, ngoại trừ một phiên người dùng hợp lệ hoặc API Key. Cho phép cả HTTP GET với các tham số chuỗi truy vấn và HTTP POST với JSON. Nó chỉ trả về siêu dữ liệu; không phải các giá trị biến đã được mã hóa.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the secret to fetch. |
+| `id` | String | **(Bắt buộc)** ID chữ và số của secret cần lấy. |
 
 Example request:
 
@@ -3729,9 +3722,9 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `secret` object containing the requested secret metadata. To retrieve and decrypt the actual variable values, use [decrypt_secret](#decrypt_secret).
+Ngoài [Định dạng phản hồi tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một đối tượng `secret` chứa siêu dữ liệu secret được yêu cầu. Để lấy và giải mã các giá trị biến thực tế, hãy sử dụng [decrypt_secret](#decrypt_secret).
 
-See [Secret](data.md#secret) for details on the metadata fields.
+Xem [Secret](data.md#secret) để biết chi tiết về các trường siêu dữ liệu.
 
 ### decrypt_secret
 
@@ -3739,15 +3732,15 @@ See [Secret](data.md#secret) for details on the metadata fields.
 GET /api/app/decrypt_secret/v1
 ```
 
-Decrypt and return a secret's variable data. Admin only. Requires a valid administrator session or API Key. Both a HTTP GET with query string parameters and a HTTP POST with JSON are allowed.
+Giải mã và trả về dữ liệu biến của một secret. Chỉ dành cho admin. Yêu cầu một phiên quản trị viên hợp lệ hoặc API Key. Cho phép cả HTTP GET với các tham số chuỗi truy vấn và HTTP POST với JSON.
 
-Access to this API is logged as a transaction in the activity log (action type `secret_access`), tagged with the requesting username.
+Quyền truy cập vào API này được ghi lại dưới dạng một giao dịch trong nhật ký hoạt động (loại action `secret_access`), được gắn thẻ với tên người dùng yêu cầu.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the secret to decrypt. |
+| `id` | String | **(Bắt buộc)** ID chữ và số của secret cần giải mã. |
 
 Example request:
 
@@ -3768,7 +3761,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `fields` array containing the decrypted [Secret.fields](data.md#secret-fields) entries.
+Ngoài [Định dạng phản hồi tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một mảng `fields` chứa các mục nhập [Secret.fields](data.md#secret-fields) đã được giải mã.
 
 ### create_secret
 
@@ -3776,9 +3769,9 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 POST /api/app/create_secret/v1
 ```
 
-Create a new secret and store its encrypted variable data. Admin only. Requires a valid administrator session or API Key. The request must be sent as an HTTP POST with a JSON body.
+Tạo một secret mới và lưu trữ dữ liệu biến đã được mã hóa của nó. Chỉ dành cho admin. Yêu cầu một phiên quản trị viên hợp lệ hoặc API Key. Yêu cầu phải được gửi dưới dạng HTTP POST với nội dung JSON.
 
-See [Secret](data.md#secret) for details on the metadata properties. The `id`, `username`, `created`, `modified` and `revision` properties may be omitted, as they are automatically generated (a unique `id` will be assigned if omitted, and the initial `revision` will be set to `1`). Include [Secret.fields](data.md#secret-fields) to define the variable names and values; these will be encrypted and stored separately from the metadata. The `names` list is auto-generated from `fields` and stored in plaintext for display.
+Xem [Secret](data.md#secret) để biết chi tiết về các thuộc tính siêu dữ liệu. Các thuộc tính `id`, `username`, `created`, `modified` và `revision` có thể bị bỏ qua, vì chúng được tạo tự động (một `id` duy nhất sẽ được gán nếu bỏ qua, và `revision` ban đầu sẽ được đặt thành `1`). Bao gồm [Secret.fields](data.md#secret-fields) để xác định tên và giá trị của biến; chúng sẽ được mã hóa và lưu trữ tách biệt với siêu dữ liệu. Danh sách `names` được tự động tạo từ `fields` và được lưu trữ ở dạng văn bản thuần túy để hiển thị.
 
 Example request:
 
@@ -3809,7 +3802,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `secret` object containing the created secret metadata. The encrypted variable data is stored separately and is not returned here.
+Ngoài [Định dạng phản hồi tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một đối tượng `secret` chứa siêu dữ liệu secret đã được tạo. Dữ liệu biến đã được mã hóa được lưu trữ riêng và không được trả về ở đây.
 
 ### update_secret
 
@@ -3817,18 +3810,18 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 POST /api/app/update_secret/v1
 ```
 
-Update an existing secret's metadata and/or encrypted variable data. Admin only. Requires a valid administrator session or API Key. The request must be sent as an HTTP POST with a JSON body.
+Cập nhật siêu dữ liệu và/hoặc dữ liệu biến đã được mã hóa của một secret hiện có. Chỉ dành cho admin. Yêu cầu một phiên quản trị viên hợp lệ hoặc API Key. Yêu cầu phải được gửi dưới dạng HTTP POST với nội dung JSON.
 
-See [Secret](data.md#secret) for details on the metadata properties. The request is shallow-merged into the existing secret, so you can provide a sparse set of properties to update. If you include [Secret.fields](data.md#secret-fields), the variables will be re-encrypted and stored; the `names` list will be regenerated from the provided field names. The `modified` timestamp is updated automatically, and the `revision` is incremented.
+Xem [Secret](data.md#secret) để biết chi tiết về các thuộc tính siêu dữ liệu. Yêu cầu được hợp nhất nông (shallow-merged) vào secret hiện có, vì vậy bạn có thể cung cấp một tập hợp các thuộc tính thưa thớt để cập nhật. Nếu bạn bao gồm [Secret.fields](data.md#secret-fields), các biến sẽ được mã hóa lại và lưu trữ; danh sách `names` sẽ được tạo lại từ các tên trường được cung cấp. Dấu thời gian `modified` được cập nhật tự động và `revision` được tăng lên.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the secret to update. |
-| (Other) | Various | Any updatable [Secret](data.md#secret) fields (e.g. `title`, `enabled`, `fields`, `events`, `categories`, `plugins`, `web_hooks`, `icon`, `notes`). |
+| `id` | String | **(Bắt buộc)** ID chữ và số của secret cần cập nhật. |
+| (Other) | Various | Bất kỳ trường [Secret](data.md#secret) nào có thể cập nhật (ví dụ: `title`, `enabled`, `fields`, `events`, `categories`, `plugins`, `web_hooks`, `icon`, `notes`). |
 
-Example request (metadata-only update):
+Yêu cầu ví dụ (chỉ cập nhật siêu dữ liệu):
 
 ```json
 {
@@ -3838,7 +3831,7 @@ Example request (metadata-only update):
 }
 ```
 
-Example request (replace variables):
+Yêu cầu ví dụ (thay thế các biến):
 
 ```json
 {
@@ -3863,13 +3856,13 @@ Example response:
 POST /api/app/delete_secret/v1
 ```
 
-Delete an existing secret, including its encrypted variable data. Admin only. Requires a valid administrator session or API Key. The request must be sent as an HTTP POST with a JSON body.
+Xóa một secret hiện có, bao gồm cả dữ liệu biến đã được mã hóa của nó. Chỉ dành cho admin. Yêu cầu một phiên quản trị viên hợp lệ hoặc API Key. Yêu cầu phải được gửi dưới dạng HTTP POST với nội dung JSON.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the secret to delete. |
+| `id` | String | **(Bắt buộc)** ID chữ và số của secret cần xóa. |
 
 Example request:
 
@@ -3887,7 +3880,7 @@ Example response:
 
 ## Servers
 
-Server APIs can list active servers, fetch a server, update server metadata, delete a server, watch for changes, and trigger snapshots. Server data powers monitoring dashboards and routing. Editing or destructive operations require admin privileges; read operations require a valid session or API Key.
+Các API server có thể liệt kê các server đang hoạt động, lấy thông tin một server, cập nhật siêu dữ liệu của server, xóa một server, theo dõi các thay đổi và kích hoạt các snapshot. Dữ liệu server cung cấp cho các bảng điều khiển giám sát và định tuyến. Các thao tác chỉnh sửa hoặc phá hủy yêu cầu đặc quyền admin; các thao tác đọc yêu cầu một phiên hợp lệ hoặc API Key.
 
 ### get_server_summaries
 
@@ -3895,9 +3888,9 @@ Server APIs can list active servers, fetch a server, update server metadata, del
 GET /api/app/get_server_summaries/v1
 ```
 
-Fetch field summaries across all indexed servers (e.g., OS and CPU distributions). Requires a valid user session or API Key.
+Lấy thông tin tóm tắt các trường trên tất cả các server đã được lập chỉ mục (ví dụ: phân phối HĐH và CPU). Yêu cầu một phiên người dùng hợp lệ hoặc API Key.
 
-No input parameters.
+Không có tham số đầu vào.
 
 Example response:
 
@@ -3916,7 +3909,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `summaries` object keyed by field ID, each containing a value-to-count map for that field.
+Ngoài [Định dạng phản hồi tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một đối tượng `summaries` được đánh khóa bằng ID trường, mỗi đối tượng chứa một bản đồ ánh xạ giá trị-số lượng cho trường đó.
 
 ### get_active_servers
 
@@ -3924,9 +3917,9 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 GET /api/app/get_active_servers/v1
 ```
 
-Fetch all active servers (connected to the current conductor server). No input parameters are required. No specific privilege is required beyond a valid user session or API Key.
+Lấy tất cả các server đang hoạt động (được kết nối với server conductor hiện tại). Không yêu cầu tham số đầu vào. Không yêu cầu đặc quyền cụ thể nào ngoài một phiên người dùng hợp lệ hoặc API Key.
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array of active servers, and a `list` object with list metadata (e.g. `length` for total rows). Example response:
+Ngoài [Định dạng phản hồi tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một mảng `rows` gồm các server đang hoạt động, và một đối tượng `list` với siêu dữ liệu danh sách (ví dụ: `length` cho tổng số hàng). Phản hồi ví dụ:
 
 ```json
 {
@@ -3958,7 +3951,7 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 }
 ```
 
-See [Server](data.md#server) for server object details.
+Xem [Server](data.md#server) để biết chi tiết về đối tượng server.
 
 ### get_active_server
 
@@ -3966,13 +3959,13 @@ See [Server](data.md#server) for server object details.
 GET /api/app/get_active_server/v1
 ```
 
-Fetch a single active (online) server by ID. No specific privilege is required beyond a valid user session or API Key. Both HTTP GET with query parameters and HTTP POST with JSON are accepted.
+Lấy thông tin một server đang hoạt động (trực tuyến) thông qua ID. Không yêu cầu đặc quyền cụ thể nào ngoài một phiên người dùng hợp lệ hoặc API Key. Cả HTTP GET với các tham số truy vấn và HTTP POST với JSON đều được chấp nhận.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The server ID to fetch. |
+| `id` | String | **(Bắt buộc)** ID server cần lấy. |
 
 Example request:
 
@@ -4008,7 +4001,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `server` object. See [Server](data.md#server) for details.
+Ngoài [Định dạng phản hồi tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một đối tượng `server`. Xem [Server](data.md#server) để biết thêm chi tiết.
 
 ### get_server
 
@@ -4016,13 +4009,13 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 GET /api/app/get_server/v1
 ```
 
-Fetch a server by ID from storage, including its most recent minute of monitoring data. If the server is currently online, the in-memory record is returned; if recently offline, a cached copy is returned; otherwise the last saved record is loaded from the database. No specific privilege is required beyond a valid user session or API Key. Both HTTP GET with query parameters and HTTP POST with JSON are accepted.
+Lấy thông tin một server thông qua ID từ kho lưu trữ, bao gồm cả dữ liệu giám sát trong phút gần nhất của nó. Nếu server hiện đang trực tuyến, bản ghi trong bộ nhớ sẽ được trả về; nếu mới ngoại tuyến gần đây, một bản sao được lưu trong bộ nhớ cache sẽ được trả về; nếu không thì bản ghi được lưu lần cuối sẽ được tải từ cơ sở dữ liệu. Không yêu cầu đặc quyền cụ thể nào ngoài một phiên người dùng hợp lệ hoặc API Key. Cả HTTP GET với các tham số truy vấn và HTTP POST với JSON đều được chấp nhận.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The server ID to fetch. |
+| `id` | String | **(Bắt buộc)** ID server cần lấy. |
 
 Example request:
 
@@ -4046,7 +4039,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a [Server](data.md#server) object, a `data` object containing [ServerMonitorData](data.md#servermonitordata), and an `online` boolean indicating current connection status.
+Ngoài [Định dạng phản hồi tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một đối tượng [Server](data.md#server), một đối tượng `data` chứa [ServerMonitorData](data.md#servermonitordata), và một boolean `online` cho biết trạng thái kết nối hiện tại.
 
 ### update_server
 
@@ -4054,25 +4047,25 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 POST /api/app/update_server/v1
 ```
 
-Update server metadata (title, enabled, icon, groups, and auto-grouping). Requires a valid session or API Key with the [update_servers](privileges.md#update_servers) privilege. Send as HTTP POST with JSON. The request is shallow-merged into the existing server record.
+Cập nhật siêu dữ liệu server (title, enabled, icon, groups, và auto-grouping). Yêu cầu một phiên hợp lệ hoặc API Key với đặc quyền [update_servers](privileges.md#update_servers). Gửi dưới dạng HTTP POST với JSON. Yêu cầu được hợp nhất nông vào bản ghi server hiện có.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The [Server.id](data.md#server-id) of the server to update. |
-| `enabled` | Boolean | Optionally enable or disable the server as an event target (disabled servers will not be chosen for jobs). |
-| `title` | String | Optional custom label for the server, displayed in the UI (by default the server's hostname is displayed). |
-| `icon` | String | Optional icon ID for the server, displayed in the UI. Icons are sourced from [Material Design Icons](https://materialdesignicons.com/).
-| `groups` | Array | Optional set of [Group.id](data.md#group-id)s for the server.  Only applicable if `autoGroup` is `false`. |
-| `autoGroup` | Boolean | Optionally set the auto-group flag for the server (see below).
-| `maxJobs` | Integer | Optionally limit the number of concurrent jobs allowed to run on the server. |
-| (Other) | Various | Any other updatable [Server](data.md#server) fields. |
+| `id` | String | **(Bắt buộc)** [Server.id](data.md#server-id) của server cần cập nhật. |
+| `enabled` | Boolean | Tùy chọn bật hoặc tắt server như một mục tiêu event (các server bị tắt sẽ không được chọn cho các job). |
+| `title` | String | Nhãn tùy chỉnh tùy chọn cho server, được hiển thị trong UI (theo mặc định, tên máy chủ (hostname) của server được hiển thị). |
+| `icon` | String | ID biểu tượng tùy chọn cho server, được hiển thị trong UI. Các biểu tượng có nguồn từ [Material Design Icons](https://materialdesignicons.com/). |
+| `groups` | Array | Tập hợp tùy chọn các [Group.id](data.md#group-id) cho server. Chỉ áp dụng nếu `autoGroup` là `false`. |
+| `autoGroup` | Boolean | Tùy chọn thiết lập cờ tự động nhóm (auto-group) cho server (xem bên dưới). |
+| `maxJobs` | Integer | Tùy chọn giới hạn số lượng job đồng thời được phép chạy trên server. |
+| (Other) | Various | Bất kỳ trường [Server](data.md#server) nào khác có thể cập nhật. |
 
-Special behavior:
+Hành vi đặc biệt:
 
-- If `autoGroup` is `true`, groups are automatically assigned from hostname rules and any provided `groups` are overridden.
-- If `autoGroup` is `false`, you may explicitly set `groups`.
+- Nếu `autoGroup` là `true`, các group được tự động gán từ các quy tắc tên máy chủ và mọi `groups` được cung cấp sẽ bị ghi đè.
+- Nếu `autoGroup` là `false`, bạn có thể thiết lập `groups` một cách rõ ràng.
 
 Example request:
 
@@ -4099,15 +4092,15 @@ Example response:
 POST /api/app/update_server_data/v1
 ```
 
-Update the server's [user data](servers.md#user-data). Requires a valid session or API Key with the [update_servers](privileges.md#update_servers) privilege. Send as HTTP POST with JSON. The user data properties are shallow-merged into the existing object, unless `replace` is set.
+Cập nhật [dữ liệu người dùng](servers.md#user-data) của server. Yêu cầu một phiên hợp lệ hoặc API Key với đặc quyền [update_servers](privileges.md#update_servers). Gửi dưới dạng HTTP POST với JSON. Các thuộc tính dữ liệu người dùng được hợp nhất nông vào đối tượng hiện có, trừ khi `replace` được thiết lập.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The [Server.id](data.md#server-id) of the server to update. |
-| `data` | Object | **(Required)** The user data properties to update (shallow-merged by default). |
-| `replace` | Boolean | Optional flag, will delete and replace the **entire** user data object if `true`. |
+| `id` | String | **(Bắt buộc)** [Server.id](data.md#server-id) của server cần cập nhật. |
+| `data` | Object | **(Bắt buộc)** Các thuộc tính dữ liệu người dùng cần cập nhật (được hợp nhất nông theo mặc định). |
+| `replace` | Boolean | Cờ tùy chọn, sẽ xóa và thay thế **toàn bộ** đối tượng dữ liệu người dùng nếu là `true`. |
 
 Example request:
 
@@ -4130,23 +4123,23 @@ Example response:
 POST /api/app/delete_server/v1
 ```
 
-Delete a server and optionally its history. Admin only. Requires a valid administrator session or API Key. Send as HTTP POST with JSON.
+Xóa một server và tùy chọn xóa cả lịch sử của nó. Chỉ dành cho admin. Yêu cầu một phiên quản trị viên hợp lệ hoặc API Key. Gửi dưới dạng HTTP POST với JSON.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The server ID to delete. |
-| `history` | Boolean | Optional. If `true`, also delete the server record, monitoring data and snapshots. If omitted or `false`, only uninstall the agent when online and keep history. |
+| `id` | String | **(Bắt buộc)** ID server cần xóa. |
+| `history` | Boolean | Tùy chọn. Nếu `true`, cũng sẽ xóa bản ghi server, dữ liệu giám sát và các snapshot. Nếu bỏ qua hoặc `false`, chỉ gỡ cài đặt tác nhân khi trực tuyến và giữ lại lịch sử. |
 
-Behavior:
+Hành vi:
 
-- Online + `history: false`: Uninstalls xyOps Satellite and removes the server from the active list; the server record and monitoring history are retained.
-- Online + `history: true`: Uninstalls the Satellite, then starts a background job to delete the server record, monitoring data and snapshots.
-- Offline: You must pass `history: true` to delete; otherwise the call fails because only uninstall would be possible when online.
-- Deletion runs in the background; the response is returned immediately.
+- Trực tuyến + `history: false`: Gỡ cài đặt PTOps Satellite và xóa server khỏi danh sách hoạt động; bản ghi server và lịch sử giám sát được giữ lại.
+- Trực tuyến + `history: true`: Gỡ cài đặt Satellite, sau đó bắt đầu một job nền để xóa bản ghi server, dữ liệu giám sát và các snapshot.
+- Ngoại tuyến: Bạn phải truyền `history: true` để xóa; nếu không, lệnh gọi sẽ thất bại vì chỉ có thể gỡ cài đặt khi trực tuyến.
+- Việc xóa chạy trong nền; phản hồi được trả về ngay lập tức.
 
-Example request (delete including history):
+Yêu cầu ví dụ (xóa bao gồm cả lịch sử):
 
 ```json
 { "id": "sorbstack01", "history": true }
@@ -4158,7 +4151,7 @@ Example response:
 { "code": 0 }
 ```
 
-Deletions are permanent and cannot be undone.
+Các thao tác xóa là vĩnh viễn và không thể hoàn tác.
 
 ### watch_server
 
@@ -4166,14 +4159,14 @@ Deletions are permanent and cannot be undone.
 POST /api/app/watch_server/v1
 ```
 
-Start or stop a watch on a server, which takes a snapshot once per minute for a specified duration. Requires the [create_snapshots](privileges.md#create_snapshots) privilege and a valid user session or API Key. Supports HTTP POST with JSON, or HTTP GET with query parameters.
+Bắt đầu hoặc dừng việc theo dõi trên một server, thao tác này sẽ thực hiện một snapshot mỗi phút một lần trong một khoảng thời gian được chỉ định. Yêu cầu đặc quyền [create_snapshots](privileges.md#create_snapshots) và một phiên người dùng hợp lệ hoặc API Key. Hỗ trợ HTTP POST với JSON, hoặc HTTP GET với các tham số truy vấn.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The server ID to watch. |
-| `duration` | Number | **(Required)** Duration in seconds. Set to `0` to cancel an existing watch. |
+| `id` | String | **(Bắt buộc)** ID server cần theo dõi. |
+| `duration` | Number | **(Bắt buộc)** Khoảng thời gian tính bằng giây. Đặt thành `0` để hủy theo dõi hiện có. |
 
 Example request:
 
@@ -4187,7 +4180,7 @@ Example response:
 { "code": 0 }
 ```
 
-See [Snapshots](snapshots.md) for more details.
+Xem [Snapshots](snapshots.md) để biết thêm chi tiết.
 
 ### create_snapshot
 
@@ -4195,13 +4188,13 @@ See [Snapshots](snapshots.md) for more details.
 POST /api/app/create_snapshot/v1
 ```
 
-Create a snapshot for the specified server using the most recent server data. Requires the [create_snapshots](privileges.md#create_snapshots) privilege and a valid user session or API Key. Supports HTTP POST with JSON, or HTTP GET with query parameters.
+Tạo một snapshot cho server được chỉ định bằng cách sử dụng dữ liệu server gần đây nhất. Yêu cầu đặc quyền [create_snapshots](privileges.md#create_snapshots) và một phiên người dùng hợp lệ hoặc API Key. Hỗ trợ HTTP POST với JSON, hoặc HTTP GET với các tham số truy vấn.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `server` | String | **(Required)** The server ID for which to create a snapshot. |
+| `server` | String | **(Bắt buộc)** ID server để tạo snapshot. |
 
 Example request:
 
@@ -4215,9 +4208,9 @@ Example response:
 { "code": 0, "id": "snmhr6zkefh1" }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include an `id` property containing the new [Snapshot.id](data.md#snapshot-id).
+Ngoài [Định dạng phản hồi tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một thuộc tính `id` chứa [Snapshot.id](data.md#snapshot-id) mới.
 
-See [Snapshots](snapshots.md) for more details.
+Xem [Snapshots](snapshots.md) để biết thêm chi tiết.
 
 ### delete_snapshot
 
@@ -4225,13 +4218,13 @@ See [Snapshots](snapshots.md) for more details.
 POST /api/app/delete_snapshot/v1
 ```
 
-Delete a single server or group snapshot given a [Snapshot.id](data.md#snapshot-id). Requires the [delete_snapshots](privileges.md#delete_snapshots) privilege and a valid user session or API Key. Supports HTTP POST with JSON, or HTTP GET with query parameters.
+Xóa một snapshot server hoặc group đã cho [Snapshot.id](data.md#snapshot-id). Yêu cầu đặc quyền [delete_snapshots](privileges.md#delete_snapshots) và một phiên người dùng hợp lệ hoặc API Key. Hỗ trợ HTTP POST với JSON, hoặc HTTP GET với các tham số truy vấn.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The [Snapshot.id](data.md#snapshot-id) to delete. |
+| `id` | String | **(Bắt buộc)** [Snapshot.id](data.md#snapshot-id) cần xóa. |
 
 Example request:
 
@@ -4245,13 +4238,13 @@ Example response:
 { "code": 0 }
 ```
 
-See [Snapshots](snapshots.md) for more details.
+Xem [Snapshots](snapshots.md) để biết thêm chi tiết.
 
 
 
 ## Tags
 
-Tag APIs manage free-form labels that can be applied to jobs, events and tickets to aid organization and search. Use them to list, fetch, create, update, and delete tags. Tagging enables search and filtering in the UI. Editing tags requires specific privileges; listing and fetching requires a valid session or API Key.
+Các API tag quản lý các nhãn tự do có thể được áp dụng cho các job, event và ticket để hỗ trợ tổ chức và tìm kiếm. Sử dụng chúng để liệt kê, lấy, tạo, cập nhật và xóa các tag. Việc gắn tag cho phép tìm kiếm và lọc trong UI. Chỉnh sửa các tag yêu cầu các đặc quyền cụ thể; liệt kê và lấy thông tin yêu cầu một phiên hợp lệ hoặc API Key.
 
 ### get_tags
 
@@ -4259,9 +4252,9 @@ Tag APIs manage free-form labels that can be applied to jobs, events and tickets
 GET /api/app/get_tags/v1
 ```
 
-Fetch all tag definitions. No input parameters are required. No specific privilege is required beyond a valid user session or API Key.
+Lấy tất cả các định nghĩa tag. Không yêu cầu tham số đầu vào. Không yêu cầu đặc quyền cụ thể nào ngoài một phiên người dùng hợp lệ hoặc API Key.
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing all tags, and a `list` object containing list metadata (e.g. `length` for total rows without pagination).
+Ngoài [Định dạng phản hồi tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một mảng `rows` chứa tất cả các tag, và một đối tượng `list` chứa siêu dữ liệu danh sách (ví dụ: `length` cho tổng số hàng mà không phân trang).
 
 Example response:
 
@@ -4282,7 +4275,7 @@ Example response:
 }
 ```
 
-See [Tag](data.md#tag) for tag object details.
+Xem [Tag](data.md#tag) để biết chi tiết về đối tượng tag.
 
 ### get_tag
 
@@ -4290,13 +4283,13 @@ See [Tag](data.md#tag) for tag object details.
 GET /api/app/get_tag/v1
 ```
 
-Fetch a single tag by ID. No specific privilege is required beyond a valid user session or API Key. Both HTTP GET with query string parameters and HTTP POST with JSON are accepted.
+Lấy thông tin một tag thông qua ID. Không yêu cầu đặc quyền cụ thể nào ngoài một phiên người dùng hợp lệ hoặc API Key. Cả HTTP GET với các tham số chuỗi truy vấn và HTTP POST với JSON đều được chấp nhận.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The tag ID to fetch. |
+| `id` | String | **(Bắt buộc)** ID tag cần lấy. |
 
 Example request:
 
@@ -4320,24 +4313,23 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `tag` object. See [Tag](data.md#tag) for details.
-
+Ngoài [Định dạng phản hồi tiêu chuẩn](#standard-response-format), nó sẽ bao gồm một đối tượng `tag`. Xem [Tag](data.md#tag) để biết thêm chi tiết.
 ### create_tag
 
 ```
 POST /api/app/create_tag/v1
 ```
 
-Create a new tag. Requires the [create_tags](privileges.md#create_tags) privilege and a valid user session or API Key. Send as HTTP POST with JSON. The `id` may be omitted and will be auto-generated.
+Tạo một tag mới. Yêu cầu đặc quyền [create_tags](privileges.md#create_tags) và một user session hoặc API Key hợp lệ. Gửi dưới dạng HTTP POST với JSON. `id` có thể bị bỏ qua và sẽ được tự động tạo.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | Optional. Alphanumeric ID to assign; if omitted, a unique one is generated. |
-| `title` | String | **(Required)** The display title for the tag. |
-| `icon` | String | Optional icon name for the tag (Material Design Icons). |
-| `notes` | String | Optional notes or comments about the tag. |
+| `id` | String | Tuỳ chọn. ID chữ và số để chỉ định; nếu bỏ qua, một ID duy nhất sẽ được tạo. |
+| `title` | String | **(Bắt buộc)** Tiêu đề hiển thị cho tag. |
+| `icon` | String | Tên icon tuỳ chọn cho tag (Material Design Icons). |
+| `notes` | String | Các ghi chú hoặc bình luận tuỳ chọn về tag. |
 
 Example request:
 
@@ -4358,7 +4350,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `tag` object containing the newly created tag, including auto-generated fields such as `id`, `username`, `created`, `modified` (and `revision`). See [Tag](data.md#tag) for properties.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này sẽ bao gồm một đối tượng `tag` chứa tag mới được tạo, bao gồm các trường được tự động tạo như `id`, `username`, `created`, `modified` (và `revision`). Xem [Tag](data.md#tag) để biết các thuộc tính.
 
 ### update_tag
 
@@ -4366,14 +4358,14 @@ In addition to the [Standard Response Format](#standard-response-format), this w
 POST /api/app/update_tag/v1
 ```
 
-Update an existing tag by ID. Requires the [edit_tags](privileges.md#edit_tags) privilege and a valid user session or API Key. Send as HTTP POST with JSON. The request is shallow-merged into the existing tag, so you can provide a sparse set of properties to update.
+Cập nhật một tag hiện có bằng ID. Yêu cầu đặc quyền [edit_tags](privileges.md#edit_tags) và một user session hoặc API Key hợp lệ. Gửi dưới dạng HTTP POST với JSON. Yêu cầu được gộp nông (shallow-merged) vào tag hiện có, do đó bạn có thể cung cấp một tập hợp thưa thớt (sparse set) các thuộc tính để cập nhật.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The tag ID to update. |
-| (Other) | Various | Any updatable [Tag](data.md#tag) fields (e.g. `title`, `icon`, `notes`). |
+| `id` | String | **(Bắt buộc)** ID của tag cần cập nhật. |
+| (Other) | Various | Bất kỳ trường [Tag](data.md#tag) nào có thể cập nhật (ví dụ: `title`, `icon`, `notes`). |
 
 Example request:
 
@@ -4396,13 +4388,13 @@ Example response:
 POST /api/app/delete_tag/v1
 ```
 
-Delete an existing tag by ID. Requires the [delete_tags](privileges.md#delete_tags) privilege and a valid user session or API Key. Send as HTTP POST with JSON.
+Xoá một tag hiện có bằng ID. Yêu cầu đặc quyền [delete_tags](privileges.md#delete_tags) và một user session hoặc API Key hợp lệ. Gửi dưới dạng HTTP POST với JSON.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The tag ID to delete. |
+| `id` | String | **(Bắt buộc)** ID của tag cần xoá. |
 
 Example request:
 
@@ -4416,13 +4408,13 @@ Example response:
 { "code": 0 }
 ```
 
-Deletions are permanent and cannot be undone.
+Các thao tác xoá là vĩnh viễn và không thể hoàn tác.
 
 
 
 ## Tickets
 
-Ticket APIs manage lightweight issue tracking and comments within xyOps. Use them to create, search, fetch, update tickets, and add changes/comments. Tickets can be linked to jobs or alerts for incident response. Editing tickets requires specific privileges; searching and reading requires a valid session or API Key.
+Các API ticket quản lý việc theo dõi sự cố hạng nhẹ (lightweight issue tracking) và bình luận bên trong PTOps. Sử dụng chúng để tạo, tìm kiếm, lấy, cập nhật các ticket, và thêm các thay đổi/bình luận. Các ticket có thể được liên kết với các job hoặc alert để ứng phó sự cố. Việc chỉnh sửa các ticket yêu cầu các đặc quyền cụ thể; việc tìm kiếm và đọc yêu cầu một session hoặc API Key hợp lệ.
 
 ### get_ticket
 
@@ -4430,14 +4422,14 @@ Ticket APIs manage lightweight issue tracking and comments within xyOps. Use the
 GET /api/app/get_ticket/v1
 ```
 
-Fetch a single ticket by ID or ticket number. No specific privilege is required beyond a valid user session or API Key. Both HTTP GET with query parameters and HTTP POST with JSON are accepted.
+Lấy một ticket duy nhất bằng ID hoặc số của ticket. Không yêu cầu đặc quyền cụ thể nào ngoài một user session hoặc API Key hợp lệ. Cả HTTP GET với các tham số truy vấn và HTTP POST với JSON đều được chấp nhận.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | The ticket ID to fetch. Required if `num` is not provided. |
-| `num` | Number | The ticket number to fetch. Required if `id` is not provided. |
+| `id` | String | ID của ticket cần lấy. Bắt buộc nếu `num` không được cung cấp. |
+| `num` | Number | Số của ticket cần lấy. Bắt buộc nếu `id` không được cung cấp. |
 
 Example request (by ID):
 
@@ -4465,7 +4457,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes a `ticket` object. See [Ticket](data.md#ticket) for details.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này bao gồm một đối tượng `ticket`. Xem [Ticket](data.md#ticket) để biết chi tiết.
 
 ### get_tickets
 
@@ -4473,14 +4465,14 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 GET /api/app/get_tickets/v1
 ```
 
-Fetch multiple tickets by ID in a single request. No specific privilege is required beyond a valid user session or API Key. Both HTTP GET with query parameters and HTTP POST with JSON are accepted.
+Lấy nhiều ticket bằng ID trong một yêu cầu duy nhất. Không yêu cầu đặc quyền cụ thể nào ngoài một user session hoặc API Key hợp lệ. Cả HTTP GET với các tham số truy vấn và HTTP POST với JSON đều được chấp nhận.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `ids` | Array | **(Required)** Array of ticket IDs to fetch. The response preserves this order. |
-| `verbose` | Boolean | Optional. If `true`, include heavy fields (`body`, full `changes`). If omitted or `false`, these are pruned. |
+| `ids` | Array | **(Bắt buộc)** Mảng các ID ticket cần lấy. Phản hồi bảo toàn thứ tự này. |
+| `verbose` | Boolean | Tuỳ chọn. Nếu `true`, bao gồm các trường nặng (heavy fields) (`body`, toàn bộ `changes`). Nếu bỏ qua hoặc `false`, các trường này sẽ bị cắt bớt (pruned). |
 
 Example request:
 
@@ -4500,7 +4492,7 @@ Example response (non-verbose):
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes a `tickets` array in the same order as `ids`. When `verbose` is not set, large fields are pruned. If a ticket cannot be loaded, its array entry will contain an `err` property instead of a ticket object. See [Ticket](data.md#ticket) for field definitions.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này bao gồm một mảng `tickets` theo cùng thứ tự với `ids`. Khi `verbose` không được đặt, các trường lớn sẽ bị cắt bớt. Nếu một ticket không thể tải được, mục nhập mảng của nó sẽ chứa thuộc tính `err` thay vì đối tượng ticket. Xem [Ticket](data.md#ticket) để biết định nghĩa các trường.
 
 
 ### create_ticket
@@ -4509,25 +4501,25 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 POST /api/app/create_ticket/v1
 ```
 
-Create a new ticket. Requires the [create_tickets](privileges.md#create_tickets) privilege and a valid user session or API Key. Send as HTTP POST. You may send either JSON, or `multipart/form-data` if uploading files:
+Tạo một ticket mới. Yêu cầu đặc quyền [create_tickets](privileges.md#create_tickets) và một user session hoặc API Key hợp lệ. Gửi dưới dạng HTTP POST. Bạn có thể gửi JSON, hoặc `multipart/form-data` nếu tải lên các tệp (files):
 
-- JSON body: Post the ticket fields as JSON.
-- Multipart form-data: Send `Content-Type: multipart/form-data` and include a `json` field containing the full JSON payload (as a string), plus one or more file fields. Uploaded files are attached to the ticket.
+- Nội dung JSON: Gửi các trường của ticket dưới dạng JSON.
+- Multipart form-data: Gửi `Content-Type: multipart/form-data` và bao gồm một trường `json` chứa toàn bộ payload JSON (dưới dạng chuỗi), cộng với một hoặc nhiều trường tệp (file fields). Các tệp được tải lên sẽ được đính kèm vào ticket.
 
 Parameters (JSON):
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | Optional. If omitted, a unique ID is generated. Must be alphanumeric if provided. |
-| `subject` | String | **(Required)** Short summary for the ticket. HTML is stripped. |
-| (Other) | Various | Any [Ticket](data.md#ticket) fields, e.g. `type`, `status`, `category`, `server`, `assignees` (array), `cc` (array), `notify` (array of email), `due` (Unix seconds), `tags` (array), `body` (Markdown). |
-| `template` | String | Optional. Auto-generate the `body` from a template. Allowed values: `job` or `alert` (see below). |
-| `job` | String | Required when `template` is `job`. The [Job.id](data.md#job-id) to use for the template content. |
-| `alert` | String | Required when `template` is `alert`. The [AlertInvocation.id](data.md#alertinvocation-id) to use for the template content. |
+| `id` | String | Tuỳ chọn. Nếu bỏ qua, một ID duy nhất sẽ được tạo. Phải là chữ và số nếu được cung cấp. |
+| `subject` | String | **(Bắt buộc)** Tóm tắt ngắn gọn cho ticket. HTML sẽ bị loại bỏ (stripped). |
+| (Other) | Various | Bất kỳ trường [Ticket](data.md#ticket) nào, ví dụ: `type`, `status`, `category`, `server`, `assignees` (mảng), `cc` (mảng), `notify` (mảng email), `due` (giây Unix), `tags` (mảng), `body` (Markdown). |
+| `template` | String | Tuỳ chọn. Tự động tạo `body` từ một mẫu (template). Các giá trị được phép: `job` hoặc `alert` (xem bên dưới). |
+| `job` | String | Bắt buộc khi `template` là `job`. [Job.id](data.md#job-id) để sử dụng cho nội dung mẫu. |
+| `alert` | String | Bắt buộc khi `template` là `alert`. [AlertInvocation.id](data.md#alertinvocation-id) để sử dụng cho nội dung mẫu. |
 
-When using `multipart/form-data`, attach one or more file fields (any field names). Files are saved and added to [Ticket.files](data.md#ticket-files) with metadata. Files auto-expire per [file_expiration](config.md#file_expiration) configuration setting.
+Khi sử dụng `multipart/form-data`, hãy đính kèm một hoặc nhiều trường tệp (tên trường bất kỳ). Các tệp được lưu và thêm vào [Ticket.files](data.md#ticket-files) cùng với metadata. Các tệp tự động hết hạn theo cài đặt cấu hình [file_expiration](config.md#file_expiration).
 
-Defaults: If not provided, the server sets `status` to `open`, `body` to an empty string, `due` to `0`, and initializes `changes` with an initial "created" entry.
+Mặc định: Nếu không được cung cấp, server thiết lập `status` thành `open`, `body` thành một chuỗi rỗng, `due` thành `0`, và khởi tạo `changes` bằng một mục nhập "created" ban đầu.
 
 Example request (JSON):
 
@@ -4551,7 +4543,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes a `ticket` object containing the newly created [Ticket](data.md#ticket) (including generated fields like `id`, `num`, `created`, `modified` and `changes`).
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này bao gồm một đối tượng `ticket` chứa [Ticket](data.md#ticket) mới được tạo (bao gồm các trường được tạo như `id`, `num`, `created`, `modified` và `changes`).
 
 ### update_ticket
 
@@ -4559,19 +4551,19 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 POST /api/app/update_ticket/v1
 ```
 
-Update an existing ticket by ID. Requires the [edit_tickets](privileges.md#edit_tickets) privilege and a valid user session or API Key. Send as HTTP POST with JSON. The request is shallow-merged into the existing ticket, so you can provide only the changed fields.
+Cập nhật một ticket hiện có bằng ID. Yêu cầu đặc quyền [edit_tickets](privileges.md#edit_tickets) và một user session hoặc API Key hợp lệ. Gửi dưới dạng HTTP POST với JSON. Yêu cầu được gộp nông (shallow-merged) vào ticket hiện có, do đó bạn có thể chỉ cung cấp các trường đã thay đổi.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The ticket ID to update. |
-| (Other) | Various | Any updatable [Ticket](data.md#ticket) fields, e.g. `subject`, `body`, `status`, `type`, `category`, `assignees`, `cc`, `notify`, `due`, `tags`, `server`. |
+| `id` | String | **(Bắt buộc)** ID của ticket cần cập nhật. |
+| (Other) | Various | Bất kỳ trường [Ticket](data.md#ticket) nào có thể cập nhật, ví dụ: `subject`, `body`, `status`, `type`, `category`, `assignees`, `cc`, `notify`, `due`, `tags`, `server`. |
 
 Notes:
 
-- HTML in `subject` is stripped; `body` is sanitized as Markdown.
-- Changes are detected and appended to [Ticket.changes](data.md#ticket-changes) (draft tickets do not record changes).
+- HTML trong `subject` sẽ bị loại bỏ; `body` được dọn dẹp (sanitized) dưới dạng Markdown.
+- Các thay đổi được phát hiện và thêm vào (appended) [Ticket.changes](data.md#ticket-changes) (các ticket bản nháp (draft) không ghi lại các thay đổi).
 
 Example request:
 
@@ -4585,7 +4577,7 @@ Example response:
 { "code": 0, "ticket": { "id": "tmgpmoorz6p", "status": "closed" } }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes an updated `ticket` object. See [Ticket](data.md#ticket).
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này bao gồm một đối tượng `ticket` đã được cập nhật. Xem [Ticket](data.md#ticket).
 
 ### add_ticket_change
 
@@ -4593,14 +4585,14 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 POST /api/app/add_ticket_change/v1
 ```
 
-Add a [change](data.md#ticket-changes) to a ticket (usually a comment). Requires the [edit_tickets](privileges.md#edit_tickets) privilege and a valid user session or API Key. Send as HTTP POST with JSON.
+Thêm một [change](data.md#ticket-changes) vào một ticket (thường là một bình luận). Yêu cầu đặc quyền [edit_tickets](privileges.md#edit_tickets) và một user session hoặc API Key hợp lệ. Gửi dưới dạng HTTP POST với JSON.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The ticket ID to update. |
-| `change` | Object | **(Required)** The change object. For comments, set `type` to `comment` and provide `body` (Markdown). See [Ticket.changes](data.md#ticket-changes) for details. |
+| `id` | String | **(Bắt buộc)** ID của ticket cần cập nhật. |
+| `change` | Object | **(Bắt buộc)** Đối tượng change. Đối với các bình luận, đặt `type` thành `comment` và cung cấp `body` (Markdown). Xem [Ticket.changes](data.md#ticket-changes) để biết chi tiết. |
 
 Example request (add comment):
 
@@ -4617,7 +4609,7 @@ Example response:
 { "code": 0, "ticket": { "id": "tmgpmoorz6p", "changes": [ /* ... */ ] } }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes the updated [Ticket](data.md#ticket) object. Comment bodies are sanitized as Markdown. See [Ticket.changes](data.md#ticket-changes).
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này bao gồm đối tượng [Ticket](data.md#ticket) đã được cập nhật. Nội dung bình luận được dọn dẹp dưới dạng Markdown. Xem [Ticket.changes](data.md#ticket-changes).
 
 ### update_ticket_change
 
@@ -4625,16 +4617,16 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 POST /api/app/update_ticket_change/v1
 ```
 
-Edit or delete an existing ticket [change](data.md#ticket-changes) (e.g., a comment). Requires the [edit_tickets](privileges.md#edit_tickets) privilege and a valid user session or API Key. A user may edit/delete their own comments; editing/deleting others' comments requires administrator privileges.
+Chỉnh sửa hoặc xoá một ticket [change](data.md#ticket-changes) hiện có (ví dụ: một bình luận). Yêu cầu đặc quyền [edit_tickets](privileges.md#edit_tickets) và một user session hoặc API Key hợp lệ. Một người dùng có thể chỉnh sửa/xoá các bình luận của chính họ; việc chỉnh sửa/xoá các bình luận của người khác yêu cầu các đặc quyền administrator.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The ticket ID. |
-| `change_id` | String | **(Required)** The change ID to edit or delete. |
-| `change` | Object | Optional. New change fields to merge (e.g., `body` for comment edits). See [Ticket.changes](data.md#ticket-changes) for details. |
-| `delete` | Boolean | Optional. If `true`, delete the specified change. |
+| `id` | String | **(Bắt buộc)** ID của ticket. |
+| `change_id` | String | **(Bắt buộc)** ID của change cần chỉnh sửa hoặc xoá. |
+| `change` | Object | Tuỳ chọn. Các trường change mới cần gộp (ví dụ: `body` cho các chỉnh sửa bình luận). Xem [Ticket.changes](data.md#ticket-changes) để biết chi tiết. |
+| `delete` | Boolean | Tuỳ chọn. Nếu `true`, xoá change được chỉ định. |
 
 Example request (edit comment):
 
@@ -4654,7 +4646,7 @@ Example response:
 { "code": 0, "ticket": { "id": "tmgpmoorz6p", "changes": [ /* ... */ ] } }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes the updated [Ticket](data.md#ticket) object. Comment bodies are sanitized and edits record an `edited` timestamp. See [Ticket.changes](data.md#ticket-changes).
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này bao gồm đối tượng [Ticket](data.md#ticket) đã được cập nhật. Nội dung bình luận được dọn dẹp và các chỉnh sửa ghi lại một mốc thời gian (timestamp) `edited`. Xem [Ticket.changes](data.md#ticket-changes).
 
 ### upload_user_ticket_files
 
@@ -4662,16 +4654,16 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 POST /api/app/upload_user_ticket_files/v1
 ```
 
-Upload ticket files. Requires the [edit_tickets](privileges.md#edit_tickets) privilege and a valid user session or API Key. Send as HTTP POST with `Content-Type: multipart/form-data` and include a `json` field containing the full JSON payload (as a string), plus one or more file fields. Uploaded files can be attached to the ticket via the `save` param.
+Tải lên các tệp (files) ticket. Yêu cầu đặc quyền [edit_tickets](privileges.md#edit_tickets) và một user session hoặc API Key hợp lệ. Gửi dưới dạng HTTP POST với `Content-Type: multipart/form-data` và bao gồm một trường `json` chứa toàn bộ payload JSON (dưới dạng chuỗi), cộng với một hoặc nhiều trường tệp. Các tệp được tải lên có thể được đính kèm vào ticket thông qua tham số `save`.
 
 Parameters (JSON):
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `ticket` | String | **(Required)** The [Ticket.id](data.md#ticket-id) to attach files to. |
-| `save` | Boolean | Optional. If present and `true` the files will be attached to the ticket.  Otherwise, they are considered to be user content dropped onto the body. |
+| `ticket` | String | **(Bắt buộc)** [Ticket.id](data.md#ticket-id) để đính kèm các tệp vào. |
+| `save` | Boolean | Tuỳ chọn. Nếu có mặt và là `true`, các tệp sẽ được đính kèm vào ticket. Ngược lại, chúng được coi là nội dung người dùng thả (dropped) vào phần thân (body). |
 
-Attach one or more file fields (any field names). Files are saved and added to [Ticket.files](data.md#ticket-files) with metadata. Files auto-expire per [file_expiration](config.md#file_expiration) configuration setting.
+Đính kèm một hoặc nhiều trường tệp (tên trường bất kỳ). Các tệp được lưu và thêm vào [Ticket.files](data.md#ticket-files) cùng với metadata. Các tệp tự động hết hạn theo cài đặt cấu hình [file_expiration](config.md#file_expiration).
 
 Example request (JSON):
 
@@ -4701,7 +4693,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes a `files` array containing all the [Ticket.files](data.md#ticket.files), including the newly uploaded ones.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này bao gồm một mảng `files` chứa tất cả các [Ticket.files](data.md#ticket.files), bao gồm cả những tệp mới được tải lên.
 
 ### delete_ticket_file
 
@@ -4709,14 +4701,14 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 POST /api/app/delete_ticket_file/v1
 ```
 
-Delete a file attached to a ticket. Requires the [edit_tickets](privileges.md#edit_tickets) privilege and a valid user session or API Key. Send as HTTP POST with JSON.
+Xoá một tệp được đính kèm vào một ticket. Yêu cầu đặc quyền [edit_tickets](privileges.md#edit_tickets) và một user session hoặc API Key hợp lệ. Gửi dưới dạng HTTP POST với JSON.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The ticket ID. |
-| `path` | String | **(Required)** The storage path of the file to delete. |
+| `id` | String | **(Bắt buộc)** ID của ticket. |
+| `path` | String | **(Bắt buộc)** Đường dẫn lưu trữ của tệp cần xoá. |
 
 Example request:
 
@@ -4730,7 +4722,7 @@ Example response:
 { "code": 0, "files": [ /* remaining File objects */ ] }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes a `files` array with the ticket's remaining [File](data.md#file) objects.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này bao gồm một mảng `files` với các đối tượng [File](data.md#file) còn lại của ticket.
 
 ### delete_ticket
 
@@ -4738,13 +4730,13 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 POST /api/app/delete_ticket/v1
 ```
 
-Delete an existing ticket by ID. Requires the [delete_tickets](privileges.md#delete_tickets) privilege and a valid user session or API Key. Send as HTTP POST with JSON.
+Xoá một ticket hiện có bằng ID. Yêu cầu đặc quyền [delete_tickets](privileges.md#delete_tickets) và một user session hoặc API Key hợp lệ. Gửi dưới dạng HTTP POST với JSON.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The ticket ID to delete. |
+| `id` | String | **(Bắt buộc)** ID của ticket cần xoá. |
 
 Example request:
 
@@ -4758,13 +4750,13 @@ Example response:
 { "code": 0 }
 ```
 
-Deletion removes the ticket permanently. References to the ticket in jobs and alerts are cleaned up by background maintenance tasks.
+Việc xoá sẽ xoá ticket vĩnh viễn. Các tham chiếu (references) đến ticket trong các job và alert sẽ được dọn dẹp bởi các tác vụ bảo trì nền (background maintenance tasks).
 
 
 
 ## Users
 
-User APIs manage user accounts.  Note that most user management APIs are handled in the [pixl-server-user](https://github.com/jhuckaby/pixl-server-user) component.  The only APIs listed here are those specific to xyOps.
+Các API user quản lý các tài khoản người dùng. Lưu ý rằng hầu hết các API quản lý user được xử lý trong thành phần [pixl-server-user](https://github.com/jhuckaby/pixl-server-user). Các API duy nhất được liệt kê ở đây là những API cụ thể cho PTOps.
 
 ### get_user_activity
 
@@ -4772,14 +4764,14 @@ User APIs manage user accounts.  Note that most user management APIs are handled
 GET /api/app/get_user_activity/v1
 ```
 
-Fetch activity log entries for the current user (e.g., logins, password changes), with pagination. Requires a valid user session or API Key. Both HTTP GET with query parameters and HTTP POST with JSON are accepted.
+Lấy các mục nhập nhật ký hoạt động (activity log entries) cho người dùng hiện tại (ví dụ: đăng nhập, thay đổi mật khẩu), có phân trang. Yêu cầu một user session hoặc API Key hợp lệ. Cả HTTP GET với các tham số truy vấn và HTTP POST với JSON đều được chấp nhận.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `offset` | Number | Zero-based index into the activity list (default `0`). |
-| `limit` | Number | Number of rows to return (default `50`). |
+| `offset` | Number | Chỉ mục dựa trên 0 (Zero-based index) vào danh sách hoạt động (mặc định là `0`). |
+| `limit` | Number | Số hàng sẽ trả về (mặc định là `50`). |
 
 Example response:
 
@@ -4800,7 +4792,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes a `rows` array with the user's activity entries (most recent first), and a `list` object with pagination metadata. A `useragent` string is included for each row when available.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này bao gồm một mảng `rows` với các mục nhập hoạt động của người dùng (mới nhất trước), và một đối tượng `list` với metadata phân trang. Một chuỗi `useragent` được bao gồm cho mỗi hàng khi có sẵn.
 
 ### user_settings
 
@@ -4808,13 +4800,13 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 POST /api/app/user_settings/v1
 ```
 
-Update non-critical settings for the current user (e.g., UI preferences such as language, timezone, contrast, motion, volume). Critical properties are ignored server-side (passwords, salts, `active`, `privileges`, `roles`, `created`). Requires a valid user session.
+Cập nhật các cài đặt không quan trọng (non-critical settings) cho người dùng hiện tại (ví dụ: các tuỳ chọn UI như ngôn ngữ, múi giờ, độ tương phản, chuyển động, âm lượng). Các thuộc tính quan trọng bị server-side bỏ qua (mật khẩu, salts, `active`, `privileges`, `roles`, `created`). Yêu cầu một user session hợp lệ.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| (Other) | Various | Any non-critical [User](data.md#user) fields such as `language`, `region`, `num_format`, `hour_cycle`, `timezone`, `color_acc`, `privacy_mode`, `effects`, `page_info`, `contrast`, `motion`, `volume`, or `icon`. |
+| (Other) | Various | Bất kỳ trường [User](data.md#user) không quan trọng nào như `language`, `region`, `num_format`, `hour_cycle`, `timezone`, `color_acc`, `privacy_mode`, `effects`, `page_info`, `contrast`, `motion`, `volume`, hoặc `icon`. |
 
 Example request:
 
@@ -4836,7 +4828,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes a `user` object containing the updated user with sensitive fields removed. Changes are persisted but not logged as critical activity.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này bao gồm một đối tượng `user` chứa người dùng đã được cập nhật với các trường nhạy cảm đã bị loại bỏ. Các thay đổi được lưu trữ (persisted) nhưng không được ghi lại dưới dạng hoạt động quan trọng.
 
 ### logout_all
 
@@ -4844,13 +4836,13 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 POST /api/app/logout_all/v1
 ```
 
-Log out all sessions associated with the current user, except the current session. Requires a valid user session and the user's current password.
+Đăng xuất tất cả các session liên kết với người dùng hiện tại, ngoại trừ session hiện tại. Yêu cầu một user session hợp lệ và mật khẩu hiện tại của người dùng.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `password` | String | **(Required)** The current account password for verification. |
+| `password` | String | **(Bắt buộc)** Mật khẩu tài khoản hiện tại để xác minh. |
 
 Example request:
 
@@ -4866,15 +4858,15 @@ Example response:
 
 Notes:
 
-- The operation runs in the background after the response is returned; any connected websockets are closed and sessions are deleted.
-- A session report is emailed when sessions were actually terminated.
-- Administrators can perform the same action for another user via [admin_logout_all](#admin_logout_all).
+- Thao tác chạy trong nền (background) sau khi trả về phản hồi; bất kỳ websocket nào đang kết nối đều bị đóng và các session bị xoá.
+- Một báo cáo session được gửi qua email khi các session thực sự bị chấm dứt.
+- Các administrator có thể thực hiện hành động tương tự cho người dùng khác thông qua [admin_logout_all](#admin_logout_all).
 
 
 
 ## Web Hooks
 
-Web Hook APIs manage outbound HTTP callbacks used by alerts, job actions and workflows. Use them to list, fetch, create, update, and delete web hook definitions, which can include headers, authentication and templated payloads (including secret expansion). Executions are logged with job activity; editing requires specific privileges.
+Các API web hook quản lý các callback HTTP gọi ra ngoài (outbound) được sử dụng bởi các alert, job action và workflow. Sử dụng chúng để liệt kê, lấy, tạo, cập nhật, và xoá các định nghĩa web hook, có thể bao gồm các header, xác thực và các payload theo mẫu (bao gồm việc mở rộng các secret). Các lần thực thi được ghi lại với hoạt động của job; việc chỉnh sửa yêu cầu các đặc quyền cụ thể.
 
 ### get_web_hooks
 
@@ -4882,9 +4874,9 @@ Web Hook APIs manage outbound HTTP callbacks used by alerts, job actions and wor
 GET /api/app/get_web_hooks/v1
 ```
 
-Fetch all web hook definitions. No input parameters are required. No specific privilege is required beyond a valid user session or API Key.
+Lấy tất cả các định nghĩa web hook. Không yêu cầu tham số đầu vào. Không yêu cầu đặc quyền cụ thể nào ngoài một user session hoặc API Key hợp lệ.
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `rows` array containing all web hooks, and a `list` object containing list metadata (e.g. `length` for total rows without pagination).
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này sẽ bao gồm một mảng `rows` chứa tất cả các web hook, và một đối tượng `list` chứa metadata danh sách (ví dụ: `length` cho tổng số hàng không có phân trang).
 
 Example response:
 
@@ -4900,7 +4892,7 @@ Example response:
       "method": "POST",
       "headers": [
         { "name": "Content-Type", "value": "application/json" },
-        { "name": "User-Agent", "value": "xyOps/WebHook" }
+        { "name": "User-Agent", "value": "PTOps/WebHook" }
       ],
       "body": "{\n\t\"text\": \"{{text}}\"\n}",
       "timeout": 30,
@@ -4920,7 +4912,7 @@ Example response:
 }
 ```
 
-See [WebHook](data.md#webhook) for details on web hook properties.
+Xem [WebHook](data.md#webhook) để biết chi tiết về các thuộc tính web hook.
 
 ### get_web_hook
 
@@ -4928,13 +4920,13 @@ See [WebHook](data.md#webhook) for details on web hook properties.
 GET /api/app/get_web_hook/v1
 ```
 
-Fetch a single web hook definition by ID. No specific privilege is required beyond a valid user session or API Key. Both HTTP GET with query string parameters and HTTP POST with JSON are accepted.
+Lấy một định nghĩa web hook duy nhất bằng ID. Không yêu cầu đặc quyền cụ thể nào ngoài một user session hoặc API Key hợp lệ. Cả HTTP GET với các tham số truy vấn chuỗi (query string parameters) và HTTP POST với JSON đều được chấp nhận.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The alphanumeric ID of the web hook to fetch. |
+| `id` | String | **(Bắt buộc)** ID chữ và số của web hook cần lấy. |
 
 Example request:
 
@@ -4955,7 +4947,7 @@ Example response:
     "method": "POST",
     "headers": [
       { "name": "Content-Type", "value": "application/json" },
-      { "name": "User-Agent", "value": "xyOps/WebHook" }
+      { "name": "User-Agent", "value": "PTOps/WebHook" }
     ],
     "body": "{\n\t\"text\": \"{{text}}\"\n}",
     "timeout": 30,
@@ -4973,23 +4965,22 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes a `web_hook` object containing the requested web hook.
+Ngoài [Standard Response Format](#standard-response-format), phản hồi này bao gồm một đối tượng `web_hook` chứa web hook được yêu cầu.
 
-See [WebHook](data.md#webhook) for property details and templating behavior.
-
+Xem [WebHook](data.md#webhook) để biết chi tiết thuộc tính và hành vi theo mẫu (templating behavior).
 ### create_web_hook
 
 ```
 POST /api/app/create_web_hook/v1
 ```
 
-Create a new web hook. Requires the [create_web_hooks](privileges.md#create_web_hooks) privilege, plus a valid user session or API Key. Send as HTTP POST with JSON. See [WebHook](data.md#webhook) for property details. The `id` may be omitted and will be auto-generated; `username`, `created`, `modified`, and `revision` are set by the server.
+Tạo một web hook mới. Yêu cầu quyền [create_web_hooks](privileges.md#create_web_hooks), cộng với user session hoặc API Key hợp lệ. Gửi dưới dạng HTTP POST kèm JSON. Xem [WebHook](data.md#webhook) để biết chi tiết thuộc tính. `id` có thể bị bỏ qua và sẽ được tự động tạo; `username`, `created`, `modified`, và `revision` được server thiết lập.
 
-Notes:
+Ghi chú:
 
-- The server validates `id` (alphanumeric/underscore), `method` (letters only), and `url` (must be `http` or `https`).
-- If `body` is provided, any `{{ ... }}` templates are precompiled and a syntax error returns an error response.
-- Web hooks can expand secrets at runtime when allowed via [Secret.web_hooks](data.md#secret-web_hooks).
+- Server xác thực `id` (chữ và số/dấu gạch dưới), `method` (chỉ chữ cái) và `url` (phải là `http` hoặc `https`).
+- Nếu `body` được cung cấp, bất kỳ template `{{ ... }}` nào cũng được biên dịch trước và lỗi cú pháp sẽ trả về phản hồi lỗi.
+- Các web hook có thể mở rộng các secret trong quá trình chạy khi được cho phép qua [Secret.web_hooks](data.md#secret-web_hooks).
 
 Example request:
 
@@ -5001,7 +4992,7 @@ Example request:
   "method": "POST",
   "headers": [
     { "name": "Content-Type", "value": "application/json" },
-    { "name": "User-Agent", "value": "xyOps/WebHook" }
+    { "name": "User-Agent", "value": "PTOps/WebHook" }
   ],
   "body": "{\n  \"text\": \"{{text}}\",\n  \"content\": \"{{text}}\"\n}",
   "timeout": 30,
@@ -5023,7 +5014,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes a `web_hook` object containing the newly created web hook.
+Ngoài [Standard Response Format](#standard-response-format), nó bao gồm đối tượng `web_hook` chứa web hook mới được tạo.
 
 ### update_web_hook
 
@@ -5031,18 +5022,18 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 POST /api/app/update_web_hook/v1
 ```
 
-Update an existing web hook by ID. Requires the [edit_web_hooks](privileges.md#edit_web_hooks) privilege, plus a valid user session or API Key. Send as HTTP POST with JSON. The request is shallow-merged into the existing web hook, so you can provide a sparse set of properties to update. The server updates `modified` and increments `revision` automatically.
+Cập nhật một web hook hiện có theo ID. Yêu cầu quyền [edit_web_hooks](privileges.md#edit_web_hooks), cộng với user session hoặc API Key hợp lệ. Gửi dưới dạng HTTP POST kèm JSON. Request được shallow-merge vào web hook hiện có, vì vậy bạn có thể cung cấp một tập hợp các thuộc tính thưa thớt để cập nhật. Server sẽ tự động cập nhật `modified` và tăng `revision`.
 
-Parameters:
+Tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The web hook ID to update. |
-| (Other) | Various | Any updatable [WebHook](data.md#webhook) fields (e.g. `title`, `enabled`, `url`, `method`, `headers`, `body`, `timeout`, `retries`, `follow`, `ssl_cert_bypass`, `max_per_day`, `notes`, `icon`). |
+| `id` | String | **(Bắt buộc)** ID của web hook cần cập nhật. |
+| (Other) | Various | Bất kỳ trường [WebHook](data.md#webhook) nào có thể cập nhật (ví dụ: `title`, `enabled`, `url`, `method`, `headers`, `body`, `timeout`, `retries`, `follow`, `ssl_cert_bypass`, `max_per_day`, `notes`, `icon`). |
 
-Notes:
+Ghi chú:
 
-- If `body` is provided, templates are precompiled; syntax errors result in an error response.
+- Nếu `body` được cung cấp, các template sẽ được biên dịch trước; lỗi cú pháp sẽ dẫn đến phản hồi lỗi.
 
 Example request:
 
@@ -5067,13 +5058,13 @@ Example response:
 POST /api/app/delete_web_hook/v1
 ```
 
-Delete a web hook by ID. Requires the [delete_web_hooks](privileges.md#delete_web_hooks) privilege, plus a valid user session or API Key. Send as HTTP POST with JSON.
+Xóa một web hook theo ID. Yêu cầu quyền [delete_web_hooks](privileges.md#delete_web_hooks), cộng với user session hoặc API Key hợp lệ. Gửi dưới dạng HTTP POST kèm JSON.
 
-Parameters:
+Tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** The web hook ID to delete. |
+| `id` | String | **(Bắt buộc)** ID của web hook cần xóa. |
 
 Example request:
 
@@ -5087,7 +5078,7 @@ Example response:
 { "code": 0 }
 ```
 
-Deletions are permanent and cannot be undone.
+Các thao tác xóa là vĩnh viễn và không thể hoàn tác.
 
 ### test_web_hook
 
@@ -5095,23 +5086,23 @@ Deletions are permanent and cannot be undone.
 POST /api/app/test_web_hook/v1
 ```
 
-Test a web hook configuration by performing a live HTTP request and returning a detailed, markdown-formatted report. Requires the [edit_web_hooks](privileges.md#edit_web_hooks) privilege, plus a valid user session or API Key. Send as HTTP POST with JSON.
+Kiểm tra cấu hình web hook bằng cách thực hiện HTTP request trực tiếp và trả về báo cáo chi tiết, được định dạng markdown. Yêu cầu quyền [edit_web_hooks](privileges.md#edit_web_hooks), cộng với user session hoặc API Key hợp lệ. Gửi dưới dạng HTTP POST kèm JSON.
 
-Behavior:
+Hành vi:
 
-- If the provided `id` matches an existing web hook, the server merges it with the request body, allowing you to override fields for testing without saving them.
-- Templates in `url`, `headers[].value`, and `body` are expanded using the same data as runtime actions. When testing an existing, saved hook, secrets are included if granted via [Secret.web_hooks](data.md#secret-web_hooks).
-- Timeouts, retries, redirect behavior (`follow`), and TLS validation (`ssl_cert_bypass`) are honored during the test.
+- Nếu `id` được cung cấp khớp với một web hook hiện có, server sẽ merge nó với nội dung request, cho phép bạn ghi đè các trường để kiểm tra mà không lưu chúng.
+- Các template trong `url`, `headers[].value`, và `body` được mở rộng bằng cách sử dụng cùng dữ liệu như các action trong quá trình chạy. Khi kiểm tra một hook hiện có, đã lưu, các secret sẽ được bao gồm nếu được cấp phép qua [Secret.web_hooks](data.md#secret-web_hooks).
+- Các timeout, retries, hành vi chuyển hướng (`follow`), và xác thực TLS (`ssl_cert_bypass`) được tuân thủ trong quá trình kiểm tra.
 
-Parameters:
+Tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** Web hook ID to test (existing hook is optional, but an ID is required). |
-| `title` | String | **(Required)** A title for the test. Required even when testing an existing hook. |
-| `method` | String | **(Required)** HTTP method to use (e.g., `GET`, `POST`). |
-| `url` | String | **(Required)** Fully-qualified `http` or `https` URL to call. |
-| (Other) | Various | Any [WebHook](data.md#webhook) fields to apply for this test only (e.g., `headers`, `body`, `timeout`, `retries`, `follow`, `ssl_cert_bypass`). |
+| `id` | String | **(Bắt buộc)** ID của web hook cần kiểm tra (hook hiện có là tùy chọn, nhưng bắt buộc phải có ID). |
+| `title` | String | **(Bắt buộc)** Tiêu đề cho bài kiểm tra. Bắt buộc ngay cả khi kiểm tra hook hiện có. |
+| `method` | String | **(Bắt buộc)** HTTP method để sử dụng (ví dụ: `GET`, `POST`). |
+| `url` | String | **(Bắt buộc)** URL `http` hoặc `https` đầy đủ điều kiện để gọi. |
+| (Other) | Various | Bất kỳ trường [WebHook](data.md#webhook) nào chỉ áp dụng cho bài kiểm tra này (ví dụ: `headers`, `body`, `timeout`, `retries`, `follow`, `ssl_cert_bypass`). |
 
 Example request (override headers and timeout for an existing hook):
 
@@ -5140,17 +5131,17 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes a `result` object with:
+Ngoài [Standard Response Format](#standard-response-format), nó bao gồm một đối tượng `result` với:
 
-- `code`: `0` on success, or a string error code (e.g., `"webhook"`).
-- `description`: Short summary text (e.g., HTTP status).
-- `details`: A markdown-formatted report including request/response headers and body, and performance metrics when available.
+- `code`: `0` khi thành công, hoặc một mã lỗi chuỗi (ví dụ: `"webhook"`).
+- `description`: Đoạn văn bản tóm tắt ngắn (ví dụ: trạng thái HTTP).
+- `details`: Một báo cáo được định dạng markdown bao gồm các header và body của request/response, và các chỉ số hiệu suất khi có sẵn.
 
 
 
 ## Administrative
 
-Administrative APIs provide system-wide maintenance and export/import utilities intended for administrators. Use them to bulk import/export data, manage configuration, and perform maintenance tasks. These endpoints are admin-only (unless otherwise specified) and all write operations are audited in the activity log.
+Các API Quản trị cung cấp các tiện ích bảo trì và xuất/nhập trên toàn hệ thống dành cho quản trị viên. Sử dụng chúng để nhập/xuất dữ liệu hàng loạt, quản lý cấu hình, và thực hiện các tác vụ bảo trì. Các endpoint này chỉ dành cho quản trị viên (trừ khi có chỉ định khác) và tất cả các thao tác ghi đều được kiểm tra trong activity log.
 
 ### get_servers
 
@@ -5158,14 +5149,14 @@ Administrative APIs provide system-wide maintenance and export/import utilities 
 GET /api/app/get_servers/v1
 ```
 
-Fetch a live snapshot of all connected worker servers and conductor/peer servers. Requires a valid user session or API key.
+Lấy một snapshot trực tiếp của tất cả các worker server và conductor/peer server đang kết nối. Yêu cầu user session hoặc API key hợp lệ.
 
-No input parameters.
+Không có tham số đầu vào.
 
-In addition to the [Standard Response Format](#standard-response-format), this returns:
+Ngoài [Standard Response Format](#standard-response-format), phần này trả về:
 
-- `servers`: Object keyed by server ID containing [Server](data.md#server) objects for all currently connected workers.
-- `masters`: Object keyed by host ID with [Conductor](data.md#conductor) objects for status, version and basic stats.
+- `servers`: Object được khóa theo server ID chứa các đối tượng [Server](data.md#server) cho tất cả các worker đang kết nối hiện tại.
+- `masters`: Object được khóa theo host ID với các đối tượng [Conductor](data.md#conductor) cho trạng thái, phiên bản và các thống kê cơ bản.
 
 Example response:
 
@@ -5187,11 +5178,11 @@ Example response:
 GET /api/app/get_global_state/v1
 ```
 
-Fetch the in-memory conductor [State](data.md#state) object. This includes runtime flags (e.g., scheduler enabled), watches, and other internal state used by the conductor. Requires a valid user session or API key.
+Lấy đối tượng [State](data.md#state) conductor trong bộ nhớ. Điều này bao gồm các cờ thời gian chạy (ví dụ: bộ lập lịch được bật), các watch và trạng thái nội bộ khác được sử dụng bởi conductor. Yêu cầu user session hoặc API key hợp lệ.
 
-No input parameters.
+Không có tham số đầu vào.
 
-In addition to the [Standard Response Format](#standard-response-format), this returns a `state` object containing current conductor state. The contents are primarily internal and subject to change between releases.
+Ngoài [Standard Response Format](#standard-response-format), phần này trả về một đối tượng `state` chứa trạng thái conductor hiện tại. Nội dung chủ yếu là nội bộ và có thể thay đổi giữa các bản phát hành.
 
 Example response:
 
@@ -5205,7 +5196,7 @@ Example response:
 }
 ```
 
-See [State](data.md#state) for more details.
+Xem [State](data.md#state) để biết thêm chi tiết.
 
 ### update_global_state
 
@@ -5213,13 +5204,13 @@ See [State](data.md#state) for more details.
 POST /api/app/update_global_state/v1
 ```
 
-Update one or more conductor state values using "dot" property paths in the [State](data.md#state) object. Admin only. Useful for toggling system features without a restart (e.g., pausing the scheduler).
+Cập nhật một hoặc nhiều giá trị trạng thái conductor bằng cách sử dụng các đường dẫn thuộc tính "dấu chấm" trong đối tượng [State](data.md#state). Chỉ dành cho quản trị viên. Hữu ích cho việc bật/tắt các tính năng hệ thống mà không cần khởi động lại (ví dụ: tạm dừng bộ lập lịch).
 
-Parameters:
+Tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| (Other) | Various | One or more dot-path properties to update in the conductor state (e.g., `"scheduler.enabled": false`). |
+| (Other) | Various | Một hoặc nhiều thuộc tính đường dẫn dấu chấm cần cập nhật trong trạng thái conductor (ví dụ: `"scheduler.enabled": false`). |
 
 Example request:
 
@@ -5233,7 +5224,7 @@ Example response:
 { "code": 0 }
 ```
 
-All updates are audited in the activity log as `state_update` transactions.
+Tất cả các cập nhật đều được kiểm tra trong activity log dưới dạng các giao dịch `state_update`.
 
 ### get_internal_jobs
 
@@ -5241,9 +5232,9 @@ All updates are audited in the activity log as `state_update` transactions.
 GET /api/app/get_internal_jobs/v1
 ```
 
-Get all currently running internal jobs.  Admin only.
+Lấy tất cả các internal job hiện đang chạy.  Chỉ dành cho quản trị viên.
 
-No input parameters.
+Không có tham số đầu vào.
 
 Example response:
 
@@ -5266,7 +5257,7 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes a `jobs` object with a property for each running internal job.  The sub-objects will contain information about each running internal job, including but not limited to: `id` (unique alphanumeric ID for the job), `progress` (0.0 to 1.0), `type` (maintenance, database, etc.), `title`, `username`, `started` (epoch), and also job-specific properties.
+Ngoài [Standard Response Format](#standard-response-format), phần này bao gồm một đối tượng `jobs` với một thuộc tính cho mỗi internal job đang chạy.  Các đối tượng con sẽ chứa thông tin về mỗi internal job đang chạy, bao gồm nhưng không giới hạn ở: `id` (ID chữ và số duy nhất cho job), `progress` (0.0 đến 1.0), `type` (bảo trì, cơ sở dữ liệu, v.v.), `title`, `username`, `started` (epoch), và cả các thuộc tính cụ thể của job.
 
 ### test_internal_job
 
@@ -5274,9 +5265,9 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 POST /api/app/test_internal_job/v1
 ```
 
-Create a dummy internal job that runs for ~60 seconds and reports progress. Admin only. This is intended to test the Internal System Jobs UI and notification mechanisms.
+Tạo một internal job giả chạy trong khoảng 60 giây và báo cáo tiến độ. Chỉ dành cho quản trị viên. Điều này nhằm mục đích kiểm tra UI Internal System Jobs và các cơ chế thông báo.
 
-This API accepts a single `duration` parameter, which can be set to a custom amount of seconds.
+API này chấp nhận một tham số `duration` duy nhất, có thể được thiết lập thành một số lượng giây tùy chỉnh.
 
 Example response:
 
@@ -5284,7 +5275,7 @@ Example response:
 { "code": 0 }
 ```
 
-The test job appears in the Internal Jobs panel and completes automatically.
+Test job xuất hiện trong bảng Internal Jobs và hoàn thành tự động.
 
 ### bulk_search_delete_jobs
 
@@ -5292,13 +5283,13 @@ The test job appears in the Internal Jobs panel and completes automatically.
 POST /api/app/bulk_search_delete_jobs/v1
 ```
 
-Start a background job to delete completed jobs in bulk by search query. Requires the [delete_jobs](privileges.md#delete_jobs) privilege.
+Bắt đầu một job nền để xóa hàng loạt các job đã hoàn thành theo truy vấn tìm kiếm. Yêu cầu quyền [delete_jobs](privileges.md#delete_jobs).
 
-Parameters:
+Tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `query` | String | Optional. [Unbase-style query](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries). Defaults to `*` (all jobs). |
+| `query` | String | Tùy chọn. [Unbase-style query](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries). Mặc định là `*` (tất cả các job). |
 
 Example request:
 
@@ -5312,7 +5303,7 @@ Example response:
 { "code": 0 }
 ```
 
-Deletion runs in the background. Progress and results are visible in Internal Jobs and the activity log.
+Việc xóa chạy trong nền. Tiến độ và kết quả có thể xem được trong Internal Jobs và activity log.
 
 ### bulk_search_delete
 
@@ -5320,14 +5311,14 @@ Deletion runs in the background. Progress and results are visible in Internal Jo
 POST /api/app/bulk_search_delete/v1
 ```
 
-Start a background job to delete records in an arbitrary index by search query. Admin only.
+Bắt đầu một job nền để xóa các bản ghi trong một index tùy ý theo truy vấn tìm kiếm. Chỉ dành cho quản trị viên.
 
-Parameters:
+Tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `index` | String | **(Required)** Target database index ID (e.g., `jobs`, `servers`, `snapshots`, `alerts`, `activity`). |
-| `query` | String | **(Required)** [Unbase-style query](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries). |
+| `index` | String | **(Bắt buộc)** ID index cơ sở dữ liệu mục tiêu (ví dụ: `jobs`, `servers`, `snapshots`, `alerts`, `activity`). |
+| `query` | String | **(Bắt buộc)** [Unbase-style query](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries). |
 
 Example request:
 
@@ -5341,7 +5332,7 @@ Example response:
 { "code": 0, "id": "ijob12345" }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes `id` with the internal job ID tracking the background deletion.
+Ngoài [Standard Response Format](#standard-response-format), phần này bao gồm `id` với ID của internal job theo dõi việc xóa nền.
 
 ### admin_run_maintenance
 
@@ -5349,9 +5340,9 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 POST /api/app/admin_run_maintenance/v1
 ```
 
-Run nightly maintenance immediately (state cleanup, trimming timelines and DBs, and storage maintenance). Admin only.
+Chạy bảo trì hàng đêm ngay lập tức (dọn dẹp trạng thái, cắt giảm timeline và cơ sở dữ liệu, và bảo trì lưu trữ). Chỉ dành cho quản trị viên.
 
-No input parameters. Returns immediately while maintenance continues in the background as an internal job.
+Không có tham số đầu vào. Trả về ngay lập tức trong khi việc bảo trì tiếp tục trong nền dưới dạng một internal job.
 
 Example response:
 
@@ -5359,7 +5350,7 @@ Example response:
 { "code": 0, "id": "imj97z8isl3bqvas" }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes an `id` property, which is an internal job ID (the maintenance runs asynchronously in the background).  To track the progress of the job, poll the [get_internal_jobs](#get_internal_jobs) API.
+Ngoài [Standard Response Format](#standard-response-format), phần này bao gồm một thuộc tính `id`, là ID của internal job (việc bảo trì chạy bất đồng bộ trong nền).  Để theo dõi tiến độ của job, hãy thăm dò API [get_internal_jobs](#get_internal_jobs).
 
 ### admin_run_optimization
 
@@ -5367,9 +5358,9 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 POST /api/app/admin_run_optimization/v1
 ```
 
-Run a SQLite database integrity check and compaction (VACUUM). Admin only. Only applicable if SQLite is being used in the storage backend.  If the current storage engine is not SQLite or no database file is present, this returns an error.
+Chạy kiểm tra tính toàn vẹn và nén (VACUUM) cơ sở dữ liệu SQLite. Chỉ dành cho quản trị viên. Chỉ áp dụng nếu SQLite đang được sử dụng trong backend lưu trữ.  Nếu engine lưu trữ hiện tại không phải là SQLite hoặc không có tệp cơ sở dữ liệu nào, nó sẽ trả về lỗi.
 
-No input parameters. On success, optimization runs as an internal job and a detailed report is generated.
+Không có tham số đầu vào. Khi thành công, quá trình tối ưu hóa sẽ chạy dưới dạng một internal job và một báo cáo chi tiết sẽ được tạo ra.
 
 Example response:
 
@@ -5377,7 +5368,7 @@ Example response:
 { "code": 0, "id": "imj97z8isl3bqvas" }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes an `id` property, which is an internal job ID (the optimization runs asynchronously in the background).  To track the progress of the job, poll the [get_internal_jobs](#get_internal_jobs) API.
+Ngoài [Standard Response Format](#standard-response-format), phần này bao gồm một thuộc tính `id`, là ID của internal job (quá trình tối ưu hóa chạy bất đồng bộ trong nền).  Để theo dõi tiến độ của job, hãy thăm dò API [get_internal_jobs](#get_internal_jobs).
 
 ### admin_reset_daily_stats
 
@@ -5385,9 +5376,9 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 POST /api/app/admin_reset_daily_stats/v1
 ```
 
-Reset daily statistics counters (dashboard day graphs). Admin only. This also pushes the current stats snapshot into historical storage and broadcasts refreshed stats to connected users.
+Đặt lại các bộ đếm thống kê hàng ngày (biểu đồ ngày trên dashboard). Chỉ dành cho quản trị viên. Điều này cũng đẩy snapshot thống kê hiện tại vào lưu trữ lịch sử và broadcast các thống kê đã làm mới tới người dùng đang kết nối.
 
-No input parameters.
+Không có tham số đầu vào.
 
 Example response:
 
@@ -5401,9 +5392,9 @@ Example response:
 POST /api/app/get_transfer_token/v1
 ```
 
-Generate a single-use, short-lived token (60 seconds) that authorizes a subsequent data transfer call (e.g., [admin_export_data](#admin_export_data)). Admin only.
+Tạo một token dùng một lần, tồn tại trong thời gian ngắn (60 giây) để ủy quyền cho lệnh gọi truyền dữ liệu tiếp theo (ví dụ: [admin_export_data](#admin_export_data)). Chỉ dành cho quản trị viên.
 
-Parameters: Same payload you would pass to [admin_export_data](#admin_export_data) (e.g., `lists`, `indexes`, `extras`, or `items`). The token binds to your session and the provided parameters.
+Tham số: Cùng một payload mà bạn sẽ chuyển đến [admin_export_data](#admin_export_data) (ví dụ: `lists`, `indexes`, `extras`, hoặc `items`). Token này liên kết với session của bạn và các tham số được cung cấp.
 
 Example response:
 
@@ -5411,7 +5402,7 @@ Example response:
 { "code": 0, "token": "tme4wxyz9ab" }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this returns a `token` string to include in a follow-up GET.
+Ngoài [Standard Response Format](#standard-response-format), phần này trả về một chuỗi `token` để đưa vào một GET tiếp theo.
 
 ### admin_stats
 
@@ -5419,19 +5410,19 @@ In addition to the [Standard Response Format](#standard-response-format), this r
 GET /api/app/admin_stats/v1
 ```
 
-Return extended system statistics for the System Status page. Admin only.
+Trả về các thống kê hệ thống mở rộng cho trang System Status. Chỉ dành cho quản trị viên.
 
-No input parameters.
+Không có tham số đầu vào.
 
-In addition to the [Standard Response Format](#standard-response-format), this returns a `stats` object including:
+Ngoài [Standard Response Format](#standard-response-format), phần này trả về một đối tượng `stats` bao gồm:
 
-- `version`: xyOps version.
-- `node.version`: Node.js version.
-- `db.sqlite`: Total on-disk bytes for SQLite DB + WAL (if present).
-- `db.records`: Map of index ID → row count (e.g., `jobs`, `servers`, `snapshots`, `alerts`, `activity`).
-- `unbase`: Low-level indexer statistics.
-- `cache`: Storage cache stats (if enabled).
-- `sockets`: Connected user and server sockets with metadata (ID, IP, type, username, server, ping).
+- `version`: Phiên bản PTOps.
+- `node.version`: Phiên bản Node.js.
+- `db.sqlite`: Tổng số byte trên ổ đĩa cho DB SQLite + WAL (nếu có).
+- `db.records`: Map của ID index → số lượng hàng (ví dụ: `jobs`, `servers`, `snapshots`, `alerts`, `activity`).
+- `unbase`: Các thống kê indexer mức thấp.
+- `cache`: Các thống kê cache lưu trữ (nếu được bật).
+- `sockets`: Các socket người dùng và server đang kết nối kèm siêu dữ liệu (ID, IP, loại, username, server, ping).
 
 Example response:
 
@@ -5445,21 +5436,21 @@ Example response:
 POST /api/app/admin_import_data/v1
 ```
 
-Bulk import data from a local archive file. Send as `multipart/form-data` with a single file field. Admin only. The file may be plain text or gzip-compressed. The import runs as an internal job in the background; the API responds early with the job ID.
+Nhập dữ liệu hàng loạt từ một tệp lưu trữ cục bộ. Gửi dưới dạng `multipart/form-data` với một trường tệp duy nhất. Chỉ dành cho quản trị viên. Tệp có thể là văn bản thuần túy hoặc được nén bằng gzip. Quá trình nhập chạy dưới dạng một internal job trong nền; API phản hồi sớm kèm theo ID của job.
 
-Parameters (multipart/form-data fields):
+Tham số (các trường multipart/form-data):
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `file` | File | **(Required)** NDJSON file to import (may be `.gz`). The field name may be arbitrary; only one file should be included. |
-| `format` | String | Optional. `xyops` (default) or `cronicle`. When `cronicle`, the server will convert known structures before importing. |
-| `danger` | Boolean | Optional. When set to `true` xyOps will **not** disable the schedule nor abort any running jobs for the import.  Use with caution. |
+| `file` | File | **(Bắt buộc)** Tệp NDJSON để nhập (có thể là `.gz`). Tên trường có thể là tùy ý; chỉ nên bao gồm một tệp. |
+| `format` | String | Tùy chọn. `xyops` (mặc định) hoặc `cronicle`. Khi là `cronicle`, server sẽ chuyển đổi các cấu trúc đã biết trước khi nhập. |
+| `danger` | Boolean | Tùy chọn. Khi được đặt thành `true`, PTOps sẽ **không** vô hiệu hóa lịch trình cũng như không hủy bất kỳ job nào đang chạy cho việc nhập.  Sử dụng một cách thận trọng. |
 
-NDJSON line formats supported:
+Các định dạng dòng NDJSON được hỗ trợ:
 
-- `{ "index": INDEX, "id": ID, "record": { ... } }` to upsert a DB record.
-- `{ "key": KEY, "value": VALUE }` to write a storage key (binary values are base64-encoded).
-- `{ "cmd": CMD, "args": [ ... ] }` to execute a storage command (e.g., `listDelete`).
+- `{ "index": INDEX, "id": ID, "record": { ... } }` để upsert một bản ghi DB.
+- `{ "key": KEY, "value": VALUE }` để ghi một khóa lưu trữ (giá trị nhị phân được mã hóa base64).
+- `{ "cmd": CMD, "args": [ ... ] }` để thực thi lệnh lưu trữ (ví dụ: `listDelete`).
 
 Example response:
 
@@ -5467,13 +5458,13 @@ Example response:
 { "code": 0, "id": "ijobabc123" }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes an `id` property, which is an internal job ID (the bulk import happens asynchronously in the background).  To track the progress of the job, poll the [get_internal_jobs](#get_internal_jobs) API.
+Ngoài [Standard Response Format](#standard-response-format), phần này bao gồm một thuộc tính `id`, là ID của internal job (việc nhập hàng loạt diễn ra bất đồng bộ trong nền).  Để theo dõi tiến độ của job, hãy thăm dò API [get_internal_jobs](#get_internal_jobs).
 
-Notes:
+Ghi chú:
 
-- The scheduler is automatically paused for the import, all queued jobs are flushed, and running jobs are aborted prior to import for data integrity.
-- A detailed report is attached to the internal job and emailed to the user who issued the request.
-- After import, global lists are reloaded, monitors/alerts are recompiled, and the UI is refreshed for connected users.
+- Bộ lập lịch được tự động tạm dừng cho quá trình nhập, tất cả các job đang xếp hàng được dọn sạch, và các job đang chạy bị hủy trước khi nhập để đảm bảo tính toàn vẹn của dữ liệu.
+- Một báo cáo chi tiết được đính kèm vào internal job và gửi qua email cho người dùng đã đưa ra request.
+- Sau khi nhập, các danh sách global được tải lại, các monitor/alert được biên dịch lại, và UI được làm mới cho người dùng đang kết nối.
 
 ### admin_export_data
 
@@ -5481,29 +5472,29 @@ Notes:
 GET /api/app/admin_export_data/v1
 ```
 
-Stream a gzip-compressed NDJSON archive of selected data to the client. Requires the [bulk_export](privileges.md#bulk_export) privilege. For browser downloads, first call [get_transfer_token](#get_transfer_token) and then include `?token=...` on this GET to authorize and apply the parameters pre-bound to the token.
+Stream một tệp lưu trữ NDJSON được nén bằng gzip của dữ liệu đã chọn tới client. Yêu cầu quyền [bulk_export](privileges.md#bulk_export). Đối với các bản tải xuống trên trình duyệt, trước tiên hãy gọi [get_transfer_token](#get_transfer_token) và sau đó bao gồm `?token=...` trên GET này để ủy quyền và áp dụng các tham số đã được liên kết trước với token.
 
-Parameters (choose either the high-level selectors or a custom `items` array):
+Tham số (chọn các bộ chọn cấp cao hoặc một mảng `items` tùy chỉnh):
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `lists` | Array(String) or String | List IDs from `config.ui.list_list` or the literal string `"all"`. Each exports the corresponding `global/NAME` list and pages. |
-| `indexes` | Array(String) or String | Database index IDs from `config.ui.database_list` or `"all"`. Exports matching DB records (newest to oldest). |
-| `extras` | Array(String) or String | Optional extras or `"all"`. Supported: `user_avatars`, `job_files`, `job_logs`, `monitor_data`, `stat_data`. |
-| `items` | Array(Object) | Advanced mode. Array of export items such as `{ type: "list", key }`, `{ type: "index", index, query?, max_rows? }`, `{ type: "users", avatars? }`, `{ type: "jobFiles", query?, max_rows?, max_size?, logs?, files? }`, `{ type: "monitorData", query? }`, `{ type: "bucketData" }`, `{ type: "bucketFiles", max_size? }`, `{ type: "secretData" }`. |
-| `token` | String | Single-use token from [get_transfer_token](#get_transfer_token). When present, parameters from the token are applied and the token is invalidated. |
+| `lists` | Array(String) or String | Các ID danh sách từ `config.ui.list_list` hoặc chuỗi hằng `"all"`. Mỗi ID xuất ra danh sách và trang `global/NAME` tương ứng. |
+| `indexes` | Array(String) or String | Các ID index cơ sở dữ liệu từ `config.ui.database_list` hoặc `"all"`. Xuất các bản ghi DB phù hợp (mới nhất đến cũ nhất). |
+| `extras` | Array(String) or String | Tùy chọn bổ sung hoặc `"all"`. Hỗ trợ: `user_avatars`, `job_files`, `job_logs`, `monitor_data`, `stat_data`. |
+| `items` | Array(Object) | Chế độ nâng cao. Mảng các mục xuất ra như `{ type: "list", key }`, `{ type: "index", index, query?, max_rows? }`, `{ type: "users", avatars? }`, `{ type: "jobFiles", query?, max_rows?, max_size?, logs?, files? }`, `{ type: "monitorData", query? }`, `{ type: "bucketData" }`, `{ type: "bucketFiles", max_size? }`, `{ type: "secretData" }`. |
+| `token` | String | Token dùng một lần từ [get_transfer_token](#get_transfer_token). Khi có mặt, các tham số từ token được áp dụng và token bị vô hiệu hóa. |
 
-Response: A `200 OK` streaming gzip file. The content is NDJSON containing a mix of:
+Phản hồi: Một tệp streaming gzip `200 OK`. Nội dung là NDJSON chứa hỗn hợp của:
 
-- `{ "index": INDEX, "id": ID, "record": { ... } }` for DB records.
-- `{ "key": KEY, "value": VALUE }` for storage keys or files (binary values are base64-encoded).
+- `{ "index": INDEX, "id": ID, "record": { ... } }` cho các bản ghi DB.
+- `{ "key": KEY, "value": VALUE }` cho các khóa lưu trữ hoặc tệp (giá trị nhị phân được mã hóa base64).
 
-Notes:
+Ghi chú:
 
-- Job logs/files are exported only if under 1 MB each.
-- Bucket files are exported as base64 with a manifest of file metadata.
-- Secret data is exported as encrypted values (as stored).
-- API keys are exported as salted hashes only (as stored).
+- Job log/tệp chỉ được xuất ra nếu dưới 1 MB mỗi tệp.
+- Các tệp bucket được xuất ra dưới dạng base64 với một tệp kê khai (manifest) về siêu dữ liệu tệp.
+- Dữ liệu secret được xuất ra dưới dạng các giá trị đã mã hóa (như được lưu trữ).
+- API key chỉ được xuất ra dưới dạng salted hash (như được lưu trữ).
 
 ### admin_delete_data
 
@@ -5511,13 +5502,13 @@ Notes:
 POST /api/app/admin_delete_data/v1
 ```
 
-Permanently delete selected data in bulk. Admin only. Runs as an internal job in the background, and compiles a report with counts and any errors/warnings.  If the delete request was sent in by a user, the report is sent via email to the user's email address.
+Xóa vĩnh viễn hàng loạt dữ liệu đã chọn. Chỉ dành cho quản trị viên. Chạy dưới dạng một internal job trong nền, và biên dịch một báo cáo với số lượng và bất kỳ lỗi/cảnh báo nào.  Nếu request xóa được gửi bởi người dùng, báo cáo sẽ được gửi qua email đến địa chỉ email của người dùng.
 
-Parameters:
+Tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `items` | Array(Object) | **(Required)** Array of delete actions. Supported types: `{ type: "list", key }`, `{ type: "index", index, query? }`, `{ type: "users" }`, `{ type: "bucketData" }`, `{ type: "bucketFiles" }`, `{ type: "secretData" }`. |
+| `items` | Array(Object) | **(Bắt buộc)** Mảng các action xóa. Các loại được hỗ trợ: `{ type: "list", key }`, `{ type: "index", index, query? }`, `{ type: "users" }`, `{ type: "bucketData" }`, `{ type: "bucketFiles" }`, `{ type: "secretData" }`. |
 
 Example request:
 
@@ -5531,12 +5522,12 @@ Example response:
 { "code": 0, "id": "imj97z8isl3bqvas" }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes an `id` property, which is an internal job ID (the bulk deletion happens asynchronously in the background).  To track the progress of the job, poll the [get_internal_jobs](#get_internal_jobs) API.
+Ngoài [Standard Response Format](#standard-response-format), phần này bao gồm một thuộc tính `id`, là ID của internal job (việc xóa hàng loạt diễn ra bất đồng bộ trong nền).  Để theo dõi tiến độ của job, hãy thăm dò API [get_internal_jobs](#get_internal_jobs).
 
-Notes:
+Ghi chú:
 
-- The scheduler is automatically paused for deletions.
-- Some types perform deep cleanup first (e.g., `users` removes avatars and security logs; bucket delete types remove data and files before the `global/buckets` list is altered).
+- Bộ lập lịch được tự động tạm dừng cho các thao tác xóa.
+- Một số loại thực hiện dọn dẹp sâu trước tiên (ví dụ: `users` loại bỏ ảnh đại diện và security log; các loại xóa bucket loại bỏ dữ liệu và tệp trước khi danh sách `global/buckets` bị thay đổi).
 
 ### admin_logout_all
 
@@ -5544,13 +5535,13 @@ Notes:
 POST /api/app/admin_logout_all/v1
 ```
 
-Log out all active sessions for a specific user and deauthorize any connected sockets. Admin only. Executes as an internal job; returns immediately.
+Đăng xuất tất cả các session đang hoạt động cho một người dùng cụ thể và hủy cấp phép bất kỳ socket nào đang kết nối. Chỉ dành cho quản trị viên. Thực thi như một internal job; trả về ngay lập tức.
 
-Parameters:
+Tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `username` | String | **(Required)** Username to log out. |
+| `username` | String | **(Bắt buộc)** Tên người dùng cần đăng xuất. |
 
 Example request:
 
@@ -5564,7 +5555,7 @@ Example response:
 { "code": 0, "id": "imj97z8isl3bqvas" }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes an `id` property, which is an internal job ID (the bulk logout happens asynchronously in the background).  To track the progress of the job, poll the [get_internal_jobs](#get_internal_jobs) API.
+Ngoài [Standard Response Format](#standard-response-format), phần này bao gồm một thuộc tính `id`, là ID của internal job (việc đăng xuất hàng loạt diễn ra bất đồng bộ trong nền).  Để theo dõi tiến độ của job, hãy thăm dò API [get_internal_jobs](#get_internal_jobs).
 
 ### admin_search_logs
 
@@ -5572,25 +5563,25 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 POST /api/app/admin_search_logs/v1
 ```
 
-Search the local xyOps system log files (current or archived) and return matching rows. Admin only.
+Tìm kiếm các tệp system log PTOps cục bộ (hiện tại hoặc đã lưu trữ) và trả về các hàng khớp. Chỉ dành cho quản trị viên.
 
-Parameters:
+Tham số:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `log` | String | **(Required)** Log name to search, e.g. `xyOps`. Must match one of the standard log filenames, sans extension. |
-| `rows` | Number | **(Required)** Max rows to return, from `1` to `1000`. The API keeps the last N matching rows from the file. |
-| `match` | String | Optional. Text or pattern to search for. If omitted, all rows match. |
-| `regex` | Boolean | Optional. If `true`, interpret `match` as a regular expression. |
-| `case` | Boolean | Optional. If `true`, search is case sensitive. |
-| `cols` | Array(String) or String | Optional. Columns to return, as an array or comma-delimited list. Defaults to all [log_columns](config.md#log_columns). |
-| `date` | String | Optional. Date in `YYYY-MM-DD` format. If omitted, searches the current live log. If set, searches the archived log for that day. |
+| `log` | String | **(Bắt buộc)** Tên log cần tìm kiếm, ví dụ: `PTOps`. Phải khớp với một trong các tên tệp log chuẩn, không có phần mở rộng. |
+| `rows` | Number | **(Bắt buộc)** Số hàng tối đa để trả về, từ `1` đến `1000`. API giữ lại N hàng khớp cuối cùng từ tệp. |
+| `match` | String | Tùy chọn. Văn bản hoặc mẫu để tìm kiếm. Nếu bỏ qua, tất cả các hàng đều khớp. |
+| `regex` | Boolean | Tùy chọn. Nếu `true`, diễn giải `match` dưới dạng biểu thức chính quy. |
+| `case` | Boolean | Tùy chọn. Nếu `true`, tìm kiếm phân biệt chữ hoa chữ thường. |
+| `cols` | Array(String) or String | Tùy chọn. Các cột để trả về, dưới dạng mảng hoặc danh sách phân tách bằng dấu phẩy. Mặc định là tất cả [log_columns](config.md#log_columns). |
+| `date` | String | Tùy chọn. Ngày theo định dạng `YYYY-MM-DD`. Nếu bỏ qua, sẽ tìm kiếm log trực tiếp hiện tại. Nếu được thiết lập, sẽ tìm kiếm log đã lưu trữ cho ngày đó. |
 
 Example request:
 
 ```json
 {
-	"log": "xyOps",
+	"log": "PTOps",
 	"match": "ERROR",
 	"rows": 100,
 	"cols": "hires_epoch,category,code,msg,data",
@@ -5618,44 +5609,43 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes:
+Ngoài [Standard Response Format](#standard-response-format), phần này bao gồm:
 
-- `rows`: Array of row objects with only the requested columns.
-- `list.length`: Total number of rows in the log file (not the number of matches).
+- `rows`: Mảng các đối tượng hàng chỉ với các cột được yêu cầu.
+- `list.length`: Tổng số hàng trong tệp log (không phải số lượng kết quả khớp).
 
-Notes:
+Ghi chú:
 
-- If the archive is not configured or the file is missing for a given `date`, the API returns an empty `rows` array.
-- Valid column IDs come from [log_columns](config.md#log_columns) (e.g., `hires_epoch`, `date`, `hostname`, `pid`, `component`, `category`, `code`, `msg`, `data`).
-
+- Nếu việc lưu trữ không được cấu hình hoặc thiếu tệp cho một `date` đã cho, API trả về mảng `rows` trống.
+- Các ID cột hợp lệ đến từ [log_columns](config.md#log_columns) (ví dụ: `hires_epoch`, `date`, `hostname`, `pid`, `component`, `category`, `code`, `msg`, `data`).
 ### admin_get_config
 
 ```
 GET /api/app/admin_get_config/v1
 ```
 
-Fetch the full xyOps configuration for the admin editor UI. Admin only.
+Lấy toàn bộ cấu hình PTOps cho giao diện quản trị viên. Chỉ dành cho admin.
 
-No input parameters.
+Không có tham số đầu vào.
 
-In addition to the [Standard Response Format](#standard-response-format), this returns:
+Ngoài [Standard Response Format](#standard-response-format), API này trả về:
 
-- `config`: The current configuration object with sensitive keys removed (`secret_key`, `SSO`, `Debug`, `config_overrides_file`).
-- `overrides`: The current configuration overrides object (sparse), with reserved keys removed.
-- `markdown`: The contents of `docs/config.md` used by the UI to build the editor.
+- `config`: Đối tượng cấu hình hiện tại với các khóa nhạy cảm đã bị xóa (`secret_key`, `SSO`, `Debug`, `config_overrides_file`).
+- `overrides`: Đối tượng ghi đè cấu hình hiện tại (sparse), với các khóa dành riêng đã bị xóa.
+- `markdown`: Nội dung của `docs/config.md` được UI sử dụng để xây dựng trình chỉnh sửa.
 
 Example response:
 
 ```json
 {
 	"code": 0,
-	"config": { "ui": { "log_files": ["xyOps"] }, "storage": { "engine": "Filesystem" } },
-	"overrides": { "ui.log_files": ["xyOps", "xyOps-plugins"] },
+	"config": { "ui": { "log_files": ["PTOps"] }, "storage": { "engine": "Filesystem" } },
+	"overrides": { "ui.log_files": ["PTOps", "PTOps-plugins"] },
 	"markdown": "# Configuration\n\n..."
 }
 ```
 
-Notably, the response omits protected / reserved properties including `secret_key`, `SSO`, `Debug`, and `config_overrides_file`, due to their sensitive nature.
+Đáng chú ý, phản hồi bỏ qua các thuộc tính được bảo vệ / dành riêng bao gồm `secret_key`, `SSO`, `Debug`, và `config_overrides_file`, do tính chất nhạy cảm của chúng.
 
 ### admin_update_config
 
@@ -5663,19 +5653,19 @@ Notably, the response omits protected / reserved properties including `secret_ke
 POST /api/app/admin_update_config/v1
 ```
 
-Update configuration overrides, save them to disk, and hot reload the new settings. Admin only. The request is a sparse list of overrides that are merged into the live config.
+Cập nhật các ghi đè cấu hình, lưu chúng vào đĩa và tải lại các cài đặt mới ngay lập tức. Chỉ dành cho admin. Yêu cầu là một danh sách thưa thớt (sparse) các ghi đè được hợp nhất vào cấu hình trực tiếp.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| (Other) | Various | Any configuration override key, using the same path names as `docs/config.md` (for example `ui.log_files` or `storage.engine`). Values replace the existing value at that path. |
+| (Other) | Various | Bất kỳ khóa ghi đè cấu hình nào, sử dụng cùng tên đường dẫn như `docs/config.md` (ví dụ `ui.log_files` hoặc `storage.engine`). Các giá trị sẽ thay thế giá trị hiện tại tại đường dẫn đó. |
 
 Example request:
 
 ```json
 {
-	"ui.log_files": ["xyOps", "xyOps-plugins"],
+	"ui.log_files": ["PTOps", "PTOps-plugins"],
 	"storage.engine": "Filesystem"
 }
 ```
@@ -5688,9 +5678,9 @@ Example response:
 
 Notes:
 
-- Overrides are additive. Only the paths you include are updated.
-- Reserved keys cannot be set via this API: `secret_key`, `SSO`, `Debug`, `config_overrides_file`.
-- Some settings may require a full server restart to take effect (for example, changing the web server port).
+- Ghi đè có tính chất cộng dồn. Chỉ những đường dẫn bạn bao gồm mới được cập nhật.
+- Các khóa dành riêng không thể được đặt thông qua API này: `secret_key`, `SSO`, `Debug`, `config_overrides_file`.
+- Một số cài đặt có thể yêu cầu khởi động lại toàn bộ server để có hiệu lực (ví dụ: thay đổi cổng web server).
 
 ### get_api_keys
 
@@ -5698,9 +5688,9 @@ Notes:
 GET /api/app/get_api_keys/v1
 ```
 
-Fetch all API Keys. Admin only. No input parameters.
+Lấy tất cả API Keys. Chỉ dành cho admin. Không có tham số đầu vào.
 
-In addition to the [Standard Response Format](#standard-response-format), this includes a `rows` array of [APIKey](data.md#apikey) objects and a `list` object with list metadata.
+Ngoài [Standard Response Format](#standard-response-format), API này bao gồm một mảng `rows` chứa các đối tượng [APIKey](data.md#apikey) và một đối tượng `list` với siêu dữ liệu danh sách.
 
 Example response:
 
@@ -5714,13 +5704,13 @@ Example response:
 GET /api/app/get_api_key/v1
 ```
 
-Fetch a single API Key by ID. Admin only. Supports HTTP GET with query parameters or HTTP POST with JSON.
+Lấy một API Key đơn lẻ theo ID. Chỉ dành cho admin. Hỗ trợ HTTP GET với các tham số truy vấn hoặc HTTP POST với JSON.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** API Key ID to fetch. |
+| `id` | String | **(Required)** ID API Key cần lấy. |
 
 Example response:
 
@@ -5728,7 +5718,7 @@ Example response:
 { "code": 0, "api_key": { "id": "k1", "title": "My App", "key": "rPEu2GRpK3TPgVnmSFVPFTT9", "active": 1 } }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes an `api_key` object. See [APIKey](data.md#apikey) for field details.
+Ngoài [Standard Response Format](#standard-response-format), API này bao gồm một đối tượng `api_key`. Xem [APIKey](data.md#apikey) để biết chi tiết các trường.
 
 ### create_api_key
 
@@ -5736,15 +5726,15 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 POST /api/app/create_api_key/v1
 ```
 
-Create a new API Key. Admin only. Send as HTTP POST with JSON. The `id`, `username`, `created`, `modified`, and `revision` fields are auto-generated by the server.
+Tạo một API Key mới. Chỉ dành cho admin. Gửi dưới dạng HTTP POST với JSON. Các trường `id`, `username`, `created`, `modified` và `revision` được tự động tạo bởi server.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `title` | String | **(Required)** Visual title for the API Key. |
-| `key` | String | **(Required)** API Key string (minimum 16 characters). |
-| (Other) | Various | Optional [APIKey](data.md#apikey) fields such as `active`, `description`, `privileges`, `roles`. |
+| `title` | String | **(Required)** Tiêu đề hiển thị cho API Key. |
+| `key` | String | **(Required)** Chuỗi API Key (tối thiểu 16 ký tự). |
+| (Other) | Various | Tùy chọn. Các trường [APIKey](data.md#apikey) như `active`, `description`, `privileges`, `roles`. |
 
 Example request:
 
@@ -5764,7 +5754,7 @@ Example response:
 { "code": 0, "api_key": { /* metadata */ }, "plain_key": "API_KEY_HERE" }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this includes an `api_key` object (see [APIKey](data.md#apikey)), as well as the actual API key value in a property named `plain_key`.  This is the **only** time the API key secret is ever sent over the wire, as it is stored in hashed format and cannot ever be fetched later.
+Ngoài [Standard Response Format](#standard-response-format), API này bao gồm một đối tượng `api_key` (xem [APIKey](data.md#apikey)), cũng như giá trị thực tế của API key trong một thuộc tính có tên là `plain_key`. Đây là lần **duy nhất** giá trị bí mật của API key được gửi qua mạng, vì nó được lưu trữ dưới định dạng đã mã hóa (hashed) và không bao giờ có thể được lấy lại sau đó.
 
 ### update_api_key
 
@@ -5772,14 +5762,14 @@ In addition to the [Standard Response Format](#standard-response-format), this i
 POST /api/app/update_api_key/v1
 ```
 
-Update an existing API Key by ID. Admin only. Send as HTTP POST with JSON. The request is shallow-merged into the existing key; `modified` and `revision` are updated automatically. The actual `key` value cannot be changed.
+Cập nhật một API Key hiện có theo ID. Chỉ dành cho admin. Gửi dưới dạng HTTP POST với JSON. Yêu cầu được shallow-merge (hợp nhất nông) vào key hiện tại; `modified` và `revision` được cập nhật tự động. Giá trị thực tế của `key` không thể bị thay đổi.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** API Key ID to update. |
-| (Other) | Various | Any updatable [APIKey](data.md#apikey) fields except `key`. |
+| `id` | String | **(Required)** ID API Key cần cập nhật. |
+| (Other) | Various | Bất kỳ trường [APIKey](data.md#apikey) nào có thể cập nhật ngoại trừ `key`. |
 
 Example request:
 
@@ -5799,13 +5789,13 @@ Example response:
 POST /api/app/delete_api_key/v1
 ```
 
-Delete an existing API Key by ID. Admin only. This action is permanent.
+Xóa một API Key hiện có theo ID. Chỉ dành cho admin. Hành động này là vĩnh viễn.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `id` | String | **(Required)** API Key ID to delete. |
+| `id` | String | **(Required)** ID API Key cần xóa. |
 
 Example request:
 
@@ -5827,15 +5817,15 @@ Example response:
 POST /api/app/admin_upgrade_masters/v1
 ```
 
-Start a background job to upgrade one or more conductor servers.  Admin only.  Send as HTTP POST with JSON.
+Bắt đầu một job dưới nền để nâng cấp một hoặc nhiều conductor server. Chỉ dành cho admin. Gửi dưới dạng HTTP POST với JSON.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `targets` | Array(String) | **(Required)** One or more online conductor host IDs to upgrade. |
-| `release` | String | **(Required)** Release selector to install.  Use `latest` for the newest stable release, or pass an explicit xyOps tag such as `v1.2.3`.  Available values can be fetched from [get_master_releases](#get_master_releases). |
-| `stagger` | Number | **(Required)** Delay in seconds between dispatching upgrade commands to each remote conductor.  Use `0` for no delay. |
+| `targets` | Array(String) | **(Required)** Một hoặc nhiều host ID của conductor đang trực tuyến để nâng cấp. |
+| `release` | String | **(Required)** Selector của bản phát hành để cài đặt. Sử dụng `latest` cho bản phát hành ổn định mới nhất, hoặc truyền một tag PTOps rõ ràng như `v1.2.3`. Có thể lấy các giá trị khả dụng từ [get_master_releases](#get_master_releases). |
+| `stagger` | Number | **(Required)** Thời gian trì hoãn (giây) giữa việc gửi lệnh nâng cấp đến mỗi conductor từ xa. Sử dụng `0` để không có trì hoãn. |
 
 Example request:
 
@@ -5855,11 +5845,11 @@ Example response:
 
 Notes:
 
-- The API returns immediately after the internal job is queued.
-- If the current primary conductor is included in `targets`, xyOps upgrades all selected backup conductors first, then upgrades the local primary last in the background.  Your client connection will typically drop when the primary begins its self-upgrade.
-- Only currently online backup conductors are eligible for remote dispatch.  Offline conductors, or conductors running in debug mode, are skipped and noted in the internal job details.
-- This API is unavailable in [Air-Gapped Mode](hosting.md#air-gapped-mode) and returns an error if air-gap is enabled.
-- If a maintenance internal job is already running, this API returns an error instead of starting the upgrade.
+- API trả về ngay sau khi internal job được đưa vào hàng đợi.
+- Nếu primary conductor hiện tại được bao gồm trong `targets`, PTOps sẽ nâng cấp tất cả các backup conductor được chọn trước, sau đó nâng cấp primary cục bộ sau cùng dưới nền. Kết nối client của bạn thường sẽ bị ngắt khi primary bắt đầu tự nâng cấp.
+- Chỉ những backup conductor hiện đang trực tuyến mới đủ điều kiện cho việc điều phối từ xa. Các conductor ngoại tuyến hoặc conductor đang chạy trong chế độ debug sẽ bị bỏ qua và được ghi chú trong chi tiết internal job.
+- API này không khả dụng trong [Air-Gapped Mode](hosting.md#air-gapped-mode) và trả về lỗi nếu air-gap được bật.
+- Nếu một maintenance internal job đã đang chạy, API này trả về lỗi thay vì bắt đầu nâng cấp.
 
 ### admin_upgrade_workers
 
@@ -5867,15 +5857,15 @@ Notes:
 POST /api/app/admin_upgrade_workers/v1
 ```
 
-Start a background job to upgrade one or more worker servers.  Admin only.  Send as HTTP POST with JSON.
+Bắt đầu một job dưới nền để nâng cấp một hoặc nhiều worker server. Chỉ dành cho admin. Gửi dưới dạng HTTP POST với JSON.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `targets` | Array(String) | **(Required)** One or more worker server IDs and/or server group IDs.  Group IDs are expanded to currently connected workers in the group, and duplicate matches are removed automatically. |
-| `release` | String | **(Required)** Release selector to install on workers, typically `latest`, `airgap`, or an explicit xySat tag such as `v0.9.50`.  Available values can be fetched from [get_satellite_releases](#get_satellite_releases). |
-| `stagger` | Number | **(Required)** Delay in seconds between dispatching upgrade commands to each worker.  Use `0` for no delay. |
+| `targets` | Array(String) | **(Required)** Một hoặc nhiều worker server ID và/hoặc server group ID. Group ID được mở rộng thành các worker hiện đang kết nối trong nhóm và các kết quả trùng lặp tự động bị loại bỏ. |
+| `release` | String | **(Required)** Selector của bản phát hành để cài đặt trên các worker, thường là `latest`, `airgap`, hoặc một tag xySat rõ ràng như `v0.9.50`. Có thể lấy các giá trị khả dụng từ [get_satellite_releases](#get_satellite_releases). |
+| `stagger` | Number | **(Required)** Thời gian trì hoãn (giây) giữa việc gửi lệnh nâng cấp đến mỗi worker. Sử dụng `0` để không có trì hoãn. |
 
 Example request:
 
@@ -5895,11 +5885,11 @@ Example response:
 
 Notes:
 
-- The API returns immediately after the internal job is queued.
-- Only workers that are currently connected at dispatch time are included.  If no active workers match the target selection, the API returns an error.
-- The selected release is persisted into [satellite.version](config.md#satelliteversion) before dispatch so the drop-down menu is pre-populated on next visit.
-- xyOps sends each worker an upgrade command and the worker performs the actual self-upgrade.  Running jobs are allowed to finish first, so upgrades are designed to avoid interrupting active work on the server.
-- If a maintenance internal job is already running, this API returns an error instead of starting the upgrade.
+- API trả về ngay sau khi internal job được đưa vào hàng đợi.
+- Chỉ những worker hiện đang kết nối tại thời điểm điều phối mới được bao gồm. Nếu không có worker đang hoạt động nào khớp với lựa chọn mục tiêu, API trả về lỗi.
+- Bản phát hành đã chọn được lưu vào [satellite.version](config.md#satelliteversion) trước khi điều phối để menu thả xuống được điền sẵn trong lần truy cập tiếp theo.
+- PTOps gửi cho mỗi worker một lệnh nâng cấp và worker tự thực hiện việc nâng cấp. Các job đang chạy được phép hoàn thành trước, do đó quá trình nâng cấp được thiết kế để tránh làm gián đoạn công việc đang hoạt động trên server.
+- Nếu một maintenance internal job đã đang chạy, API này trả về lỗi thay vì bắt đầu nâng cấp.
 
 
 
@@ -5911,14 +5901,14 @@ Notes:
 POST /api/app/master_register/v1
 ```
 
-Internal only.  This endpoint is part of the multi-conductor election and registration flow, and is used by conductors to discover the current primary and authenticate peers.  It does **not** use user sessions or API Keys.  Instead, peer authentication is performed using a cryptographic hash of the shared [secret_key](config.md#secret_key).
+Chỉ sử dụng nội bộ. Endpoint này là một phần của luồng bầu cử và đăng ký đa conductor (multi-conductor), được sử dụng bởi các conductor để khám phá primary hiện tại và xác thực các máy ngang hàng. Nó **không** sử dụng user session hoặc API Key. Thay vào đó, việc xác thực ngang hàng được thực hiện bằng một mã băm mật mã (cryptographic hash) của [secret_key](config.md#secret_key) dùng chung.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `host` | String | **(Required)** Host ID of the conductor attempting to register.  This must be the conductor hostname only, with no port. |
-| `auth` | String | **(Required)** Lowercase hex SHA-256 digest of `host + secret_key`. |
+| `host` | String | **(Required)** Host ID của conductor đang cố gắng đăng ký. Đây phải chỉ là hostname của conductor, không bao gồm port. |
+| `auth` | String | **(Required)** Mã băm SHA-256 hệ thập lục phân in thường của `host + secret_key`. |
 
 Example request:
 
@@ -5938,14 +5928,14 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this returns a `master` boolean indicating whether the contacted conductor is currently the primary.
+Ngoài [Standard Response Format](#standard-response-format), API này trả về một giá trị boolean `master` cho biết conductor được liên hệ hiện có phải là primary hay không.
 
 Notes:
 
-- This endpoint may be called on either a primary or backup conductor.
-- If the target conductor is primary and the requesting `host` is not already present in the cluster master list, the peer is added to the cluster automatically.
-- If the requesting conductor contacts itself, the API returns a `duplicate` error.  This usually indicates duplicate entries in `masters.json` (or the configured multi master list file).
-- If the shared secret does not match, the API returns an `auth` error.
+- Endpoint này có thể được gọi trên primary hoặc backup conductor.
+- Nếu conductor mục tiêu là primary và `host` yêu cầu chưa hiện diện trong danh sách cluster master, máy ngang hàng đó sẽ tự động được thêm vào cluster.
+- Nếu conductor yêu cầu liên hệ với chính nó, API trả về lỗi `duplicate`. Điều này thường chỉ ra có các mục nhập trùng lặp trong `masters.json` (hoặc tập tin danh sách multi master được cấu hình).
+- Nếu secret dùng chung không khớp, API trả về lỗi `auth`.
 
 ### get_master_releases
 
@@ -5953,9 +5943,9 @@ Notes:
 GET /api/app/get_master_releases/v1
 ```
 
-Fetch the list of official xyOps release tags from the origin configured in [multi](config.md#multi) (usually GitHub).  Requires a valid user session or API Key.
+Lấy danh sách các release tag PTOps chính thức từ origin được cấu hình trong [multi](config.md#multi) (thường là GitHub). Yêu cầu có user session hoặc API Key hợp lệ.
 
-The API accepts one optional `verbose` parameter, which if set to `true` will include the full response from the upstream provider in a `data` property.
+API này chấp nhận một tham số tùy chọn `verbose`. Nếu được đặt là `true`, nó sẽ bao gồm toàn bộ phản hồi từ nhà cung cấp upstream trong một thuộc tính `data`.
 
 Example response:
 
@@ -5966,14 +5956,14 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this returns a `releases` array.  The first element is always `latest`, followed by the discovered release tags.  If `verbose` is specified, a `data` object will also be included, containing the full upstream provider response.
+Ngoài [Standard Response Format](#standard-response-format), API này trả về một mảng `releases`. Phần tử đầu tiên luôn là `latest`, theo sau là các release tag được phát hiện. Nếu `verbose` được chỉ định, một đối tượng `data` cũng sẽ được bao gồm, chứa toàn bộ phản hồi của nhà cung cấp upstream.
 
 Notes:
 
-- This uses the configured release metadata URL from the [multi](config.md#multi) settings, typically GitHub.
-- Responses are cacheable, using `multi.cache_ttl` if configured, otherwise `3600` seconds.
-- This endpoint is used by the Conductors and System admin UI to highlight outdated conductors and populate upgrade menus.
-- A canned response will be returned if [Air-Gapped Mode](hosting.md#air-gapped-mode) is enabled.
+- API này sử dụng release metadata URL được cấu hình từ cài đặt [multi](config.md#multi), điển hình là GitHub.
+- Các phản hồi có thể được lưu trữ (cache), sử dụng `multi.cache_ttl` nếu được cấu hình, hoặc mặc định `3600` giây.
+- Endpoint này được sử dụng bởi Conductors và System admin UI để làm nổi bật các conductor đã lỗi thời và cung cấp dữ liệu cho các menu nâng cấp.
+- Một canned response (phản hồi được lập trình sẵn) sẽ được trả về nếu [Air-Gapped Mode](hosting.md#air-gapped-mode) được kích hoạt.
 
 ### master_command
 
@@ -5981,14 +5971,14 @@ Notes:
 POST /api/app/master_command/v1
 ```
 
-Send a control command to a conductor server.  Admin only.  Requires a valid administrator session or API Key.  The request must be sent as an HTTP POST with a JSON body.
+Gửi một lệnh điều khiển đến một conductor server. Chỉ dành cho admin. Yêu cầu có administrator session hoặc API Key hợp lệ. Yêu cầu phải được gửi dưới dạng HTTP POST với nội dung JSON.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `host` | String | **(Required)** Host ID of the target conductor.  This must be the conductor hostname only, with no port. |
-| `commands` | Array(String) | **(Required)** Command array to run.  The first element must be one of `stop` (shutdown), `restart`, `upgrade`, or `remove`.  For `upgrade`, an optional second element may specify a release tag such as `v1.2.3`; otherwise the latest stable release is used. |
+| `host` | String | **(Required)** Host ID của conductor mục tiêu. Đây phải chỉ là hostname của conductor, không bao gồm port. |
+| `commands` | Array(String) | **(Required)** Mảng các lệnh để chạy. Phần tử đầu tiên phải là một trong `stop` (tắt), `restart`, `upgrade`, hoặc `remove`. Đối với `upgrade`, phần tử thứ hai tùy chọn có thể chỉ định một release tag như `v1.2.3`; nếu không, bản phát hành ổn định mới nhất sẽ được sử dụng. |
 
 Example request:
 
@@ -6009,17 +5999,17 @@ Example response:
 
 Notes:
 
-- The API returns after the command is dispatched.  It does not wait for the remote conductor to finish restarting, shutting down, or upgrading.
-- Non-`remove` commands require the target backup conductor to be online.  Otherwise the API returns an error.
-- If `host` matches the current primary conductor, the command is executed locally.  However, `remove` is rejected for the current primary.
-- `remove` updates the cluster master list immediately, and if the target conductor is online xyOps first sends it a `stop` command before removing it from the cluster.
-- Local commands ultimately execute through `bin/control.sh`, and command arguments are sanitized before execution.
+- API trả về sau khi lệnh được điều phối. Nó không chờ đợi conductor từ xa hoàn thành việc khởi động lại, tắt hoặc nâng cấp.
+- Các lệnh không phải `remove` yêu cầu backup conductor mục tiêu đang trực tuyến. Nếu không API trả về lỗi.
+- Nếu `host` khớp với primary conductor hiện tại, lệnh được thực thi cục bộ. Tuy nhiên, lệnh `remove` bị từ chối đối với primary hiện tại.
+- Lệnh `remove` cập nhật danh sách cluster master ngay lập tức, và nếu conductor mục tiêu đang trực tuyến, PTOps trước tiên gửi cho nó lệnh `stop` trước khi xóa nó khỏi cluster.
+- Các lệnh cục bộ cuối cùng được thực thi thông qua `bin/control.sh`, và các tham số lệnh được làm sạch (sanitized) trước khi thực thi.
 
 
 
 ## Satellite
 
-These APIs handle xySat bootstrap, install, upgrade, and release discovery.  Unlike most xyOps APIs, the `satellite` endpoint family serves plain-text scripts, tarballs, and JSON config files rather than the standard JSON response envelope on success.
+Các API này xử lý việc khởi tạo (bootstrap), cài đặt, nâng cấp và khám phá bản phát hành của xySat. Khác với hầu hết các API PTOps, nhóm endpoint `satellite` phục vụ các script văn bản thuần túy, tệp tin nén (tarball) và tệp tin JSON config thay vì bao bọc (envelope) phản hồi JSON chuẩn khi thành công.
 
 ### get_satellite_token
 
@@ -6027,18 +6017,18 @@ These APIs handle xySat bootstrap, install, upgrade, and release discovery.  Unl
 POST /api/app/get_satellite_token/v1
 ```
 
-Generate a short-lived satellite bootstrap token for use with the [satellite](#satellite) API family.  Requires a valid user session or API Key with the [add_servers](privileges.md#add_servers) privilege.
+Tạo một satellite bootstrap token có thời hạn ngắn để sử dụng với nhóm API [satellite](#satellite). Yêu cầu có user session hoặc API Key hợp lệ với đặc quyền [add_servers](privileges.md#add_servers).
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `expires` | Number | Optional. Token lifetime in seconds. Defaults to `86400` (24 hours). |
-| `title` | String | Optional. Initial title / label to assign to the server on first connect. |
-| `enabled` | Boolean | Optional. Initial enabled state for the server record. |
-| `icon` | String | Optional. Initial icon for the server record. |
-| `groups` | Array(String) | Optional. Initial server groups. Empty arrays are ignored. |
-| (Other) | Various | Optional. Additional initial server metadata to embed in the bootstrap token. |
+| `expires` | Number | Tùy chọn. Thời gian sống (lifetime) của token tính bằng giây. Mặc định là `86400` (24 giờ). |
+| `title` | String | Tùy chọn. Tiêu đề / nhãn ban đầu được gán cho server trong lần kết nối đầu tiên. |
+| `enabled` | Boolean | Tùy chọn. Trạng thái kích hoạt (enabled) ban đầu cho bản ghi của server. |
+| `icon` | String | Tùy chọn. Biểu tượng ban đầu cho bản ghi của server. |
+| `groups` | Array(String) | Tùy chọn. Các server group ban đầu. Các mảng rỗng sẽ bị bỏ qua. |
+| (Other) | Various | Tùy chọn. Thêm các metadata ban đầu của server để nhúng vào bootstrap token. |
 
 Example request:
 
@@ -6064,18 +6054,18 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this returns:
+Ngoài [Standard Response Format](#standard-response-format), API này trả về:
 
-- `token`: The generated time-based bootstrap token.
-- `base_url`: Base URL to use for the bootstrap request.
-- `image`: The configured xySat container image name.
-- `version`: The configured xySat release tag to install.
+- `token`: Bootstrap token dựa trên thời gian được tạo ra.
+- `base_url`: URL cơ sở (base URL) để sử dụng cho yêu cầu bootstrap.
+- `image`: Tên image của xySat container được cấu hình.
+- `version`: Release tag xySat được cấu hình để cài đặt.
 
 Notes:
 
-- The returned token authenticates satellite bootstrap requests via the `t` query parameter.
-- `base_url`, `image`, and `version` come from the conductor's [satellite](config.md#satellite) configuration.
-- The bootstrap token carries the initial server metadata, which is later written into the generated satellite config as `initial`.
+- Token trả về được dùng để xác thực các yêu cầu satellite bootstrap qua tham số truy vấn `t`.
+- `base_url`, `image`, và `version` xuất phát từ cấu hình [satellite](config.md#satellite) của conductor.
+- Bootstrap token mang metadata ban đầu của server, sau đó được ghi vào satellite config được tạo ra dưới khóa `initial`.
 
 ### get_satellite_releases
 
@@ -6083,9 +6073,9 @@ Notes:
 GET /api/app/get_satellite_releases/v1
 ```
 
-Fetch the list of official xySat release tags from the origin configured in [satellite](config.md#satellite) (usually GitHub).  Requires a valid user session or API Key.
+Lấy danh sách các release tag xySat chính thức từ origin được cấu hình trong [satellite](config.md#satellite) (thường là GitHub). Yêu cầu có user session hoặc API Key hợp lệ.
 
-The API accepts one optional `verbose` parameter, which if set to `true` will include the full response from the upstream provider in a `data` property.
+API này chấp nhận một tham số tùy chọn `verbose`. Nếu được đặt là `true`, nó sẽ bao gồm toàn bộ phản hồi từ nhà cung cấp upstream trong một thuộc tính `data`.
 
 Example response:
 
@@ -6096,12 +6086,12 @@ Example response:
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this returns a `releases` array.  The first element is always `latest`, followed by the discovered release tags.  If `verbose` is specified, a `data` object will also be included, containing the full upstream provider response.
+Ngoài [Standard Response Format](#standard-response-format), API này trả về một mảng `releases`. Phần tử đầu tiên luôn là `latest`, theo sau là các release tag được phát hiện. Nếu `verbose` được chỉ định, một đối tượng `data` cũng sẽ được bao gồm, chứa toàn bộ phản hồi của nhà cung cấp upstream.
 
 Notes:
 
-- This uses the configured release metadata URL, typically GitHub, from the [satellite](config.md#satellite) settings.
-- Air-gap rules are honored.  If air-gap mode is enabled and a satellite bucket is configured, the API returns `["airgap"]` instead of querying upstream.
+- API này sử dụng release metadata URL, điển hình là GitHub, từ cài đặt [satellite](config.md#satellite).
+- Các quy tắc về air-gap được tôn trọng. Nếu air-gap mode được kích hoạt và một satellite bucket được cấu hình, API sẽ trả về `["airgap"]` thay vì truy vấn từ upstream.
 
 ### satellite
 
@@ -6112,29 +6102,29 @@ GET /api/app/satellite/core?t=...&os=...&arch=...
 GET /api/app/satellite/config?t=...
 ```
 
-Bootstrap or upgrade xySat on remote systems.  This endpoint family is used internally by the "Add Server" flow, the worker upgrade system, Docker bootstrap, and xySat self-upgrade.
+Khởi tạo (bootstrap) hoặc nâng cấp xySat trên các hệ thống từ xa. Nhóm endpoint này được sử dụng nội bộ bởi luồng "Add Server", hệ thống nâng cấp worker, Docker bootstrap, và tính năng tự nâng cấp xySat.
 
 Authentication:
 
-- Bootstrap token: Pass a time-based token from [get_satellite_token](#get_satellite_token) in the `t` query parameter.
-- Server token: Pass the server's permanent auth token in `t` and the server ID in `s`.  This is used for self-upgrade and is accepted only for active or recently active servers.
-- API Key: Pass an API Key with the [add_servers](privileges.md#add_servers) privilege in `t`.  This is primarily for automated deployments and ephemeral infrastructure.
+- Bootstrap token: Truyền một token dựa trên thời gian từ [get_satellite_token](#get_satellite_token) vào tham số truy vấn `t`.
+- Server token: Truyền auth token vĩnh viễn của server vào `t` và ID server vào `s`. Token này được dùng cho mục đích tự nâng cấp và chỉ được chấp nhận đối với các server đang hoạt động (active) hoặc mới hoạt động gần đây.
+- API Key: Truyền một API Key có đặc quyền [add_servers](privileges.md#add_servers) vào `t`. API này chủ yếu dành cho triển khai tự động và hạ tầng tạm thời (ephemeral infrastructure).
 
 Common query parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `t` | String | **(Required)** Authentication token.  This may be a bootstrap token, server auth token, or API Key. |
-| `s` | String | Required for `/upgrade`, and also when authenticating via a server auth token.  This is the Server ID. |
-| `os` | String | Optional for `/install` to select the Windows PowerShell script.  Required for `/core` to select the correct package, e.g. `linux`, `darwin`, or `windows`. |
-| `arch` | String | Required for `/core` to select the correct package architecture, e.g. `x64` or `arm64`. |
+| `t` | String | **(Required)** Token xác thực. Đây có thể là bootstrap token, server auth token, hoặc API Key. |
+| `s` | String | Bắt buộc đối với `/upgrade`, và cũng như khi xác thực bằng server auth token. Đây là Server ID. |
+| `os` | String | Tùy chọn đối với `/install` để chọn Windows PowerShell script. Bắt buộc đối với `/core` để chọn package đúng, ví dụ `linux`, `darwin`, hoặc `windows`. |
+| `arch` | String | Bắt buộc đối với `/core` để chọn kiến trúc package đúng, ví dụ `x64` hoặc `arm64`. |
 
 Sub-methods:
 
-- `/api/app/satellite/install`: Returns a plain-text bootstrap script (`text/plain`).  Use `os=windows` to fetch the PowerShell installer; otherwise a POSIX shell script is returned.  When authenticated with a bootstrap token, any extra query parameters other than `t` and `os` are merged into the initial server metadata before the config is generated.
-- `/api/app/satellite/upgrade`: Returns a plain-text upgrade script (`text/plain`).  Requires `s` plus `t`.  Use `os=windows` to fetch the PowerShell upgrade script; otherwise a POSIX shell script is returned.
-- `/api/app/satellite/core`: Returns the xySat tarball (`application/gzip`) with a download filename like `satellite-OS-ARCH.tar.gz`.  If a satellite bucket is configured, the file is served from there.  Otherwise xyOps uses its local cache and fetches from the configured upstream release base URL as needed.
-- `/api/app/satellite/config`: Returns a generated `config.json` file (`application/json`).  This includes the conductor's `satellite.config`, air-gap settings if not already present, the current master host and port, a newly generated `server_id`, a derived `auth_token`, and any initial bootstrap metadata under `initial`.
+- `/api/app/satellite/install`: Trả về một bootstrap script dưới dạng văn bản thuần túy (`text/plain`). Dùng `os=windows` để lấy bộ cài PowerShell; ngược lại, một POSIX shell script sẽ được trả về. Khi được xác thực bằng bootstrap token, bất kỳ tham số truy vấn bổ sung nào ngoài `t` và `os` sẽ được gộp vào metadata ban đầu của server trước khi cấu hình được tạo.
+- `/api/app/satellite/upgrade`: Trả về một upgrade script dưới dạng văn bản thuần túy (`text/plain`). Yêu cầu `s` và `t`. Dùng `os=windows` để lấy kịch bản nâng cấp PowerShell; ngược lại, một POSIX shell script sẽ được trả về.
+- `/api/app/satellite/core`: Trả về tệp tin nén (tarball) của xySat (`application/gzip`) với một tên tập tin tải xuống dạng `satellite-OS-ARCH.tar.gz`. Nếu một satellite bucket được cấu hình, tệp được cung cấp từ đó. Ngược lại, PTOps dùng bộ đệm (cache) cục bộ và tìm nạp từ upstream release base URL được cấu hình khi cần thiết.
+- `/api/app/satellite/config`: Trả về một tệp `config.json` được tạo (`application/json`). Tệp này bao gồm `satellite.config` của conductor, các cài đặt air-gap nếu chưa có, máy chủ (host) và cổng (port) của master hiện tại, một `server_id` mới được tạo, một `auth_token` được dẫn xuất (derived), và bất kỳ metadata bootstrap ban đầu nào dưới khóa `initial`.
 
 Example bootstrap commands:
 
@@ -6164,9 +6154,9 @@ Example `config` response:
 
 Notes:
 
-- Successful responses are streamed files or plain text, depending on the sub-method.  On errors, the standard JSON API error format is returned.
-- `/config` generates a fresh `server_id` and `auth_token` on every request, which is why the same API Key based bootstrap URL can be reused for provisioning ephemeral workers.
-- `/core` and release metadata requests honor air-gap settings.
+- Các phản hồi thành công là các tập tin được stream hoặc văn bản thuần túy, tùy thuộc vào phương thức phụ. Nếu có lỗi, định dạng JSON API error tiêu chuẩn sẽ được trả về.
+- `/config` tạo ra một `server_id` và `auth_token` mới trong mỗi yêu cầu, đó là lý do tại sao bootstrap URL sử dụng API Key có thể được tái sử dụng để cung cấp các ephemeral worker (worker tạm thời).
+- `/core` và các yêu cầu release metadata tôn trọng cài đặt air-gap.
 
 
 
@@ -6178,11 +6168,11 @@ Notes:
 GET /api/app/ping/v1
 ```
 
-Simple health check endpoint. Returns success if the API is reachable.
+Endpoint kiểm tra tình trạng (health check) đơn giản. Trả về thành công nếu có thể tiếp cận được API.
 
 Notes:
 
-- Public endpoint; no authentication required.
+- Endpoint công khai; không yêu cầu xác thực.
 
 Example response:
 
@@ -6197,19 +6187,19 @@ GET /api/app/echo/v1
 POST /api/app/echo/v1
 ```
 
-Diagnostic endpoint that echoes request details. Useful for testing connectivity, headers, cookies, parameter parsing, and multipart uploads. The response does not include the standard `code` field.
+Endpoint phân tích chuẩn đoán (diagnostic endpoint) phản hồi (echo) các chi tiết yêu cầu. Hữu ích cho việc kiểm tra kết nối, headers, cookies, phân tích cú pháp tham số, và tải lên nhiều phần (multipart uploads). Phản hồi không bao gồm trường `code` tiêu chuẩn.
 
 Parameters:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `sleep` | Number | Optional delay in milliseconds before responding. Defaults to `1`. |
-| `pretty` | Number | Optional. If set to `1` will pretty-print the JSON response. |
+| `sleep` | Number | Độ trễ tùy chọn tính bằng mili-giây trước khi phản hồi. Mặc định là `1`. |
+| `pretty` | Number | Tùy chọn. Nếu được đặt thành `1` sẽ định dạng hiển thị cho phản hồi JSON. |
 
 Notes:
 
-- Public endpoint; no authentication required.
-- Returns a JSON object with the following fields: `method`, `uri`, `ips`, `headers`, `cookies`, `params`, `files`.
+- Endpoint công khai; không yêu cầu xác thực.
+- Trả về một đối tượng JSON với các trường sau: `method`, `uri`, `ips`, `headers`, `cookies`, `params`, `files`.
 
 Example response (truncated):
 
@@ -6231,12 +6221,12 @@ Example response (truncated):
 GET /api/app/error/v1
 ```
 
-Simulate an error response for testing client error handling.
+Mô phỏng một phản hồi lỗi để kiểm tra quá trình xử lý lỗi ở phía client.
 
 Notes:
 
-- Public endpoint; no authentication required.
-- Always responds with a test error using the [Standard Response Format](#standard-response-format).
+- Endpoint công khai; không yêu cầu xác thực.
+- Luôn phản hồi bằng một lỗi mô phỏng (test error) sử dụng [Standard Response Format](#standard-response-format).
 
 Example error response:
 
@@ -6246,22 +6236,21 @@ Example error response:
   "description": "This is a test error message."
 }
 ```
-
 ### dash_stats
 
 ```
 GET /api/app/dash_stats/v1
 ```
 
-Return live dashboard statistics from the primary conductor, including current-day activity counts, memory and CPU metrics, database (Unbase) engine stats, and optional storage cache stats.
+Trả về số liệu thống kê dashboard trực tiếp từ conductor chính, bao gồm số lượng hoạt động trong ngày hiện tại, số liệu bộ nhớ và CPU, số liệu thống kê engine cơ sở dữ liệu (Unbase) và số liệu thống kê cache lưu trữ tùy chọn.
 
-Notes:
+Ghi chú:
 
-- Requires a valid user session or API Key.
-- Primary conductor only. If called on a secondary and redirects are enabled, a `302` redirect to the primary may be returned.
-- No input parameters.
+- Yêu cầu phiên người dùng hoặc API Key hợp lệ.
+- Chỉ dành cho conductor chính. Nếu được gọi trên một conductor phụ và các chuyển hướng được bật, một chuyển hướng `302` đến conductor chính có thể được trả về.
+- Không có tham số đầu vào.
 
-Example response:
+Ví dụ phản hồi:
 
 ```json
 {
@@ -6311,24 +6300,24 @@ Example response:
 GET /api/app/config/v1
 ```
 
-This API is used to "bootstrap" the xyOps UI.  It returns an initial set of data as the page first loads.  It also triggers the front-end UI code to initialize and render the page.
+API này được sử dụng để "bootstrap" giao diện người dùng PTOps. Nó trả về một tập hợp dữ liệu ban đầu khi trang tải lần đầu. Nó cũng kích hoạt mã UI front-end để khởi tạo và hiển thị trang.
 
-The response is a custom JavaScript function call that cannot be changed:
+Phản hồi là một lệnh gọi hàm JavaScript tùy chỉnh không thể thay đổi:
 
 ```js
 app.receiveConfig({ code: 0, /* other data */ });
 ```
 
-The data passed into the `app.receiveConfig` function will contain the following properties:
+Dữ liệu được truyền vào hàm `app.receiveConfig` sẽ chứa các thuộc tính sau:
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `code` | Number | Zero for success, any other value for error. |
-| `version` | String | The current version of xyOps running on the conductor server. |
-| `epoch` | Number | The current Unix date/time on the conductor server. |
-| `port` | Number | The web server port currently being used by the UI. |
-| `config` | Object | The [client](config.md#client) configuration object, with various other bits merged in. |
-| `masters` | Array | An array of [Conductor](data.md#conductor) objects, one for each conductor server in the cluster. |
+| `code` | Number | Số 0 cho thành công, bất kỳ giá trị nào khác cho lỗi. |
+| `version` | String | Phiên bản PTOps hiện tại đang chạy trên server conductor. |
+| `epoch` | Number | Ngày/giờ Unix hiện tại trên server conductor. |
+| `port` | Number | Cổng web server hiện đang được UI sử dụng. |
+| `config` | Object | Đối tượng cấu hình [client](config.md#client), với nhiều bit khác được hợp nhất vào. |
+| `masters` | Array | Một mảng các đối tượng [Conductor](data.md#conductor), một cho mỗi server conductor trong cụm. |
 
 ### form_config
 
@@ -6336,9 +6325,9 @@ The data passed into the `app.receiveConfig` function will contain the following
 GET /api/app/form_config/v1/TOKEN
 ```
 
-A special version of the [config](#config) API, made specifically for [Magic Link Triggers](triggers.md#magic-link), namely the landing page (see [form](#form)).  This API contains special instructions to load the magic landing page instead of the main xyOps UI, and it omits many of the verbose properties present in the [config](#config) API.
+Một phiên bản đặc biệt của API [config](#config), được tạo riêng cho [Magic Link Triggers](triggers.md#magic-link), cụ thể là trang đích (xem [form](#form)). API này chứa các hướng dẫn đặc biệt để tải trang đích magic thay vì giao diện người dùng PTOps chính, và nó bỏ qua nhiều thuộc tính dài dòng có trong API [config](#config).
 
-The response is a custom JavaScript function call that cannot be changed:
+Phản hồi là một lệnh gọi hàm JavaScript tùy chỉnh không thể thay đổi:
 
 ```js
 app.receiveConfig({ code: 0, /* other data */ });
@@ -6350,33 +6339,33 @@ app.receiveConfig({ code: 0, /* other data */ });
 POST /api/app/send_email/v1
 ```
 
-Send a custom email on demand with optional attachments. Requires a valid user session or API Key with the [send_emails](privileges.md#send_emails) privilege.
+Gửi một email tùy chỉnh theo yêu cầu với các tệp đính kèm tùy chọn. Yêu cầu một phiên người dùng hoặc API Key hợp lệ với đặc quyền [send_emails](privileges.md#send_emails).
 
-When the global [email_format](config.md#email_format) configuration property is set to `html` (the default), this sends an email using the official xyOps HTML stationary (with header, logo image, title, button, footer, copyright, version, border).  In this case the `body` text you specify should be either [GitHub-flavored Markdown](https://github.github.com/gfm/) or HTML format, and is rendered inside the main stationary presentation box.  However, when [email_format](config.md#email_format) is set to `text`, your body should be plain text and is sent verbatim (with a one-line text footer containing the version, copyright, etc.).
+Khi thuộc tính cấu hình toàn cục [email_format](config.md#email_format) được đặt thành `html` (mặc định), điều này sẽ gửi một email sử dụng mẫu HTML PTOps chính thức (với tiêu đề, hình ảnh logo, title, nút, chân trang, bản quyền, phiên bản, viền). Trong trường hợp này, văn bản `body` bạn chỉ định phải là định dạng [GitHub-flavored Markdown](https://github.github.com/gfm/) hoặc HTML và được hiển thị bên trong hộp trình bày mẫu chính. Tuy nhiên, khi [email_format](config.md#email_format) được đặt thành `text`, body của bạn phải là văn bản thuần túy và được gửi nguyên văn (với chân trang văn bản một dòng chứa phiên bản, bản quyền, v.v.).
 
-Emails are always sent from the [email_from](config.md#email_from) global configuration property.
+Email luôn được gửi từ thuộc tính cấu hình toàn cục [email_from](config.md#email_from).
 
-**Input formats:**
+**Định dạng đầu vào:**
 
-- Pure JSON: Send `Content-Type: application/json` with a JSON body.
-- Multipart form-data (for file uploads): Send `Content-Type: multipart/form-data` and include a `json` field containing the full JSON payload (as a string), plus one or more file fields. All uploaded files are attached to the email.
+- JSON thuần túy: Gửi `Content-Type: application/json` với một body JSON.
+- Multipart form-data (để tải lên tệp): Gửi `Content-Type: multipart/form-data` và bao gồm một trường `json` chứa toàn bộ payload JSON (dưới dạng chuỗi), cộng với một hoặc nhiều trường tệp. Tất cả các tệp được tải lên được đính kèm vào email.
 
-**Parameters:**
+**Các tham số:**
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `to` | String | **(Required)** The email addresses to send to, comma-separated. |
-| `subject` | String | **(Required)** The email subject line. |
-| `body` | String | **(Required)** The email body text, in markdown or HTML format. |
-| `cc` | String | Optional `Cc` carbon-copy address list, comma-separated. |
-| `bcc` | String | Optional `Bcc` blind-carbon-copy address list, comma-separated. |
-| `title` | String | Optional "title" shown in large bold font next to the logo (HTML emails only). |
-| `button` | String | Optional clickable button shown in the top-right corner (HTML emails only). |
-| `headers` | Object | Optional MIME headers to send along with the email, e.g. `{ "Importance": "High", "X-Priority": "1", "X-MSMail-Priority": "High" }`. |
+| `to` | String | **(Bắt buộc)** Các địa chỉ email để gửi đến, cách nhau bằng dấu phẩy. |
+| `subject` | String | **(Bắt buộc)** Dòng tiêu đề email. |
+| `body` | String | **(Bắt buộc)** Văn bản body của email, ở định dạng markdown hoặc HTML. |
+| `cc` | String | Danh sách địa chỉ carbon-copy `Cc` tùy chọn, cách nhau bằng dấu phẩy. |
+| `bcc` | String | Danh sách địa chỉ blind-carbon-copy `Bcc` tùy chọn, cách nhau bằng dấu phẩy. |
+| `title` | String | "title" tùy chọn được hiển thị bằng phông chữ in đậm lớn bên cạnh logo (chỉ dành cho email HTML). |
+| `button` | String | Nút có thể nhấp tùy chọn được hiển thị ở góc trên cùng bên phải (chỉ dành cho email HTML). |
+| `headers` | Object | Các header MIME tùy chọn để gửi cùng với email, ví dụ: `{ "Importance": "High", "X-Priority": "1", "X-MSMail-Priority": "High" }`. |
 
-For the optional `button` parameter please use this syntax: `LABEL | URL`.  So for example: `Visit Disney | https://disney.com`.
+Đối với tham số `button` tùy chọn, vui lòng sử dụng cú pháp này: `LABEL | URL`. Vì vậy, ví dụ: `Visit Disney | https://disney.com`.
 
-**Example:** Pure JSON POST (no files)
+**Ví dụ:** POST JSON thuần túy (không có tệp)
 
 ```json
 {
@@ -6386,7 +6375,7 @@ For the optional `button` parameter please use this syntax: `LABEL | URL`.  So f
 }
 ```
 
-**Example:** multipart/form-data with attachments
+**Ví dụ:** multipart/form-data với các tệp đính kèm
 
 ```
 POST /api/app/send_email/v1
@@ -6409,7 +6398,7 @@ hello world
 ------XYZ--
 ```
 
-**Example response:**
+**Ví dụ phản hồi:**
 
 ```json
 {
@@ -6418,6 +6407,6 @@ hello world
 }
 ```
 
-In addition to the [Standard Response Format](#standard-response-format), this will include a `details` property containing the mailer debug log (useful for troubleshooting).
+Ngoài [Định dạng phản hồi tiêu chuẩn](#standard-response-format), điều này sẽ bao gồm một thuộc tính `details` chứa nhật ký gỡ lỗi của trình gửi thư (hữu ích cho việc khắc phục sự cố).
 
-**Note:** This API is rate-limited by the [max_emails_per_day](config.md#max_emails_per_day) configuration property.  If exceeded, it will fail with an error.
+**Lưu ý:** API này bị giới hạn tỷ lệ bởi thuộc tính cấu hình [max_emails_per_day](config.md#max_emails_per_day). Nếu vượt quá, nó sẽ thất bại với một lỗi.

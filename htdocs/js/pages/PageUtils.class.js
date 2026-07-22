@@ -479,7 +479,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 		var opts = this._temp_export;
 		var json = {
 			type: 'xypdf',
-			description: "xyOps Portable Data Object",
+			description: "PTOps Portable Data Object",
 			version: "1.0",
 			xyops: app.version,
 			items: [{ // FUTURE: Support multiple
@@ -488,7 +488,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 			}]
 		};
 		var payload = JSON.stringify(json, null, "\t") + "\n";
-		var filename = 'xyops-' + opts.dataType + '-' + opts.data.id + '.json';
+		var filename = 'ptops-' + opts.dataType + '-' + opts.data.id + '.json';
 		var blob = new Blob([payload], { type: "application/json" });
 		var url = URL.createObjectURL(blob);
 		
@@ -564,7 +564,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 			
 			if (find_object(all_objs, { id: obj.id })) {
 				do_replace = true;
-				md += "\n" + `> [!WARNING]\n> This ${opts.name} already exists in the xyOps database.  If you proceed, it will be **replaced** with the uploaded version.` + "\n";
+				md += "\n" + `> [!WARNING]\n> This ${opts.name} already exists in the PTOps database.  If you proceed, it will be **replaced** with the uploaded version.` + "\n";
 			}
 			if (hasEnabledTriggers(obj)) {
 				md += "\n" + `> [!IMPORTANT]\n> The ${opts.name} you are importing has **active triggers**.  If you proceed, it may **automatically run** sometime in the future.` + "\n";
@@ -661,7 +661,7 @@ Page.PageUtils = class PageUtils extends Page.Base {
 			} )) return;
 			
 			if (do_replace) {
-				md += "\n" + `> [!WARNING]\n> One or more items already exist in the xyOps database.  If you proceed, they will be **replaced** with the uploaded versions.` + "\n";
+				md += "\n" + `> [!WARNING]\n> One or more items already exist in the PTOps database.  If you proceed, they will be **replaced** with the uploaded versions.` + "\n";
 			}
 			if (schedule_warning) {
 				md += "\n" + `> [!IMPORTANT]\n> One or more events or workflows have **active triggers**.  If you proceed, they may **automatically run** sometime in the future.` + "\n";
@@ -727,10 +727,10 @@ Page.PageUtils = class PageUtils extends Page.Base {
 			catch (err) { return app.doError("Failed to parse JSON in uploaded file: " + err); }
 			
 			if (!json.version || (json.version !== '1.0') || !json.type || (json.type !== 'xypdf') || !json.items || !json.items[0]) {
-				return app.doError("Unknown Format: Uploaded file is not an xyOps Portable Data Object.");
+				return app.doError("Unknown Format: Uploaded file is not a PTOps Portable Data Object.");
 			}
 			if (json.xyops && (get_int_version(json.xyops) > get_int_version(app.version))) {
-				return app.doError(`Unsupported Version: This import requires xyOps v${json.xyops} or higher.`);
+				return app.doError(`Unsupported Version: This import requires PTOps v${json.xyops} or higher.`);
 			}
 			
 			if (json.items.length > 1) doImportMultiple(json);

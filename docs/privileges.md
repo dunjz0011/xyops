@@ -1,180 +1,180 @@
 # Privileges
 
-## Overview
+## Tổng Quan
 
-xyOps uses a simple, flexible privilege system to control access to features. Privileges can be assigned directly to Users and API Keys, and Roles can bundle sets of privileges that are then attached to Users and API Keys. The effective permission set is the union of all directly assigned privileges plus those granted by any roles. The special `admin` privilege grants full access to all features. Removal of all privileges effectively creates a "read-only" user.
+PTOps dùng một hệ thống privilege đơn giản, linh hoạt để kiểm soát quyền truy cập vào các tính năng. Privilege có thể được gán trực tiếp cho User và API Key, và Role có thể đóng gói các bộ privilege sau đó được gắn cho User và API Key. Bộ quyền hiệu lực là hợp của tất cả privilege được gán trực tiếp cộng với những privilege được cấp bởi bất kỳ role nào. Privilege đặc biệt `admin` cấp toàn quyền truy cập vào tất cả tính năng. Loại bỏ tất cả privilege sẽ tạo ra một user "chỉ đọc" trên thực tế.
 
-Note: Some operations also enforce resource-level access (e.g., category, group, or target restrictions). Having a privilege is necessary, but certain actions may additionally require access to the specific resource.
+Lưu ý: Một số hoạt động cũng thực thi kiểm soát truy cập ở cấp resource (ví dụ giới hạn category, group, hoặc target). Có privilege là cần thiết, nhưng một số hành động có thể còn yêu cầu quyền truy cập vào resource cụ thể.
 
-## Special
+## Đặc Biệt
 
 ### admin
-Full administrator access; implies all privileges and bypasses normal restrictions.
+Toàn quyền quản trị; bao hàm tất cả privilege và bỏ qua các giới hạn thông thường.
 
 ### bulk_export
-Allow bulk data exports using the [admin_export_data](api.md#admin_export_data) API.
+Cho phép xuất dữ liệu hàng loạt dùng API [admin_export_data](api.md#admin_export_data).
 
 ## Alerts
 
 ### create_alerts
-Create new alert definitions that evaluate monitor data and trigger actions.
+Tạo alert definition mới đánh giá dữ liệu monitor và kích hoạt action.
 
 ### edit_alerts
-Edit existing alert definitions, including expressions, messages, and settings.
+Sửa alert definition hiện có, bao gồm expression, message, và cài đặt.
 
 ### delete_alerts
-Delete alert definitions and remove their associated configuration.
+Xóa alert definition và loại bỏ cấu hình liên quan.
 
 ## Buckets
 
 ### create_buckets
-Create new data storage buckets for artifacts or structured data.
+Tạo storage bucket mới để lưu artifact hoặc dữ liệu có cấu trúc.
 
 ### edit_buckets
-Edit existing buckets, including metadata, data payload, and file lists.
+Sửa bucket hiện có, bao gồm metadata, payload dữ liệu, và danh sách file.
 
 ### delete_buckets
-Delete buckets, including all associated data and files.
+Xóa bucket, bao gồm tất cả dữ liệu và file liên quan.
 
 ## Categories
 
 ### create_categories
-Create new event categories that define defaults and organization.
+Tạo category event mới định nghĩa giá trị mặc định và tổ chức.
 
 ### edit_categories
-Edit existing categories and their defaults (limits, actions, colors, etc.).
+Sửa category hiện có và giá trị mặc định của chúng (limit, action, màu sắc, v.v.).
 
 ### delete_categories
-Delete categories from the system (subject to normal references and usage).
+Xóa category khỏi hệ thống (tuỳ theo các tham chiếu và sử dụng thông thường).
 
 ## Channels
 
 ### create_channels
-Create outbound notification channels (e.g., email, web hook destinations).
+Tạo channel thông báo gửi ra (ví dụ đích email, web hook).
 
 ### edit_channels
-Edit existing notification channels and their delivery settings.
+Sửa channel thông báo hiện có và cài đặt gửi của chúng.
 
 ### delete_channels
-Delete notification channels from the system.
+Xóa channel thông báo khỏi hệ thống.
 
 ## Events
 
 ### create_events
-Create new events and workflows, including schedules, targets, and plugin settings.
+Tạo event và workflow mới, bao gồm lịch, target, và cài đặt plugin.
 
 ### edit_events
-Edit existing events and workflows, including schedules, limits, actions, and parameters.
+Sửa event và workflow hiện có, bao gồm lịch, limit, action, và tham số.
 
 ### delete_events
-Delete events and workflows (optionally including associated jobs where applicable).
+Xóa event và workflow (tuỳ chọn bao gồm job liên quan nếu áp dụng).
 
 ## Groups
 
 ### create_groups
-Create new server groups for organizing and targeting servers.
+Tạo server group mới để tổ chức và nhắm mục tiêu server.
 
 ### edit_groups
-Edit existing server groups, including titles, rules, and alert settings.
+Sửa server group hiện có, bao gồm tiêu đề, quy tắc, và cài đặt alert.
 
 ### delete_groups
-Delete server groups from the system.
+Xóa server group khỏi hệ thống.
 
 ## Jobs
 
 ### run_jobs
-Run events on demand and upload pre-run input files for jobs.
+Chạy event theo yêu cầu và upload file input trước khi chạy cho job.
 
 ### abort_jobs
-Abort running jobs.
+Hủy job đang chạy.
 
 ### delete_jobs
-Delete jobs and their associated files or logs (where applicable).
+Xóa job và file hoặc log liên quan (nếu áp dụng).
 
 ### tag_jobs
-Add or update tags on completed jobs.
+Thêm hoặc cập nhật tag trên job đã hoàn thành.
 
 ## Monitors
 
 ### create_monitors
-Create new monitors that collect and process server or application metrics.
+Tạo monitor mới thu thập và xử lý số liệu server hoặc ứng dụng.
 
 ### edit_monitors
-Edit existing monitors, including expressions, matching rules, and settings.
+Sửa monitor hiện có, bao gồm expression, quy tắc khớp, và cài đặt.
 
 ### delete_monitors
-Delete monitors from the system.
+Xóa monitor khỏi hệ thống.
 
 ## Plugins
 
 ### create_plugins
-Create new plugins (event, monitor, action, or scheduler types).
+Tạo plugin mới (loại event, monitor, action, hoặc scheduler).
 
 ### edit_plugins
-Edit existing plugin definitions and their configuration.
+Sửa định nghĩa plugin hiện có và cấu hình của chúng.
 
 ### delete_plugins
-Delete plugins from the system.
+Xóa plugin khỏi hệ thống.
 
 ## Roles
 
 ### create_roles
-Create new roles that bundle sets of privileges.
+Tạo role mới đóng gói các bộ privilege.
 
 ### edit_roles
-Edit existing roles, including titles and assigned privileges.
+Sửa role hiện có, bao gồm tiêu đề và privilege được gán.
 
 ### delete_roles
-Delete roles from the system.
+Xóa role khỏi hệ thống.
 
 ## Tags
 
 ### create_tags
-Create system tags for organizing events, jobs, and related data.
+Tạo tag hệ thống để tổ chức event, job, và dữ liệu liên quan.
 
 ### edit_tags
-Edit existing tags.
+Sửa tag hiện có.
 
 ### delete_tags
-Delete tags from the system.
+Xóa tag khỏi hệ thống.
 
 ## Tickets
 
 ### create_tickets
-Create new tickets for tracking tasks, reviews, or follow-ups.
+Tạo ticket mới để theo dõi task, review, hoặc theo dõi tiếp.
 
 ### edit_tickets
-Edit existing tickets, including subject, details, assignees, and status.
+Sửa ticket hiện có, bao gồm chủ đề, chi tiết, người được gán, và trạng thái.
 
 ### delete_tickets
-Delete tickets from the system.
+Xóa ticket khỏi hệ thống.
 
 ## Web Hooks
 
 ### create_web_hooks
-Create new web hooks for outgoing notifications and integrations.
+Tạo web hook mới cho thông báo gửi ra và tích hợp.
 
 ### edit_web_hooks
-Edit existing web hooks and their request details.
+Sửa web hook hiện có và chi tiết request của chúng.
 
 ### delete_web_hooks
-Delete web hooks from the system.
+Xóa web hook khỏi hệ thống.
 
 ## Servers
 
 ### add_servers
-Add new servers on-demand in the UI, and also allow access to the API to dynamically register ephemeral servers.
+Thêm server mới theo yêu cầu trên UI, và cũng cho phép API đăng ký server tạm thời (ephemeral) một cách động.
 
 ### update_servers
-Update server metadata, such as the title (label), icon, groups, and user data.
+Cập nhật metadata server, như tiêu đề (label), icon, group, và dữ liệu user.
 
 ### create_snapshots
-Create on-demand server snapshots and set/cancel watches that take periodic snapshots.
+Tạo snapshot server theo yêu cầu và đặt/hủy watch lấy snapshot định kỳ.
 
 ### delete_snapshots
-Delete server or group snapshots from the system.
+Xóa snapshot server hoặc group khỏi hệ thống.
 
-## Misc
+## Khác
 
 ### send_emails
-Send custom emails using the [send_email](api.md#send_email) API.
+Gửi email tuỳ chỉnh dùng API [send_email](api.md#send_email).

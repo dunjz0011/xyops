@@ -1,6 +1,15 @@
 .dockerignore
-.gitignore
 .git
+.git*
+.github
+.env
+.env.*
+!.env.example
+.DS_Store
+Dockerfile*
+compose*.yml
+compose*.yaml
+
 /docker
 /node_modules
 /work
@@ -8,6 +17,8 @@
 /data
 /conf
 /temp
+/test
+
 /htdocs/index.html
 /htdocs/test*
 /htdocs/js/external/*
@@ -21,6 +32,3 @@
 /htdocs/codemirror
 /sample_conf/masters.json
 /sample_conf/overrides.json
-/test/data
-/test/logs
-/test/temp

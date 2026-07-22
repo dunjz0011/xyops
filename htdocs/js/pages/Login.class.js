@@ -40,83 +40,78 @@ Page.Login = class Login extends Page.Base {
 
 		var show_google_sso = config.sso && config.sso.enabled && (config.sso.provider == 'google');
 		var show_local_login = !config.sso || (config.sso.allow_local_login !== false);
+		var intro = show_google_sso ?
+			(show_local_login ? 'Continue with Google or use your local ' + config.name + ' account.' : 'Continue with Google to access your ' + config.name + ' account.') :
+			'Enter the username and password associated with your ' + config.name + ' account.';
 		var html = '';
-		html += '<form action="post">';
-		
-		html += '<div class="dialog inline">';
-			html += '<div class="dialog_title">User Login</div>';
-			html += '<div class="dialog_intro">Enter the username and password associated with your ' + config.name + ' account.</div>';
+		html += '<form method="post" onSubmit="event.preventDefault(); $P().doLogin();">';
+
+		html += '<div class="dialog inline login-dialog">';
+			html += '<div class="dialog_title">Sign in to ' + encode_entities(config.name) + '</div>';
+			html += '<div class="dialog_intro">' + encode_entities(intro) + '</div>';
 			html += '<div class="dialog_content">';
 			html += '<div class="box_content">';
+				html += '<div class="login-auth-shell">';
 
 				if (show_google_sso) {
-					html += '<div style="height:20px;"></div>';
-					html += '<center><a class="google-sso-btn" href="javascript:void(0)" onClick="$P().doGoogleSSO()"><div class="google-sso-icon"></div><span class="google-sso-text">' + encode_entities(config.sso.button_label || 'Sign in with Google') + '</span></a></center>';
-					if (show_local_login) html += '<div style="height:20px; border-bottom:1px solid var(--border-color);"></div>';
+					html += '<button type="button" class="google-sso-btn" onClick="$P().doGoogleSSO()"><span class="google-sso-icon" aria-hidden="true"></span><span class="google-sso-text">' + encode_entities(config.sso.button_label || 'Sign in with Google') + '</span></button>';
+					if (show_local_login) html += '<div class="login-auth-divider"><span>or</span></div>';
 				}
 
 				if (show_local_login) {
-					html += '<div style="height:20px;"></div>';
-				
-				// username
-				html += this.getFormRow({
-					label: 'Username:',
-					content: this.getFormText({
-						id: 'fe_login_username',
-						class: 'monospace',
-						spellcheck: 'false',
-						autocomplete: 'username',
-						value: app.getPref('username') || ''
-					})
-				});
-				
-				// password
-				html += this.getFormRow({
-					label: 'Password:',
-					content: this.getFormText({
-						id: 'fe_login_password',
-						type: 'password',
-						class: 'monospace',
-						spellcheck: 'false',
-						autocomplete: 'current-password'
-					}),
-					suffix: app.get_password_toggle_html()
-				});
+					html += '<div class="login-local-form">';
+
+					// username
+					html += this.getFormRow({
+						class: 'login-field',
+						label: '<label for="fe_login_username">Username</label>',
+						content: this.getFormText({
+							id: 'fe_login_username',
+							class: 'monospace',
+							spellcheck: 'false',
+							autocomplete: 'username',
+							'aria-label': 'Username',
+							value: app.getPref('username') || ''
+						})
+					});
+
+					// password
+					html += this.getFormRow({
+						class: 'login-field',
+						label: '<label for="fe_login_password">Password</label>',
+						content: this.getFormText({
+							id: 'fe_login_password',
+							type: 'password',
+							class: 'monospace',
+							spellcheck: 'false',
+							autocomplete: 'current-password',
+							'aria-label': 'Password'
+						}),
+						suffix: app.get_password_toggle_html()
+					});
+
+					html += '<div class="login-actions">';
+						html += '<button type="submit" class="button primary login-submit"><i class="mdi mdi-key" aria-hidden="true">&nbsp;</i>Login</button>';
+						html += '<button type="button" class="login-forgot-link" onClick="$P().navPasswordRecovery()">Forgot password?</button>';
+					html += '</div>';
+					html += '</div>';
 				}
 				else {
-					html += '<div class="caption" style="text-align:center; margin-top:20px;">Local login is disabled by SSO configuration.</div>';
+					html += '<div class="caption login-sso-caption">Local login is disabled by SSO configuration.</div>';
 				}
 
-			html += '</div>';
-			
-			if (show_local_login) {
-				html += '<div class="dialog_buttons">';
-					// if (config.free_accounts) {
-					// 	html += '<div class="button" onClick="$P().navCreateAccount()">Create Account...</div>';
-					// }
-					// html += '<div class="button mobile_hide" onClick="$P().cancelCreate()">Cancel</div>';
-					html += '<div class="button" onClick="$P().navPasswordRecovery()">Forgot Password...</div>';
-					html += '<div class="button primary" onClick="$P().doLogin()"><i class="mdi mdi-key">&nbsp;</i>Login</div>';
-				html += '</div>';
-			}
-		
-		html += '</div>'; // box_content
-		html += '</div>'; // dialog_content
+				html += '</div>'; // login-auth-shell
+			html += '</div>'; // box_content
+			html += '</div>'; // dialog_content
 		html += '</div>'; // dialog
 		html += '</form>';
-		
-		this.div.html( html ).buttonize();
-		
+
+		this.div.html( html );
+		app.buttonize( this.div, '.form_suffix_icon' );
+
 		setTimeout( function() {
 			if (show_local_login) {
 				$( app.getPref('username') ? '#fe_login_password' : '#fe_login_username' ).focus();
-
-				 $('#fe_login_username, #fe_login_password').keypress( function(event) {
-					if (event.keyCode == '13') { // enter key
-						event.preventDefault();
-						$P().doLogin();
-					}
-				} );
 			}
 		}, 1 );
 		

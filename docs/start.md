@@ -1,48 +1,48 @@
-# Getting Started with xyOps
+# Bắt Đầu Với PTOps
 
-This guide walks you from a fresh xyOps install to a few useful automations: a first job, job chaining, queue limits, failure web hooks, and a tiny workflow.
+Hướng dẫn này đưa bạn từ một bản cài PTOps mới đến vài automation hữu ích: job đầu tiên, chuỗi job (job chaining), limit hàng chờ (queue limit), web hook khi lỗi, và một workflow nhỏ.
 
-The goal here is not to cover every option.  The goal is to get you oriented, help you avoid the common setup traps, and show how the pieces fit together.
+Mục tiêu ở đây không phải là bao quát mọi tuỳ chọn. Mục tiêu là giúp bạn định hướng, tránh những cạm bẫy setup thường gặp, và cho thấy các phần ghép lại với nhau như thế nào.
 
-For deeper reference material, each section links to the full docs.
-
-
-## What You Will Build
-
-By the end of this guide, you will have:
-
-- A running xyOps conductor.
-- At least one server that can run jobs.
-- A "Hello World" event.
-- A second event triggered by the first event.
-- A basic job script that reports progress and output data.
-- A concurrency limit with queueing.
-- A web hook action that fires when a job fails.
-- A simple workflow with a trigger node, an event node, and an action node.
+Với tài liệu tham khảo chi tiết hơn, mỗi phần đều dẫn link tới docs đầy đủ.
 
 
-## A Few Terms First
+## Bạn Sẽ Xây Dựng Gì
 
-xyOps has a small set of core concepts:
+Đến cuối hướng dẫn này, bạn sẽ có:
 
-- **Conductor**: The primary xyOps server.  It hosts the UI, scheduler, API, and coordination logic.
-- **xySat**: The lightweight agent that runs on worker servers.  It executes jobs and sends monitoring metrics back to xyOps.
-- **Server**: A registered xySat worker, or the local xySat bundled with the conductor for testing.
-- **Event**: A reusable definition for launching one kind of job.
-- **Job**: One actual run of an event (other apps call this an "execution" or "task").
-- **Trigger**: A rule that starts a job or workflow, such as Manual, Schedule, Interval, or Single Shot.
-- **Action**: A reaction that runs when a job reaches a selected condition, such as start, success, error, or completion.  Actions can send email, fire a web hook, run another event, call an Action Plugin, and more.
-- **Limit**: A guardrail for jobs, such as maximum runtime, maximum concurrent jobs, or maximum queue size.
-- **Workflow**: A visual graph that connects triggers, events, jobs, actions, limits, and controllers.
-
-Most new automations should start as simple events.  Use workflows when you need visual orchestration, branching, fan-out, fan-in, or multi-step flows.
+- Một conductor PTOps đang chạy.
+- Ít nhất một server có thể chạy job.
+- Một event "Hello World".
+- Một event thứ hai được trigger bởi event đầu tiên.
+- Một job script cơ bản báo cáo progress và output data.
+- Một concurrency limit kèm queueing.
+- Một web hook action kích hoạt khi job lỗi.
+- Một workflow đơn giản với trigger node, event node, và action node.
 
 
-## Install xyOps
+## Vài Thuật Ngữ Trước
 
-For a first test install, Docker is the fastest path.  Pick a hostname that will resolve on your network and be reachable by any worker server you plan to add.
+PTOps có một tập nhỏ khái niệm cốt lõi:
 
-In the example below, replace `xyops01.internal.example.com` with your real conductor hostname.
+- **Conductor**: Server PTOps chính. Nó host UI, scheduler, API, và logic điều phối.
+- **xySat**: Agent nhẹ chạy trên worker server. Nó thực thi job và gửi số liệu giám sát về PTOps.
+- **Server**: Một xySat worker đã đăng ký, hoặc xySat local đi kèm conductor để test.
+- **Event**: Một định nghĩa có thể tái sử dụng để khởi chạy một loại job.
+- **Job**: Một lần chạy thực tế của event (các app khác gọi đây là "execution" hoặc "task").
+- **Trigger**: Một quy tắc khởi chạy job hoặc workflow, như Manual, Schedule, Interval, hoặc Single Shot.
+- **Action**: Một phản ứng chạy khi job đạt tới một điều kiện được chọn, như start, success, error, hoặc completion. Action có thể gửi email, bắn web hook, chạy event khác, gọi Action Plugin, và hơn nữa.
+- **Limit**: Một rào chắn cho job, như thời gian chạy tối đa, số job đồng thời tối đa, hoặc kích thước hàng chờ tối đa.
+- **Workflow**: Một đồ thị trực quan kết nối trigger, event, job, action, limit, và controller.
+
+Hầu hết automation mới nên bắt đầu ở dạng event đơn giản. Dùng workflow khi bạn cần điều phối trực quan, phân nhánh, fan-out, fan-in, hoặc luồng nhiều bước.
+
+
+## Cài Đặt PTOps
+
+Với lần cài thử đầu tiên, Docker là cách nhanh nhất. Chọn một hostname sẽ resolve được trên network của bạn và có thể truy cập được từ bất kỳ worker server nào bạn định thêm.
+
+Trong ví dụ dưới đây, thay `xyops01.internal.example.com` bằng hostname conductor thật của bạn.
 
 ```sh
 docker run \
@@ -64,177 +64,171 @@ docker run \
 	ghcr.io/pixlcore/xyops:latest
 ```
 
-Then open:
+Sau đó mở:
 
 ```text
 http://xyops01.internal.example.com:5522/
 ```
 
-The default administrator account is:
+Tài khoản administrator mặc định là:
 
 - **Username:** `admin`
 - **Password:** `admin`
 
-You will be prompted to change the password on first login.
+Bạn sẽ được yêu cầu đổi password ngay lần đăng nhập đầu tiên.
 
-See [Self-Hosting](hosting.md) for Docker Compose, manual installs, storage, TLS, and production recommendations.
+Xem [Self-Hosting](hosting.md) để biết về Docker Compose, cài đặt thủ công, storage, TLS, và các khuyến nghị cho production.
 
 
-## Set The Two Important URLs Correctly
+## Đặt Đúng Hai URL Quan Trọng
 
-There are two related settings that are easy to confuse.
+Có hai cài đặt liên quan dễ bị nhầm lẫn.
 
-### The Conductor Hostname
+### Hostname Của Conductor
 
-The conductor hostname is the network name of the xyOps server or container.  Worker servers need to connect to this name.
+Hostname của conductor là tên network của server hoặc container PTOps. Worker server cần kết nối tới tên này.
 
-This is very important:
+Điều này rất quan trọng:
 
-- The hostname must resolve in DNS, Tailscale, `/etc/hosts`, or whatever name system your network uses.
-- The resolved address must be reachable from every worker server.
-- Workers must be able to reach the conductor's web port and satellite socket port, typically `5522` and `5523`.
-- If you are using Docker, the container hostname should be the same stable, routable name.
-- The `XYOPS_masters` value must include the conductor hostname.  For a single-conductor install, it is just that one hostname.
-- Treat conductor hostnames as long-lived infrastructure names.  If you change them later, you may need to update conductor and worker configuration.
+- Hostname phải resolve được trong DNS, Tailscale, `/etc/hosts`, hoặc bất kỳ hệ thống tên nào network của bạn dùng.
+- Địa chỉ đã resolve phải truy cập được từ mọi worker server.
+- Worker phải truy cập được cổng web và cổng socket satellite của conductor, thường là `5522` và `5523`.
+- Nếu bạn dùng Docker, hostname của container nên là cùng một tên ổn định, có thể route tới.
+- Giá trị `XYOPS_masters` phải bao gồm hostname của conductor. Với bản cài một conductor, đó chỉ là một hostname duy nhất.
+- Coi hostname conductor như tên hạ tầng lâu dài. Nếu đổi sau này, bạn có thể cần cập nhật cấu hình conductor và worker.
 
-For example:
+Ví dụ:
 
 ```sh
 --hostname "xyops01.internal.example.com"
 -e XYOPS_masters="xyops01.internal.example.com"
 ```
 
-A quick test from a worker server should succeed:
+Hãy đảm bảo điều đó hoạt động trước khi thêm worker từ xa. Nhiều tính năng PTOps phụ thuộc vào việc conductor và worker có thể route tới nhau qua hostname.
 
-```sh
-curl http://xyops01.internal.example.com:5522/health
-```
+### Base App URL
 
-If this does not connect, fix that before adding remote workers.  Many xyOps features depend on conductors and workers being able to route to each other by hostname.
+`base_app_url` là URL hướng tới người dùng cho web app PTOps của bạn. Nó được dùng để tạo link đầy đủ (fully-qualified) ở những nơi như email, ticket, alert, và payload web hook.
 
-### The Base App URL
+**Quan trọng:** Đây *không phải* là host giao tiếp server-to-server.
 
-`base_app_url` is the user-facing URL for your xyOps web app.  It is used to generate fully-qualified links in places like emails, tickets, alerts, and web hook payloads.
-
-**Important:** This is *not* the server-to-server host.
-
-Set it to the URL humans should click:
+Đặt nó thành URL mà con người nên click:
 
 ```sh
 -e XYOPS_base_app_url="https://xyops.example.com"
 ```
 
-Examples:
+Ví dụ:
 
-| Situation | `base_app_url` |
+| Tình Huống | `base_app_url` |
 |----------|----------------|
-| Local test | `http://localhost:5522` |
-| Internal network | `http://xyops01.internal.example.com:5522` |
-| Public HTTPS behind a proxy | `https://xyops.example.com` |
+| Test local | `http://localhost:5522` |
+| Network nội bộ | `http://xyops01.internal.example.com:5522` |
+| HTTPS công khai sau proxy | `https://xyops.example.com` |
 
-If you are running behind a proxy, load balancer, Cloudflare Tunnel, or SSO gateway, there are more moving pieces involved.  Start with this guide for a local or direct internal setup, then see [Self-Hosting](hosting.md), [SSO Setup](sso.md), and [Tailscale](tailscale.md) for advanced hosting.
-
-
-## Add Your First Server
-
-If you set `XYOPS_xysat_local=true` during Docker startup, xyOps launches a local xySat agent in the conductor container.  That is enough to run your first jobs.
-
-To add another server:
-
-1. Open **Servers**.
-2. Click **Add Server**.
-3. Choose the target OS or Docker install option.
-4. Copy the generated install command.
-5. Run it on the worker server.
-
-The worker should appear online in the UI and begin streaming metrics.
-
-If the worker does not appear, check the conductor hostname and routing first.  The worker must be able to reach the conductor by the hostname configured during setup.
-
-See [Servers](servers.md) for automated provisioning, groups, user data, and server settings.
+Nếu bạn chạy sau proxy, load balancer, Cloudflare Tunnel, hoặc SSO gateway, sẽ có nhiều phần liên quan hơn. Bắt đầu với hướng dẫn này cho setup local hoặc nội bộ trực tiếp, sau đó xem [Self-Hosting](hosting.md), [SSO Setup](sso.md), và [Tailscale](tailscale.md) cho hosting nâng cao.
 
 
-## Create A Hello World Event
+## Thêm Server Đầu Tiên
 
-Events are the basic unit of automation in xyOps.  Each event says what to run, where to run it, when to run it, and what to do afterward.
+Nếu bạn đặt `XYOPS_xysat_local=true` khi khởi động Docker, PTOps sẽ chạy một agent xySat local trong container conductor. Vậy là đủ để chạy job đầu tiên của bạn.
 
-Create your first event:
+Để thêm server khác:
 
-1. Open **Events**.
-2. Click **New Event**.
-3. Set the title to "Hello World".
-4. Select the default "General" category.
-5. Select the **Shell Plugin**.
-6. Paste this script:
+1. Mở **Servers**.
+2. Nhấn **Add Server**.
+3. Chọn OS đích hoặc tuỳ chọn cài Docker.
+4. Sao chép lệnh cài đặt được tạo ra.
+5. Chạy nó trên worker server.
+
+Worker sẽ xuất hiện online trên UI và bắt đầu truyền số liệu.
+
+Nếu worker không xuất hiện, kiểm tra hostname của conductor và routing trước. Worker phải truy cập được conductor qua hostname đã cấu hình lúc setup.
+
+Xem [Servers](servers.md) để biết về cấp phát tự động, group, user data, và cài đặt server.
+
+
+## Tạo Event Hello World
+
+Event là đơn vị automation cơ bản trong PTOps. Mỗi event nói rõ cái gì sẽ chạy, chạy ở đâu, khi nào chạy, và làm gì sau đó.
+
+Tạo event đầu tiên của bạn:
+
+1. Mở **Events**.
+2. Nhấn **New Event**.
+3. Đặt tiêu đề là "Hello World".
+4. Chọn category "General" mặc định.
+5. Chọn **Shell Plugin**.
+6. Dán script này:
 
 ```sh
 #!/bin/sh
 
-# This text appears in the job log.
-echo "Hello from xyOps."
+# Đoạn text này xuất hiện trong job log.
+echo "Hello from PTOps."
 
-# This shorthand updates the live progress meter.
+# Cách viết tắt này cập nhật thanh progress trực tiếp.
 echo "25%"
 
-# Sleep for 5 seconds
+# Ngủ 5 giây
 sleep 5
 
-# You can also write full XYWP JSON messages from Shell Plugin scripts.
+# Bạn cũng có thể viết message JSON XYWP đầy đủ từ script Shell Plugin.
 echo '{ "xy": 1, "status": "Taking a short break...", "progress": 0.5 }'
 
-# Sleep for another 5 seconds
+# Ngủ thêm 5 giây
 sleep 5
 
-# This is just more normal log output.
+# Đây chỉ là output log thông thường thêm.
 echo "The job is almost done."
 
-# Exit 0 tells the Shell Plugin that the job succeeded.
+# Exit 0 báo cho Shell Plugin biết job đã thành công.
 exit 0
 ```
 
-Then:
+Sau đó:
 
-1. Select a target server or group.
-2. A **Manual** trigger should already be included and enabled.
-3. Save the event.
-4. Click **Run Now...**.
+1. Chọn server hoặc group đích.
+2. Trigger **Manual** nên đã có sẵn và được bật.
+3. Lưu event.
+4. Nhấn **Run Now...**.
 
-Open the job details page and look at the live log, progress meter, result code, runtime, and server metrics.
+Mở trang chi tiết job và xem log trực tiếp, thanh progress, mã kết quả, thời gian chạy, và số liệu server.
 
-The Shell Plugin is not limited to `/bin/sh`.  It can run any script that starts with a valid shebang line, including Node.js, Python, Perl, PHP, Ruby, Powershell, and more.
+Shell Plugin không bị giới hạn ở `/bin/sh`. Nó có thể chạy bất kỳ script bắt đầu bằng dòng shebang hợp lệ, gồm Node.js, Python, Perl, PHP, Ruby, Powershell, và hơn nữa.
 
-See [Events](events.md), [Triggers](triggers.md), and [Plugins](plugins.md) for the full details.
+Xem [Events](events.md), [Triggers](triggers.md), và [Plugins](plugins.md) để biết chi tiết đầy đủ.
 
 
-## Understand JSON Over STDIO
+## Hiểu JSON Qua STDIO
 
-The Shell Plugin is the easiest way to get started because it can use normal process exit codes and normal log output.  But it also supports the full [xyOps Wire Protocol](xywp.md), or XYWP: newline-delimited JSON over STDIN and STDOUT.
+Shell Plugin là cách dễ nhất để bắt đầu vì nó có thể dùng exit code thông thường và output log thông thường. Nhưng nó cũng hỗ trợ đầy đủ [PTOps Wire Protocol](xywp.md), hay XYWP: JSON phân dòng qua STDIN và STDOUT.
 
-At job start, xyOps sends one compact JSON document to your script on STDIN.  It includes the job ID, event ID, selected server, parameters, input data, input files, and more.
+Lúc job bắt đầu, PTOps gửi một tài liệu JSON gọn tới script của bạn qua STDIN. Nó bao gồm job ID, event ID, server đã chọn, parameter, input data, input file, và hơn nữa.
 
-Your script can write compact JSON messages to STDOUT.  Every protocol message should include `"xy": 1`.
+Script của bạn có thể viết message JSON gọn ra STDOUT. Mỗi message protocol nên bao gồm `"xy": 1`.
 
-Here is a Shell Plugin script written in Node.js.  The `#!/usr/bin/env node` shebang tells the Shell Plugin to run it with Node instead of `/bin/sh`:
+Đây là một script Shell Plugin viết bằng Node.js. Dòng shebang `#!/usr/bin/env node` báo cho Shell Plugin chạy nó bằng Node thay vì `/bin/sh`:
 
 ```js
 #!/usr/bin/env node
 
-// Read the single JSON job document from STDIN.
+// Đọc tài liệu JSON job duy nhất từ STDIN.
 const chunks = [];
 for await (const chunk of process.stdin) chunks.push(chunk);
 let job = JSON.parse( chunks.join('') );
 
-// Report a status message and progress while the job is still running.
+// Báo cáo message trạng thái và progress khi job vẫn đang chạy.
 console.log( JSON.stringify({
 	xy: 1,
 	progress: 0.25,
 	status: "Reading job input..."
 } ) );
 
-// Read user input passed from the UI, API, workflow, or previous job.
-let name = (job.input && job.input.data && job.input.data.name) || "xyOps";
+// Đọc input người dùng truyền từ UI, API, workflow, hoặc job trước đó.
+let name = (job.input && job.input.data && job.input.data.name) || "PTOps";
 
-// Send custom output data.  This can be passed to the next job.
+// Gửi output data tuỳ chỉnh. Cái này có thể được truyền cho job kế tiếp.
 console.log( JSON.stringify({
 	xy: 1,
 	data: {
@@ -243,15 +237,15 @@ console.log( JSON.stringify({
 	}
 } ) );
 
-// Update progress again.
+// Cập nhật progress lần nữa.
 console.log( JSON.stringify({
 	xy: 1,
 	progress: 0.75,
 	status: "Finishing..."
 } ) );
 
-// This final message completes the job successfully.
-// Send it last, because xyOps treats any message with "code" as final.
+// Message cuối này hoàn tất job thành công.
+// Gửi nó cuối cùng, vì PTOps coi bất kỳ message có "code" là cuối cùng.
 console.log( JSON.stringify({
 	xy: 1,
 	code: 0,
@@ -259,121 +253,118 @@ console.log( JSON.stringify({
 } ) );
 ```
 
-To report an error, send a final message with a non-zero code:
+Để báo lỗi, gửi một message cuối với code khác 0:
 
 ```json
 { "xy": 1, "code": 999, "description": "Failed to connect to the database." }
 ```
 
-Common output messages:
+Các output message thường dùng:
 
-| What You Want | Example |
+| Bạn Muốn Gì | Ví Dụ |
 |---------------|---------|
 | Progress | `{ "xy": 1, "progress": 0.5 }` |
-| Live status | `{ "xy": 1, "status": "Processing records..." }` |
-| Custom output data | `{ "xy": 1, "data": { "count": 42 } }` |
-| Attach output files | `{ "xy": 1, "files": [ "*.csv" ] }` |
-| Success | `{ "xy": 1, "code": 0 }` |
-| Error | `{ "xy": 1, "code": 999, "description": "Something failed." }` |
+| Trạng thái trực tiếp | `{ "xy": 1, "status": "Processing records..." }` |
+| Output data tuỳ chỉnh | `{ "xy": 1, "data": { "count": 42 } }` |
+| Gắn output file | `{ "xy": 1, "files": [ "*.csv" ] }` |
+| Thành công | `{ "xy": 1, "code": 0 }` |
+| Lỗi | `{ "xy": 1, "code": 999, "description": "Something failed." }` |
 
-Anything that is not recognized as an XYWP message is captured as plain log output.  Also, STDERR is captured as raw text, not protocol JSON.
+Bất cứ thứ gì không được nhận diện là message XYWP sẽ được ghi lại thành output log thông thường. Ngoài ra, STDERR được ghi lại dưới dạng text thô, không phải JSON protocol.
 
-Writing your own reusable Event Plugin is also an option, but you do not need to start there.  Custom Event Plugins are best when you want to package reusable components, define Plugin Parameters for event authors, or share a polished integration with other xyOps users.
+Viết Event Plugin có thể tái sử dụng của riêng bạn cũng là một tuỳ chọn, nhưng bạn không cần bắt đầu từ đó. Event Plugin tuỳ chỉnh phù hợp nhất khi bạn muốn đóng gói thành phần có thể tái sử dụng, định nghĩa Plugin Parameter cho người viết event, hoặc chia sẻ một tích hợp hoàn chỉnh với người dùng PTOps khác.
 
-See [xyOps Wire Protocol](xywp.md) and [Plugins](plugins.md#job-output) for the full protocol.
+Xem [PTOps Wire Protocol](xywp.md) và [Plugins](plugins.md#job-output) để biết protocol đầy đủ.
 
+## Chuỗi Hai Event Không Cần Workflow
 
-## Chain Two Events Without A Workflow
+Bạn không cần workflow chỉ để chạy một event sau một event khác. Dùng action **Run Event**.
 
-You do not need a workflow just to run one event after another.  Use a **Run Event** action.
+Tạo event thứ hai:
 
-Create a second event:
-
-1. Open **Events**.
-2. Click **New Event**.
-3. Set the title to "Hello Followup".
-4. Choose the **Shell Plugin**.
-5. Paste this script:
+1. Mở **Events**.
+2. Nhấn **New Event**.
+3. Đặt tiêu đề là "Hello Followup".
+4. Chọn **Shell Plugin**.
+5. Dán script này:
 
 ```sh
 #!/bin/sh
 
-# This event is launched by the first event.
+# Event này được khởi chạy bởi event đầu tiên.
 echo "The followup event is running."
 
-# If the previous job produced output data, xyOps can pass it along.
-# For simple Shell Plugin scripts, you can usually start with env vars,
-# plugin params, or plain log output before writing a custom plugin.
+# Nếu job trước có output data, PTOps có thể truyền nó tiếp.
+# Với script Shell Plugin đơn giản, bạn thường có thể bắt đầu bằng env var,
+# plugin param, hoặc output log thuần trước khi viết plugin tuỳ chỉnh.
 
 exit 0
 ```
 
-6. Select a target server or group.
-7. Leave the default **Manual** trigger enabled.
-8. Save the event.
+6. Chọn server hoặc group đích.
+7. Giữ trigger **Manual** mặc định được bật.
+8. Lưu event.
 
-Now edit the first `Hello World` event:
+Giờ chỉnh sửa event `Hello World` đầu tiên:
 
-1. Open the **Actions** section.
-2. Add an action.
-3. Set **Condition** to "On Success".
-4. Set **Type** to "Run Event".
-5. Select "Hello Followup" as the event to run.
-6. Save.
+1. Mở phần **Actions**.
+2. Thêm một action.
+3. Đặt **Condition** thành "On Success".
+4. Đặt **Type** thành "Run Event".
+5. Chọn "Hello Followup" làm event sẽ chạy.
+6. Lưu.
 
-Run the "Hello World" event again.  When it succeeds, xyOps will launch "Hello Followup".
+Chạy lại event "Hello World". Khi nó thành công, PTOps sẽ khởi chạy "Hello Followup".
 
-This is the simplest way to build a linear chain:
+Đây là cách đơn giản nhất để xây một chuỗi tuyến tính:
 
 ```text
-Event A succeeds -> Run Event action -> Event B runs
+Event A thành công -> action Run Event -> Event B chạy
 ```
 
-Use this pattern for simple pipelines.  Move to workflows when you need visual branching, joins, fan-out, or more complex control flow.
+Dùng mẫu này cho pipeline đơn giản. Chuyển sang workflow khi bạn cần phân nhánh trực quan, gộp (join), fan-out, hoặc luồng điều khiển phức tạp hơn.
 
-See [Actions](actions.md#run-event) for all Run Event options.
+Xem [Actions](actions.md#run-event) để biết mọi tuỳ chọn Run Event.
 
+## Thêm Limit Concurrency Và Queue
 
-## Add Concurrency And Queue Limits
+Theo mặc định, nếu một job không thể bắt đầu vì event của nó đã đạt giới hạn concurrency, nó sẽ lỗi ngay với error. Bạn nên kết hợp **Max Concurrent Jobs** với **Max Queue Limit** khi muốn job vào hàng chờ.
 
-By default, if a job cannot start because its event is already at the concurrency limit, it will immediately fail with an error.  You should pair **Max Concurrent Jobs** with **Max Queue Limit** when you want jobs to queue.
+Ví dụ, giả sử bạn muốn một event chỉ chạy một job tại một thời điểm, với tối đa 25 job đang chờ.
 
-For example, suppose you want an event to run only one job at a time, with up to 25 waiting jobs.
+Chỉnh sửa event:
 
-Edit the event:
+1. Mở trình chỉnh sửa event.
+2. Mở phần **Limits**.
+3. Thêm **Max Concurrent Jobs**.
+4. Đặt amount thành `1`.
+5. Thêm **Max Queue Limit**.
+6. Đặt amount thành `25`.
+7. Lưu.
 
-1. Open the event editor.
-2. Open the **Limits** section.
-3. Add **Max Concurrent Jobs**.
-4. Set the amount to `1`.
-5. Add **Max Queue Limit**.
-6. Set the amount to `25`.
-7. Save.
+Điều này có nghĩa là:
 
-This means:
+- Nếu không có job nào đang chạy, job mới bắt đầu.
+- Nếu một job đã đang chạy, job mới chờ trong hàng chờ của event.
+- Nếu 25 job đã đang chờ, lần khởi chạy tiếp theo bị từ chối.
 
-- If no job is running, the new job starts.
-- If one job is already running, the new job waits in the event queue.
-- If 25 jobs are already waiting, the next launch is rejected.
+Cặp limit này cũng quan trọng khi job có thể khởi chạy nhanh hơn worker của bạn có thể tiếp nhận, như trigger web hook, workflow repeat, workflow multiplex, hoặc schedule bận rộn.
 
-This pair is also important when jobs can launch faster than your workers can accept them, such as web hook triggers, repeat workflows, multiplex workflows, or busy schedules.
+Xem [Limits](limits.md#max-concurrent-jobs) và [Limits](limits.md#max-queue-limit) để biết hành vi đầy đủ.
 
-See [Limits](limits.md#max-concurrent-jobs) and [Limits](limits.md#max-queue-limit) for the full behavior.
+## Bắn Web Hook Khi Job Lỗi
 
+Web hook là các HTTP request gửi ra ngoài có thể tái sử dụng. Bạn tạo web hook một lần, sau đó gắn nó vào event hoặc alert bằng một action.
 
-## Fire A Web Hook When A Job Fails
+Trước tiên tạo một web hook:
 
-Web hooks are reusable outbound HTTP requests.  You create the web hook once, then attach it to events or alerts with an action.
-
-First create a web hook:
-
-1. Open **Web Hooks**.
-2. Click **New Web Hook**.
-3. Give it a title, such as "Ops Failure Hook".
-4. Set the method to `POST`.
-5. Set the URL to your endpoint.
-6. Add a `Content-Type: application/json` header.
-7. Use a JSON body like this:
+1. Mở **Web Hooks**.
+2. Nhấn **New Web Hook**.
+3. Đặt tiêu đề, ví dụ "Ops Failure Hook".
+4. Đặt method thành `POST`.
+5. Đặt URL thành endpoint của bạn.
+6. Thêm header `Content-Type: application/json`.
+7. Dùng body JSON như thế này:
 
 ```json
 {
@@ -386,17 +377,17 @@ First create a web hook:
 }
 ```
 
-Then attach it to an event:
+Sau đó gắn nó vào một event:
 
-1. Open the event editor.
-2. Open the **Actions** section.
-3. Add an action.
-4. Set **Condition** to "On Any Error".
-5. Set **Type** to "Web Hook".
-6. Select "Ops Failure Hook".
-7. Save.
+1. Mở trình chỉnh sửa event.
+2. Mở phần **Actions**.
+3. Thêm một action.
+4. Đặt **Condition** thành "On Any Error".
+5. Đặt **Type** thành "Web Hook".
+6. Chọn "Ops Failure Hook".
+7. Lưu.
 
-To test it, temporarily change your Shell Plugin script to fail:
+Để test, tạm thời đổi script Shell Plugin của bạn để lỗi:
 
 ```sh
 #!/bin/sh
@@ -405,30 +396,29 @@ echo "This job is going to fail for testing."
 exit 1
 ```
 
-Run the event.  The job should fail, and the web hook action should fire.  The job details page will show action activity and web hook diagnostics.
+Chạy event. Job nên lỗi, và action web hook sẽ kích hoạt. Trang chi tiết job sẽ hiện hoạt động action và thông tin chẩn đoán web hook.
 
-See [Web Hooks](webhooks.md) and [Actions](actions.md#web-hook) for templating, secrets, retries, and troubleshooting.
+Xem [Web Hooks](webhooks.md) và [Actions](actions.md#web-hook) để biết về templating, secrets, retry, và khắc phục sự cố.
 
+## Xây Dựng Một Workflow Nhỏ
 
-## Build A Tiny Workflow
+Workflow là đồ thị trực quan. Chúng hữu ích khi automation cần được nhìn thấy và chỉnh sửa dưới dạng luồng.
 
-Workflows are visual graphs.  They are useful when the automation needs to be seen and edited as a flow.
+Tạo một workflow nhỏ:
 
-Create a small workflow:
+1. Mở **Workflows**.
+2. Nhấn **New Workflow**.
+3. Dùng node trigger **Manual** mặc định.
+4. Thêm một node **Event**.
+5. Chọn event "Hello World" của bạn.
+6. Kết nối output của node trigger (bên phải) với input của node event (bên trái).
+7. Thêm một node **Action**.
+8. Chọn một action, ví dụ Web Hook hoặc Email.
+9. Kết nối output của node event (bên phải) với node action (bên trái).
+10. Nhấn vào wire từ node event tới node action và đặt condition, ví dụ "On Any Error" hoặc "On Success".
+11. Lưu và chạy workflow.
 
-1. Open **Workflows**.
-2. Click **New Workflow**.
-3. Use the default **Manual** trigger node.
-4. Add an **Event** node.
-5. Select your "Hello World" event.
-6. Connect the trigger node output (right side) to the event node input (left side).
-7. Add an **Action** node.
-8. Choose an action, such as Web Hook or Email.
-9. Connect the event node output (right side) to the action node (left side).
-10. Click the wire from the event node to the action node and set the condition, such as "On Any Error" or "On Success".
-11. Save and run the workflow.
-
-The basic shape is:
+Hình dạng cơ bản là:
 
 ```text
 +----------------+     +-------------------+     +--------+
@@ -436,30 +426,29 @@ The basic shape is:
 +----------------+     +-------------------+     +--------+
 ```
 
-If you attach a **Limit** node, connect it to the event node's South pole.  For example, attach Max Concurrent Jobs and Max Queue Limit to control fan-out.
+Nếu bạn gắn một node **Limit**, kết nối nó vào cực Nam (South pole) của node event. Ví dụ, gắn Max Concurrent Jobs và Max Queue Limit để kiểm soát fan-out.
 
-A few workflow tips:
+Vài mẹo workflow:
 
-- New wires from event and job nodes mean "continue when this job succeeds" by default, but you can click the icon to change the condition.
-- Event and job nodes run in parallel by default if multiple paths are active.
-- Action nodes do not continue the flow.  They attach a reaction to the event or job node.
-- Limit nodes do not continue the flow.  They attach guardrails and/or configuration to the event or job node.
-- For simple "run B after A succeeds" chains, a Run Event action may be easier than a workflow.
+- Wire mới từ node event và job mặc định nghĩa là "tiếp tục khi job này thành công", nhưng bạn có thể nhấn icon để đổi condition.
+- Node event và job chạy song song theo mặc định nếu nhiều đường đang hoạt động.
+- Node action không tiếp tục luồng. Chúng gắn một phản ứng vào node event hoặc job.
+- Node limit không tiếp tục luồng. Chúng gắn rào chắn và/hoặc cấu hình vào node event hoặc job.
+- Với chuỗi đơn giản "chạy B sau khi A thành công", một action Run Event có thể dễ hơn workflow.
 
-See [Workflows](workflows.md) for node types, wire conditions, controllers, and data passing.
+Xem [Workflows](workflows.md) để biết loại node, wire condition, controller, và truyền dữ liệu.
 
+## Bước Tiếp Theo
 
-## Where To Go Next
+Khi phần cơ bản đã hoạt động, các tài liệu sau là điểm dừng tốt tiếp theo:
 
-Once the basics are working, these docs are good next stops:
+- [Self-Hosting](hosting.md): Cài đặt production, TLS, Docker Compose, storage, và setup multi-conductor.
+- [Events](events.md): Mô hình event đầy đủ.
+- [Triggers](triggers.md): Manual, schedule, interval, single-shot, incoming web hook, range, blackout window, và catch-up.
+- [Actions](actions.md): Email, web hook, Run Event, channel, ticket, snapshot, và hơn nữa.
+- [Limits](limits.md): Runtime limit, queueing, retry, concurrency, và giới hạn hàng ngày.
+- [Workflows](workflows.md): Điều phối trực quan, controller, wire condition, và luồng dữ liệu.
+- [PTOps Wire Protocol](xywp.md): Protocol JSON qua STDIO để viết plugin.
+- [Plugins](plugins.md): Plugin có sẵn và phát triển plugin tuỳ chỉnh.
 
-- [Self-Hosting](hosting.md): Production installs, TLS, Docker Compose, storage, and multi-conductor setups.
-- [Events](events.md): The complete event model.
-- [Triggers](triggers.md): Manual, schedule, interval, single-shot, incoming web hooks, ranges, blackout windows, and catch-up.
-- [Actions](actions.md): Email, web hooks, Run Event, channels, tickets, snapshots, and more.
-- [Limits](limits.md): Runtime limits, queueing, retries, concurrency, and daily caps.
-- [Workflows](workflows.md): Visual orchestration, controllers, wire conditions, and data flow.
-- [xyOps Wire Protocol](xywp.md): The JSON over STDIO protocol for writing plugins.
-- [Plugins](plugins.md): Built-in plugins and custom plugin development.
-
-Start small, get one event running reliably, then add triggers, actions, limits, and workflows as your automation grows.
+Bắt đầu nhỏ, cho một event chạy ổn định, sau đó thêm trigger, action, limit, và workflow khi automation của bạn phát triển.

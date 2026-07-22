@@ -1,67 +1,65 @@
 # Tickets
 
-## Overview
+## Tổng Quan
 
-Tickets in xyOps provide a lightweight, integrated way to track issues, releases, changes, incidents, and any operational work that benefits from an audit trail, comments, files, and automation. Tickets live alongside jobs, alerts, servers, and workflows, and can both react to the system (auto-created from jobs or alerts) and drive the system (run events/jobs directly from a ticket).
+Tickets trong PTOps cung cấp cách nhẹ nhàng, tích hợp để theo dõi issue, release, thay đổi, sự cố, và bất kỳ công việc vận hành nào cần audit trail, comment, file, và automation. Tickets tồn tại song song với job, alert, server, và workflow, và có thể vừa phản ứng với hệ thống (tự tạo từ job hoặc alert) vừa điều khiển hệ thống (chạy event/job trực tiếp từ ticket).
 
+## Thuộc Tính
 
-## Properties
+Tickets là các bản ghi JSON đơn giản với vài trường cốt lõi và tùy chọn. Schema đầy đủ nằm ở [Ticket](data.md#ticket). Các thuộc tính chính được tóm tắt ở đây.
 
-Tickets are simple JSON records with a few core and optional fields. The full schema is documented at [Ticket](data.md#ticket). Key properties are summarized here.
+- `subject`: Tóm tắt/tiêu đề ngắn. HTML bị loại bỏ.
+- `body`: Nội dung Markdown cho ticket. Hữu ích cho runbook, context từ job/alert, và checklist.
+- `type`: Một trong issue, feature, release, change, maintenance, question, other. Chỉ ảnh hưởng đến hiển thị; chọn loại phù hợp nhất với workflow của bạn.
+- `status`: Một trong draft, open, closed.
+  - `draft`: Chặn toàn bộ email thông báo. Dùng khi soạn nháp mà không muốn báo cho ai.
+  - `open`: Trạng thái ticket đang hoạt động bình thường.
+  - `closed`: Đã hoàn thành/giải quyết. Việc đóng ticket được ghi vào lịch sử thay đổi và có thể tìm kiếm.
+- `assignees`: Mảng username chịu trách nhiệm về ticket. Nhận email cập nhật và thông báo quá hạn.
+- `cc`: Mảng username cũng nhận email cập nhật (không nhận thông báo quá hạn).
+- `notify`: Mảng địa chỉ email tùy chỉnh nhận cập nhật (không nhận thông báo quá hạn). Hữu ích cho danh sách nhóm như `ops-team@company.com`.
+- `category`: [Category.id](data.md#category-id) tùy chọn. Tự động đặt khi ticket được tạo từ job để khớp category của job.
+- `tags`: Mảng [Tag.id](data.md#tag-id). Tự động đặt từ tag của job gốc khi tự tạo.
+- `server`: [Server.id](data.md#server-id) tùy chọn. Tự động đặt khi tạo từ job/alert có tham chiếu server.
+- `due`: Ngày hạn tùy chọn (Unix giây). Sau khi qua ngày này, thông báo quá hạn hàng ngày sẽ được gửi email cho assignee.
+- `files`: Mảng file được tải lên gắn vào ticket. File được liệt kê trên trang ticket và truyền làm input cho job chạy từ các event của ticket.
+- `events`: Danh sách các event stub có thể chạy job từ ticket. Mỗi event có thể override targets, thuật toán chọn, tags, và giá trị tham số mặc định.
+- `changes`: Lịch sử thay đổi và comment. Bao gồm các mục "change" có cấu trúc và mục "comment".
 
-- `subject`: Short summary/title. HTML is stripped.
-- `body`: Markdown content for the ticket. Useful for runbooks, context from jobs/alerts, and checklists.
-- `type`: One of issue, feature, release, change, maintenance, question, other. Controls presentation only; choose what best fits your workflow.
-- `status`: One of draft, open, closed.
-  - `draft`: Suppresses all email notifications. Use for drafting without notifying anyone.
-  - `open`: Normal active ticket state.
-  - `closed`: Completed/resolved. Closing is recorded in change history and can be searched.
-- `assignees`: Array of usernames responsible for the ticket. Receive update emails and overdue notices.
-- `cc`: Array of usernames to also receive update emails (no overdue notices).
-- `notify`: Array of custom email addresses for updates (no overdue notices). Useful for team lists like `ops-team@company.com`.
-- `category`: Optional [Category.id](data.md#category-id). Auto-set when tickets are created from jobs to match the job's category.
-- `tags`: Array of [Tag.id](data.md#tag-id)s. Auto-set from the source job's tags when auto-created.
-- `server`: Optional [Server.id](data.md#server-id). Auto-set when created from jobs/alerts that reference a server.
-- `due`: Optional due date (Unix seconds). After the date passes, daily overdue notices are emailed to assignees.
-- `files`: Array of uploaded files attached to the ticket. Files are listed on the ticket page and passed as inputs to jobs launched from the ticket's events.
-- `events`: A list of event stubs that can run jobs from the ticket. Each event may override targets, selection algorithm, tags, and parameter defaults.
-- `changes`: The change and comment history. Includes structured "change" entries and "comment" entries.
+## Tạo Ticket
 
+Bạn có thể tạo ticket thủ công, qua API, và tự động qua action của job/alert.
 
-## Creating Tickets
+### Thủ Công
 
-You can create tickets manually, through the API, and automatically via job/alert actions.
-
-### Manually
-
-- Click "New Ticket" in the sidebar.
-- Fill subject, body (Markdown), type, status, category, server, assignees, cc, notify, tags, and due.
-- Attach files if needed (these appear under Ticket Files and will be passed to jobs launched from the ticket).
-- Save as Draft to suppress notifications until ready.
+- Nhấn "New Ticket" trên sidebar.
+- Điền subject, body (Markdown), type, status, category, server, assignees, cc, notify, tags, và due.
+- Gắn file nếu cần (các file này sẽ hiện dưới Ticket Files và được truyền vào job chạy từ ticket).
+- Lưu dưới dạng Draft để chặn thông báo cho đến khi sẵn sàng.
 
 ### API
 
-Use [create_ticket](api.md#create_ticket) to create tickets programmatically. You may post JSON or multipart/form-data (to upload files). See [API](api.md) for full details and examples.
+Dùng [create_ticket](api.md#create_ticket) để tạo ticket bằng chương trình. Bạn có thể gửi JSON hoặc multipart/form-data (để tải file lên). Xem [API](api.md) để biết chi tiết và ví dụ đầy đủ.
 
-- JSON: `POST /api/app/create_ticket/v1` with the ticket fields.
-- File upload: Use `multipart/form-data` with a `json` field containing the ticket JSON string, plus one or more file fields to attach.
+- JSON: `POST /api/app/create_ticket/v1` với các trường ticket.
+- Tải file: Dùng `multipart/form-data` với trường `json` chứa chuỗi JSON của ticket, cộng thêm một hoặc nhiều trường file để gắn.
 
-Related APIs:
+Các API liên quan:
 
-- [update_ticket](api.md#update_ticket): Shallow-merge updates; server detects and records changes.
-- [add_ticket_change](api.md#add_ticket_change) and [update_ticket_change](api.md#update_ticket_change): Add/edit/delete comments or change entries.
-- [upload_user_ticket_files](api.md#upload_user_ticket_files): Upload and attach files to ticket.
-- [delete_ticket_file](api.md#delete_ticket_file): Remove an attached file.
-- [delete_ticket](api.md#delete_ticket): Permanently delete a ticket.
-- [search_tickets](api.md#search_tickets): Search with pagination and sorting; supports compact mode for grids.
+- [update_ticket](api.md#update_ticket): Cập nhật shallow-merge; server tự phát hiện và ghi lại thay đổi.
+- [add_ticket_change](api.md#add_ticket_change) và [update_ticket_change](api.md#update_ticket_change): Thêm/sửa/xóa comment hoặc mục thay đổi.
+- [upload_user_ticket_files](api.md#upload_user_ticket_files): Tải lên và gắn file vào ticket.
+- [delete_ticket_file](api.md#delete_ticket_file): Xóa file đã gắn.
+- [delete_ticket](api.md#delete_ticket): Xóa ticket vĩnh viễn.
+- [search_tickets](api.md#search_tickets): Tìm kiếm với pagination và sắp xếp; hỗ trợ chế độ compact cho grid.
 
-### New Ticket Template
+### Mẫu Ticket Mới (New Ticket Template)
 
-You can set defaults for new tickets using the [client.new_ticket_template](config.md#client-new_ticket_template) configuration object.  This is useful when your team wants every new ticket to start with common metadata, a standard due date, or a global notification list.
+Bạn có thể đặt giá trị mặc định cho ticket mới bằng cấu hình [client.new_ticket_template](config.md#client-new_ticket_template). Điều này hữu ích khi team muốn mọi ticket mới bắt đầu với metadata chung, ngày hạn chuẩn, hoặc danh sách thông báo toàn cục.
 
-The template applies to tickets created manually in the UI, and parts of it are also used by tickets created from job and alert actions.  Specifically, ticket actions inherit `cc`, `notify`, and `due` from the template, unless the action supplies its own due date.
+Mẫu này áp dụng cho ticket được tạo thủ công trên UI, và một phần của nó cũng được dùng bởi ticket tạo từ action của job và alert. Cụ thể, action tạo ticket kế thừa `cc`, `notify`, và `due` từ mẫu, trừ khi action tự cung cấp ngày hạn riêng.
 
-Here is a simple example:
+Ví dụ đơn giản:
 
 ```json
 "new_ticket_template": {
@@ -75,17 +73,17 @@ Here is a simple example:
 }
 ```
 
-Common options include:
+Các tùy chọn phổ biến bao gồm:
 
-- `assignees`: Default list of user IDs assigned to manually-created tickets.
-- `cc`: Default list of xyOps usernames who should receive ticket update emails.
-- `notify`: Default list of custom email addresses that should receive ticket update emails.
-- `tags`: Default list of tag IDs applied to manually-created tickets.
-- `type`: Default ticket type, such as `issue`, `change`, or `maintenance`.
-- `status`: Default ticket status, usually `open` or `draft`.
-- `due`: Default due date.  This may be an absolute Unix epoch time, or a relative date delta such as `"1 day"`, `"3 days"`, `"1 week"`, or `"1d"`.
+- `assignees`: Danh sách user ID mặc định được assign cho ticket tạo thủ công.
+- `cc`: Danh sách username PTOps mặc định nhận email cập nhật ticket.
+- `notify`: Danh sách địa chỉ email tùy chỉnh mặc định nhận email cập nhật ticket.
+- `tags`: Danh sách tag ID mặc định áp dụng cho ticket tạo thủ công.
+- `type`: Loại ticket mặc định, ví dụ `issue`, `change`, hoặc `maintenance`.
+- `status`: Trạng thái ticket mặc định, thường là `open` hoặc `draft`.
+- `due`: Ngày hạn mặc định. Có thể là thời gian Unix epoch tuyệt đối, hoặc một khoảng thời gian tương đối như `"1 day"`, `"3 days"`, `"1 week"`, hoặc `"1d"`.
 
-For example, to copy an operations manager on all new tickets, set:
+Ví dụ, để CC một ops manager vào mọi ticket mới, đặt:
 
 ```json
 "new_ticket_template": {
@@ -93,7 +91,7 @@ For example, to copy an operations manager on all new tickets, set:
 }
 ```
 
-To send all ticket update emails to an outside mailing list, use `notify`:
+Để gửi tất cả email cập nhật ticket đến một mailing list ngoài, dùng `notify`:
 
 ```json
 "new_ticket_template": {
@@ -101,7 +99,7 @@ To send all ticket update emails to an outside mailing list, use `notify`:
 }
 ```
 
-To make every new ticket due three days after it is created, set:
+Để mọi ticket mới có hạn ba ngày sau khi tạo, đặt:
 
 ```json
 "new_ticket_template": {
@@ -109,181 +107,164 @@ To make every new ticket due three days after it is created, set:
 }
 ```
 
-When a ticket has a due date and remains open past that date, xyOps sends daily overdue reminder emails to ticket assignees.  Ticket update emails still go to assignees, `cc` users, and `notify` email addresses.
+Khi ticket có ngày hạn và vẫn mở sau ngày đó, PTOps sẽ gửi email nhắc quá hạn hàng ngày cho assignee của ticket. Email cập nhật ticket vẫn gửi cho assignee, người dùng trong `cc`, và địa chỉ email trong `notify`.
 
-### Job Action
+### Action Từ Job
 
-Jobs can create tickets on start or completion based on outcome or tags. Add a "Create Ticket" action to an event, workflow node, or via category/universal defaults. When fired:
+Job có thể tạo ticket khi bắt đầu hoặc hoàn thành dựa trên kết quả hoặc tag. Thêm action "Create Ticket" vào một event, node workflow, hoặc qua mặc định của category/universal. Khi kích hoạt:
 
-- The ticket body is auto-generated (template: job) with useful context (job details, performance, log excerpt, links).
-- Category, tags, and server fields are auto-populated from the job when applicable.
-- The ticket can inherit default `cc`, `notify`, and `due` values from `client.new_ticket_template`.
-- The new ticket is added to the originating job for traceability.
+- Nội dung ticket được tự động tạo (mẫu: job) với context hữu ích (chi tiết job, hiệu năng, trích đoạn log, link).
+- Category, tags, và trường server được tự động điền từ job khi phù hợp.
+- Ticket có thể kế thừa giá trị mặc định `cc`, `notify`, và `due` từ `client.new_ticket_template`.
+- Ticket mới được thêm vào job gốc để dễ truy vết.
 
-See [Actions](actions.md) for action configuration.
+Xem [Actions](actions.md) để biết cách cấu hình action.
 
-### Alert Actions
+### Action Từ Alert
 
-Alerts can create tickets when an alert fires (or clears, if desired). Add a "Create Ticket" alert action. When fired:
+Alert có thể tạo ticket khi alert kích hoạt (hoặc khi clear, nếu muốn). Thêm action alert "Create Ticket". Khi kích hoạt:
 
-- The ticket body is auto-generated (template: alert) with server and alert context, links to the alert and server, and optionally active job summaries.
-- Server is populated from the firing server; tags can be set from the action.
-- The ticket can inherit default `cc`, `notify`, and `due` values from `client.new_ticket_template`.
-- The new ticket is added to the alert invocation record.
+- Nội dung ticket được tự động tạo (mẫu: alert) với context server và alert, link đến alert và server, và tùy chọn tóm tắt các job đang hoạt động.
+- Server được điền từ server kích hoạt; tags có thể đặt từ action.
+- Ticket có thể kế thừa giá trị mặc định `cc`, `notify`, và `due` từ `client.new_ticket_template`.
+- Ticket mới được thêm vào bản ghi alert invocation.
 
+## Event Của Ticket
 
-## Ticket Events
+Event của ticket gắn các event (job) có thể chạy vào một ticket cùng override tham số tùy chọn. Chỉ cần nhấn nút "Add Event" và chọn một event.
 
-Ticket events attach runnable events (jobs) to a ticket with optional parameter overrides.  Just click the "Add Event" button and select an event.
+Từ giao diện ticket bạn có thể chạy bất kỳ event đã gắn nào. Khi một job được khởi chạy từ ticket:
 
-From the ticket view you can run any attached event. When a job is launched from a ticket:
+- Ticket được liên kết với job.
+- Mọi file của ticket được truyền làm file input của job.
+- File tạo ra từ các job trước đó chạy từ ticket cũng có thể được liên kết vào các lần chạy sau từ giao diện ticket.
 
-- The ticket is associated to the job.
-- Any ticket files are passed as job input files.
-- Files produced by previous ticket-launched jobs can also be chained into subsequent runs from the ticket view.
+Điều này khiến ticket trở thành một control plane mạnh mẽ cho CI/CD: tạo ticket cho một release, gắn các event deploy/test/rollback, tải artifact lên ticket, sau đó chạy job từ ticket và giữ toàn bộ lịch sử tập trung một nơi.
 
-This makes tickets a powerful control plane for CI/CD: create a ticket for a release, attach deploy/test/rollback events, upload artifacts to the ticket, then run jobs from the ticket and keep the entire history centralized.
+## File Của Ticket
 
+- Gắn file trên UI hoặc tải lên qua API khi tạo ticket. File được lưu ở phía server và liệt kê trên ticket.
+- File gắn vào ticket tự động được cung cấp cho job chạy từ các event của ticket.
+- File có thể bị xóa khỏi ticket; việc xóa sẽ xóa cả bản ghi và đối tượng đã lưu.
+- Thời hạn hết hiệu lực của file được kiểm soát bởi cấu hình (xem [file_expiration](config.md#file_expiration)). File hết hạn sẽ tự động được dọn dẹp.
 
-## Ticket Files
+## Comment và Thay Đổi
 
-- Attach files in the UI or upload via API when creating a ticket. Files are stored server-side and listed on the ticket.
-- Files attached to a ticket are automatically provided to jobs launched from the ticket's events.
-- Files can be removed from the ticket; deletion removes the record and the stored object.
-- File expiration is governed by configuration (see [file_expiration](config.md#file_expiration)). Expired files are cleaned up automatically.
+Bất kỳ người dùng có privilege [edit_tickets](privileges.md#edit_tickets) đều có thể thêm comment. Comment được lưu trong changes với type comment, và hỗ trợ định dạng Markdown.
 
+- **Lịch sử thay đổi**: Việc sửa các trường chính (subject, status, type, category, server, assignees, due, cc, notify, tags) được ghi lại thành các mục thay đổi có cấu trúc. Ticket ở trạng thái draft không ghi lại thay đổi hoặc gửi thông báo.
+- **Cập nhật email**: Assignee, người dùng trong cc, và email trong notify nhận email cập nhật theo lô (debounced) với tóm tắt các thay đổi và comment mới. Nếu nội dung body bị thay đổi, toàn bộ body sẽ được đưa vào bản cập nhật.
+- **Thông báo quá hạn**: Sau khi qua ngày hạn, email nhắc quá hạn hàng ngày chỉ gửi cho assignee.
 
-## Comments and Changes
+## Tìm Kiếm
 
-Any user with the [edit_tickets](privileges.md#edit_tickets) privilege can add comments. Comments are stored in changes with type comment, and support Markdown formatting.
-
-- **Change history**: Edits to key fields (subject, status, type, category, server, assignees, due, cc, notify, tags) are recorded as structured change entries. Draft tickets do not record changes or send notifications.
-- **Email updates**: Assignees, cc users, and notify emails receive batched email updates (debounced) with a summary of changes and any new comments. If the body text was changed, the full body is included in the update.
-- **Overdue notices**: After due date has passed, daily overdue emails are sent to assignees only.
-
-
-## Searching
-
-To perform a ticket search, click on ticket search preset links in the sidebar, e.g. "**All Tickets**".  Then, enter one or more words into the search field, and hit enter (or click the **Search** button).  By default the ticket subject and body text are searched.  Searches are not case-sensitive.  If you enter multiple words, they all must be found in the ticket for it to be included in the search results.  However, the words don't necessarily have to appear in order.  For example, consider this search query:
+Để thực hiện tìm kiếm ticket, nhấn vào các link preset tìm kiếm ticket trên sidebar, ví dụ "**All Tickets**". Sau đó, nhập một hoặc nhiều từ vào ô tìm kiếm, và nhấn enter (hoặc nhấn nút **Search**). Theo mặc định, subject và nội dung body của ticket sẽ được tìm kiếm. Tìm kiếm không phân biệt hoa thường. Nếu bạn nhập nhiều từ, tất cả phải xuất hiện trong ticket để được đưa vào kết quả tìm kiếm. Tuy nhiên, các từ không cần xuất hiện theo thứ tự. Ví dụ, xét truy vấn tìm kiếm này:
 
 ```
 zip targeting
 ```
 
-This would find any tickets that contained both words (`zip` and `targeting`), but they do not have to appear next to together.  They each can be anywhere in the ticket.  If you want to match an exact phrase, surround it with "double-quotes", like this:
+Truy vấn này sẽ tìm mọi ticket chứa cả hai từ (`zip` và `targeting`), nhưng chúng không cần đứng cạnh nhau. Mỗi từ có thể ở bất kỳ đâu trong ticket. Nếu bạn muốn khớp chính xác một cụm từ, hãy đặt nó trong "dấu ngoặc kép", như sau:
 
 ```
 "zip targeting"
 ```
 
-This would only show messages that contained the *exact phrase* in quotes, i.e. the two words in sequence.
+Truy vấn này chỉ hiển thị các message chứa *chính xác cụm từ* trong ngoặc kép, nghĩa là hai từ theo đúng thứ tự liên tiếp.
 
-### Negative Matches
+### Khớp Phủ Định (Negative Matches)
 
-You can augment a search so that it *excludes* certain words or phrases.  To do this, prefix the negative words or phrases with a hyphen (`-`).  Example:
+Bạn có thể bổ sung tìm kiếm để *loại trừ* một số từ hoặc cụm từ nhất định. Để làm điều này, thêm tiền tố gạch ngang (`-`) trước từ hoặc cụm từ phủ định. Ví dụ:
 
 ```
 "zip targeting" -birds -cats -frogs
 ```
 
-This would find messages that contain the exact phrase "zip targeting", but **not** the words `birds`, `cats` or `frogs`.  Note that negative words can only take away from an existing search result, so you need to start with some positive (normal matching) words.
+Truy vấn này sẽ tìm message chứa chính xác cụm từ "zip targeting", nhưng **không** chứa các từ `birds`, `cats` hoặc `frogs`. Lưu ý rằng từ phủ định chỉ có thể loại bớt khỏi kết quả tìm kiếm đã có, nên bạn cần bắt đầu với một số từ tìm kiếm dương (khớp thông thường).
 
-### OR Matches
+### Khớp OR
 
-To find messages that contain any of a set of words (known as an "OR" match), separate them by pipe (`|`) characters.  Example:
+Để tìm message chứa bất kỳ từ nào trong một tập từ (gọi là khớp "OR"), phân tách chúng bằng ký tự gạch đứng (`|`). Ví dụ:
 
 ```
 campaign | memory | performance
 ```
 
-This would find tickets that contain **any** of the specified words.  Note that you cannot combine an OR and an AND search in the same search query, so it's either one or the other (unless you use [PxQL](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#pxql-queries)).
+Truy vấn này sẽ tìm ticket chứa **bất kỳ** từ nào được chỉ định. Lưu ý bạn không thể kết hợp tìm kiếm OR và AND trong cùng một truy vấn, nên chỉ có thể chọn một trong hai (trừ khi dùng [PxQL](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#pxql-queries)).
 
-### Search Options
+### Trường Tìm Kiếm
 
-You can search more than just the ticket text.  Click the "**Options**" button to reveal several drop-down menus to narrow your search, using criteria such as type, assignee, tags, date range, and more.  You can also use a GitHub-style syntax to customize your search inside the query text box, by specifying one or more field IDs followed by a colon.  Here is an example:
+| Tên | Mô tả |
+|------|-------|
+| `subject` | Tìm kiếm trong trường chủ đề (subject) của ticket, ví dụ `subject:zip`. |
+| `body` | Tìm kiếm toàn văn trong subject và body (mặc định khi không chỉ định trường). |
+| `changes` | Tìm kiếm trong các thay đổi của ticket (bình luận và thay đổi trường), ví dụ `changes:rolled`. |
+| `status` | Tìm kiếm theo trường status, ví dụ `status:open` hoặc `status:closed`. |
+| `username` | Tìm kiếm theo người tạo ticket, ví dụ `username:admin`. |
+| `assignees` | Tìm kiếm theo người được assign, ví dụ `assignees:admin`. |
+| `cc` | Tìm kiếm theo danh sách CC, ví dụ `cc:admin`. |
+| `type` | Tìm kiếm theo loại ticket, ví dụ `type:issue`. |
+| `category` | Tìm kiếm theo category của ticket, ví dụ `category:prod`. |
+| `tags` | Tìm kiếm theo tag của ticket, ví dụ `tags:important`. |
+| `created` | Tìm kiếm theo ngày tạo ticket, ví dụ `created:>2020-02-01`. Đây là trường date hỗ trợ range. Xem [Simple Queries](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries) để biết chi tiết. |
+| `due` | Tìm kiếm theo ngày hết hạn của ticket, ví dụ `due:<today`. Đây là trường date hỗ trợ range. Xem [Simple Queries](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries) để biết chi tiết. |
+| `num` | Tìm kiếm theo số ticket, ví dụ `num:>5000`. Đây là trường số nguyên hỗ trợ range. Xem [Simple Queries](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries) để biết chi tiết. |
 
-```
-subject:yum status:open created:>=2020-01-01
-```
-
-This would search for all open tickets that contain the word "yum" specifically in their subject line, and were created in or after the year 2020.  Here is a list of all the fields you can use to narrow your search:
-
-| Field ID | Description |
-|----------|-------------|
-| `subject` | Search the ticket subject line, e.g. `subject:yum`. |
-| `body` | Search the ticket body text (which also includes the subject), e.g. `body:memory usage` (this is the default search field if none are specified). |
-| `changes` | Search the ticket changes (i.e. comments and field changes), e.g. `changes:rolled`. |
-| `status` | Search the ticket status field, e.g. `status:open` or `status:closed`. |
-| `username` | Search the ticket author, e.g. `username:admin`. |
-| `assignees` | Search the ticket assignees, e.g. `assignees:admin`. |
-| `cc` | Search the ticket carbon-copy list, e.g. `cc:admin`. |
-| `type` | Search the ticket type ID, e.g. `type:issue`. |
-| `category` | Search the ticket category, e.g. `category:prod`. |
-| `tags` | Search the ticket tags, e.g. `tags:important`. |
-| `created` | Search the ticket creation date, e.g. `created:>2020-02-01`.  This is a date field which supports ranges.  See [Simple Queries](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries) for details. |
-| `due` | Search the ticket due date, e.g. `due:<today`.  This is a date field which supports ranges.  See [Simple Queries](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries) for details. |
-| `num` | Search the ticket number, e.g. `num:>5000`.  This is an integer number field which supports ranges.  See [Simple Queries](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries) for details. |
-
-If you specify multiple fields, they are matched using logical AND.  You can, however, specify multiple values inside each field using a pipe (|) character for an inner logical OR match.  Example:
+Nếu bạn chỉ định nhiều trường, chúng được khớp theo logic AND. Tuy nhiên, bạn có thể chỉ định nhiều giá trị trong mỗi trường bằng ký tự gạch đứng (|) để khớp OR nội bộ. Ví dụ:
 
 ```
 status:open|closed tags:important
 ```
 
-If you need more complex queries, consider using [PxQL](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#pxql-queries) syntax, which is fully supported.
+Nếu bạn cần truy vấn phức tạp hơn, có thể dùng cú pháp [PxQL](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#pxql-queries), được hỗ trợ đầy đủ.
 
-### Search Examples
+### Ví Dụ Tìm Kiếm
 
-Here are a few search query examples you might find useful:
+Dưới đây là một số ví dụ truy vấn tìm kiếm hữu ích:
 
-| Name | Query |
+| Tên | Truy vấn |
 |------|-------|
-| All tickets | `*` |
-| All issues | `type:issue` |
-| All non-important | `num:>0 tags:-important` |
-| All overdue tickets | `status:open due:<today` |
-| Created in date range | `created:2021/02/01..2021/03/01` |
-| Open for N days | `status:open created:<2021/02/01` |
-| Open and important | `status:open tags:important` |
-| Ticket number range | `num:>=5000 num:<6000` |
-| Search only subjects | `subject:zip targeting` |
-| Search only comments | `changes:thank you` |
+| Tất cả ticket | `*` |
+| Tất cả issue | `type:issue` |
+| Tất cả không quan trọng | `num:>0 tags:-important` |
+| Tất cả ticket quá hạn | `status:open due:<today` |
+| Tạo trong khoảng ngày | `created:2021/02/01..2021/03/01` |
+| Mở trong N ngày | `status:open created:<2021/02/01` |
+| Mở và quan trọng | `status:open tags:important` |
+| Khoảng số ticket | `num:>=5000 num:<6000` |
+| Tìm chỉ trong subject | `subject:zip targeting` |
+| Tìm chỉ trong bình luận | `changes:thank you` |
 
-### Search Presets
+### Preset Tìm Kiếm
 
-Once you have your search working how you want it, you can "save" it to your account as a search preset.  Saved presets will appear in the sidebar under "**Ticket Searches**", so you can get back to them with one single click, and see updated results.
+Khi đã có truy vấn tìm kiếm ưng ý, bạn có thể "lưu" nó vào tài khoản của mình dưới dạng preset tìm kiếm. Các preset đã lưu sẽ hiện trong sidebar dưới mục "**Ticket Searches**", để bạn quay lại chỉ với một cú click, và xem kết quả đã cập nhật.
 
-To save a search query, click on the "**Save Preset**" button, and give it a name.  This is then saved to your user account, so it will still be there if you log out, and log back in later, or on a different device.
+Để lưu truy vấn tìm kiếm, nhấn nút "**Save Preset**", và đặt tên cho nó. Preset này sẽ được lưu vào tài khoản của bạn, nên nó vẫn còn đó dù bạn đăng xuất và đăng nhập lại sau, hoặc trên thiết bị khác.
 
-To edit a search preset, click on the preset from the sidebar, make any changes you want, then click the "**Edit Preset**" button, then the "**Save Changes**" button.  To delete a search preset, click on it from the sidebar, then click the "**Delete Preset**" button.
+Để sửa preset tìm kiếm, nhấn vào preset từ sidebar, thực hiện thay đổi mong muốn, rồi nhấn nút "**Edit Preset**", sau đó nhấn "**Save Changes**". Để xoá preset tìm kiếm, nhấn vào nó từ sidebar, rồi nhấn nút "**Delete Preset**".
 
-### Search API
+### API Tìm Kiếm
 
-Programmatic searches are available via the [search_tickets](api.md#search_tickets) API (supports pagination and compact responses).
+Tìm kiếm bằng chương trình có sẵn qua API [search_tickets](api.md#search_tickets) (hỗ trợ phân trang và response dạng gọn).
 
+## Gợi Ý và Mẫu Áp Dụng
 
+- **Quản lý release**: Tạo một ticket Release và gắn các event deploy, test, và rollback. Upload artifact build của bạn lên ticket, rồi chạy deploy từ ticket. Artifact sẽ tự động chuyển vào job.
+- **Xử lý sự cố (incident)**: Tự động tạo Issue khi alert kích hoạt kèm context server. Assign cho on-call, đặt ngày hết hạn để theo dõi tiếp, và ghi lại các bước khắc phục bằng bình luận. Đóng ticket khi đã xử lý xong.
+- **Kiểm soát thay đổi (change control)**: Dùng ticket Change cho công việc đã có kế hoạch. Gắn các job kiểm tra (pre-check, post-check) và yêu cầu người assign thứ hai review.
+- **Cửa sổ bảo trì (maintenance windows)**: Lên lịch ticket Maintenance với ngày hết hạn. Gắn job health-check để xác nhận trạng thái sau bảo trì.
+- **Runbook**: Dùng body của ticket (Markdown) cho runbook và checklist. Liên kết đến job qua ticket event để có hành động lặp lại được.
 
+## Privileges (Quyền)
 
-## Tips and Patterns
+- [create_tickets](privileges.md#create_tickets): Tạo ticket.
+- [edit_tickets](privileges.md#edit_tickets): Sửa ticket, thêm bình luận, gắn/xoá file, chạy event của ticket.
+- [delete_tickets](privileges.md#delete_tickets): Xoá ticket vĩnh viễn.
 
-- **Release management**: Create a Release ticket and attach deploy, test, and rollback events. Upload your build artifacts to the ticket, then run deploy from the ticket. Artifacts automatically flow into the job.
-- **Incident response**: Auto-create an Issue on alert fire with server context. Assign on-call, set a due date for follow-up, and track remediation steps with comments. Close when resolved.
-- **Change control**: Use Change tickets for planned work. Attach validation jobs (pre-checks, post-checks) and require a second assignee to review.
-- **Maintenance windows**: Schedule Maintenance tickets with due dates. Attach health-check jobs to verify post-maintenance status.
-- **Runbooks**: Use the ticket body (Markdown) for runbooks and checklists. Link to jobs via ticket events for repeatable actions.
+Xác thực chuẩn áp dụng cho việc sử dụng UI và API (session hoặc API Key). Xem [Privileges](privileges.md) và [API](api.md) để biết chi tiết.
 
+## Xem Thêm
 
-## Privileges
-
-- [create_tickets](privileges.md#create_tickets): Create tickets.
-- [edit_tickets](privileges.md#edit_tickets): Edit tickets, add comments, attach/remove files, run ticket events.
-- [delete_tickets](privileges.md#delete_tickets): Permanently delete tickets.
-
-Standard authentication applies for UI and API usage (sessions or API Keys). See [Privileges](privileges.md) and [API](api.md) for details.
-
-
-## See Also
-
-- Actions can create tickets automatically: see [Actions](actions.md)
-- Ticket data model and field details: see [Ticket](data.md#ticket)
-- Ticket API endpoints: see [API](api.md#tickets) ([search_tickets](api.md#search_tickets), [create_ticket](api.md#create_ticket), [update_ticket](api.md#update_ticket), [add_ticket_change](api.md#add_ticket_change), [update_ticket_change](api.md#update_ticket_change), [delete_ticket_file](api.md#delete_ticket_file), [delete_ticket](api.md#delete_ticket))
+- Action có thể tự động tạo ticket: xem [Actions](actions.md)
+- Mô hình dữ liệu và chi tiết trường của ticket: xem [Ticket](data.md#ticket)
+- Endpoint API của ticket: xem [API](api.md#tickets) ([search_tickets](api.md#search_tickets), [create_ticket](api.md#create_ticket), [update_ticket](api.md#update_ticket), [add_ticket_change](api.md#add_ticket_change), [update_ticket_change](api.md#update_ticket_change), [delete_ticket_file](api.md#delete_ticket_file), [delete_ticket](api.md#delete_ticket))

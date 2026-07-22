@@ -283,7 +283,7 @@
 	},
 	
 	"plugin_type_descriptions": {
-		"event": "**Event Plugins** contain the code that runs your actual jobs.  They run on the target server for the event, and are expected to consume JSON on STDIN and output JSON on STDOUT, to communicate with xyOps regarding the job, and to denote the completion and status.  For more information see [Event Plugins](#Docs/plugins/event-plugins).",
+		"event": "**Event Plugins** contain the code that runs your actual jobs.  They run on the target server for the event, and are expected to consume JSON on STDIN and output JSON on STDOUT, to communicate with PTOps regarding the job, and to denote the completion and status.  For more information see [Event Plugins](#Docs/plugins/event-plugins).",
 		"monitor": "**Monitor Plugins** run the specified code every minute on every targeted server to graph custom data.  For example, you can use this to monitor your own application status, and produce output that feeds multiple graphs.  For more information see [Monitor Plugins](#Docs/plugins/monitor-plugins).",
 		"action": "**Action Plugins** can run custom code in response to job conditions such as completion, success, error, and other cases.  The action code runs on the current conductor server, and is designed to call your own notification system.  For more information see [Action Plugins](#Docs/plugins/action-plugins).",
 		"scheduler": "**Trigger Plugins** allow you to define your own event scheduling systems.  Every minute, your plugin code will execute and be passed a JSON document containing all the events currently assigned, plus the date/time in the event's timezone, and you can decide which events run at which times.  For more information see [Trigger Plugins](#Docs/plugins/trigger-plugins)."
@@ -668,7 +668,7 @@
 			},
 			"d_sys_sat_release": {
 				"label": "Satellite Version:",
-				"caption": "Select the desired xyOps Satellite version to be installed."
+				"caption": "Select the desired PTOps Satellite version to be installed."
 			},
 			"fe_sys_sat_release": {
 				"title": "Select Satellite Version"
@@ -687,11 +687,11 @@
 				"placeholder": "Select conductors for upgrade..."
 			},
 			"d_sys_multi_release": {
-				"label": "xyOps Version:",
-				"caption": "Select the desired xyOps version to be installed."
+				"label": "PTOps Version:",
+				"caption": "Select the desired PTOps version to be installed."
 			},
 			"fe_sys_multi_release": {
-				"title": "Select xyOps Version"
+				"title": "Select PTOps Version"
 			},
 			"d_sys_multi_stagger": {
 				"label": "Stagger Installs:",
@@ -1529,7 +1529,7 @@
 			"method": "POST",
 			"headers": [
 				{ "name": "Content-Type", "value": "application/x-www-form-urlencoded" },
-				{ "name": "User-Agent", "value": "xyOps/WebHook" }
+				{ "name": "User-Agent", "value": "PTOps/WebHook" }
 			],
 			"body": "token={{ encode(secrets.PUSHOVER_API_TOKEN) }}&user={{ encode(secrets.PUSHOVER_USER_KEY) }}&message={{ encode(text) }}",
 			"timeout": 30,
@@ -1566,7 +1566,7 @@
 			"method": "POST",
 			"headers": [
 				{ "name": "Content-Type", "value": "application/json" },
-				{ "name": "User-Agent", "value": "xyOps/WebHook" }
+				{ "name": "User-Agent", "value": "PTOps/WebHook" }
 			],
 			"body": "{\n\t\"text\": {{ stringify(text) }}\n}",
 			"timeout": 30,
@@ -1595,7 +1595,7 @@
 			"method": "POST",
 			"headers": [
 				{ "name": "Content-Type", "value": "application/json" },
-				{ "name": "User-Agent", "value": "xyOps/WebHook" }
+				{ "name": "User-Agent", "value": "PTOps/WebHook" }
 			],
 			"body": "{\n\t\"content\": {{ stringify(text) }}\n}",
 			"timeout": 30,
@@ -1624,11 +1624,11 @@
 			"method": "POST",
 			"headers": [
 				{ "name": "Content-Type", "value": "text/plain; charset=utf-8" },
-				{ "name": "Title", "value": "xyOps" },
+				{ "name": "Title", "value": "PTOps" },
 				{ "name": "Priority", "value": "high" },
 				{ "name": "Tags", "value": "warning" },
 				{ "name": "Authorization", "value": "Bearer {{ secrets.NTFY_TOKEN }}" },
-				{ "name": "User-Agent", "value": "xyOps/WebHook" }
+				{ "name": "User-Agent", "value": "PTOps/WebHook" }
 			],
 			"body": "{{ text }}",
 			"timeout": 30,
@@ -1665,9 +1665,9 @@
 			"method": "POST",
 			"headers": [
 				{ "name": "Content-Type", "value": "application/json" },
-				{ "name": "User-Agent", "value": "xyOps/WebHook" }
+				{ "name": "User-Agent", "value": "PTOps/WebHook" }
 			],
-			"body": "{\n\t\"source\": \"xyOps\",\n\t\"message\": {{ stringify(text) }}\n}",
+			"body": "{\n\t\"source\": \"PTOps\",\n\t\"message\": {{ stringify(text) }}\n}",
 			"timeout": 30,
 			"retries": 3,
 			"follow": false,
@@ -1694,7 +1694,7 @@
 			"method": "POST",
 			"headers": [
 				{ "name": "Content-Type", "value": "application/json; charset=UTF-8" },
-				{ "name": "User-Agent", "value": "xyOps/WebHook" }
+				{ "name": "User-Agent", "value": "PTOps/WebHook" }
 			],
 			"body": "{\n\t\"text\": {{ stringify(text) }}\n}",
 			"timeout": 30,
@@ -1739,7 +1739,7 @@
 			"method": "POST",
 			"headers": [
 				{ "name": "Content-Type", "value": "application/x-www-form-urlencoded" },
-				{ "name": "User-Agent", "value": "xyOps/WebHook" }
+				{ "name": "User-Agent", "value": "PTOps/WebHook" }
 			],
 			"body": "chat_id={{ encode(secrets.TELEGRAM_CHAT_ID) }}&text={{ encode(text) }}",
 			"timeout": 30,
@@ -1776,7 +1776,7 @@
 			"method": "POST",
 			"headers": [
 				{ "name": "Content-Type", "value": "application/json" },
-				{ "name": "User-Agent", "value": "xyOps/WebHook" }
+				{ "name": "User-Agent", "value": "PTOps/WebHook" }
 			],
 			"body": "{\n\t\"text\": {{ stringify(text) }}\n}",
 			"timeout": 30,
@@ -1813,9 +1813,9 @@
 			"method": "POST",
 			"headers": [
 				{ "name": "Content-Type", "value": "application/json" },
-				{ "name": "User-Agent", "value": "xyOps/WebHook" }
+				{ "name": "User-Agent", "value": "PTOps/WebHook" }
 			],
-			"body": "{\n\t\"title\": \"xyOps\",\n\t\"message\": {{ stringify(text) }},\n\t\"priority\": 5\n}",
+			"body": "{\n\t\"title\": \"PTOps\",\n\t\"message\": {{ stringify(text) }},\n\t\"priority\": 5\n}",
 			"timeout": 30,
 			"retries": 3,
 			"follow": false,
@@ -1850,9 +1850,9 @@
 			"method": "POST",
 			"headers": [
 				{ "name": "Content-Type", "value": "application/json" },
-				{ "name": "User-Agent", "value": "xyOps/WebHook" }
+				{ "name": "User-Agent", "value": "PTOps/WebHook" }
 			],
-			"body": "{\n\t\"routing_key\": \"{{ secrets.PAGERDUTY_ROUTING_KEY }}\",\n\t\"event_action\": \"trigger\",\n\t\"payload\": {\n\t\t\"summary\": {{ stringify(text) }},\n\t\t\"source\": \"xyOps\",\n\t\t\"severity\": \"error\"\n\t}\n}",
+			"body": "{\n\t\"routing_key\": \"{{ secrets.PAGERDUTY_ROUTING_KEY }}\",\n\t\"event_action\": \"trigger\",\n\t\"payload\": {\n\t\t\"summary\": {{ stringify(text) }},\n\t\t\"source\": \"PTOps\",\n\t\t\"severity\": \"error\"\n\t}\n}",
 			"timeout": 30,
 			"retries": 3,
 			"follow": false,
@@ -1880,9 +1880,9 @@
 			"headers": [
 				{ "name": "Content-Type", "value": "application/json" },
 				{ "name": "Authorization", "value": "GenieKey {{ secrets.OPSGENIE_API_KEY }}" },
-				{ "name": "User-Agent", "value": "xyOps/WebHook" }
+				{ "name": "User-Agent", "value": "PTOps/WebHook" }
 			],
-			"body": "{\n\t\"message\": \"xyOps Alert\",\n\t\"description\": {{ stringify(text) }},\n\t\"source\": \"xyOps\",\n\t\"priority\": \"P3\"\n}",
+			"body": "{\n\t\"message\": \"PTOps Alert\",\n\t\"description\": {{ stringify(text) }},\n\t\"source\": \"PTOps\",\n\t\"priority\": \"P3\"\n}",
 			"timeout": 30,
 			"retries": 3,
 			"follow": false,

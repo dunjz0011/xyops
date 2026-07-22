@@ -1,87 +1,87 @@
-# Project Governance Charter
+# Hiến Chương Quản Trị Dự Án
 
-## 1. Guiding Principles
+## 1. Nguyên Tắc Chỉ Đạo
 
-The xyOps project is built on openness, transparency, and long-term reliability.  This governance model exists to protect those values and ensure that xyOps remains a durable, community-serving open-source project.
+Dự án PTOps được xây dựng dựa trên tính mở, minh bạch, và độ tin cậy lâu dài. Mô hình quản trị này tồn tại để bảo vệ những giá trị đó và đảm bảo PTOps vẫn là một dự án mã nguồn mở bền vững, phục vụ cộng đồng.
 
-- **Open Access:** All source code and documentation will remain available under the BSD 3-Clause License.
-- **Transparency:** All decisions that materially affect the project will be made publicly and archived for accountability.
-- **Meritocracy:** Influence is earned through high-quality, consistent contributions and alignment with the project's values.
-- **Continuity:** Stewardship decisions prioritize the long-term stability and health of the project above all else.
+- **Truy Cập Mở:** Toàn bộ mã nguồn và tài liệu sẽ luôn được cung cấp theo Giấy phép BSD 3-Clause.
+- **Minh Bạch:** Mọi quyết định ảnh hưởng đáng kể đến dự án sẽ được công bố công khai và lưu trữ để đảm bảo tính minh bạch trách nhiệm.
+- **Chế Độ Trọng Công (Meritocracy):** Tầm ảnh hưởng đạt được thông qua các đóng góp chất lượng cao, nhất quán, và phù hợp với giá trị của dự án.
+- **Tính Liên Tục:** Các quyết định về quản lý (stewardship) ưu tiên sự ổn định và sức khoẻ lâu dài của dự án trên hết.
 
-## 2. Governance Model
+## 2. Mô Hình Quản Trị
 
-xyOps currently operates under a **Steward-Led** governance model and intends to evolve into a **broader community stewardship model** as the contributor base grows.
+PTOps hiện hoạt động theo mô hình quản trị **do người quản lý dẫn dắt (Steward-Led)**, và có định hướng phát triển thành **mô hình quản trị cộng đồng rộng hơn** khi số lượng người đóng góp tăng lên.
 
-### Steward-Led Phase (Current)
-PixlCore LLC and Joseph Huckaby serve as the initial maintainers and project stewards.  
-Their responsibilities include:
+### Giai Đoạn Steward-Led (Hiện tại)
+PixlCore LLC và Joseph Huckaby đóng vai trò là những người duy trì (maintainer) và người quản lý (steward) ban đầu của dự án.
+Trách nhiệm của họ bao gồm:
 
-- Overseeing technical direction and releases  
-- Reviewing and merging contributions  
-- Ensuring that the project continues to align with the Longevity Pledge and BSD licensing  
-- Documenting important decisions in public
+- Giám sát định hướng kỹ thuật và các bản phát hành
+- Xem xét và merge các đóng góp
+- Đảm bảo dự án tiếp tục tuân theo Longevity Pledge và giấy phép BSD
+- Ghi lại công khai các quyết định quan trọng
 
-### Evolving Toward Shared Stewardship
-As xyOps grows, additional trusted contributors may be invited into expanded stewardship roles, including:
+### Hướng Đến Quản Trị Chia Sẻ
+Khi PTOps phát triển, các cộng tác viên đáng tin cậy khác có thể được mời vào các vai trò quản lý mở rộng hơn, bao gồm:
 
-- Maintainers with commit access  
-- A small advisory group of experienced contributors who help shape roadmap priorities, review policy changes, and advise on succession matters  
+- Maintainer có quyền commit
+- Một nhóm cố vấn nhỏ gồm các cộng tác viên giàu kinh nghiệm, giúp định hình ưu tiên roadmap, xem xét thay đổi chính sách, và tư vấn về vấn đề kế nhiệm
 
-This evolution is intentional but not bound to a specific timeline; it will occur naturally as the contributor ecosystem matures.
+Sự phát triển này là có chủ đích nhưng không ràng buộc theo mốc thời gian cụ thể; nó sẽ diễn ra tự nhiên khi hệ sinh thái cộng tác viên trưởng thành hơn.
 
-Decision-making will generally follow **consensus by discussion**.  
-If consensus cannot be reached, the Stewards will make a final decision guided by the project's principles and the best interests of long-term stability.
+Việc ra quyết định thường sẽ theo hình thức **đồng thuận qua thảo luận**.
+Nếu không đạt được đồng thuận, các Steward sẽ đưa ra quyết định cuối cùng dựa trên nguyên tắc của dự án và lợi ích tốt nhất cho sự ổn định lâu dài.
 
-## 3. Roles & Responsibilities
+## 3. Vai Trò & Trách Nhiệm
 
-### Maintainers
-- Have commit access and release authority  
-- Review pull requests for technical soundness, security, and consistency  
-- Uphold the BSD 3-Clause License for the entire codebase  
-- Document notable changes and decisions publicly  
+### Maintainer
+- Có quyền commit và quyền phát hành
+- Xem xét pull request về tính đúng đắn kỹ thuật, bảo mật, và tính nhất quán
+- Duy trì Giấy phép BSD 3-Clause cho toàn bộ codebase
+- Ghi lại công khai các thay đổi và quyết định quan trọng
 
-### Contributors
-- Provide patches, bug reports, and documentation improvements  
-- Agree that all contributions are licensed under the project's existing BSD 3-Clause License  
-- May be nominated for expanded roles based on merit, trust, and sustained participation  
+### Contributor (Người Đóng Góp)
+- Cung cấp bản vá (patch), báo cáo lỗi, và cải thiện tài liệu
+- Đồng ý rằng tất cả đóng góp được cấp phép theo Giấy phép BSD 3-Clause hiện tại của dự án
+- Có thể được đề cử vào các vai trò mở rộng dựa trên năng lực, sự tin tưởng, và mức độ tham gia bền vững
 
-### Advisory Group (Future)
-As the project grows, a small group of trusted contributors may be formalized to:
+### Nhóm Cố Vấn (Trong tương lai)
+Khi dự án phát triển, một nhóm nhỏ cộng tác viên đáng tin cậy có thể được chính thức hoá để:
 
-- Provide continuity and high-level guidance  
-- Review proposals affecting roadmap, policy, or governance  
-- Participate in steward succession discussions  
-- Help ensure adherence to the Longevity Pledge  
+- Đảm bảo tính liên tục và định hướng cấp cao
+- Xem xét các đề xuất ảnh hưởng đến roadmap, chính sách, hoặc quản trị
+- Tham gia thảo luận về việc kế nhiệm steward
+- Giúp đảm bảo tuân thủ Longevity Pledge
 
-This group is advisory rather than executive; final release authority remains with the Stewards unless governance evolves further.
+Nhóm này đóng vai trò cố vấn hơn là điều hành; quyền phát hành cuối cùng vẫn thuộc về các Steward, trừ khi mô hình quản trị tiếp tục phát triển thêm.
 
-## 4. Succession & Long-Term Stewardship
+## 4. Kế Nhiệm & Quản Lý Lâu Dài
 
-To reduce single-maintainer or single-organization risk, xyOps is structured so the project can outlive any individual or entity.
+Để giảm rủi ro phụ thuộc vào một maintainer hoặc một tổ chức duy nhất, PTOps được cấu trúc để dự án có thể tồn tại lâu hơn bất kỳ cá nhân hay tổ chức nào.
 
-If PixlCore LLC or Joseph Huckaby are ever unable to continue active stewardship:
+Nếu PixlCore LLC hoặc Joseph Huckaby không thể tiếp tục vai trò quản lý tích cực:
 
-- The intention is to transfer stewardship to a suitable successor; ideally a foundation, nonprofit, or trusted maintainer group.  
-- Any transfer of stewardship will include clear expectations that xyOps remain openly developed under the BSD 3-Clause License.  
-- The community will be notified publicly before any transition is finalized.  
+- Ý định là chuyển giao vai trò quản lý cho một người kế nhiệm phù hợp; lý tưởng nhất là một tổ chức phi lợi nhuận, quỹ, hoặc nhóm maintainer đáng tin cậy.
+- Bất kỳ việc chuyển giao vai trò quản lý nào cũng sẽ bao gồm kỳ vọng rõ ràng rằng PTOps tiếp tục được phát triển công khai theo Giấy phép BSD 3-Clause.
+- Cộng đồng sẽ được thông báo công khai trước khi bất kỳ sự chuyển giao nào được hoàn tất.
 
-This charter does not impose legal obligations but is a public commitment to transparent, community-respecting transitions.
+Hiến chương này không áp đặt nghĩa vụ pháp lý, nhưng là một cam kết công khai về việc chuyển giao minh bạch, tôn trọng cộng đồng.
 
-## 5. Governance Amendments
+## 5. Sửa Đổi Quản Trị
 
-This document may evolve as xyOps grows. Amendments require:
+Tài liệu này có thể thay đổi khi PTOps phát triển. Các sửa đổi yêu cầu:
 
-- A public pull request  
-- Review and approval by current maintainers (and advisory members, once established)  
-- No changes that undermine the commitments expressed in the Longevity Pledge or reduce the openness of the project  
+- Một pull request công khai
+- Được xem xét và phê duyệt bởi các maintainer hiện tại (và thành viên cố vấn, khi đã được thành lập)
+- Không có thay đổi nào làm suy yếu các cam kết trong Longevity Pledge hoặc giảm tính mở của dự án
 
-Amendments will be documented and archived for transparency.
+Các sửa đổi sẽ được ghi lại và lưu trữ để đảm bảo minh bạch.
 
-## 6. Acknowledgment
+## 6. Xác Nhận
 
-This charter affirms xyOps' commitment to being not only open source, but responsibly stewarded, transparent in direction, and built for long-term sustainability.
+Hiến chương này khẳng định cam kết của PTOps không chỉ là mã nguồn mở, mà còn được quản lý có trách nhiệm, minh bạch về định hướng, và được xây dựng cho sự bền vững lâu dài.
 
-- **Joseph Huckaby**  
-- Founder & Steward, PixlCore LLC  
-- October 27, 2025
+- **Joseph Huckaby**
+- Nhà sáng lập & Steward, PixlCore LLC
+- 27 tháng 10, 2025

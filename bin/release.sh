@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# Release the latest version of xyOps
+# Release the latest version of PTOps
 
 HOMEDIR="$(dirname "$(cd -- "$(dirname "$0")" && (pwd -P 2>/dev/null || pwd))")"
 cd $HOMEDIR

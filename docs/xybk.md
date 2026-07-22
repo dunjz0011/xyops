@@ -1,39 +1,39 @@
-# xyOps Backup Format
+# Định Dạng Backup của PTOps
 
-## Overview
+## Tổng Quan
 
-This document describes the xyOps Backup Format (XYBK) v1.0, used to bulk export and import data from a xyOps system. The format supports selecting categories of data (lists, database indexes, and extras), or including everything. Files are [NDJSON](https://github.com/ndjson/ndjson-spec) with support for comment lines and blank lines, and are typically wrapped in [Gzip](https://en.wikipedia.org/wiki/Gzip) for transport.
+Tài liệu này mô tả Định Dạng Backup của PTOps (XYBK) v1.0, dùng để xuất/nhập dữ liệu hàng loạt từ hệ thống PTOps. Định dạng này hỗ trợ chọn các nhóm dữ liệu (list, database index, và extra), hoặc bao gồm tất cả. File ở dạng [NDJSON](https://github.com/ndjson/ndjson-spec) có hỗ trợ dòng comment và dòng trống, thường được đóng gói bằng [Gzip](https://en.wikipedia.org/wiki/Gzip) để truyền tải.
 
-- **Title**: xyOps Backup Format
+- **Tiêu đề**: Định Dạng Backup của PTOps
 - **ID**: XYBK
-- **Version**: 1.0
-- **Date**: December 12, 2025
-- **Authors**: Joseph Huckaby (PixlCore)
+- **Phiên bản**: 1.0
+- **Ngày**: 12 tháng 12, 2025
+- **Tác giả**: Joseph Huckaby (PixlCore)
 
-XYBK is primarily consumed by the Admin "Export Data" and "Import Data" features. The exporter streams a Gzip-compressed NDJSON file to the client, and the importer accepts either plain NDJSON or Gzip-wrapped NDJSON.
+XYBK chủ yếu được dùng bởi tính năng "Export Data" và "Import Data" trong Admin. Bộ xuất (exporter) truyền một file NDJSON đã nén Gzip đến client, và bộ nhập (importer) chấp nhận cả NDJSON thuần hoặc NDJSON đóng gói Gzip.
 
-## File Structure
+## Cấu Trúc File
 
-An XYBK file is a sequence of UTF-8 text lines. Three types of lines are allowed:
+Một file XYBK là một chuỗi dòng văn bản UTF-8. Ba loại dòng được cho phép:
 
-- **Comment**: Any line beginning with `#` is a comment and ignored by the importer.
-- **Blank**: Empty or whitespace-only lines are allowed and ignored.
-- **Record**: A single JSON object on one line (NDJSON). These are processed in order.
+- **Comment**: Bất kỳ dòng nào bắt đầu bằng `#` là comment và bị importer bỏ qua.
+- **Trống**: Dòng trống hoặc chỉ có khoảng trắng được cho phép và bị bỏ qua.
+- **Record**: Một object JSON trên một dòng (NDJSON). Các dòng này được xử lý theo thứ tự.
 
-The file begins with a short header emitted as a comment block (for human readability only):
+File bắt đầu bằng một header ngắn dưới dạng khối comment (chỉ để con người dễ đọc):
 
 ```
-# xyOps Data Export v1.0
+# PTOps Data Export v1.0
 # Hostname: [host]
 # Date/Time: [string]
 # Format: NDJSON
 ```
 
-Following the header, the file contains one or more labeled sections (comment lines) and NDJSON records. Section headers are advisory and ignored by the importer. The importer only processes JSON lines that start with `{`.
+Sau header, file chứa một hoặc nhiều phần được gán nhãn (dòng comment) và các record NDJSON. Header của các phần chỉ mang tính tham khảo và bị importer bỏ qua. Importer chỉ xử lý các dòng JSON bắt đầu bằng `{`.
 
-## Record Types
+## Các Loại Record
 
-Each NDJSON record must be exactly one of the following forms:
+Mỗi record NDJSON phải là chính xác một trong các dạng sau:
 
 ### Storage Put
 
@@ -41,9 +41,9 @@ Each NDJSON record must be exactly one of the following forms:
 { "key": "<storage_key>", "value": /* json_or_base64 */ }
 ```
 
-- Writes directly to [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage) as a key/value "put".
-- For binary keys, `value` contains a Base64 string. On import, binary detection is automatic via key pattern, and the value is decoded back to raw bytes.
-- For JSON keys, `value` is a JSON object which is stored as-is.
+- Ghi trực tiếp vào [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage) dưới dạng "put" key/value.
+- Đối với key nhị phân, `value` chứa một chuỗi Base64. Khi nhập, việc phát hiện nhị phân là tự động dựa trên pattern của key, và value được decode lại thành raw byte.
+- Đối với key JSON, `value` là một object JSON được lưu nguyên bản.
 
 ### Storage Command
 
@@ -51,9 +51,9 @@ Each NDJSON record must be exactly one of the following forms:
 { "cmd": "<method>", "args": [ /* arg1, arg2, ... */ ] }
 ```
 
-- Invokes a storage API on [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage), e.g. `listDelete`.
-- Arguments are passed as-is. The importer appends its own callback internally.
-- Used by exports to prepare state for re-population (e.g. delete list pages before re-creating them).
+- Gọi một API storage trên [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage), ví dụ `listDelete`.
+- Các tham số được truyền nguyên bản. Importer tự thêm callback riêng của nó bên trong.
+- Được dùng bởi export để chuẩn bị trạng thái cho việc tái tạo lại (ví dụ xoá các trang của list trước khi tạo lại chúng).
 
 ### Database Record
 
@@ -61,12 +61,12 @@ Each NDJSON record must be exactly one of the following forms:
 { "index": "<index_id>", "id": "<record_id>", "record": { /* ... */ } }
 ```
 
-- Inserts a database record into [Unbase](https://github.com/jhuckaby/pixl-server-unbase) via `unbase.insert(index, id, record)`.
-- Semantics are "create or replace" by ID.
+- Chèn một record database vào [Unbase](https://github.com/jhuckaby/pixl-server-unbase) qua `unbase.insert(index, id, record)`.
+- Ngữ nghĩa là "tạo hoặc thay thế" theo ID.
 
-## Sections
+## Các Phần (Sections)
 
-The exporter adds comment section headers to group related lines. These are informational only and ignored during import. You may encounter the following section headers:
+Bộ xuất thêm các header phần dạng comment để nhóm các dòng liên quan. Các header này chỉ mang tính thông tin và bị bỏ qua khi nhập. Bạn có thể gặp các header phần sau:
 
 - `# List: <key>`
 - `# Database Index: <index> (<query>)`
@@ -80,91 +80,91 @@ The exporter adds comment section headers to group related lines. These are info
 
 ### Lists
 
-Many xyOps subsystems are modeled as storage "Lists" (paged arrays). See [Lists](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Lists.md) for list internals. Exports include list metadata and all pages. The format is:
+Nhiều hệ thống con của PTOps được mô hình hoá dưới dạng "List" của storage (mảng có phân trang). Xem [Lists](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Lists.md) để biết chi tiết nội bộ về list. Bản export bao gồm metadata của list và toàn bộ các trang. Định dạng như sau:
 
-Pre-delete list to make way for the incoming one:
+Xoá list trước để dọn chỗ cho list mới sắp đến:
 
 ```json
 { "cmd": "listDelete", "args": [ "<key>", false ] }
 ```
 
-Add the list header (key/value):
+Thêm header của list (key/value):
 
 ```json
 { "key": "<key>", "value": { "page_size": 100, "first_page": 1, "last_page": 5, "length": 500, "type": "list" } }
 ```
 
-Add the list pages (key/value):
+Thêm các trang của list (key/value):
 
 ```json
 { "key": "<key>/<page>", "value": { "type": "list_page", "items": [ /* ... */ ] } }
 ```
 
-The `items` array contains the actual list items. Pages are emitted from `first_page` to `last_page` inclusive.
+Mảng `items` chứa các item thực tế của list. Các trang được xuất từ `first_page` đến `last_page` (bao gồm cả hai).
 
-Typical list keys exported under `global/` include:
+Các key list thường được xuất dưới `global/` bao gồm:
 
 - `alerts`, `api_keys`, `buckets`, `categories`, `channels`, `events`, `groups`, `monitors`, `plugins`, `secrets`, `tags`, `users`, `roles`, `web_hooks`
 
-Note: User account records themselves are not stored in `global/users` (that list holds the roster). Actual user records are exported under `users/<username>` (see "User Data" below).
+Lưu ý: Các record tài khoản người dùng không được lưu trong `global/users` (list đó chỉ chứa danh sách roster). Các record người dùng thực tế được xuất dưới `users/<username>` (xem "User Data" bên dưới).
 
 ### Database Indexes
 
-Exports can include full Unbase indexes, optionally filtered by a query. Each record is emitted as:
+Bản export có thể bao gồm toàn bộ index Unbase, có thể lọc theo query. Mỗi record được xuất dưới dạng:
 
 ```json
 { "index": "<index_id>", "id": "<record_id>", "record": { /* ... */ } }
 ```
 
-Common index IDs include: `alerts`, `jobs`, `servers`, `snapshots`, `activity`, `tickets`.
+Các ID index phổ biến bao gồm: `alerts`, `jobs`, `servers`, `snapshots`, `activity`, `tickets`.
 
-See [Unbase](https://github.com/jhuckaby/pixl-server-unbase) for more details.
+Xem [Unbase](https://github.com/jhuckaby/pixl-server-unbase) để biết thêm chi tiết.
 
 ### User Data
 
-User account records are exported as storage keys:
+Các record tài khoản người dùng được xuất dưới dạng storage key:
 
 - `users/<normalized_username>` → `{ ...user record... }`
 
-If the "User Avatars" extra is selected, the following binary keys may also be included (Base64 values):
+Nếu extra "User Avatars" được chọn, các key nhị phân sau cũng có thể được bao gồm (dạng Base64):
 
 - `users/<normalized_username>/avatar/64.png`
 - `users/<normalized_username>/avatar/256.png`
 
-Passwords in user records are stored as salted [bcrypt](https://en.wikipedia.org/wiki/Bcrypt) hashes and are exported as stored.
+Mật khẩu trong record người dùng được lưu dưới dạng hash [bcrypt](https://en.wikipedia.org/wiki/Bcrypt) có salt và được xuất y như đã lưu.
 
 ### Buckets
 
-If the Buckets list is selected, the exporter also includes bucket data and may include file payloads, depending on extras:
+Nếu list Buckets được chọn, bộ xuất cũng bao gồm dữ liệu bucket và có thể bao gồm payload file, tuỳ vào extra:
 
-- `key: buckets/<bucket_id>/data` (JSON) containing the per-bucket metadata/data object.
-- `key: buckets/<bucket_id>/files` (JSON) containing each file payload keyed by its storage path. File payloads are Base64.
+- `key: buckets/<bucket_id>/data` (JSON) chứa object metadata/data cho từng bucket.
+- `key: buckets/<bucket_id>/files` (JSON) chứa từng file payload theo storage path của nó. Payload file là Base64.
 
 ### Secrets
 
-Secret vault metadata lives in the `global/secrets` list (exported like any list). The secret payloads themselves are exported under:
+Metadata của secret vault nằm trong list `global/secrets` (được xuất như mọi list khác). Các payload secret thực tế được xuất dưới:
 
-- `key: secrets/<secret_id>` → Value is the encrypted blob (as stored). Contents are Base64-encoded encrypted data; secrets are not exported in plaintext.
+- `key: secrets/<secret_id>` → Value là blob đã mã hoá (như được lưu). Nội dung là dữ liệu mã hoá dạng Base64; secret không được xuất dưới dạng plaintext.
 
-### Job and Ticket Files/Logs
+### Job và Ticket Files/Logs
 
-If selected via extras, job and ticket attachments are exported by key with Base64 payloads. For jobs, the compressed log may also be exported:
+Nếu được chọn qua extra, các file đính kèm của job và ticket được xuất theo key với payload Base64. Đối với job, log đã nén cũng có thể được xuất:
 
-- Job files: `key: <file_path>` for each file in a job’s `files[]` list (subject to max size).
-- Job log: `key: logs/jobs/<job_id>/log.txt.gz` if present and under size limit.
-- Ticket files: `key: <file_path>` for each file in a ticket’s `files[]` list (subject to max size).
+- File job: `key: <file_path>` cho mỗi file trong `files[]` của job (tuỳ theo giới hạn kích thước tối đa).
+- Log job: `key: logs/jobs/<job_id>/log.txt.gz` nếu tồn tại và dưới giới hạn kích thước.
+- File ticket: `key: <file_path>` cho mỗi file trong `files[]` của ticket (tuỳ theo giới hạn kích thước tối đa).
 
 ### Monitor Timeline Data
 
-Server monitor time-series are stored as lists under `timeline/<server_id>/<system_id>`. When included, the exporter emits each timeline as a normal List (see [Lists](#lists)).
+Dữ liệu chuỗi thời gian (time-series) của monitor server được lưu dưới dạng list tại `timeline/<server_id>/<system_id>`. Khi được bao gồm, bộ xuất sẽ xuất mỗi timeline như một List thông thường (xem [Lists](#lists)).
 
-## Data Selection
+## Chọn Dữ Liệu
 
-The UI exposes three selection groups which map to exported item types:
+UI hiển thị ba nhóm lựa chọn tương ứng với các loại item được xuất:
 
-- **Lists**: One or more of the standard lists under `global/` (see above). Choosing `users` also triggers "User Data" export for `users/<username>` records. Choosing `buckets` triggers "Bucket Data". Choosing `secrets` triggers "Encrypted Secret Data".
-- **Indexes**: One or more Unbase indexes by ID (optionally filtered by query).
-- **Extras**: Optional payloads and time-series:
+- **Lists**: Một hoặc nhiều list chuẩn dưới `global/` (xem trên). Chọn `users` cũng sẽ kích hoạt xuất "User Data" cho các record `users/<username>`. Chọn `buckets` sẽ kích hoạt "Bucket Data". Chọn `secrets` sẽ kích hoạt "Encrypted Secret Data".
+- **Indexes**: Một hoặc nhiều index Unbase theo ID (có thể lọc theo query).
+- **Extras**: Payload và chuỗi thời gian tuỳ chọn:
   - `job_files`
   - `job_logs`
   - `bucket_files`
@@ -173,24 +173,24 @@ The UI exposes three selection groups which map to exported item types:
   - `stat_data` 
   - `user_avatars`
 
-The exporter may be instructed to include "all" in any group. Internally, these selections are expanded into a stream of the record types described above.
+Bộ xuất có thể được yêu cầu bao gồm "tất cả" trong bất kỳ nhóm nào. Bên trong, các lựa chọn này được mở rộng thành một luồng các loại record đã mô tả trên.
 
-## Compression
+## Nén Dữ Liệu
 
-Exports are streamed as Gzip files with a filename like `xyops-data-export-YYYY-MM-DD-<id>.txt.gz`. The importer accepts either a plain `.txt` NDJSON file or a Gzip-compressed `.txt.gz` file.
+Bản export được truyền dạng file Gzip với tên tương tự `ptops-data-export-YYYY-MM-DD-<id>.txt.gz`. Bộ nhập chấp nhận cả file NDJSON thuần `.txt` hoặc file `.txt.gz` đã nén Gzip.
 
-## Security Characteristics
+## Đặc Điểm An Toàn
 
-- **API Keys**: Only salted hashes are exported; plaintext API key material is never emitted. The `key` field is a salted SHA-256 digest stored at creation time.
-- **Secrets**: Secret payloads are exported as encrypted blobs (Base64); plaintext is never exported.
-- **Users**: Passwords are stored and exported as salted bcrypt hashes. No plaintext passwords are exported.
+- **API Keys**: Chỉ hash có salt được xuất; plaintext của API key không bao giờ được xuất. Trường `key` là một digest SHA-256 có salt được lưu lúc tạo.
+- **Secrets**: Payload secret được xuất dưới dạng blob mã hoá (Base64); plaintext không bao giờ được xuất.
+- **Users**: Mật khẩu được lưu và xuất dưới dạng hash bcrypt có salt. Không có mật khẩu plaintext nào được xuất.
 
-## Example
+## Ví Dụ
 
-Snippet showing list export, API keys, and a database record:
+Đoạn ví dụ hiển thị xuất list, API key, và một record database:
 
 ```
-# xyOps Data Export v1.0
+# PTOps Data Export v1.0
 # Hostname: joemax.xyops.io
 # Date/Time: Tue Nov 18 2025 12:01:27 GMT-0800 (Pacific Standard Time)
 # Format: NDJSON
@@ -209,23 +209,23 @@ Snippet showing list export, API keys, and a database record:
 {"index":"tickets","id":"tmhzbmbagig","record":{"subject":"Alert: High Active Jobs on raspberrypi", ...}}
 ```
 
-## Parsing Rules
+## Quy Tắc Parse
 
-- Comments and blank lines are ignored. Only lines that begin with `{` are parsed.
-- Lines are processed in order. Commands may prepare state (e.g. list deletion) before subsequent puts.
-- Key/value records are written via `storage.put(key, value)`. Binary keys are automatically Base64-decoded on import.
-- Database records are inserted via `unbase.insert(index, id, record)`.
-- Storage commands call the named method on the storage engine with provided args.
-- The importer streams and validates line-by-line, collecting up to 100 errors for reporting, and continues past non-fatal errors.
+- Comment và dòng trống bị bỏ qua. Chỉ các dòng bắt đầu bằng `{` mới được parse.
+- Các dòng được xử lý theo thứ tự. Command có thể chuẩn bị trạng thái (ví dụ xoá list) trước các lệnh put tiếp theo.
+- Record key/value được ghi qua `storage.put(key, value)`. Key nhị phân được tự động decode Base64 khi nhập.
+- Record database được chèn qua `unbase.insert(index, id, record)`.
+- Storage command gọi phương thức được đặt tên trên storage engine với các tham số đã cung cấp.
+- Bộ nhập truyền và kiểm tra từng dòng, thu thập tối đa 100 lỗi để báo cáo, và tiếp tục vượt qua các lỗi không nghiêm trọng.
 
-## Lists and Storage Notes
+## Ghi Chú Về Lists và Storage
 
-xyOps stores most configuration objects as Lists. Useful references:
+PTOps lưu hầu hết các object cấu hình dưới dạng List. Tài liệu tham khảo hữu ích:
 
 - [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage)
 - [Lists](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Lists.md)
 - [Unbase](https://github.com/jhuckaby/pixl-server-unbase)
 
-## Versioning
+## Phiên Bản
 
-This document specifies XYBK v1.0. The exporter emits `# xyOps Data Export v1.0` in the header. Future versions may add new section headers and record shapes, but importers ignore comments and only rely on the three NDJSON record types defined here.
+Tài liệu này mô tả XYBK v1.0. Bộ xuất phát ra `# PTOps Data Export v1.0` trong header. Các phiên bản tương lai có thể thêm các header phần và dạng record mới, nhưng bộ nhập luôn bỏ qua comment và chỉ dựa vào ba loại record NDJSON được định nghĩa ở đây.

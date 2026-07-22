@@ -1,94 +1,94 @@
 # Cronicle
 
-## Overview
+## Tổng Quan
 
-This chapter is for users of [Cronicle](https://github.com/jhuckaby/cronicle), the spiritual predecessor of xyOps.  If you have an existing Cronicle installation, you can migrate all of your data over to xyOps, enable a special compatibility mode for Cronicle Plugin interop, and if you like, white-label the UI to bring back the Cronicle name and logo.
+Chương này dành cho người dùng [Cronicle](https://github.com/jhuckaby/cronicle), người tiền nhiệm tinh thần của PTOps. Nếu bạn đang có một bản cài đặt Cronicle, bạn có thể di chuyển toàn bộ dữ liệu sang PTOps, bật một chế độ tương thích đặc biệt cho khả năng liên thông (interop) Plugin của Cronicle, và nếu muốn, whitelabel UI để đưa lại tên và logo Cronicle.
 
-## Prerequisites
+## Điều Kiện Tiên Quyết
 
-Before you import your Cronicle data, please make sure you [add all your worker servers](servers.md#adding-servers) to your xyOps installation.  The reason is, Cronicle events can target servers directly by their hostname, but xyOps does this differently.  It is important to have all your servers in your xyOps cluster before importing, so the code can properly match up your Cronicle server targets to your new xyOps servers.
+Trước khi bạn nhập dữ liệu Cronicle, hãy đảm bảo bạn đã [thêm tất cả worker server](servers.md#adding-servers) vào bản cài đặt PTOps của mình. Lý do là, event của Cronicle có thể nhắm mục tiêu server trực tiếp qua hostname của chúng, nhưng PTOps làm điều này khác đi. Điều quan trọng là phải có tất cả server trong cluster PTOps của bạn trước khi nhập, để code có thể khớp đúng target server Cronicle với server PTOps mới của bạn.
 
-## Data Export
+## Xuất Dữ Liệu
 
-Follow the [Cronicle Data Export](https://github.com/jhuckaby/Cronicle/blob/master/docs/CommandLine.md#data-import-and-export) guide for exporting all your data from Cronicle.
+Theo hướng dẫn [Cronicle Data Export](https://github.com/jhuckaby/Cronicle/blob/master/docs/CommandLine.md#data-import-and-export) để xuất toàn bộ dữ liệu từ Cronicle.
 
-## Data Import
+## Nhập Dữ Liệu
 
-To import your Cronicle data into xyOps, follow these steps:
+Để nhập dữ liệu Cronicle vào PTOps, theo các bước sau:
 
-1. Login to xyOps as an administrator.
-2. Click on the "**System**" tab in the sidebar.
-3. Click on the "**Import Data...**" button.
-4. In the "**File Format**" menu, select "**Cronicle Data Format**".
-5. Click the "**Choose File...**" button and select your Cronicle data export file.
+1. Đăng nhập PTOps với vai trò quản trị viên.
+2. Nhấn vào tab "**System**" ở sidebar.
+3. Nhấn nút "**Import Data...**".
+4. Trong menu "**File Format**", chọn "**Cronicle Data Format**".
+5. Nhấn nút "**Choose File...**" và chọn file xuất dữ liệu Cronicle của bạn.
 
 > [!WARNING]
-> The bulk import operation is destructive, and will delete all data in the way.  Also, this will abort all running jobs, flush all queued jobs, and the scheduler will automatically be paused.
+> Thao tác nhập hàng loạt có tính phá hoại (destructive), sẽ xoá toàn bộ dữ liệu trong đường đi. Ngoài ra, việc này sẽ hủy tất cả job đang chạy, xoá tất cả job đang chờ trong queue, và scheduler sẽ tự động bị tạm dừng.
 
-Once the process is complete, a notification will appear in the bottom-left corner of your screen.  Then, you can click on the "**Activity**" tab in the sidebar, locate the completed import job (should be the topmost entry) and click the "**Details...**" link to see a full report, including any warnings or errors.
+Khi quá trình hoàn tất, một thông báo sẽ xuất hiện ở góc dưới bên trái màn hình. Sau đó, bạn có thể nhấn vào tab "**Activity**" ở sidebar, tìm job nhập đã hoàn tất (thường là mục nằm trên cùng) và nhấn link "**Details...**" để xem báo cáo đầy đủ, bao gồm cảnh báo hoặc lỗi nếu có.
 
-Before you reenable the scheduler, please ensure all your Events, Categories, Server Groups, Plugins, Users, and API Keys all came over cleanly.  Verify user privileges, and event settings like multiplex, notifications, CPU/RAM limits, retries, etc.
+Trước khi bật lại scheduler, hãy đảm bảo tất cả Events, Categories, Server Groups, Plugins, Users, và API Keys của bạn đều đã chuyển sang gọn gàng. Kiểm tra lại privilege người dùng, và cài đặt event như multiplex, thông báo, giới hạn CPU/RAM, retry, v.v.
 
-## Plugin Compatibility Mode
+## Chế Độ Tương Thích Plugin
 
-While both xyOps and Cronicle communicate with Plugins via JSON over STDIO, the APIs differ slightly.  xyOps requires that each JSON message have a top-level `xy` property set to `1`, alongside any other job properties.  Example:
+Cả PTOps và Cronicle đều giao tiếp với Plugin qua JSON trên STDIO, nhưng API có khác nhau đôi chút. PTOps yêu cầu mỗi message JSON phải có thuộc tính `xy` ở cấp cao nhất được đặt là `1`, cùng với các thuộc tính job khác. Ví dụ:
 
 ```json
 { "xy": 1, "progress": 0.5 }
 ```
 
-This is how xyOps differentiates its own API versus other random JSON that may be emitted by your Plugin or a sub-process.  Cronicle, on the other hand, basically accepts any JSON message it finds, if it has one or more properties it recognizes:
+Đây là cách PTOps phân biệt API của riêng nó với các JSON ngẫu nhiên khác có thể được phát ra bởi Plugin của bạn hoặc một sub-process. Ngược lại, Cronicle cơ bản chấp nhận bất kỳ message JSON nào nó tìm thấy, nếu nó có một hoặc nhiều thuộc tính mà nó nhận diện được:
 
 ```json
 { "progress": 0.5 }
 ```
 
-If you have written existing Cronicle Plugins that you want to migrate to xyOps *without having to make any code changes*, you can enable a special compatibility mode.  Once turned on, it drops the `xy` property requirement, and also recognizes and converts several other Cronicle-specific Plugin APIs like `chain`, `chain_error`, `chain_data`, `notify_success` and `notify_fail`.  To enable compatibility mode, add a `cronicle` property set to `true` inside the [satellite.config](config.md#satellite-config) object.
+Nếu bạn đã viết Plugin Cronicle sẵn có mà muốn di chuyển sang PTOps *mà không cần thay đổi code*, bạn có thể bật một chế độ tương thích đặc biệt. Khi bật, nó bỏ yêu cầu thuộc tính `xy`, và cũng nhận diện và chuyển đổi một số API Plugin đặc thù của Cronicle khác như `chain`, `chain_error`, `chain_data`, `notify_success` và `notify_fail`. Để bật chế độ tương thích, thêm thuộc tính `cronicle` đặt là `true` bên trong object [satellite.config](config.md#satellite-config).
 
-You can also set it via environment variable if you like:
+Bạn cũng có thể đặt qua biến môi trường nếu muốn:
 
 ```
 XYOPS_satellite__config__cronicle="true"
 ```
 
 > [!NOTE]
-> Changing the Satellite Configuration requires a restart for the changes to take effect across all your servers.
+> Thay đổi Satellite Configuration cần khởi động lại để thay đổi có hiệu lực trên tất cả server của bạn.
 
-## White-Label UI
+## Whitelabel UI
 
-If you want to white-label the xyOps UI so it resembles Cronicle, you can change both the app "name" (used in a variety of places) and the logo image shown in the top-left corner.  To do this, modify these two configuration properties: [client.name](config.md#client-name) and [client.logo_url](config.md#client-logo_url) with the following overridden values:
+Nếu bạn muốn whitelabel UI của PTOps để nó giống Cronicle, bạn có thể thay đổi cả tên app "name" (dùng ở nhiều nơi khác nhau) và hình logo hiển thị ở góc trên bên trái. Để làm điều này, chỉnh sửa hai thuộc tính cấu hình sau: [client.name](config.md#client-name) và [client.logo_url](config.md#client-logo_url) với các giá trị override sau:
 
 ```json
 "name": "Cronicle",
 "logo_url": "/images/cronicle-logo.png"
 ```
 
-Note that these properties are *inside* the `client` object, in your `config.json` file.
+Lưu ý các thuộc tính này nằm *trong* object `client`, trong file `config.json` của bạn.
 
-You can also override them via environment variables if you like:
+Bạn cũng có thể override chúng qua biến môi trường nếu muốn:
 
 ```
 XYOPS_client__name="Cronicle"
 XYOPS_client__logo_url="/images/cronicle-logo.png"
 ```
 
-Make sure the logo path matches your [email_logo](config.md#email_logo) setting.  With the default `inline` email logo mode, this must be a local web root path under the xyOps `htdocs` directory, typically beginning with `/`.  If you set `email_logo` to `link`, the logo may be a regular image URL instead.
+Đảm bảo đường dẫn logo khớp với cài đặt [email_logo](config.md#email_logo) của bạn. Với chế độ logo email `inline` mặc định, đây phải là một web root path cục bộ dưới thư mục `htdocs` của PTOps, thường bắt đầu bằng `/`. Nếu bạn đặt `email_logo` là `link`, logo có thể là một URL ảnh thông thường.
 
 ## Multiplex Events
 
-xyOps handles [multiplex events](https://github.com/jhuckaby/Cronicle/blob/master/docs/WebUI.md#multiplexing) (jobs that run on multiple servers in parallel) differently than Cronicle.  They are now implemented as part of a [Workflow](workflows.md), using a [Multiplex Controller Node](workflows.md#multiplex-controller).  When you import your Cronicle data with multiplexed events, they are automatically converted to workflows, with the event added inside as a [Job Node](workflows.md#job-node).
+PTOps xử lý [multiplex event](https://github.com/jhuckaby/Cronicle/blob/master/docs/WebUI.md#multiplexing) (job chạy trên nhiều server song song) khác với Cronicle. Chúng giờ được triển khai như một phần của [Workflow](workflows.md), sử dụng [Multiplex Controller Node](workflows.md#multiplex-controller). Khi bạn nhập dữ liệu Cronicle có multiplex event, chúng sẽ tự động được chuyển đổi thành workflow, với event được thêm vào bên trong dưới dạng [Job Node](workflows.md#job-node).
 
-What this means in practice is that your multiplex events should "just work" like they did in Cronicle.  However, you now have more options to customize things.  Inside the workflow editor, you can attach [Limiter Nodes](workflows.md#limiter-nodes) to your job node, which control how many jobs can run in parallel, allowing some to queue up.  To do this, add both a [Max Jobs Limiter](workflows.md#max-jobs-limiter), and a [Max Queue Limiter](workflows.md#max-queue-limiter).  Note that by default there is no parallel limit.
+Điều này có nghĩa trong thực tế là các multiplex event của bạn sẽ "hoạt động ngay" giống như trong Cronicle. Tuy nhiên, giờ bạn có nhiều tuỳ chọn hơn để tuỳ chỉnh. Trong trình chỉnh sửa workflow, bạn có thể gắn [Limiter Node](workflows.md#limiter-nodes) vào job node của bạn, kiểm soát số job có thể chạy song song, cho phép một số job xếp hàng chờ. Để làm điều này, thêm cả [Max Jobs Limiter](workflows.md#max-jobs-limiter), và [Max Queue Limiter](workflows.md#max-queue-limiter). Lưu ý mặc định không có giới hạn song song.
 
 ## Detached Jobs
 
-xyOps does not have the concept of [detached jobs](https://github.com/jhuckaby/Cronicle/blob/master/docs/WebUI.md#detached-mode) like Cronicle does.  The reason is, xyOps installs a small satellite binary on your worker servers, which runs 24x7 and does not ever need to be restarted.  And if you do need to upgrade the satellite software, the process is orchestrated in such a way where it rolls out gradually, and never interrupts running jobs (each worker server waits for all jobs to complete before self-upgrading).
+PTOps không có khái niệm [detached job](https://github.com/jhuckaby/Cronicle/blob/master/docs/WebUI.md#detached-mode) như Cronicle. Lý do là, PTOps cài đặt một satellite binary nhỏ trên worker server của bạn, chạy 24x7 và không bao giờ cần restart. Và nếu bạn cần nâng cấp software satellite, quá trình được điều phối theo cách triển khai dần dần, và không bao giờ làm gián đoạn job đang chạy (mỗi worker server chờ tất cả job hoàn tất trước khi tự nâng cấp).
 
-Also, stopping the primary xyOps service does not abort any running jobs.  They all continue headless, and if they complete while the xyOps conductor server is still down, they simply wait for a conductor server to come up before reporting completion.
+Ngoài ra, việc dừng dịch vụ PTOps chính không hủy bất kỳ job đang chạy nào. Chúng đều tiếp tục chạy headless, và nếu chúng hoàn tất khi conductor server PTOps vẫn đang down, chúng chỉ đơn giản chờ một conductor server lên trước khi báo cáo hoàn tất.
 
-## User Privileges
+## Privilege Người Dùng
 
-User and API Key privileges are automatically migrated over to xyOps, but there are a couple of exceptions:
+Privilege của User và API Key được tự động di chuyển sang PTOps, nhưng có vài ngoại lệ:
 
-- Cronicle's **Toggle Scheduler** user privilege doesn't exist in xyOps.  The feature exists, but it is limited to administrators only.
-- Cronicle's undocumented `job_read_only` privilege doesn't exist in xyOps.  Instead, individual Plugin and Event parameters can be marked as "administrator locked" (only admins can write to them), and the Shell Plugin script param is preconfigured this way.
+- Privilege người dùng **Toggle Scheduler** của Cronicle không tồn tại trong PTOps. Tính năng này vẫn tồn tại, nhưng chỉ giới hạn cho quản trị viên.
+- Privilege `job_read_only` không được document của Cronicle không tồn tại trong PTOps. Thay vào đó, các tham số Plugin và Event riêng lẻ có thể được đánh dấu là "administrator locked" (chỉ admin mới ghi được), và tham số script của Shell Plugin được cấu hình sẵn theo cách này.

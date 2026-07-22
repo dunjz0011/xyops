@@ -1,4 +1,4 @@
-// xyOps Communication Layer
+// PTOps Communication Layer
 // Copyright (c) 2019 - 2026 PixlCore LLC
 // Released under the BSD 3-Clause License.
 // See the LICENSE.md file in this repository.
@@ -227,7 +227,7 @@ app.comm = {
 	
 	forceVersionRefresh: function(data) {
 		// server software was upgraded, need client refresh
-		var msg = `The primary conductor server was upgraded to xyOps v${data.version}.  We now need to refresh your client to complete the upgrade.  Sorry for the inconvenience!`;
+		var msg = `The primary conductor server was upgraded to PTOps v${data.version}.  We now need to refresh your client to complete the upgrade.  Sorry for the inconvenience!`;
 		
 		Dialog.confirm( 'Refresh Needed', msg, ['refresh', 'Refresh'], function(result) {
 			if (!result) return;

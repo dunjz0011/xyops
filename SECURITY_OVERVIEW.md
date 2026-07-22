@@ -1,10 +1,10 @@
-# xyOps Security Overview
+# PTOps Security Overview
 
 ## Overview
 
-This document explains how xyOps protects user accounts, secrets, API access, job execution, and server-to-server communication.
+This document explains how PTOps protects user accounts, secrets, API access, job execution, and server-to-server communication.
 
-xyOps is designed around a few core ideas with regard to security:
+PTOps is designed around a few core ideas with regard to security:
 
 - Keep sensitive data out of the browser unless it is truly needed.
 - Encrypt secrets at rest and decrypt them only at the moment of use.
@@ -13,12 +13,12 @@ xyOps is designed around a few core ideas with regard to security:
 - Prefer explicit tokens, audit logs, and scoped privileges over implicit trust.
 - Keep the platform self-hostable, without requiring a vendor cloud control plane to operate.
 
-This document is not a claim that xyOps is bug-free, and it is not a substitute for good deployment hygiene. TLS, reverse proxies, SSO gateways, operating system hardening, backup handling, and administrator choices still matter.
+This document is not a claim that PTOps is bug-free, and it is not a substitute for good deployment hygiene. TLS, reverse proxies, SSO gateways, operating system hardening, backup handling, and administrator choices still matter.
 
 
-## Why Trust xyOps
+## Why Trust PTOps
 
-At a high level, xyOps is built to keep a strong boundary between ordinary users, administrators, and remote worker servers:
+At a high level, PTOps is built to keep a strong boundary between ordinary users, administrators, and remote worker servers:
 
 - Passwords are salted and bcrypt-hashed, not stored in plaintext.
 - Browser sessions use cryptographically generated session IDs and CSRF tokens.
@@ -32,14 +32,14 @@ At a high level, xyOps is built to keep a strong boundary between ordinary users
 
 ## Architecture
 
-xyOps is not built on a conventional Express or React stack. It uses the first-party PixlCore framework family on both the server and client side.
+PTOps is not built on a conventional Express or React stack. It uses the first-party PixlCore framework family on both the server and client side.
 
 ### Core Components
 
 | Component | Role | Security Relevance |
 |----------|------|--------------------|
 | [pixl-server](https://github.com/jhuckaby/pixl-server) | Top-level daemon and component manager | Controls startup, shutdown, config loading, logging, and component wiring. |
-| [pixl-server-api](https://github.com/jhuckaby/pixl-server-api) | REST API router | Normalizes API names and only dispatches to registered methods. xyOps exposes app methods through the `api_` prefix. |
+| [pixl-server-api](https://github.com/jhuckaby/pixl-server-api) | REST API router | Normalizes API names and only dispatches to registered methods. PTOps exposes app methods through the `api_` prefix. |
 | [pixl-server-debug](https://github.com/jhuckaby/pixl-server-debug) | Optional debug port | Disabled by default. Must be explicitly enabled in config or environment. |
 | [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage) | Persistent storage abstraction | Handles JSON records, lists, hashes, files, locking, and transactions across multiple backends. |
 | [pixl-server-user](https://github.com/jhuckaby/pixl-server-user) | User auth and session system | Handles passwords, sessions, cookies, password reset flow, and CSRF. |
@@ -47,19 +47,19 @@ xyOps is not built on a conventional Express or React stack. It uses the first-p
 | [pixl-server-unbase](https://github.com/jhuckaby/pixl-server-unbase) | Query layer on top of storage | Queries are read-only and separate from write APIs. |
 | [pixl-xyapp](https://github.com/pixlcore/pixl-xyapp) | Browser-side SPA framework | Adds CSRF headers to mutating requests and keeps session-related state in runtime memory. |
 
-The main trust boundaries in xyOps are:
+The main trust boundaries in PTOps are:
 
 - Browser to conductor
 - Conductor to storage
 - Conductor to xySat worker agents
 - Conductor to peer conductors in multi-conductor mode
 - xySat to local child processes that run jobs and monitor plugins
-- xyOps to external HTTP destinations such as web hooks
+- PTOps to external HTTP destinations such as web hooks
 
 
 ## Protected Assets
 
-The most sensitive things in a typical xyOps deployment are:
+The most sensitive things in a typical PTOps deployment are:
 
 - User password hashes and salts
 - Session IDs and CSRF tokens
@@ -70,7 +70,7 @@ The most sensitive things in a typical xyOps deployment are:
 - Configuration credentials such as mail auth, S3 credentials, and SSO settings
 - Job logs, uploads, exported backups, and ticket attachments that may contain sensitive user data
 
-xyOps protects these in different ways depending on the asset. Some are hashed, some are encrypted, some are never sent to the browser, and some are only exposed one time at creation.
+PTOps protects these in different ways depending on the asset. Some are hashed, some are encrypted, some are never sent to the browser, and some are only exposed one time at creation.
 
 ### Credentials and Tokens
 
@@ -89,7 +89,7 @@ xyOps protects these in different ways depending on the asset. Some are hashed, 
 
 ### Password Storage
 
-xyOps uses `pixl-server-user` for local account management. Passwords are protected as follows:
+PTOps uses `pixl-server-user` for local account management. Passwords are protected as follows:
 
 - Each user gets a random salt.
 - The stored password is a bcrypt hash of `password + salt`.
@@ -117,7 +117,7 @@ This reduces brute-force pressure and avoids common JavaScript object-key attack
 
 ### Sessions
 
-When a user logs in, xyOps creates a session record containing:
+When a user logs in, PTOps creates a session record containing:
 
 - a cryptographically generated session ID
 - the username
@@ -125,11 +125,11 @@ When a user logs in, xyOps creates a session record containing:
 - timestamps for creation, modification, and expiration
 - a CSRF token if CSRF is enabled
 
-The default session lifetime in xyOps is `365` days. Sessions are stored server-side, not encoded into a browser token.
+The default session lifetime in PTOps is `365` days. Sessions are stored server-side, not encoded into a browser token.
 
 ### Cookies
 
-In the default xyOps configuration, the session is delivered using a cookie rather than returning the session ID in the JSON login response. The default cookie settings are:
+In the default PTOps configuration, the session is delivered using a cookie rather than returning the session ID in the JSON login response. The default cookie settings are:
 
 ```json
 "cookie_settings": {
@@ -156,11 +156,11 @@ CSRF protection is enabled by default.
 - The token lives in the in-memory global `app` object and is not stored in `localStorage` or `sessionStorage`.
 - Server-side CSRF checks apply to mutating requests. `GET` and `HEAD` are exempt.
 
-xyOps only uses HTTP `GET` and `POST` for its own REST API.
+PTOps only uses HTTP `GET` and `POST` for its own REST API.
 
 ### Session Scrubbing
 
-After a session or API key is loaded, xyOps removes auth material from common request containers:
+After a session or API key is loaded, PTOps removes auth material from common request containers:
 
 - `session_id`
 - `csrf_token`
@@ -171,19 +171,19 @@ This reduces the chance of those values leaking into downstream logs, debug outp
 
 ### User Security Activity
 
-xyOps also exposes account-oriented security history, including login activity, and allows users to log out all sessions after re-entering their password. This gives users a practical response if they suspect account compromise.
+PTOps also exposes account-oriented security history, including login activity, and allows users to log out all sessions after re-entering their password. This gives users a practical response if they suspect account compromise.
 
 
 ## API Keys
 
-API keys in xyOps are designed for services and automation, not human browser sessions.
+API keys in PTOps are designed for services and automation, not human browser sessions.
 
 ### Key Protection
 
 - Only administrators can create them.
 - Each key gets its own ID, title, privilege set, revision history, and active flag.
 - The plaintext key is generated once and shown once.
-- xyOps stores only a salted SHA-256 hash of the key, not the plaintext.
+- PTOps stores only a salted SHA-256 hash of the key, not the plaintext.
 - A masked version is stored for display convenience.
 - Each key can have an optional expiration date, after which it auto-disables.
 - You can set a max req/sec for each key, for throttling.
@@ -221,7 +221,7 @@ Deleting a key also clears its cached rate-limit and usage state.
 
 ## Secret Vaults and Encryption
 
-Secret Vaults are the main way xyOps stores sensitive runtime configuration such as passwords, tokens, and API credentials.
+Secret Vaults are the main way PTOps stores sensitive runtime configuration such as passwords, tokens, and API credentials.
 
 ### Storage Layout
 
@@ -251,7 +251,7 @@ This gives both confidentiality and integrity protection, and prevents encrypted
 
 ### Decryption Lifecycle
 
-xyOps decrypts secrets only when needed:
+PTOps decrypts secrets only when needed:
 
 - just before launching a job or plugin that has access to them
 - just before rendering a web hook that references them
@@ -271,7 +271,7 @@ Secret access is auditable in two ways:
 
 ### Operational Note
 
-xyOps protects secret values at rest, but once a secret is handed to a job or web hook, the downstream code can still expose it. For example:
+PTOps protects secret values at rest, but once a secret is handed to a job or web hook, the downstream code can still expose it. For example:
 
 - a script can print an environment variable into a job log
 - a web hook can send a secret to a third-party service
@@ -282,7 +282,7 @@ So Secret Vaults protect storage and controlled delivery, not arbitrary downstre
 
 ## The Global Secret Key
 
-xyOps uses one global `secret_key` for several security-sensitive operations.
+PTOps uses one global `secret_key` for several security-sensitive operations.
 
 ### Where It Lives
 
@@ -290,7 +290,7 @@ The key lives in the config override file, typically:
 
 - `conf/overrides.json`
 
-xyOps protects both `config.json` and `overrides.json` with owner-only permissions (`chmod 600`) during startup and update operations.
+PTOps protects both `config.json` and `overrides.json` with owner-only permissions (`chmod 600`) during startup and update operations.
 
 ### Uses
 
@@ -304,14 +304,14 @@ The secret key is used to:
 
 ### Generation
 
-xyOps generates an initial secret key automatically during first install:
+PTOps generates an initial secret key automatically during first install:
 
 - container startup uses `openssl rand -hex 32`
 - standard installs use a cryptographically generated value written to the overrides file
 
 ### Protection
 
-xyOps deliberately keeps the secret key off normal client surfaces:
+PTOps deliberately keeps the secret key off normal client surfaces:
 
 - it is not sent to the browser
 - it is not returned by the admin config APIs
@@ -319,7 +319,7 @@ xyOps deliberately keeps the secret key off normal client surfaces:
 
 ### Secret Key Rotation
 
-xyOps includes an orchestrated secret-key rotation flow for administrators. The rotation process is designed to avoid partial updates:
+PTOps includes an orchestrated secret-key rotation flow for administrators. The rotation process is designed to avoid partial updates:
 
 - scheduler is paused
 - queued jobs are flushed
@@ -331,9 +331,9 @@ xyOps includes an orchestrated secret-key rotation flow for administrators. The 
 This is much safer than manually changing a key and hoping all dependent systems catch up.
 
 
-## xyOps Satellite
+## PTOps Satellite
 
-xySat (xyOps Satellite) is the remote worker and monitoring agent for xyOps. It is security-sensitive because it is the component that actually runs jobs on your servers.
+xySat (PTOps Satellite) is the remote worker and monitoring agent for PTOps. It is security-sensitive because it is the component that actually runs jobs on your servers.
 
 ### No Inbound Listener
 
@@ -374,7 +374,7 @@ That install-time privilege does **not** mean every job has to run with the same
 
 ### Reduced-Privilege Jobs
 
-On POSIX systems, xySat can drop child processes to a configured UID and GID before launching a plugin. This is one of the most important production hardening controls in xyOps.
+On POSIX systems, xySat can drop child processes to a configured UID and GID before launching a plugin. This is one of the most important production hardening controls in PTOps.
 
 You can:
 
@@ -421,12 +421,12 @@ This same pattern applies to other sensitive built-in plugin fields, including:
 - the HTTP Request plugin `url`
 - several Docker plugin launch fields such as image name and command extras
 
-So xyOps does not merely hide these controls in the browser. It preserves locked values on the server for non-admin users.
+So PTOps does not merely hide these controls in the browser. It preserves locked values on the server for non-admin users.
 
 
 ## Privileges and Admin Controls
 
-xyOps uses a flexible privilege system with users, roles, and API keys.
+PTOps uses a flexible privilege system with users, roles, and API keys.
 
 ### Default Privileges
 
@@ -456,7 +456,7 @@ So ordinary users do not start with the ability to define new executable code, a
 
 ### Resource-Level Checks
 
-xyOps also enforces resource-specific checks where appropriate, including:
+PTOps also enforces resource-specific checks where appropriate, including:
 
 - category access
 - server group access
@@ -480,12 +480,12 @@ Several surfaces are intentionally administrator-controlled because they can cro
 - system hooks
 - marketplace plugin installation
 
-This is an important theme in xyOps: powerful automation is a feature, but it is not handed to low-privilege users by default.
+This is an important theme in PTOps: powerful automation is a feature, but it is not handed to low-privilege users by default.
 
 
 ## WebSockets and Tokens
 
-xyOps uses several authenticated real-time network communication channels.
+PTOps uses several authenticated real-time network communication channels.
 
 ### Browser Sockets
 
@@ -525,7 +525,7 @@ This allows peers to form a trusted control plane without sharing the raw secret
 
 ### Derived Tokens
 
-xyOps also uses derived tokens for internal file and stream flows, for example:
+PTOps also uses derived tokens for internal file and stream flows, for example:
 
 - job log and file download tokens
 - SSE stream tokens
@@ -536,11 +536,11 @@ These tokens are derived from job IDs, server IDs, and the secret key. The raw s
 
 ## Web Server and APIs
 
-xyOps replaces Express-style middleware stacks with [pixl-server-web](https://github.com/jhuckaby/pixl-server-web) and [pixl-server-api](https://github.com/jhuckaby/pixl-server-api).
+PTOps replaces Express-style middleware stacks with [pixl-server-web](https://github.com/jhuckaby/pixl-server-web) and [pixl-server-api](https://github.com/jhuckaby/pixl-server-api).
 
 ### API Routing
 
-`pixl-server-api` normalizes API names to a restricted character set and dispatches only to registered handlers. In xyOps, app APIs are namespaced and use the `api_` prefix, so malformed URLs do not automatically gain access to arbitrary methods.
+`pixl-server-api` normalizes API names to a restricted character set and dispatches only to registered handlers. In PTOps, app APIs are namespaced and use the `api_` prefix, so malformed URLs do not automatically gain access to arbitrary methods.
 
 ### Static File Safety
 
@@ -560,7 +560,7 @@ These are not a substitute for upstream rate limiting, but they do place useful 
 
 ### Security Headers
 
-By default, xyOps configures strict security headers for HTML routes, including:
+By default, PTOps configures strict security headers for HTML routes, including:
 
 - `Content-Security-Policy`
 - `X-Frame-Options: DENY`
@@ -572,7 +572,7 @@ The default CSP starts from `default-src 'none'` and then explicitly allows the 
 
 ### Validation and Sanitization
 
-xyOps APIs include several safety checks:
+PTOps APIs include several safety checks:
 
 - required parameters are validated against regex rules
 - reserved and unsafe object keys are rejected globally
@@ -609,7 +609,7 @@ Auth-related APIs intentionally use vague error messages such as "Access denied"
 
 ## Database and Storage Safety
 
-xyOps uses [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage) plus [pixl-server-unbase](https://github.com/jhuckaby/pixl-server-unbase), not traditional SQL.
+PTOps uses [pixl-server-storage](https://github.com/jhuckaby/pixl-server-storage) plus [pixl-server-unbase](https://github.com/jhuckaby/pixl-server-unbase), not traditional SQL.
 
 ### Storage Layer
 
@@ -637,7 +637,7 @@ This materially reduces the attack surface compared to dynamic SQL or scriptable
 
 ## Outbound HTTP
 
-xyOps includes outbound HTTP features by design.
+PTOps includes outbound HTTP features by design.
 
 ### Web Hooks
 
@@ -663,14 +663,14 @@ So this is an administrator-controlled automation surface, not an unintended SSR
 
 ### Airgap Enforcement
 
-Both web hooks and the HTTP Request plugin honor xyOps airgap controls. If you configure IP allowlists or blocklists for outbound access, those rules are pushed into the relevant request paths, including xySat where appropriate.
+Both web hooks and the HTTP Request plugin honor PTOps airgap controls. If you configure IP allowlists or blocklists for outbound access, those rules are pushed into the relevant request paths, including xySat where appropriate.
 
 
 ## Marketplace and System Hooks
 
 ### Marketplace Plugins
 
-Marketplace plugins are third-party packages, but they are still gated by the xyOps privilege model:
+Marketplace plugins are third-party packages, but they are still gated by the PTOps privilege model:
 
 - marketplace entries are vetted by PixlCore before being admitted to the official marketplace
 - only administrators, or users with explicit plugin privileges, can install them
@@ -693,7 +693,7 @@ They are configured in the server config, not as ordinary user content. Standard
 
 ## Expressions and Templates
 
-xyOps uses JEXL-based expressions for monitors, alerts, messages, workflow controllers, plugin parameters, web hooks, and templates.
+PTOps uses JEXL-based expressions for monitors, alerts, messages, workflow controllers, plugin parameters, web hooks, and templates.
 
 From a security standpoint, the key point is:
 
@@ -702,12 +702,12 @@ From a security standpoint, the key point is:
 - expressions only see the context objects explicitly passed to them
 - they cannot escape into native server execution
 
-This is the reason xyOps uses JEXL instead of letting users run arbitrary JavaScript expressions.
+This is the reason PTOps uses JEXL instead of letting users run arbitrary JavaScript expressions.
 
 
 ## Auditing and Logging
 
-xyOps treats security events as something operators should be able to review.
+PTOps treats security events as something operators should be able to review.
 
 Examples of audit-worthy actions include:
 
@@ -718,12 +718,12 @@ Examples of audit-worthy actions include:
 - conductor and peer changes
 - server enrollment and connectivity changes
 
-That said, job logs are application output. If a script prints a password, token, or secret value into stdout or stderr, xyOps will record it like any other log output. So operators should treat job logs, exports, and backups as sensitive data.
+That said, job logs are application output. If a script prints a password, token, or secret value into stdout or stderr, PTOps will record it like any other log output. So operators should treat job logs, exports, and backups as sensitive data.
 
 
 ## Administrator Authority
 
-xyOps is opinionated about trust boundaries, but it does not try to "save" administrators from every deliberate action. In particular, it does not prevent a trusted admin from:
+PTOps is opinionated about trust boundaries, but it does not try to "save" administrators from every deliberate action. In particular, it does not prevent a trusted admin from:
 
 - writing a shell script that accesses internal resources
 - pointing a web hook or HTTP Request plugin at a private URL
@@ -736,7 +736,7 @@ This distinction matters. These are administrative power features, not default r
 
 ## Production Hardening
 
-The defaults are a solid starting point, but production deployments should still harden the environment around xyOps.
+The defaults are a solid starting point, but production deployments should still harden the environment around PTOps.
 
 Recommended steps:
 
@@ -764,4 +764,4 @@ For detailed deployment guidance, see [Self-Hosting](https://docs.xyops.io/hosti
 - [Self-Hosting](https://docs.xyops.io/hosting)
 - [Scaling](https://docs.xyops.io/scaling)
 - [Web Hooks](https://docs.xyops.io/webhooks)
-- [xyOps Expression Format](https://docs.xyops.io/xyexp)
+- [PTOps Expression Format](https://docs.xyops.io/xyexp)

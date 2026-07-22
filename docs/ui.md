@@ -1,22 +1,22 @@
-# User Interface
+# Giao Diện Người Dùng
 
-## Overview
+## Tổng Quan
 
-This document explains the main user interface settings in xyOps, which live under the `client` object in your configuration file.
+Tài liệu này giải thích các cài đặt giao diện người dùng chính trong PTOps, nằm trong object `client` trong file cấu hình của bạn.
 
-The main configuration file is typically located at `/opt/xyops/conf/config.json`.  If you edit settings in the Admin UI, xyOps writes the changes to `/opt/xyops/conf/overrides.json` instead.  See [Configuration](config.md) and [Self-Hosting](hosting.md#configuration) for more details.
+File cấu hình chính thường nằm ở `/opt/xyops/conf/config.json`. Nếu bạn chỉnh sửa cài đặt trong Admin UI, PTOps sẽ ghi thay đổi vào `/opt/xyops/conf/overrides.json`. Xem [Configuration](config.md) và [Self-Hosting](hosting.md#configuration) để biết thêm chi tiết.
 
-## Whitelabeling
+## Whitelabel
 
-xyOps can be lightly whitelabeled by changing the product name, footer company name, and logo.  These settings affect the web UI, email subjects, email footers, and other user-facing messages.
+PTOps có thể được whitelabel nhẹ bằng cách đổi tên sản phẩm, tên công ty ở footer, và logo. Các cài đặt này ảnh hưởng đến giao diện web, tiêu đề email, footer email, và các thông báo hiển thị cho người dùng khác.
 
-| Setting | Default | Description |
+| Cài Đặt | Mặc Định | Mô Tả |
 |---------|---------|-------------|
-| `client.name` | `xyOps` | The application name shown in the UI, login text, documentation header, email subjects, alert text, web hook text, and version strings. |
-| `client.company` | `PixlCore LLC` | The company name shown in the UI footer and email footer copyright. |
-| `client.logo_url` | `/images/logotype.png` | The logo image path or URL used in the sidebar, login header, and email template. |
+| `client.name` | `PTOps` | Tên ứng dụng hiển thị trong UI, text đăng nhập, tiêu đề tài liệu, tiêu đề email, text alert, text web hook, và chuỗi phiên bản. |
+| `client.company` | `PixlCore LLC` | Tên công ty hiển thị ở footer UI và copyright footer email. |
+| `client.logo_url` | `/images/logotype.png` | Đường dẫn hoặc URL ảnh logo dùng trong sidebar, header đăng nhập, và template email. |
 
-Example:
+Ví dụ:
 
 ```json
 {
@@ -28,9 +28,9 @@ Example:
 }
 ```
 
-The `logo_url` may be a local web root path, typically beginning with `/`, or a fully-qualified image URL.  However, the default `email_logo` mode is `inline`, which embeds the logo into outgoing emails.  In that mode, `logo_url` must be a local path under the xyOps `htdocs` directory, because xyOps loads the image from disk before attaching it to email.  If you set [email_logo](config.md#email_logo) to `link`, then `logo_url` may be a remote image URL instead.
+`logo_url` có thể là đường dẫn web root cục bộ, thường bắt đầu bằng `/`, hoặc một URL ảnh đầy đủ. Tuy nhiên, chế độ mặc định của `email_logo` là `inline`, sẽ nhúng logo vào email gửi đi. Ở chế độ đó, `logo_url` phải là đường dẫn cục bộ dưới thư mục `htdocs` của PTOps, vì PTOps đọc ảnh từ đĩa trước khi đính kèm vào email. Nếu bạn đặt [email_logo](config.md#email_logo) thành `link`, thì `logo_url` có thể là URL ảnh từ xa.
 
-You can also override these settings with environment variables:
+Bạn cũng có thể override các cài đặt này bằng biến môi trường:
 
 ```sh
 XYOPS_client__name="Acme Ops"
@@ -40,13 +40,13 @@ XYOPS_client__logo_url="/images/acme-ops-logo.png"
 
 ## Sidebar
 
-The sidebar can be controlled at three levels:
+Sidebar có thể được kiểm soát ở ba cấp độ:
 
-1. **User preferences in the UI:** Each user can choose which sidebar sections are visible from **My Settings**.  This is stored on their user record as `sidebar`.
-2. **Default user preferences:** The server-side `default_user_prefs.sidebar` array sets the default sidebar sections for new users, and for SSO-created users when their profile is initialized.
-3. **Global hidden sections:** The `client.hide_sidebar_sections` array force-hides sections for everyone, regardless of their user preferences.
+1. **Tuỳ chọn người dùng trong UI:** Mỗi người dùng có thể chọn phần sidebar nào hiển thị từ **My Settings**. Được lưu trong bản ghi user dưới dạng `sidebar`.
+2. **Tuỳ chọn mặc định cho người dùng mới:** Mảng `default_user_prefs.sidebar` phía server đặt các phần sidebar mặc định cho người dùng mới, và cho người dùng được tạo qua SSO khi hồ sơ của họ được khởi tạo.
+3. **Phần ẩn toàn cục:** Mảng `client.hide_sidebar_sections` ép ẩn các phần cho tất cả mọi người, bất kể tuỳ chọn cá nhân của họ.
 
-Here is the full set of built-in sidebar section IDs:
+Đây là toàn bộ ID phần sidebar có sẵn:
 
 ```json
 [
@@ -62,23 +62,23 @@ Here is the full set of built-in sidebar section IDs:
 ]
 ```
 
-### User Sidebar Preferences
+### Tuỳ Chọn Sidebar Của Người Dùng
 
-Users can open **My Settings** and choose the sidebar sections they want to see.  This affects only their own account, and does not change permissions.  For example, hiding the **Admin** sidebar section makes the UI quieter for that user, but it does not remove admin privileges.
+Người dùng có thể mở **My Settings** và chọn các phần sidebar mà họ muốn thấy. Điều này chỉ ảnh hưởng đến tài khoản của họ, và không thay đổi quyền hạn. Ví dụ, ẩn phần sidebar **Admin** làm UI gọn hơn cho người dùng đó, nhưng không loại bỏ quyền admin.
 
-Internally, the selection is stored on the user record as [User.sidebar](data.md#user-sidebar).
+Bên trong, lựa chọn này được lưu trong bản ghi user dưới dạng [User.sidebar](data.md#user-sidebar).
 
-Some individual tabs are still hidden automatically based on privileges.  For example, a non-admin user will not see most Admin links, even if their `sidebar` array includes `admin`.
+Một số tab riêng lẻ vẫn tự động bị ẩn dựa trên quyền hạn. Ví dụ, người dùng không phải admin sẽ không thấy hầu hết các liên kết Admin, dù mảng `sidebar` của họ có chứa `admin`.
 
-### Default Sidebar Preferences
+### Tuỳ Chọn Sidebar Mặc Định
 
-To set the starting sidebar layout for new users, add a `sidebar` array inside [default_user_prefs](config.md#default_user_prefs).
+Để đặt bố cục sidebar khởi đầu cho người dùng mới, thêm mảng `sidebar` vào trong [default_user_prefs](config.md#default_user_prefs).
 
-Users can still customize this later in **My Settings**, unless you also hide sections globally with `client.hide_sidebar_sections`.
+Người dùng vẫn có thể tự tuỳ chỉnh sau trong **My Settings**, trừ khi bạn cũng ẩn các phần toàn cục bằng `client.hide_sidebar_sections`.
 
-### Globally Hidden Sidebar Sections
+### Ẩn Phần Sidebar Toàn Cục
 
-To hide sidebar sections for all users, add their IDs to `client.hide_sidebar_sections`:
+Để ẩn các phần sidebar cho tất cả người dùng, thêm ID của chúng vào `client.hide_sidebar_sections`:
 
 ```json
 {
@@ -88,15 +88,15 @@ To hide sidebar sections for all users, add their IDs to `client.hide_sidebar_se
 }
 ```
 
-Globally hidden sections are removed from the **My Settings** sidebar selector as well, so users cannot re-enable them.
+Các phần bị ẩn toàn cục cũng bị loại khỏi bộ chọn sidebar trong **My Settings**, nên người dùng không thể tự bật lại.
 
-This is useful when you want to simplify the UI for a focused deployment.  For example, if you use xyOps only for monitoring and alerts, you may want to hide scheduler-related sections from most installs.
+Điều này hữu ích khi bạn muốn đơn giản hoá UI cho một triển khai tập trung vào một mục đích cụ thể. Ví dụ, nếu bạn chỉ dùng PTOps cho giám sát và alert, bạn có thể muốn ẩn các phần liên quan đến scheduler khỏi hầu hết các cài đặt.
 
-## Sortable Tables
+## Bảng Có Thể Sắp Xếp (Sortable Tables)
 
-xyOps has several sortable tables in the UI.  When a user clicks a table column header, xyOps remembers the selected sort column and direction in that user's local browser preferences.
+PTOps có nhiều bảng có thể sắp xếp trong UI. Khi người dùng nhấn vào tiêu đề cột bảng, PTOps sẽ ghi nhớ cột và hướng sắp xếp đã chọn trong tuỳ chọn trình duyệt cục bộ của người dùng đó.
 
-The `client.tables` object lets you define global default sort settings for these tables:
+Object `client.tables` cho phép bạn định nghĩa cài đặt sắp xếp mặc định toàn cục cho các bảng này:
 
 ```json
 {
@@ -115,17 +115,17 @@ The `client.tables` object lets you define global default sort settings for thes
 }
 ```
 
-The precedence order is:
+Thứ tự ưu tiên là:
 
-1. The user's remembered browser preference, if one exists.
-2. The global default in `client.tables`.
-3. The built-in default from the page code.
+1. Tuỳ chọn trình duyệt đã ghi nhớ của người dùng, nếu có.
+2. Mặc định toàn cục trong `client.tables`.
+3. Mặc định có sẵn từ code của trang.
 
-This means `client.tables` is best used for first-run defaults, shared kiosk screens, or resetting the natural starting sort for users who have not already chosen their own table sort.
+Điều này nghĩa là `client.tables` phù hợp nhất cho mặc định lần chạy đầu tiên, màn hình kiosk chia sẻ, hoặc reset thứ tự sắp xếp khởi đầu cho người dùng chưa tự chọn cách sắp xếp bảng của họ.
 
-### Sort Direction
+### Hướng Sắp Xếp
 
-Use `1` for ascending order and `-1` for descending order:
+Dùng `1` cho thứ tự tăng và `-1` cho thứ tự giảm:
 
 ```json
 {
@@ -134,28 +134,28 @@ Use `1` for ascending order and `-1` for descending order:
 }
 ```
 
-### Table IDs
+### ID Bảng
 
-Here are the built-in sortable table IDs and their default sort settings:
+Đây là các ID bảng có thể sắp xếp có sẵn và cài đặt sắp xếp mặc định của chúng:
 
-| Table ID | Page | Built-in Default |
+| Table ID | Trang | Mặc Định Có Sẵn |
 |----------|------|------------------|
-| `t_events` | Events and Workflows | `cat_sort`, ascending |
-| `t_servers` | Active Servers | `label`, ascending |
-| `t_plugins` | Plugins | `title`, ascending |
-| `t_marketplace` | Marketplace | `title`, ascending |
-| `t_snap_conts` | Server Snapshot Containers | `cpu`, descending |
-| `t_snap_procs` | Server Snapshot Processes | `cpu`, descending |
-| `t_snap_conns` | Server Snapshot Connections | `state`, ascending |
-| `t_snap_ifaces` | Server Snapshot Interfaces | `iface`, ascending |
-| `t_snap_fs` | Server Snapshot Mounts | `mount`, ascending |
-| `t_grp_conts` | Group Containers | `cpu`, descending |
-| `t_grp_procs` | Group Processes | `cpu`, descending |
-| `t_grp_conns` | Group Connections | `state`, ascending |
+| `t_events` | Events và Workflows | `cat_sort`, tăng |
+| `t_servers` | Active Servers | `label`, tăng |
+| `t_plugins` | Plugins | `title`, tăng |
+| `t_marketplace` | Marketplace | `title`, tăng |
+| `t_snap_conts` | Server Snapshot Containers | `cpu`, giảm |
+| `t_snap_procs` | Server Snapshot Processes | `cpu`, giảm |
+| `t_snap_conns` | Server Snapshot Connections | `state`, tăng |
+| `t_snap_ifaces` | Server Snapshot Interfaces | `iface`, tăng |
+| `t_snap_fs` | Server Snapshot Mounts | `mount`, tăng |
+| `t_grp_conts` | Group Containers | `cpu`, giảm |
+| `t_grp_procs` | Group Processes | `cpu`, giảm |
+| `t_grp_conns` | Group Connections | `state`, tăng |
 
-### Column IDs
+### ID Cột
 
-The `sort_by` value must match one of the table's column IDs.  Common examples include:
+Giá trị `sort_by` phải khớp với một trong các ID cột của bảng. Ví dụ phổ biến bao gồm:
 
 ```json
 {
@@ -170,11 +170,11 @@ The `sort_by` value must match one of the table's column IDs.  Common examples i
 }
 ```
 
-If you use a column ID that does not exist for that table, the table header will not be able to describe the sort cleanly, and sorting may not behave as expected.  When in doubt, use the built-in defaults above.
+Nếu bạn dùng một ID cột không tồn tại cho bảng đó, tiêu đề bảng sẽ không thể mô tả rõ cách sắp xếp, và việc sắp xếp có thể không hoạt động như mong đợi. Nếu không chắc, hãy dùng các mặc định có sẵn ở trên.
 
-Here are the sortable column IDs for each table:
+Đây là các ID cột có thể sắp xếp cho từng bảng:
 
-| Table ID | Sortable Column IDs |
+| Table ID | ID Cột Có Thể Sắp Xếp |
 |----------|---------------------|
 | `t_events` | `title`, `cat_sort`, `tag_sort`, `plug_sort`, `target_sort`, `timing_sort`, `status_sort` |
 | `t_servers` | `label`, `ip`, `grp_labels`, `cpu_cores`, `mem_total`, `arch_label`, `os_label`, `sat_ver`, `uptime`, `num_jobs`, `num_alerts` |
@@ -189,18 +189,18 @@ Here are the sortable column IDs for each table:
 | `t_grp_procs` | `command`, `server_label`, `user`, `pid`, `parentPid`, `cpu`, `memRss`, `age`, `state` |
 | `t_grp_conns` | `state`, `server_label`, `type`, `local_addr`, `remote_addr`, `command`, `bytes_in`, `bytes_out` |
 
-## General UI Settings
+## Cài Đặt UI Chung
 
-| Setting | Default | Description |
+| Cài Đặt | Mặc Định | Mô Tả |
 |---------|---------|-------------|
-| `client.items_per_page` | `50` | Default page size for search results and main list pages, such as job search, tickets, servers, alerts, marketplace, activity, and snapshots. |
-| `client.alt_items_per_page` | `25` | Secondary page size for compact inline lists, picker dialogs, recent job lookups, upcoming jobs, and other small UI widgets. |
-| `client.max_table_rows` | `500` | Maximum number of rows rendered in sortable client-side tables before the UI truncates the display with a "more not shown" row. |
-| `client.max_menu_items` | `1000` | Maximum number of options shown in select menus and dropdowns. |
-| `client.max_job_output` | `5 MB` | Maximum amount of job output displayed inline on the Job Details page. |
-| `client.alt_to_toggle` | `false` | Requires users to hold Opt/Alt when toggling enabled flags in selected admin list screens, helping prevent accidental clicks. |
+| `client.items_per_page` | `50` | Kích thước trang mặc định cho kết quả tìm kiếm và các trang danh sách chính, như job search, tickets, servers, alerts, marketplace, activity, và snapshots. |
+| `client.alt_items_per_page` | `25` | Kích thước trang phụ cho danh sách inline gọn, dialog chọn, tra cứu job gần đây, upcoming jobs, và các widget UI nhỏ khác. |
+| `client.max_table_rows` | `500` | Số dòng tối đa render trong các bảng sắp xếp phía client trước khi UI cắt ngắn hiển thị với dòng "more not shown". |
+| `client.max_menu_items` | `1000` | Số tuỳ chọn tối đa hiển thị trong menu chọn và dropdown. |
+| `client.max_job_output` | `5 MB` | Lượng output job tối đa hiển thị inline trên trang Job Details. |
+| `client.alt_to_toggle` | `false` | Yêu cầu người dùng giữ Opt/Alt khi toggle cờ enabled trong một số màn hình danh sách admin đã chọn, giúp tránh nhấn nhầm. |
 
-Example:
+Ví dụ:
 
 ```json
 {
@@ -215,11 +215,11 @@ Example:
 }
 ```
 
-## New Event Template
+## Mẫu Event Mới (New Event Template)
 
-The `client.new_event_template` object provides default values for newly-created events and workflows.  It is copied into the event form when a user starts a new event.
+Object `client.new_event_template` cung cấp giá trị mặc định cho các event và workflow mới được tạo. Nó được sao chép vào form event khi người dùng bắt đầu tạo một event mới.
 
-The default template includes:
+Mẫu mặc định bao gồm:
 
 ```json
 {
@@ -258,9 +258,9 @@ The default template includes:
 }
 ```
 
-You can use this to set defaults that match your organization, such as a default category, plugin, target group, actions, tags, limits, or notes.  See [Events](events.md), [Limits](limits.md), and [Actions](actions.md) for the event fields themselves.
+Bạn có thể dùng cái này để đặt mặc định khớp với tổ chức của bạn, như category mặc định, plugin, target group, action, tag, limit, hoặc notes. Xem [Events](events.md), [Limits](limits.md), và [Actions](actions.md) cho các trường event.
 
-Example:
+Ví dụ:
 
 ```json
 {
@@ -296,11 +296,11 @@ Example:
 }
 ```
 
-## Chart Defaults
+## Mặc Định Chart
 
-The `client.chart_defaults` object is passed into the UI chart renderer used for monitor graphs and server metrics.  It controls visual details such as line width, smoothing, tick counts, fill opacity, and hover sort behavior.
+Object `client.chart_defaults` được truyền vào bộ render chart UI dùng cho biểu đồ monitor và số liệu server. Nó kiểm soát các chi tiết trực quan như độ rộng đường, làm mịn, số lượng tick, độ mờ fill, và hành vi sắp xếp khi hover.
 
-Default:
+Mặc định:
 
 ```json
 {
@@ -317,13 +317,13 @@ Default:
 }
 ```
 
-These options are merged with xyOps UI defaults before each chart is rendered.  See [pixl-chart](https://github.com/jhuckaby/pixl-chart) for the lower-level chart option behavior.
+Các tuỳ chọn này được merge với mặc định UI của PTOps trước khi mỗi chart được render. Xem [pixl-chart](https://github.com/jhuckaby/pixl-chart) để biết hành vi tuỳ chọn chart ở mức thấp hơn.
 
-## Code Editor Defaults
+## Mặc Định Code Editor
 
-The `client.editor_defaults` object configures CodeMirror fields in the UI, such as script editors, JSON editors, and text areas that support code formatting.
+Object `client.editor_defaults` cấu hình các trường CodeMirror trong UI, như script editor, JSON editor, và text area hỗ trợ định dạng code.
 
-Default:
+Mặc định:
 
 ```json
 {
@@ -337,15 +337,15 @@ Default:
 }
 ```
 
-These values are passed into CodeMirror when editors are created.  See [CodeMirror 5](https://codemirror.net/5/) for supported editor options.
+Các giá trị này được truyền vào CodeMirror khi editor được tạo. Xem [CodeMirror 5](https://codemirror.net/5/) để biết các tuỳ chọn editor được hỗ trợ.
 
-## Upload Settings
+## Cài Đặt Upload
 
-xyOps has separate upload settings for buckets, tickets, and jobs.  These settings are used by the browser uploader, and the important limits are also enforced on the server side.
+PTOps có các cài đặt upload riêng cho bucket, ticket, và job. Các cài đặt này được dùng bởi uploader trên trình duyệt, và các giới hạn quan trọng cũng được enforce ở phía server.
 
-### Bucket Uploads
+### Upload Bucket
 
-`client.bucket_upload_settings` controls uploads to [Storage Buckets](buckets.md):
+`client.bucket_upload_settings` kiểm soát upload vào [Storage Buckets](buckets.md):
 
 ```json
 {
@@ -355,15 +355,15 @@ xyOps has separate upload settings for buckets, tickets, and jobs.  These settin
 }
 ```
 
-| Setting | Description |
+| Cài Đặt | Mô Tả |
 |---------|-------------|
-| `max_files_per_bucket` | Maximum number of files allowed in a bucket. |
-| `max_file_size` | Maximum size of a single uploaded file, in bytes. |
-| `accepted_file_types` | Browser file picker accept string.  Blank means any file type. |
+| `max_files_per_bucket` | Số file tối đa cho phép trong một bucket. |
+| `max_file_size` | Kích thước tối đa của một file upload, tính bằng byte. |
+| `accepted_file_types` | Chuỗi accept của bộ chọn file trình duyệt. Để trống nghĩa là mọi loại file. |
 
-### Ticket Uploads
+### Upload Ticket
 
-`client.ticket_upload_settings` controls file attachments on [Tickets](tickets.md):
+`client.ticket_upload_settings` kiểm soát file đính kèm trên [Tickets](tickets.md):
 
 ```json
 {
@@ -373,15 +373,15 @@ xyOps has separate upload settings for buckets, tickets, and jobs.  These settin
 }
 ```
 
-| Setting | Description |
+| Cài Đặt | Mô Tả |
 |---------|-------------|
-| `max_files_per_ticket` | Maximum number of files allowed on one ticket. |
-| `max_file_size` | Maximum size of a single uploaded file, in bytes. |
-| `accepted_file_types` | Browser file picker accept string.  Blank means any file type. |
+| `max_files_per_ticket` | Số file tối đa cho phép trên một ticket. |
+| `max_file_size` | Kích thước tối đa của một file upload, tính bằng byte. |
+| `accepted_file_types` | Chuỗi accept của bộ chọn file trình duyệt. Để trống nghĩa là mọi loại file. |
 
-### Job Uploads
+### Upload Job
 
-`client.job_upload_settings` controls files uploaded into jobs, including manual job runs and Magic Form submissions:
+`client.job_upload_settings` kiểm soát file được upload vào job, bao gồm chạy job thủ công và gửi qua Magic Form:
 
 ```json
 {
@@ -393,19 +393,19 @@ xyOps has separate upload settings for buckets, tickets, and jobs.  These settin
 }
 ```
 
-| Setting | Description |
+| Cài Đặt | Mô Tả |
 |---------|-------------|
-| `max_files_per_job` | Maximum number of files allowed for one job run.  Field-level limits can reduce this further. |
-| `max_file_size` | Maximum size of a single uploaded file, in bytes.  Field-level limits can reduce this further. |
-| `accepted_file_types` | Browser file picker accept string.  Blank means any file type.  Field-level accept rules can override this. |
-| `user_file_expiration` | How long user-uploaded job input files are retained. |
-| `plugin_file_expiration` | How long plugin-generated uploaded job files are retained. |
+| `max_files_per_job` | Số file tối đa cho phép cho một lần chạy job. Giới hạn ở cấp field có thể giảm thêm giá trị này. |
+| `max_file_size` | Kích thước tối đa của một file upload, tính bằng byte. Giới hạn ở cấp field có thể giảm thêm giá trị này. |
+| `accepted_file_types` | Chuỗi accept của bộ chọn file trình duyệt. Để trống nghĩa là mọi loại file. Quy tắc accept ở cấp field có thể override giá trị này. |
+| `user_file_expiration` | Thời gian lưu giữ file input job do người dùng upload. |
+| `plugin_file_expiration` | Thời gian lưu giữ file job do plugin tạo ra và upload. |
 
-The expiration values use human-readable durations, such as `30 days`, `12 hours`, or `1 week`.
+Các giá trị hết hạn dùng định dạng thời gian dễ đọc, như `30 days`, `12 hours`, hoặc `1 week`.
 
-## Environment Variables
+## Biến Môi Trường
 
-All of these settings can be overridden with the `XYOPS_` environment variable syntax.  Use double underscores for nested object paths:
+Tất cả các cài đặt này có thể override bằng cú pháp biến môi trường `XYOPS_`. Dùng gạch dưới đôi cho đường dẫn object lồng nhau:
 
 ```sh
 XYOPS_client__items_per_page="100"
@@ -414,8 +414,8 @@ XYOPS_client__tables__t_servers__sort_by="num_alerts"
 XYOPS_client__tables__t_servers__sort_dir="-1"
 ```
 
-For arrays and larger objects, editing `config.json` or `overrides.json` is usually clearer than trying to express the whole structure as environment variables.
+Đối với mảng và object lớn hơn, chỉnh sửa `config.json` hoặc `overrides.json` thường rõ ràng hơn so với việc cố diễn tả toàn bộ cấu trúc bằng biến môi trường.
 
-## Security Note
+## Ghi Chú Bảo Mật
 
-The `client` settings are sent to the browser before login, so please do not put secrets, private tokens, internal passwords, or sensitive infrastructure details anywhere under `client`.
+Các cài đặt `client` được gửi tới trình duyệt trước khi đăng nhập, vì vậy vui lòng không đặt secret, token riêng tư, password nội bộ, hoặc chi tiết infrastructure nhạy cảm ở bất cứ đâu dưới `client`.

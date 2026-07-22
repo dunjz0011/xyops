@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to try xyOps, and send a feature request!
+        Thanks for taking the time to try PTOps, and send a feature request!
   - type: checkboxes
     attributes:
       label: Is there an existing feature request for this?

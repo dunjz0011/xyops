@@ -1,84 +1,79 @@
 # Secrets
 
-## Overview
+## Tổng Quan
 
-Secrets are encrypted "vaults" for sensitive configuration such as API keys, auth tokens, passwords, and similar credentials. Each secret contains one or more named variables (key/value pairs). xyOps stores the variable data encrypted at rest and only decrypts it in memory when needed at runtime.
+Secret là các "vault" (kho) được mã hoá cho cấu hình nhạy cảm như API key, auth token, password, và các thông tin xác thực tương tự. Mỗi secret chứa một hoặc nhiều biến có tên (cặp key/value). PTOps lưu trữ dữ liệu biến được mã hoá lúc nghỉ (at rest) và chỉ giải mã trong bộ nhớ khi cần lúc runtime.
 
-Secrets can be granted (assigned) to events, categories, plugins, and web hooks:
+Secret có thể được cấp (gán) cho event, category, plugin, và web hook:
 
-- Jobs launched by events or plugins receive secret variables as environment variables.
-- Web hooks can access secret variables through template expansion via `{{ secrets.VAR_NAME }}`.
+- Job được khởi chạy bởi event hoặc plugin nhận biến secret dưới dạng biến môi trường.
+- Web hook có thể truy cập biến secret qua template expansion bằng `{{ secrets.VAR_NAME }}`.
 
-This page explains how secrets are modeled, how access is granted, how they are delivered at runtime, and how access is audited.
+Trang này giải thích cách secret được mô hình hoá, cách quyền truy cập được cấp, cách chúng được truyền tải lúc runtime, và cách truy cập được audit.
 
+## Mô Hình Dữ Liệu
 
-## Data Model
-
-- Secret object: See the full schema in [Secret](data.md#secret).
-- Encrypted payload: The variable values live in an encrypted record separate from the metadata. The UI and list APIs return metadata only; variable data is never exposed unless explicitly decrypted by an administrator.
-- Plaintext metadata: The following fields are stored in plaintext for display and routing:
+- Đối tượng Secret: Xem schema đầy đủ trong [Secret](data.md#secret).
+- Payload đã mã hoá: Giá trị của biến nằm trong một record được mã hoá riêng biệt với metadata. UI và các API liệt kê chỉ trả về metadata; dữ liệu biến không bao giờ được lộ ra trừ khi được admin giải mã một cách rõ ràng.
+- Metadata dạng plaintext: Các trường sau được lưu dưới dạng plaintext để hiển thị và định tuyến:
   - `id`, `title`, `enabled`, `icon`, `notes`
-  - `names` (the list of variable names only, not values)
-  - assignment lists: `events`, `categories`, `plugins`, `web_hooks`
+  - `names` (chỉ danh sách tên biến, không phải giá trị)
+  - danh sách gán: `events`, `categories`, `plugins`, `web_hooks`
 
-Secret values are always strings (as they are delivered via environment variables). If you need to store binary data, [Base64-encode](https://en.wikipedia.org/wiki/Base64) it first.
+Giá trị secret luôn là string (vì chúng được truyền tải qua biến môi trường). Nếu bạn cần lưu dữ liệu binary, hãy [Base64-encode](https://en.wikipedia.org/wiki/Base64) trước.
 
+## Mã Hoá
 
-## Encryption
+PTOps sử dụng mã hoá xác thực (authenticated encryption) để bảo vệ giá trị secret lúc nghỉ:
 
-xyOps uses authenticated encryption to protect secret values at rest:
+- Thuật toán: **AES-256-GCM** cho tính bảo mật và tính toàn vẹn.
+	- AES-256-GCM là một thuật toán mã hoá đối xứng có độ an toàn cao, kết hợp Advanced Encryption Standard (AES) với key 256-bit và Galois/Counter Mode (GCM) để cung cấp cả tính bảo mật dữ liệu và xác thực.
+- Dẫn xuất key: scrypt với `N=16384, r=8, p=1` và một salt ngẫu nhiên 16-byte cho mỗi record.
+- Nonce/IV: IV ngẫu nhiên 12-byte cho mỗi record.
+- AAD: ID của secret được ràng buộc như Additional Authenticated Data để tránh việc đổi lẫn giữa các record.
+- Lưu trữ: Blob đã mã hoá bao gồm `alg`, `salt`, `iv`, `tag`, và `ct`.
 
-- Algorithm: **AES-256-GCM** for confidentiality and integrity.
-	- AES-256-GCM is a high-security symmetric encryption algorithm that combines the Advanced Encryption Standard (AES) with a 256-bit key and the Galois/Counter Mode (GCM) to provide both data confidentiality and authentication.
-- Key derivation: scrypt with `N=16384, r=8, p=1` and a per-record random 16-byte salt.
-- Nonce/IV: Per-record random 12-byte IV.
-- AAD: The secret's ID is bound as Additional Authenticated Data to prevent swapping between records.
-- Storage: The encrypted blob includes `alg`, `salt`, `iv`, `tag`, and `ct`.
+Encryption key được dẫn xuất từ [config.secret_key](config.md#secret_key). Giữ giá trị này mạnh và bí mật trong production. Xem [Secret Key Rotation](hosting.md#secret-key-rotation) để biết hướng dẫn xoay secret key.
 
-The encryption key is derived from [config.secret_key](config.md#secret_key). Keep this value strong and private in production.  See [Secret Key Rotation](hosting.md#secret-key-rotation) for instructions on rotating the secret key.
+## Gán Quyền Truy Cập
 
+Secret kiểm soát nơi chúng có thể được sử dụng bằng cách gán resource. Khi bất kỳ cái nào trong số này đang active, PTOps tự động giải mã và tiêm biến.
 
-## Assigning Access
+- `events`: Cấp cho các event được chọn; job của chúng nhận được các biến.
+- `categories`: Cấp cho tất cả event trong các category được chọn.
+- `plugins`: Cấp cho các plugin được chọn khi chúng chạy job, action hoặc trigger.
+- `web_hooks`: Cấp cho các web hook được chọn; hook sử dụng template expansion thay cho biến môi trường.
 
-Secrets control where they may be used by assigning resources. When any of these are active, xyOps decrypts and injects variables automatically.
+### Thứ tự ưu tiên khi hợp nhất
 
-- `events`: Grant to selected events; their jobs receive the variables.
-- `categories`: Grant to all events in the selected categories.
-- `plugins`: Grant to selected plugins when they run jobs, actions or triggers.
-- `web_hooks`: Grant to selected web hooks; hooks use template expansion instead of environment variables.
-
-### Merge precedence
-
-If multiple assigned secrets define the same variable name, the final value used by the job is determined by merge order:
+Nếu nhiều secret được gán định nghĩa cùng một tên biến, giá trị cuối cùng được job sử dụng được xác định theo thứ tự hợp nhất:
 
 1. Event
-2. Workflow sub-event (if applicable and different)
+2. Sub-event của workflow (nếu áp dụng và khác)
 3. Category
-4. Plugin (merged last, so plugin wins on conflicts)
+4. Plugin (hợp nhất cuối cùng, nên plugin thắng khi có xung đột)
 
-Web hooks have no merging; each referenced secret's variables are expanded independently in templates.
+Web hook không có việc hợp nhất; các biến của mỗi secret được tham chiếu sẽ được mở rộng độc lập trong template.
 
-When a job is part of a workflow, secrets assigned to both the sub-event and the parent workflow event may apply. The system injects the sub-event's secrets first, then the parent event's, before category and plugin layers.
+Khi một job là một phần của workflow, secret được gán cho cả sub-event và event workflow cha có thể áp dụng. Hệ thống tiêm secret của sub-event trước, sau đó secret của event cha, trước các lớp category và plugin.
 
+## Truyền Tải Lúc Runtime
 
-## Runtime Delivery
+- Job: Biến secret được tiêm vào environment của process job dưới dạng cặp `NAME=value` ngay trước khi khởi chạy. Biến tuân theo quy tắc đặt tên POSIX (chữ, số và gạch dưới; nên bắt đầu bằng chữ hoặc gạch dưới).
+- Web hook: Secret có sẵn cho hệ thống templating qua `{{ secrets.VAR_NAME }}` trong template URL, header, và body của hook.
+- Vòng đời giải mã: Dữ liệu đã mã hoá vẫn ở trạng thái nghỉ cho đến chính xác thời điểm nó cần. PTOps giải mã vào bộ nhớ, sử dụng giá trị, và không bao giờ lưu lại dưới dạng plaintext.
 
-- Jobs: Secret variables are injected into the job's process environment as `NAME=value` pairs just before launch. Variables follow POSIX naming rules (letters, digits and underscores; starting with a letter or underscore is recommended).
-- Web hooks: Secrets are available to the templating system via `{{ secrets.VAR_NAME }}` in hook URL, headers, and body templates.
-- Decryption lifecycle: The encrypted data remains at rest until the exact moment it is needed. xyOps decrypts into memory, uses the values, and never persists them in plaintext.
+## Audit Và Ghi Log
 
+PTOps ghi lại cả việc sử dụng thường xuyên và truy cập do người dùng khởi xướng đối với secret.
 
-## Auditing and Logging
-
-xyOps records both routine and user-initiated access to secrets.
-
-**Routine runtime use**: Logged "quietly" to a dedicated `Secret.log` file whenever a job, plugin or web hook uses a secret. Entries include: epoch timestamp, formatted date/time, server hostname, PID, a textual description (e.g. "Using secret ..."), the full secret metadata JSON (no values), and the access type (event, category, plugin, or web hook).  Example:
+**Sử dụng thường xuyên lúc runtime**: Được ghi "âm thầm" vào file `Secret.log` riêng mỗi khi một job, plugin hoặc web hook sử dụng secret. Entry bao gồm: timestamp epoch, ngày/giờ đã định dạng, hostname server, PID, mô tả bằng văn bản (ví dụ "Using secret ..."), toàn bộ metadata JSON của secret (không có giá trị), và loại truy cập (event, category, plugin, hoặc web hook). Ví dụ:
 
 ```
 [1763675628.397][2025-11-20 13:53:48][joemax.lan][62614][Secret][debug][1][Using secret zmeejkeb8nu (Dev Database) for events: emeekm2ablu][{"secret":{"id":"zmeejkeb8nu","title":"Dev Database","enabled":true,"icon":"","notes":"This secret provides access to the dev database.","names":["DB_HOST","DB_PASS","DB_USER"],"events":["emeekm2ablu"],"categories":[],"plugins":[],"username":"admin","modified":1757204132,"created":1755365953,"revision":8,"web_hooks":["example_hook"]},"type":"events","id":"emeekm2ablu"}]
 ```
 
-**Administrator decryption**: When an admin decrypts a secret through the UI or API, the access is logged "loudly" in the Activity Log and tagged with the username. Create, update, and delete operations are also logged.  Example access:
+**Giải mã bởi Administrator**: Khi một admin giải mã một secret qua UI hoặc API, việc truy cập được ghi "rõ ràng" vào Activity Log và gắn tag với username. Các hoạt động tạo, cập nhật, và xoá cũng được ghi log. Ví dụ về việc truy cập:
 
 ```json
 {
@@ -94,12 +89,12 @@ xyOps records both routine and user-initiated access to secrets.
 	],
 	"headers": {
 		"host": "local.xyops.io:5523",
-		/* Omitted verbose HTTP headers for brevity */
+		/* Bỏ qua các HTTP header dài dòng để ngắn gọn */
 	},
 	"secret": {
 		"id": "zmeejkeb8nu",
 		"title": "Dev Database",
-		/* See Secret data structure for more */
+		/* Xem cấu trúc dữ liệu Secret để biết thêm */
 	},
 	"keywords": [
 		"zmeejkeb8nu",
@@ -109,34 +104,31 @@ xyOps records both routine and user-initiated access to secrets.
 }
 ```
 
-For API details and response formats, see [Secrets API](api.md#secrets).
+Để biết chi tiết API và định dạng response, xem [Secrets API](api.md#secrets).
 
+## Sử Dụng Secret Trên UI
 
-## Using Secrets in the UI
+Trang admin Secrets yêu cầu privilege administrator.
 
-The Secrets admin page requires administrator privileges.
+- **Tạo**: Định nghĩa tiêu đề, icon/notes tuỳ chọn, gán cho event/category/plugin/web hook, và thêm biến. Giá trị được mã hoá khi lưu; chỉ `names` được lưu dưới dạng plaintext.
+- **Sửa metadata và gán**: Bạn có thể cập nhật title, icon, notes, và danh sách gán mà không cần chạm vào dữ liệu đã mã hoá.
+- **Xem hoặc sửa giá trị**: Giá trị không được load theo mặc định. Nhấn để xem/giải mã yêu cầu role admin và kích hoạt một xác nhận cùng một hoạt động được ghi log. Lưu sẽ cập nhật và mã hoá lại payload mới.
+- **Bật/tắt**: Chuyển đổi khả năng sử dụng mà không xoá dữ liệu bên dưới.
+- **Xoá**: Xoá vĩnh viễn cả metadata và payload đã mã hoá; hành động được ghi log.
 
-- **Create**: Define a title, optional icon/notes, assign to events/categories/plugins/web hooks, and add variables. The values are encrypted on save; only `names` are stored in plaintext.
-- **Edit metadata and assignments**: You can update title, icon, notes, and assignment lists without touching the encrypted data.
-- **View or edit values**: Values are not loaded by default. Clicking to view/decrypt requires an admin role and triggers a confirmation and a logged activity. Saving updates re-encrypts and stores the new payload.
-- **Enable/disable**: Toggle availability without deleting the underlying data.
-- **Delete**: Permanently removes both metadata and encrypted payload; the action is logged.
+## Thực Hành Tốt Nhất Và Giới Hạn
 
+- Giữ title/notes không nhạy cảm: Không bao gồm giá trị secret hoặc gợi ý trong `title`, `notes` hoặc tên key (chúng được lưu dưới dạng plaintext).
+- Đặt tên: Sử dụng tên rõ ràng, chữ hoa với gạch dưới, ví dụ `DB_HOST`, `API_TOKEN`. Tránh trùng lặp giữa các secret được gán.
+- Dữ liệu binary: Base64-encode payload binary trước khi lưu. Nhớ rằng Base64 làm tăng kích thước khoảng ~33%.
+- Giới hạn kích thước environment: POSIX không định nghĩa một mức tối đa cố định cho mỗi biến; hệ thống áp đặt giới hạn tổng kích thước của argv+environment cho `execve()` (ví dụ: Linux thường ≥2 MB; macOS thường ~256 KB). Một biến duy nhất có thể tiến gần đến giới hạn đó, nhưng overhead và các biến khác làm giảm khoảng dư. Nguyên tắc chung là giữ mỗi giá trị dưới vài kilobyte. Với dữ liệu lớn hơn, ưu tiên dùng file hoặc [Buckets](buckets.md) và truyền tham chiếu thay cho giá trị env lớn.
+  - Mẹo: Trên một server đích, `getconf ARG_MAX` báo cáo giới hạn hệ thống cho argv+environment.
+- Web hook: Ưu tiên đặt secret trong header hoặc body, không đặt trong URL. Tránh log lại các template đã mở rộng có thể lộ giá trị secret.
+- Plugin/job: Đảm bảo script không echo biến môi trường ra log hoặc error output. Scrub hoặc redact khi cần.
 
-## Best Practices and Limits
+## Link API
 
-- Keep titles/notes non-sensitive: Do not include secret values or hints in `title`, `notes` or key names (they are stored in plaintext).
-- Naming: Use clear, uppercase names with underscores, e.g. `DB_HOST`, `API_TOKEN`. Avoid collisions across assigned secrets.
-- Binary data: Base64-encode binary payloads before storing. Remember Base64 increases size by ~33%.
-- Environment size limits: POSIX does not define a fixed per-variable maximum; systems enforce a limit on the total size of argv+environment for `execve()` (e.g., Linux often ≥2 MB; macOS commonly ~256 KB). A single variable can approach that limit, but overhead and other variables reduce headroom. As a rule of thumb keep each value under a few kilobytes. For larger data, prefer files or [Buckets](buckets.md) and pass references instead of large env values.
-  - Tip: On a target server, `getconf ARG_MAX` reports the system limit for argv+environment.
-- Web hooks: Prefer placing secrets in headers or body, not in URLs. Avoid logging expanded templates that would reveal secret values.
-- Plugin/jobs: Ensure scripts don't echo environment variables to logs or error output. Scrub or redact as needed.
-
-
-## API Links
-
-For full request/response examples, see the API reference:
+Để xem đầy đủ ví dụ request/response, xem tài liệu tham khảo API:
 
 - [get_secrets](api.md#get_secrets)
 - [get_secret](api.md#get_secret)

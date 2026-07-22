@@ -777,10 +777,10 @@ Page.Marketplace = class Marketplace extends Page.PageUtils {
 		var json = resp.data;
 		
 		if (!json.version || (json.version !== '1.0') || !json.type || (json.type !== 'xypdf') || !json.items || !json.items[0]) {
-			return app.doError("Unknown Format: Marketplace file is not an xyOps Portable Data Object.");
+			return app.doError("Unknown Format: Marketplace file is not a PTOps Portable Data Object.");
 		}
 		if (json.xyops && (get_int_version(json.xyops) > get_int_version(app.version))) {
-			return app.doError(`Unsupported Version: This marketplace product requires xyOps v${json.xyops} or higher.`);
+			return app.doError(`Unsupported Version: This marketplace product requires PTOps v${json.xyops} or higher.`);
 		}
 		
 		// prompt user to confirm importing a single item
@@ -817,12 +817,12 @@ Page.Marketplace = class Marketplace extends Page.PageUtils {
 		var prefix = opts.name.match(/^[aeiou]/i) ? 'an' : 'a';
 		
 		var md = '';
-		md += `You are about to install **${product.title} ${ver}** from the xyOps Marketplace.  Please confirm the data is what you expect:` + "\n";
+		md += `You are about to install **${product.title} ${ver}** from the PTOps Marketplace.  Please confirm the data is what you expect:` + "\n";
 		
 		var old_obj = find_object(all_objs, { id: obj.id });
 		if (old_obj) {
 			do_replace = true;
-			md += "\n" + `> [!WARNING]\n> This ${opts.name} already exists in your xyOps database.  If you proceed, it will be **replaced** with the selected version.` + "\n";
+			md += "\n" + `> [!WARNING]\n> This ${opts.name} already exists in your PTOps database.  If you proceed, it will be **replaced** with the selected version.` + "\n";
 			
 			if (product.type == 'plugin') {
 				var deps = this.get_plugin_dependants(old_obj);

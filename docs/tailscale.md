@@ -1,14 +1,14 @@
 # Tailscale
 
-## Overview
+## Tổng Quan
 
-xyOps pairs well with [Tailscale](https://tailscale.com/) (specifically [Tailscale Serve](https://tailscale.com/kb/1312/serve)), which acts as an SSO auth system by forwarding trusted headers.  This document describes how to set up xyOps on your Tailnet using the Tailscale Serve CLI, and also as a "sidecar" with Docker Compose.
+PTOps kết hợp tốt với [Tailscale](https://tailscale.com/) (cụ thể là [Tailscale Serve](https://tailscale.com/kb/1312/serve)), hoạt động như một hệ thống SSO bằng cách chuyển tiếp các header đáng tin cậy. Tài liệu này mô tả cách thiết lập PTOps trên Tailnet của bạn bằng CLI Tailscale Serve, và cả khi dùng làm "sidecar" với Docker Compose.
 
-First, please read the [xyOps SSO Guide](sso.md), as it introduces several concepts we will be referencing here.
+Trước tiên, hãy đọc [Hướng Dẫn SSO của PTOps](sso.md), vì tài liệu đó giới thiệu một số khái niệm mà chúng ta sẽ tham chiếu ở đây.
 
 ## Header Map
 
-Here is how you should configure your [SSO Header Map](sso.md#header-map) for Tailscale Serve use:
+Đây là cách bạn nên cấu hình [SSO Header Map](sso.md#header-map) khi dùng Tailscale Serve:
 
 ```json
 "header_map": {
@@ -20,30 +20,30 @@ Here is how you should configure your [SSO Header Map](sso.md#header-map) for Ta
 }
 ```
 
-Alternatively, you can simply enable SSO and set the `preset` property to `tailscale`, which configures the header map (among other things) for you.  Example with environment variables:
+Ngoài ra, bạn có thể chỉ cần bật SSO và đặt thuộc tính `preset` thành `tailscale`, thuộc tính này sẽ tự cấu hình header map (và một số thứ khác) cho bạn. Ví dụ dùng biến môi trường:
 
 ```sh
 XYOPS_SSO__enabled="true"
 XYOPS_SSO__preset="tailscale"
 ```
 
-## Usernames
+## Username
 
-Please read the [SSO Header Cleanup](sso.md#header-cleanup) section regarding username cleanup, so you understand how your Tailscale username (which comes in as an email address) will be translated on the xyOps side.  By default, the email domain is stripped, and your username becomes the first part of your email address.
+Hãy đọc phần [SSO Header Cleanup](sso.md#header-cleanup) về việc dọn dẹp username, để hiểu cách username Tailscale của bạn (được gửi vào dưới dạng địa chỉ email) sẽ được chuyển đổi ở phía PTOps. Theo mặc định, domain email sẽ bị loại bỏ, và username của bạn sẽ là phần đầu của địa chỉ email.
 
 ## Admin Bootstrap
 
-If you want to just get up and running quickly, you can use the [SSO Admin Bootstrap](sso.md#admin-bootstrap) feature to automatically promote yourself to a full administrator.  Just note that this is designed as a one-time setup shortcut, and will log a loud warning in the xyOps activity log on every login.
+Nếu bạn chỉ muốn nhanh chóng chạy được hệ thống, bạn có thể dùng tính năng [SSO Admin Bootstrap](sso.md#admin-bootstrap) để tự động nâng cấp bản thân thành administrator đầy đủ quyền. Lưu ý rằng tính năng này được thiết kế như một shortcut thiết lập một lần, và sẽ ghi một cảnh báo lớn vào activity log của PTOps mỗi lần đăng nhập.
 
-## Capabilities
+## Capability
 
-Tailscale can forward along what they call "capabilities", which can translate to roles and privileges on the xyOps side.  In short, you can use Tailscale's capability grants to automatically assign your xyOps users appropriate privileges and/or roles.  Here is how to set it up:
+Tailscale có thể chuyển tiếp thứ họ gọi là "capability" (khả năng), có thể chuyển đổi thành role và privilege ở phía PTOps. Nói ngắn gọn, bạn có thể dùng capability grant của Tailscale để tự động gán privilege và/hoặc role phù hợp cho user PTOps của bạn. Đây là cách thiết lập:
 
-1. Login to your [Tailscale Admin Console](https://login.tailscale.com/welcome).
-2. Click on the "Access Controls" tab.
-3. Click on "JSON Editor".
+1. Đăng nhập vào [Tailscale Admin Console](https://login.tailscale.com/welcome).
+2. Nhấn tab "Access Controls".
+3. Nhấn "JSON Editor".
 
-First, create a new tag called `tag:xyops` and add it into the `tagOwners` section.  Example:
+Đầu tiên, tạo một tag mới tên `tag:xyops` và thêm vào phần `tagOwners`. Ví dụ:
 
 ```json
 "tagOwners": {
@@ -51,7 +51,7 @@ First, create a new tag called `tag:xyops` and add it into the `tagOwners` secti
 }
 ```
 
-Next, locate the `grants` array in the JSON editor, or create it if needed.  Add the following grant into the array:
+Tiếp theo, tìm mảng `grants` trong JSON editor, hoặc tạo nó nếu cần. Thêm grant sau vào mảng:
 
 ```json
 "grants": [
@@ -65,9 +65,9 @@ Next, locate the `grants` array in the JSON editor, or create it if needed.  Add
 ]
 ```
 
-This will automatically promote anyone in your `autogroup:admin` Tailscale group to a full xyOps administrator.  The `autogroup:admin` group should already exist in your account, as it is automatically created for you by Tailscale.  You can see all your groups, and also also add new groups, by clicking on the "Visual Editor" tab, and then the "Groups" sub-tab.
+Điều này sẽ tự động nâng cấp bất kỳ ai trong group `autogroup:admin` của Tailscale thành administrator đầy đủ quyền của PTOps. Group `autogroup:admin` sẽ đã có sẵn trong tài khoản của bạn, vì nó được Tailscale tự động tạo. Bạn có thể xem tất cả group của mình, và cũng có thể thêm group mới, bằng cách nhấn tab "Visual Editor", rồi tab con "Groups".
 
-The `app` section of the grant JSON is very important -- the syntax must be exact:
+Phần `app` trong JSON của grant rất quan trọng -- cú pháp phải chính xác:
 
 ```json
 "app": {
@@ -75,51 +75,51 @@ The `app` section of the grant JSON is very important -- the syntax must be exac
 }
 ```
 
-The `xyops.io/cap/ts` is a unique key that xyOps looks for when it parses the incoming headers.  It must be set exactly to `xyops.io/cap/ts`, and the value must be an array of objects, as shown above.  The properties inside the object are passed directly to xyOps:
+`xyops.io/cap/ts` là key duy nhất mà PTOps tìm kiếm khi phân tích các header đến. Nó phải được đặt chính xác là `xyops.io/cap/ts`, và giá trị phải là một mảng object, như minh hoạ trên. Các thuộc tính trong object được truyền trực tiếp cho PTOps:
 
-- The `privileges` sub-array can contain any valid [xyOps Privilege IDs](privileges.md), e.g. `admin`.
-- The `roles` sub-array can contain any valid [xyOps Role IDs](users.md#roles), which are user-created.
+- Mảng con `privileges` có thể chứa bất kỳ [PTOps Privilege ID](privileges.md) hợp lệ nào, ví dụ `admin`.
+- Mảng con `roles` có thể chứa bất kỳ [PTOps Role ID](users.md#roles) hợp lệ nào, do người dùng tự tạo.
 
-Note that by default, roles and privileges are applied "additively" to user records.  Meaning, the SSO sync will never *remove* a role or privilege.  This is so you can manually apply your own user roles and permissions using the xyOps Admin UI, and everything plays nice.  However, if you do not want this behavior, and instead want Tailscale to be the single source of truth for all user roles and privileges, set the SSO [replace_roles](sso.md#configuration) and/or [replace_privileges](sso.md#configuration) properties to `true`.  Those will replace **all** the user roles and/or privileges with whatever we get from the Tailscale capabilities trusted header.  This sync happens on every user login and session refresh, wiping out any local changes made in xyOps.
+Lưu ý rằng theo mặc định, role và privilege được áp dụng "cộng thêm" (additive) vào bản ghi user. Nghĩa là, đồng bộ SSO sẽ không bao giờ *xoá* một role hoặc privilege. Điều này giúp bạn có thể tự áp dụng role và quyền cho user thông qua Admin UI của PTOps mà không bị xung đột. Tuy nhiên, nếu bạn không muốn hành vi này, và muốn Tailscale là nguồn thông tin duy nhất cho toàn bộ role và privilege của user, hãy đặt thuộc tính SSO [replace_roles](sso.md#configuration) và/hoặc [replace_privileges](sso.md#configuration) thành `true`. Những thuộc tính đó sẽ thay thế **toàn bộ** role và/hoặc privilege của user bằng bất cứ gì nhận được từ header capability của Tailscale. Việc đồng bộ này diễn ra mỗi lần user đăng nhập và làm mới session, xoá bỏ mọi thay đổi cục bộ đã thực hiện trong PTOps.
 
-Make sure you click the "Save" button when you are finished editing the JSON in your Tailscale Admin Console.
+Nhớ nhấn nút "Save" khi bạn hoàn tất chỉnh sửa JSON trong Tailscale Admin Console.
 
 ## Base URL
 
-xyOps needs to know the base URL of the hosted application so it can generate self-referencing URLs in things like outbound emails and web hooks.  To do this, you'll need to set the [base_app_url](config.md#base_app_url) configuration property to your Tailscale-provided app URL.  The hostname will be the current machine name, followed by your custom Tailnet domain.  Example:
+PTOps cần biết base URL của ứng dụng đang host để có thể tạo các URL tự tham chiếu trong những thứ như email gửi ra và web hook. Để làm điều này, bạn cần đặt thuộc tính cấu hình [base_app_url](config.md#base_app_url) thành URL app do Tailscale cung cấp. Hostname sẽ là tên máy hiện tại, theo sau bởi domain Tailnet tuỳ chỉnh của bạn. Ví dụ:
 
 ```json
 "base_app_url": "https://joemax.taild89302.ts.net"
 ```
 
-Or via environment variable:
+Hoặc qua biến môi trường:
 
 ```sh
 XYOPS_base_app_url="https://joemax.taild89302.ts.net"
 ```
 
-Additionally, if you plan on adding remote satellite servers, xyOps needs to know what hostname to use for advertising itself to its cluster (i.e. how satellite servers will connect back to the primary conductor server).  To do this, add a `hostname` top-level configuration property set to your machine's Tailnet hostname:
+Thêm vào đó, nếu bạn có kế hoạch thêm các satellite server ở xa, PTOps cần biết hostname nào để dùng khi tự quảng bá (advertise) với cluster của nó (tức là các satellite server sẽ kết nối lại với conductor chính bằng cách nào). Để làm điều này, thêm thuộc tính cấu hình cấp cao nhất `hostname` đặt thành Tailnet hostname của máy bạn:
 
 ```json
 "hostname": "joemax.taild89302.ts.net"
 ```
 
-Or via environment variable:
+Hoặc qua biến môi trường:
 
 ```sh
 XYOPS_hostname="joemax.taild89302.ts.net"
 ```
 
-By default xyOps uses the current machine's local hostname for this, so we want to override it to use our special Tailnet hostname.
+Theo mặc định PTOps dùng hostname cục bộ của máy hiện tại cho việc này, nên ta muốn ghi đè để dùng Tailnet hostname đặc biệt của mình.
 
 ## HTTPS
 
-Assuming you have [Tailscale HTTPS](https://login.tailscale.com/admin/dns) enabled on your Tailnet (highly recommended), this means that Tailscale Serve will **only** support HTTPS URLs to your app.  So, we need to set a couple of extra configuration properties so you can add satellite servers and have them communicate over HTTPS as well:
+Giả sử bạn đã bật [Tailscale HTTPS](https://login.tailscale.com/admin/dns) trên Tailnet của mình (rất khuyến nghị), điều này có nghĩa Tailscale Serve **chỉ** hỗ trợ URL HTTPS tới app của bạn. Vì vậy, ta cần đặt thêm vài thuộc tính cấu hình để bạn có thể thêm satellite server và cho chúng giao tiếp qua HTTPS:
 
 - `satellite.config.secure`: `true`
 - `satellite.config.port`: `443`
 
-Or via environment variables:
+Hoặc qua biến môi trường:
 
 ```sh
 XYOPS_satellite__config__secure="true"
@@ -128,83 +128,83 @@ XYOPS_satellite__config__port="443"
 
 ## Serve
 
-Once you have xyOps configured and running with SSO enabled, start [Tailscale Serve](https://tailscale.com/kb/1312/serve) using these command-line arguments:
+Khi đã cấu hình và chạy PTOps với SSO được bật, khởi động [Tailscale Serve](https://tailscale.com/kb/1312/serve) bằng các đối số command-line này:
 
 ```sh
 tailscale serve --accept-app-caps=xyops.io/cap/ts 5522
 ```
 
-The special `--accept-app-caps=xyops.io/cap/ts` argument tells Tailscale to forward the special `Tailscale-App-Capabilities` HTTP header with all incoming requests, which xyOps uses to apply user privileges and roles (see [Capabilities](#capabilities) above).
+Đối số đặc biệt `--accept-app-caps=xyops.io/cap/ts` báo cho Tailscale chuyển tiếp header HTTP đặc biệt `Tailscale-App-Capabilities` với mọi request đến, mà PTOps dùng để áp dụng privilege và role cho user (xem [Capability](#capability) ở trên).
 
-Before trying to load the app in a browser, go to your [Machine List](https://login.tailscale.com/admin/machines) in your Tailscale Admin Console, and add the `tag:xyops` tag to the machine hosting xyOps.
+Trước khi thử tải app trong browser, vào [Machine List](https://login.tailscale.com/admin/machines) trong Tailscale Admin Console, và thêm tag `tag:xyops` cho máy đang host PTOps.
 
-Note that the first time you visit your Tailscale-provided secure HTTPS URL for your served app, there may be a short delay as Tailscale provisions the TLS certificate.  If you receive a timeout error, please wait a few seconds and refresh.  This is normal.
+Lưu ý rằng lần đầu bạn truy cập URL HTTPS an toàn do Tailscale cung cấp cho app đang serve, có thể có một khoảng chờ ngắn khi Tailscale cấp phát chứng chỉ TLS. Nếu bạn nhận được lỗi timeout, hãy chờ vài giây và refresh lại. Đây là điều bình thường.
 
-## Logout
+## Đăng Xuất
 
-When a user clicks the "Logout" button in the xyOps UI, the user's session data and cookie are deleted.  However, with an SSO provider like Tailscale we cannot "fully" log the user out, because they will still be connected and authenticated with their Tailnet, and thus if they just navigate their browser back to the app, they'll instantly log back in (this is by design).
+Khi user nhấn nút "Logout" trong PTOps UI, dữ liệu session và cookie của user sẽ bị xoá. Tuy nhiên, với một nhà cung cấp SSO như Tailscale ta không thể đăng xuất "hoàn toàn" user, vì họ vẫn đang kết nối và xác thực với Tailnet của họ, nên nếu họ chỉ điều hướng browser quay lại app, họ sẽ đăng nhập lại ngay lập tức (đây là chủ ý thiết kế).
 
-So, for Tailscale SSO the best way to handle this is to set the [logout_url](sso.md#logging-out) to the following value, which displays a message to the user describing the "partial logout" situation:
+Vì vậy, với SSO Tailscale cách tốt nhất để xử lý điều này là đặt [logout_url](sso.md#logging-out) thành giá trị sau, hiển thị một thông báo cho user giải thích tình huống "đăng xuất một phần":
 
 ```sh
 XYOPS_SSO__logout_url="/api/app/sso_logout"
 ```
 
-Note that if you use the `preset` feature to enable Tailscale (see above), the `logout_url` is set automatically for you.
+Lưu ý rằng nếu bạn dùng tính năng `preset` để bật Tailscale (xem trên), `logout_url` sẽ được đặt tự động cho bạn.
 
-## Security
+## Bảo Mật
 
-For security hardening, set your [SSO IP Whitelist](sso.md#ip-whitelist) to only accept trusted headers from localhost, as that is how Tailscale Serve routes traffic:
+Để tăng cường bảo mật, đặt [SSO IP Whitelist](sso.md#ip-whitelist) chỉ chấp nhận header đáng tin cậy từ localhost, vì đó là cách Tailscale Serve định tuyến traffic:
 
 ```json
 "whitelist": ["127.0.0.1", "::1/128"]
 ```
 
-The whitelist can also be specified via environment variable.  Just use a CSV list of IPs and/or CIDRs in that case:
+Whitelist cũng có thể được chỉ định qua biến môi trường. Trong trường hợp đó chỉ cần dùng danh sách IP và/hoặc CIDR phân tách bằng dấu phẩy:
 
 ```sh
 XYOPS_SSO__whitelist="127.0.0.1,::1/128"
 ```
 
-Finally, remember to **delete the stock admin user account** that xyOps automatically creates on first install.  Since you are using SSO this account is technically "unreachable", but deleting it is safest as it has an insecure password by default.
+Cuối cùng, nhớ **xoá tài khoản admin mặc định** mà PTOps tự động tạo khi cài đặt lần đầu. Vì bạn đang dùng SSO, tài khoản này về mặt kỹ thuật là "không thể truy cập", nhưng xoá nó là an toàn nhất vì nó có mật khẩu không an toàn theo mặc định.
 
 ## Sidecar
 
-Tailscale has a really cool feature which allows xyOps to run in a Docker container as its own dedicated "node" on your Tailnet.  This is done by running Tailscale as a [sidecar container](https://tailscale.com/blog/docker-tailscale-guide) alongside a xyOps container.  Tailscale then handles everything including DNS, TLS, and proxying requests to xyOps, including forwarding trusted headers for automatic login and privilege / role assignments.  This guide contains everything you need to get up and running.
+Tailscale có một tính năng rất hay cho phép PTOps chạy trong container Docker như một "node" riêng trên Tailnet của bạn. Điều này được thực hiện bằng cách chạy Tailscale như một [sidecar container](https://tailscale.com/blog/docker-tailscale-guide) cùng với container PTOps. Tailscale sau đó xử lý mọi thứ bao gồm DNS, TLS, và proxy request tới PTOps, bao gồm chuyển tiếp header đáng tin cậy để tự động đăng nhập và gán privilege/role. Hướng dẫn này chứa mọi thứ bạn cần để khởi động và chạy.
 
-### Tailscale Admin Setup
+### Thiết Lập Tailscale Admin
 
-The first thing you'll need to do is login to your [Tailscale Admin Console](https://login.tailscale.com/welcome), and then:
+Điều đầu tiên bạn cần làm là đăng nhập vào [Tailscale Admin Console](https://login.tailscale.com/welcome), rồi:
 
-1. Read the [Capabilities](#capabilities) section above, to add a grant into your Tailnet policy file, so xyOps can automatically assign privileges and roles to your users.
-2. Create an Auth Key.  See [Generate An Auth Key]( https://tailscale.com/kb/1085/auth-keys#generate-an-auth-key) for instructions.
+1. Đọc phần [Capability](#capability) ở trên, để thêm grant vào tệp chính sách Tailnet của bạn, để PTOps có thể tự động gán privilege và role cho user.
+2. Tạo một Auth Key. Xem [Generate An Auth Key](https://tailscale.com/kb/1085/auth-keys#generate-an-auth-key) để biết hướng dẫn.
 
-Remember, auth keys expire by default.  See [Tailscale Key Expiry](https://tailscale.com/docs/features/access-control/auth-keys#key-expiry) to learn more.  For permanent access, you can disable key expiry, and add a tag to the machine.
+Nhớ rằng auth key mặc định sẽ hết hạn. Xem [Tailscale Key Expiry](https://tailscale.com/docs/features/access-control/auth-keys#key-expiry) để biết thêm. Để có quyền truy cập vĩnh viễn, bạn có thể tắt việc hết hạn key, và thêm tag cho máy.
 
-### Host Setup
+### Thiết Lập Host
 
-Make sure you have [Docker](https://www.docker.com/) and the Docker CLI with Docker Compose all installed and running.
+Đảm bảo bạn đã cài đặt và chạy [Docker](https://www.docker.com/) cùng với Docker CLI và Docker Compose.
 
-Create a directory on your host machine for xyOps to use, and `cd` into it.  It just needs to store a couple of configuration files and some volume-mapped directories for the containers.
+Tạo một thư mục trên máy host để PTOps sử dụng, và `cd` vào đó. Nó chỉ cần lưu vài tệp cấu hình và một số thư mục ánh xạ volume cho các container.
 
 ### Env File
 
-Create an `.env` file in our host directory with the following contents:
+Tạo tệp `.env` trong thư mục host của chúng ta với nội dung sau:
 
 ```sh
-# Tailscale Configuration
+# Cấu hình Tailscale
 TS_AUTHKEY="YOUR_TAILSCALE_AUTHKEY"
 TS_HOST="xyops.taild89302.ts.net"
 TZ="America/Los_Angeles"
 ```
 
-- Change the `TS_AUTHKEY` value to your own auth key you just created on your Tailscale console.
-- Change the `TS_HOST` value to your own Tailnet domain name, leaving in the `xyops.` prefix.  See the [DNS](https://login.tailscale.com/admin/dns) tab in your Tailscale Admin Console.
-- Change the `TZ` to your own local timezone, so xyOps can rotate logs and reset daily stats at "your" midnight.
+- Đổi giá trị `TS_AUTHKEY` thành auth key của bạn vừa tạo trên Tailscale console.
+- Đổi giá trị `TS_HOST` thành domain Tailnet của riêng bạn, giữ lại tiền tố `xyops.`. Xem tab [DNS](https://login.tailscale.com/admin/dns) trong Tailscale Admin Console.
+- Đổi `TZ` thành timezone cục bộ của bạn, để PTOps có thể xoay log và reset thống kê hàng ngày vào "nửa đêm của bạn".
 
 ### Docker Compose
 
-Create a `compose.yaml` file in our host directory with the following contents:
+Tạo tệp `compose.yaml` trong thư mục host của chúng ta với nội dung sau:
 
 ```yaml
 configs:
@@ -217,26 +217,26 @@ configs:
       "AllowFunnel":{"$${TS_CERT_DOMAIN}:443":false}}
 
 services:
-  # Tailscale Sidecar Configuration
+  # Cấu hình Tailscale Sidecar
   tailscale:
     image: tailscale/tailscale:latest
-    container_name: tailscale-xyops # Name for local container management
-    hostname: xyops # Name used within your Tailscale environment
+    container_name: tailscale-xyops # Tên để quản lý container cục bộ
+    hostname: xyops # Tên dùng trong môi trường Tailscale của bạn
     environment:
       TS_AUTHKEY: "${TS_AUTHKEY}"
       TS_STATE_DIR: "/var/lib/tailscale"
       TS_SERVE_CONFIG: "/config/serve.json"
       TS_USERSPACE: "false"
-      TS_ENABLE_HEALTH_CHECK: "true" # Enable healthcheck endpoint: "/healthz"
-      TS_LOCAL_ADDR_PORT: "127.0.0.1:41234" # The <addr>:<port> for the healthz endpoint
-      TS_ACCEPT_DNS: "true" # Use Tailscale MagicDNS
+      TS_ENABLE_HEALTH_CHECK: "true" # Bật endpoint healthcheck: "/healthz"
+      TS_LOCAL_ADDR_PORT: "127.0.0.1:41234" # <addr>:<port> cho endpoint healthz
+      TS_ACCEPT_DNS: "true" # Dùng Tailscale MagicDNS
       TS_AUTH_ONCE: "true"
     configs:
       - source: ts-serve
         target: /config/serve.json
     volumes:
-      - ./ts-config:/config # Config folder used to store Tailscale files
-      - ./ts-state:/var/lib/tailscale # Tailscale requirement
+      - ./ts-config:/config # Thư mục config dùng để lưu file Tailscale
+      - ./ts-state:/var/lib/tailscale # Yêu cầu bắt buộc của Tailscale
     devices:
       - /dev/net/tun:/dev/net/tun
     cap_add:
@@ -252,7 +252,7 @@ services:
   xyops01:
     image: ghcr.io/pixlcore/xyops:latest
     container_name: xyops01
-    network_mode: service:tailscale # Use Sidecar
+    network_mode: service:tailscale # Dùng Sidecar
     init: true
     restart: unless-stopped
     environment:
@@ -278,23 +278,23 @@ volumes:
   xy-data:
 ```
 
-You should not need to edit anything in the `compose.yaml` file, but here are a couple of notes:
+Bạn không cần chỉnh sửa gì trong tệp `compose.yaml`, nhưng đây là vài lưu ý:
 
-- The `XYOPS_xysat_local` environment variable causes xyOps to launch [xySat](hosting.md#satellite) in the background, in the same container.  This is so you can start running jobs right away -- it is great for testing and home labs, but *not recommended for production*.
-- The `/var/run/docker.sock` bind is optional, and allows xyOps to launch its own containers (i.e. for the [Docker Plugin](plugins.md#docker-plugin), and the [Plugin Marketplace](marketplace.md)).
+- Biến môi trường `XYOPS_xysat_local` khiến PTOps khởi chạy [xySat](hosting.md#satellite) ở background, trong cùng container. Điều này giúp bạn có thể chạy job ngay -- rất tốt cho việc test và home lab, nhưng *không khuyến nghị cho production*.
+- Việc bind `/var/run/docker.sock` là tuỳ chọn, và cho phép PTOps tự khởi chạy container của nó (ví dụ cho [Docker Plugin](plugins.md#docker-plugin), và [Plugin Marketplace](marketplace.md)).
 
-### Start Up
+### Khởi Động
 
-Type this command to start everything up (the `-d` switch runs it in the background):
+Nhập lệnh sau để khởi động toàn bộ (switch `-d` chạy nó ở background):
 
 ```sh
 docker compose up -d
 ```
 
-Before trying to load the app in a browser, go to your [Machine List](https://login.tailscale.com/admin/machines) in your Tailscale Admin Console, and add the `tag:xyops` tag to the new machine.  You can also disable the expiry here as well.
+Trước khi thử tải app trong browser, vào [Machine List](https://login.tailscale.com/admin/machines) trong Tailscale Admin Console, và thêm tag `tag:xyops` cho máy mới. Bạn cũng có thể tắt việc hết hạn ở đây.
 
-Finally, visit your `TS_HOST` URL in your favorite browser.  Example:
+Cuối cùng, truy cập URL `TS_HOST` của bạn trong browser yêu thích. Ví dụ:
 
 https://xyops.taild89302.ts.net/
 
-Note that the first time you visit the URL, there may be a short delay as Tailscale provisions the TLS certificate.
+Lưu ý rằng lần đầu bạn truy cập URL, có thể có một khoảng chờ ngắn khi Tailscale cấp phát chứng chỉ TLS.

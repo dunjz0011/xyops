@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Upgrade xyOps Satellite in /opt/xyops/satellite/
+# Upgrade PTOps Satellite in /opt/xyops/satellite/
 # Copyright (c) 2026 PixlCore LLC.  BSD 3-Clause License.
 
 set -eu
@@ -12,7 +12,7 @@ INSTALL_DIR="/opt/xyops/satellite"
 
 # Check if satellite is installed (required for upgrade)
 if [ ! -f "$INSTALL_DIR/package.json" ]; then
-    echo "Error: xyOps Satellite is not installed in $INSTALL_DIR/"
+    echo "Error: PTOps Satellite is not installed in $INSTALL_DIR/"
     echo "Cannot upgrade because no existing installation was found."
     exit 1
 fi
@@ -75,7 +75,7 @@ if [ $RC != 0 ]; then
 fi
 echo "Ping successful."
 
-echo "Upgrading xyOps Satellite for ${OS}/${ARCH}..."
+echo "Upgrading PTOps Satellite for ${OS}/${ARCH}..."
 
 # Create directories
 cd $INSTALL_DIR

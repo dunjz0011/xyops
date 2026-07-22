@@ -1,263 +1,263 @@
-# Page Descriptions
+# Mô Tả Trang
 
-This document contains short descriptions of each top-level page.  They are displayed in the UI if the user has the preference enabled.
+Tài liệu này chứa mô tả ngắn cho từng trang cấp cao nhất. Chúng được hiển thị trong giao diện nếu người dùng bật tuỳ chọn tương ứng.
 
 ## Search
 
-Completed jobs are stored for analysis, troubleshooting, and auditing. Job history includes results, timing, parameters, logs, output data, and files, so you can verify behavior and compare outcomes across runs.
+Các job đã hoàn thành được lưu lại để phân tích, xử lý sự cố, và kiểm toán. Lịch sử job bao gồm kết quả, thời gian, tham số, log, dữ liệu output, và file, giúp bạn kiểm chứng hành vi và so sánh kết quả giữa các lần chạy.
 
-The Job Search page lets you browse and filter this history. Narrow by result (success, error, warning, critical, aborted), event or workflow, category, tags, source (scheduler, manual, API key, workflow, action, alert, plugin), plugin, server, group, and date range. You can also search inside logs and attached text files using plain text or regular expressions with optional case sensitivity.
+Trang Job Search cho phép bạn duyệt và lọc lịch sử này. Thu hẹp theo kết quả (success, error, warning, critical, aborted), event hoặc workflow, category, tag, nguồn (scheduler, manual, API key, workflow, action, alert, plugin), plugin, server, group, và khoảng thời gian. Bạn cũng có thể tìm kiếm trong log và file văn bản đính kèm bằng văn bản thường hoặc biểu thức chính quy, có thể phân biệt hoa/thường.
 
-Save frequent queries as presets that appear in the sidebar for quick access. Presets are per‑user so you can keep personal workflows without affecting others. 
+Lưu các truy vấn thường dùng thành preset xuất hiện ở sidebar để truy cập nhanh. Preset được lưu theo từng người dùng, nên bạn có thể giữ quy trình riêng mà không ảnh hưởng đến người khác.
 
-Learn more: [Events](events.md), [Workflows](workflows.md), [Tags](tags.md).
+Xem thêm: [Events](events.md), [Workflows](workflows.md), [Tags](tags.md).
 
 ## Tickets
 
-**Tickets** are lightweight records for tracking issues, features, releases, changes, maintenance, and questions. They capture a subject, body, assignees and CC lists, optional due dates, tags, and files, and they can link to automation resources including events, jobs, and alerts.
+**Ticket** là các bản ghi nhẹ dùng để theo dõi issue, feature, release, thay đổi, bảo trì, và câu hỏi. Chúng ghi lại subject, body, danh sách assignee và CC, ngày due tuỳ chọn, tag, và file, và có thể liên kết đến các tài nguyên tự động hoá bao gồm event, job, và alert.
 
-The Ticket Search page helps you find and manage this work. Click "**New Ticket**" to create one, or search by full‑text in the body, type, status (open, closed, draft), assignee, author, category, server, tags, and date range.
+Trang Ticket Search giúp bạn tìm và quản lý công việc này. Nhấn "**New Ticket**" để tạo mới, hoặc tìm kiếm toàn văn trong body, theo type, status (open, closed, draft), assignee, tác giả, category, server, tag, và khoảng thời gian.
 
-Tickets can embed runnable events so you can launch jobs directly from a ticket. Attached files flow into those jobs as inputs and outputs are linked back for traceability. 
+Ticket có thể nhúng các event có thể chạy được, để bạn khởi chạy job trực tiếp từ ticket. File đính kèm sẽ được đưa vào các job đó như input, và output được liên kết ngược lại để dễ truy vết.
 
-Learn more: [Tickets](tickets.md).
+Xem thêm: [Tickets](tickets.md).
 
 ## Events
 
-**Events** define how jobs run: what code to execute (plugin and parameters), where to run it (targets and selection algorithm), when to run (triggers), and how to react (actions and limits). Each event launch produces a job with full lifecycle tracking.
+**Event** định nghĩa cách job chạy: chạy code gì (plugin và tham số), chạy ở đâu (target và thuật toán chọn), chạy khi nào (trigger), và phản ứng ra sao (action và limit). Mỗi lần event chạy sẽ tạo ra một job với đầy đủ trạng thái lifecycle được theo dõi.
 
-The Event List page lets you browse, search, and manage events. Click "**New Event**" to add one, or filter by keywords (title), status (enabled or disabled), category, target (group or server), plugin, tags, triggers, actions, or author. Open any event to view or edit its configuration.
+Trang Event List cho phép bạn duyệt, tìm kiếm, và quản lý event. Nhấn "**New Event**" để thêm mới, hoặc lọc theo từ khoá (title), trạng thái (enabled hoặc disabled), category, target (group hoặc server), plugin, tag, trigger, action, hoặc tác giả. Mở bất kỳ event nào để xem hoặc chỉnh sửa cấu hình.
 
-Category defaults merge into event jobs, and per‑event limits and actions can refine behavior. Include a manual trigger if you want on‑demand runs via UI or API. 
+Giá trị mặc định của category sẽ được gộp vào job của event, và limit/action riêng của từng event có thể tinh chỉnh hành vi. Thêm một trigger manual nếu bạn muốn chạy theo yêu cầu qua UI hoặc API.
 
-Learn more: [Events](events.md), [Categories](categories.md), [Plugins](plugins.md).
+Xem thêm: [Events](events.md), [Categories](categories.md), [Plugins](plugins.md).
 
 ## Workflows
 
-**Workflows** are visual graphs that orchestrate multiple jobs with flow control. They connect triggers, event or job nodes, controllers, actions, and limits to express parallelism, branching, fan‑out, and fan‑in.
+**Workflow** là các đồ thị trực quan điều phối nhiều job với luồng điều khiển. Chúng kết nối trigger, node event hoặc job, controller, action, và limit để thể hiện tính song song, phân nhánh, fan-out, và fan-in.
 
-The Workflow List page shows all workflow events. Click "**New Workflow**" to create a workflow, or filter the existing ones by keywords (title), status (enabled or disabled), category, target (group or server), tags, triggers, actions, or author to find what you need.
+Trang Workflow List hiển thị tất cả event dạng workflow. Nhấn "**New Workflow**" để tạo workflow mới, hoặc lọc các workflow hiện có theo từ khoá (title), trạng thái (enabled hoặc disabled), category, target (group hoặc server), tag, trigger, action, hoặc tác giả để tìm đúng thứ bạn cần.
 
-Common controllers include split, join, repeat, multiplex, decision, and wait. The editor supports testing with custom inputs and optional action or limit suppression. 
+Các controller phổ biến gồm split, join, repeat, multiplex, decision, và wait. Trình chỉnh sửa hỗ trợ test với input tuỳ chỉnh và có thể tắt action hoặc limit khi test.
 
-Learn more: [Workflows](workflows.md).
+Xem thêm: [Workflows](workflows.md).
 
 ## Categories
 
-**Categories** are user‑defined groupings for events and workflows. They help organize automation, control visibility, and apply default actions and limits to all jobs inside the category.
+**Category** là các nhóm do người dùng định nghĩa cho event và workflow. Chúng giúp tổ chức automation, kiểm soát khả năng hiển thị, và áp dụng action/limit mặc định cho tất cả job bên trong category.
 
-The Category List page lets you create and manage categories. Set a title, color, icon, notes, enabled flag, and sort order. You can import/export and reorder categories to match your preferred layout.
+Trang Category List cho phép bạn tạo và quản lý category. Đặt title, màu, icon, ghi chú, cờ enabled, và thứ tự sắp xếp. Bạn có thể import/export và sắp xếp lại category theo bố cục mong muốn.
 
-Defaults from categories merge into job runs, standardizing notifications and resource policies. Disabling a category prevents scheduling and manual runs for everything it contains. 
+Giá trị mặc định từ category sẽ gộp vào các lần chạy job, giúp chuẩn hoá thông báo và chính sách tài nguyên. Disable một category sẽ ngăn việc lập lịch và chạy thủ công cho mọi thứ bên trong nó.
 
-Learn more: [Categories](categories.md), [Actions](actions.md), [Limits](limits.md).
+Xem thêm: [Categories](categories.md), [Actions](actions.md), [Limits](limits.md).
 
 ## Buckets
 
-**Storage Buckets** are durable stores for JSON data and files that jobs and workflows can share. They are useful for cross‑job handoffs, artifact storage, and long‑lived shared state.
+**Storage Bucket** là nơi lưu trữ bền vững cho dữ liệu JSON và file mà job và workflow có thể chia sẻ. Chúng hữu ích cho việc chuyển giao dữ liệu giữa các job, lưu artifact, và duy trì trạng thái chia sẻ lâu dài.
 
-The Storage Bucket List page lets you create buckets, edit the JSON data pane, and upload or download files. You can replace or remove objects as needed, with filename normalization and size/count limits enforced by the server.
+Trang Storage Bucket List cho phép bạn tạo bucket, chỉnh sửa panel dữ liệu JSON, và upload hoặc download file. Bạn có thể thay thế hoặc xoá object khi cần, với việc chuẩn hoá tên file và giới hạn kích thước/số lượng được server thực thi.
 
-Jobs can fetch from a bucket at start and store data or files on completion via actions, allowing loose coupling between processes and teams. 
+Job có thể fetch từ bucket lúc bắt đầu và lưu dữ liệu hoặc file khi hoàn thành qua action, cho phép sự kết hợp lỏng giữa các tiến trình và team.
 
-Learn more: [Buckets](buckets.md).
+Xem thêm: [Buckets](buckets.md).
 
 ## Tags
 
-**Tags** are reusable labels you can attach to events, jobs, and tickets. They provide quick visual cues, enable powerful searches, and can drive conditional automation.
+**Tag** là các nhãn có thể tái sử dụng mà bạn có thể gắn vào event, job, và ticket. Chúng cung cấp gợi ý trực quan nhanh, cho phép tìm kiếm mạnh mẽ, và có thể điều khiển automation có điều kiện.
 
-The Tag List page lets you create, edit, and delete tag definitions with titles, optional icons, and notes. Tag IDs are the reference keys used by actions and plugins.
+Trang Tag List cho phép bạn tạo, chỉnh sửa, và xoá định nghĩa tag với title, icon tuỳ chọn, và ghi chú. Tag ID là khoá tham chiếu được action và plugin sử dụng.
 
-Actions can be conditioned on tags present at job completion, and plugins can push tags at runtime to annotate jobs. 
+Action có thể được điều kiện hoá theo tag có mặt khi job hoàn thành, và plugin có thể push tag lúc runtime để đánh dấu job.
 
-Learn more: [Tags](tags.md).
+Xem thêm: [Tags](tags.md).
 
 ## Alerts
 
-**Alerts** continuously evaluate live server data and fire when conditions are met. Definitions specify scope, expressions, messages, and actions; each firing becomes an invocation with its own lifecycle.
+**Alert** liên tục đánh giá dữ liệu server thời gian thực và kích hoạt khi điều kiện được thoả mãn. Định nghĩa alert chỉ định scope, expression, message, và action; mỗi lần kích hoạt trở thành một invocation với lifecycle riêng.
 
-The Alert Search page shows active and historical invocations so you can review conditions, timing, and downstream actions. Filter by alert definition, server, group, and date range to isolate incidents or trends.
+Trang Alert Search hiển thị các invocation đang hoạt động và trong lịch sử để bạn xem xét điều kiện, thời gian, và các action tiếp theo. Lọc theo định nghĩa alert, server, group, và khoảng thời gian để khoanh vùng sự cố hoặc xu hướng.
 
-On fire or clear, actions can notify channels, create tickets, run events, and take snapshots. Alerts can also block new jobs or abort running jobs on affected servers. 
+Khi kích hoạt hoặc xoá, action có thể thông báo channel, tạo ticket, chạy event, và chụp snapshot. Alert cũng có thể chặn job mới hoặc hủy job đang chạy trên các server bị ảnh hưởng.
 
-Learn more: [Alerts](alerts.md).
+Xem thêm: [Alerts](alerts.md).
 
 ## Servers
 
-**Servers** are worker nodes that execute jobs and collect metrics. Each runs the xySat agent, maintains a connection to a conductor, and reports host details and monitoring data.
+**Server** là các worker node thực thi job và thu thập số liệu. Mỗi server chạy agent xySat, duy trì kết nối với conductor, và báo cáo thông tin host cùng dữ liệu giám sát.
 
-The Server List page shows the active fleet with labels, hostnames, IPs, OS and CPU details, and status. Filter by keywords and platform attributes, use "**Search History**" for offline servers, or click "**Add Server**" to generate a one‑line installer for Docker, Linux, macOS, or Windows.
+Trang Server List hiển thị đội máy đang hoạt động với label, hostname, IP, thông tin OS và CPU, và trạng thái. Lọc theo từ khoá và thuộc tính platform, dùng "**Search History**" cho các server offline, hoặc nhấn "**Add Server**" để tạo lệnh cài đặt một dòng cho Docker, Linux, macOS, hoặc Windows.
 
-Opening a server presents live and historical charts, current processes and network connections, running and upcoming jobs, and active alerts with links to details. 
+Mở một server sẽ hiển thị biểu đồ trực tiếp và lịch sử, các process và kết nối mạng hiện tại, job đang chạy và sắp chạy, và alert đang hoạt động cùng liên kết đến chi tiết.
 
-Learn more: [Servers](servers.md).
+Xem thêm: [Servers](servers.md).
 
 ## Groups
 
-**Server Groups** organize servers into logical sets used for targeting, dashboards, and alert scoping. Membership can be automatic via hostname regex or assigned manually per server.
+**Server Group** tổ chức các server thành các tập hợp logic dùng để targeting, dashboard, và giới hạn phạm vi alert. Việc trở thành thành viên có thể tự động qua regex hostname hoặc gán thủ công cho từng server.
 
-The Server Group List page lets you create, edit, and reorder groups. Click "**New Group**" to add one, set an optional hostname match, notes, and default alert actions.
+Trang Server Group List cho phép bạn tạo, chỉnh sửa, và sắp xếp lại group. Nhấn "**New Group**" để thêm mới, đặt hostname match tuỳ chọn, ghi chú, và action alert mặc định.
 
-Opening a group shows aggregated charts, processes and connections across members, running and upcoming jobs, alerts, and controls for snapshots and watches. 
+Mở một group sẽ hiển thị biểu đồ tổng hợp, process và kết nối trên tất cả thành viên, job đang chạy và sắp chạy, alert, và các control để chụp snapshot và đặt watch.
 
-Learn more: [Server Groups](groups.md).
+Xem thêm: [Server Groups](groups.md).
 
 ## Snapshots
 
-**Snapshots** capture a point‑in‑time view of a server or a whole group, including metrics, processes, connections, and context like jobs and alerts. They are ideal for forensics and before/after comparisons.
+**Snapshot** chụp một góc nhìn tại một thời điểm của server hoặc cả một group, bao gồm số liệu, process, kết nối, và bối cảnh như job và alert. Chúng lý tưởng cho việc điều tra và so sánh trước/sau.
 
-The Snapshot History page lists captured records. Filter by source (alert, user, watch, job), server, group, and date range to locate relevant entries and trends.
+Trang Snapshot History liệt kê các bản ghi đã chụp. Lọc theo nguồn (alert, user, watch, job), server, group, và khoảng thời gian để xác định các mục và xu hướng liên quan.
 
-Opening a snapshot shows frozen server or group data with quick metrics and minute‑level monitors, processes, connections, jobs, and alerts from the exact capture moment. 
+Mở một snapshot sẽ hiển thị dữ liệu server hoặc group đã được đóng băng cùng số liệu nhanh và monitor theo phút, process, kết nối, job, và alert tại đúng thời điểm chụp.
 
-Learn more: [Snapshots](snapshots.md).
+Xem thêm: [Snapshots](snapshots.md).
 
 ## MyAccount
 
-Your account profile includes your identity, credentials, roles, and avatar. Keeping this up to date helps others recognize you in activity logs and lists.
+Hồ sơ tài khoản của bạn bao gồm danh tính, thông tin xác thực, role, và avatar. Cập nhật thông tin này giúp người khác nhận ra bạn trong log hoạt động và danh sách.
 
-The My Account page lets you change your display name, email address, and password, and upload or replace your avatar image. You can also select an icon to display alongside your name in the UI.
+Trang My Account cho phép bạn đổi tên hiển thị, địa chỉ email, và mật khẩu, và upload hoặc thay ảnh avatar. Bạn cũng có thể chọn icon hiển thị cạnh tên trong UI.
 
-The page shows which roles you are assigned so you can understand your effective permissions at a glance. 
+Trang này hiển thị các role bạn được gán để bạn hiểu quyền hiệu lực của mình một cách nhanh chóng.
 
 ## MySettings
 
-Preferences control the look, feel, and behavior of the UI for your account. They include localization, accessibility, notifications, media, and keyboard shortcuts.
+Tuỳ chọn cá nhân kiểm soát giao diện, cảm giác, và hành vi của UI cho tài khoản của bạn. Chúng bao gồm bản địa hoá, khả năng tiếp cận, thông báo, media, và phím tắt.
 
-The My Settings page lets you configure locale, region, timezone, number format, and hour cycle. You can adjust motion, contrast, vision accessibility, notifications, visual effects, and streamer mode, along with volume, brightness, contrast, hue, and saturation.
+Trang My Settings cho phép bạn cấu hình locale, region, timezone, định dạng số, và hour cycle. Bạn có thể điều chỉnh motion, contrast, khả năng tiếp cận thị giác, thông báo, hiệu ứng hình ảnh, và streamer mode, cùng với volume, độ sáng, độ tương phản, hue, và saturation.
 
-Keyboard shortcuts can be tailored for efficiency. Settings travel with your account and apply across devices. 
+Phím tắt có thể được tuỳ chỉnh để làm việc hiệu quả hơn. Cài đặt sẽ theo tài khoản của bạn và áp dụng trên mọi thiết bị.
 
 ## MySecurity
 
-Your personal security log shows account activity such as logins and sensitive changes. Each entry includes metadata like IP addresses and user agents.
+Log an ninh cá nhân của bạn hiển thị hoạt động tài khoản như đăng nhập và các thay đổi nhạy cảm. Mỗi mục bao gồm metadata như địa chỉ IP và user agent.
 
-The My Security page allows you to audit this history and confirm that recent actions are legitimate. It is a good habit to review periodically.
+Trang My Security cho phép bạn kiểm tra lại lịch sử này và xác nhận các hành động gần đây là hợp lệ. Đây là thói quen tốt nên thực hiện định kỳ.
 
-Use Logout All Sessions to invalidate every other session while keeping the current one active.
+Dùng Logout All Sessions để vô hiệu hoá mọi session khác trong khi vẫn giữ session hiện tại hoạt động.
 
 ## ActivityLog
 
-The system activity log records creates, updates, deletes, user logins, security actions, and server connectivity changes. It provides an audit trail for administrators.
+Log hoạt động hệ thống ghi lại các lệnh tạo, cập nhật, xoá, đăng nhập người dùng, hành động an ninh, và thay đổi kết nối server. Nó cung cấp một audit trail cho quản trị viên.
 
-The Activity Log page presents this history with search and filters so you can isolate actions by user, object type, or time window. Each entry includes helpful metadata for investigations.
+Trang Activity Log hiển thị lịch sử này với tìm kiếm và bộ lọc để bạn khoanh vùng hành động theo người dùng, loại đối tượng, hoặc khoảng thời gian. Mỗi mục bao gồm metadata hữu ích cho việc điều tra.
 
-Use this page for change reviews, compliance audits, and troubleshooting administrative operations across the platform.
+Dùng trang này cho việc xem xét thay đổi, kiểm toán tuân thủ, và xử lý sự cố các hoạt động quản trị trên toàn hệ thống.
 
 ## AlertSetup
 
-Alert definitions describe what to watch on servers and what to do when conditions are met. Each definition includes scope, an expression, a message, and actions for fire and clear.
+Định nghĩa alert mô tả cái gì cần theo dõi trên server và cần làm gì khi điều kiện được thoả mãn. Mỗi định nghĩa bao gồm scope, một expression, một message, và action cho lúc fire và clear.
 
-The Alert Setup page lists and manages these definitions. Click "**New Alert**" to create one, test expressions against live data, and configure warm‑up/cool‑down samples, overlays, and options.
+Trang Alert Setup liệt kê và quản lý các định nghĩa này. Nhấn "**New Alert**" để tạo mới, test expression với dữ liệu thực, và cấu hình số sample warm-up/cool-down, overlay, và các tuỳ chọn khác.
 
-Alerts can notify channels, create tickets, run events, take snapshots, and optionally limit or abort jobs on affected servers while active. 
+Alert có thể thông báo channel, tạo ticket, chạy event, chụp snapshot, và tuỳ chọn giới hạn hoặc hủy job trên các server bị ảnh hưởng khi đang hoạt động.
 
-Learn more: [Alerts](alerts.md).
+Xem thêm: [Alerts](alerts.md).
 
 ## APIKeys
 
-**API Keys** are access tokens for programmatic use of the REST API. They are like special user accounts for applications, with assignable privileges and optional role grants.
+**API Key** là token truy cập cho việc sử dụng REST API theo hướng tự động hoá. Chúng giống như tài khoản người dùng đặc biệt cho ứng dụng, với privilege có thể gán và tuỳ chọn cấp role.
 
-The API Keys page lets you create and manage keys. Click "**New API Key**" to set a title, description, privileges, roles, and an optional expiration. Keys can be disabled or deleted at any time.
+Trang API Keys cho phép bạn tạo và quản lý key. Nhấn "**New API Key**" để đặt title, mô tả, privilege, role, và ngày hết hạn tuỳ chọn. Key có thể bị disable hoặc xoá bất cứ lúc nào.
 
-Key values are shown only once and stored as salted SHA‑256 hashes thereafter. Scope keys narrowly and expire them when appropriate. 
+Giá trị key chỉ được hiển thị một lần và sau đó được lưu dưới dạng hash SHA-256 có salt. Nên giới hạn phạm vi key hẹp và đặt hạn dùng khi phù hợp.
 
-Learn more: [API Reference](api.md).
+Xem thêm: [API Reference](api.md).
 
 ## Channels
 
-**Notification Channels** bundle multiple actions such as emailing users, firing a web hook, launching a remediation event, and showing in‑app notifications with sound. Referencing a channel keeps responses consistent.
+**Notification Channel** đóng gói nhiều action như gửi email cho người dùng, kích hoạt web hook, chạy event khắc phục, và hiển thị thông báo trong app kèm âm thanh. Việc tham chiếu một channel giúp phản hồi luôn nhất quán.
 
-The Channels page lets you define and manage these bundles. Click "**New Channel**" to pick users, external emails, a web hook, an optional run‑event, an optional sound, and an optional per‑day cap.
+Trang Channels cho phép bạn định nghĩa và quản lý các bó này. Nhấn "**New Channel**" để chọn người dùng, email ngoài, web hook, event chạy tuỳ chọn, âm thanh tuỳ chọn, và giới hạn mỗi ngày tuỳ chọn.
 
-Channels execute their sub‑actions in parallel and record results for auditing. Use icons and concise titles for easy recognition. 
+Channel thực thi các sub-action song song và ghi lại kết quả để kiểm toán. Dùng icon và title ngắn gọn để dễ nhận diện.
 
-Learn more: [Channels](channels.md).
+Xem thêm: [Channels](channels.md).
 
 ## Conductors
 
-**Conductors** are the main xyOps scheduler servers that coordinate job launches, data ingestion, storage, and the UI. A cluster can run multiple conductors for redundancy; one is primary at any moment.
+**Conductor** là các server scheduler chính của PTOps, điều phối việc khởi chạy job, thu nạp dữ liệu, lưu trữ, và UI. Một cluster có thể chạy nhiều conductor để dự phòng; chỉ một trong số đó là primary tại bất kỳ thời điểm nào.
 
-The Conductors page shows these servers and indicates which is primary and which are online or offline. This helps confirm redundancy and election status.
+Trang Conductors hiển thị các server này và cho biết cái nào là primary và cái nào online hoặc offline. Điều này giúp xác nhận tính dự phòng và trạng thái election.
 
-Use this view to see server status or restart / shutdown conductors.
+Dùng góc nhìn này để xem trạng thái server hoặc restart / shutdown conductor.
 
-Learn more: [Servers](servers.md).
+Xem thêm: [Servers](servers.md).
 
 ## Monitors
 
-**Monitors** track a single numeric metric per server over time, computed from the live data received each minute. They power the charts on server and group pages and can feed alerts.
+**Monitor** theo dõi một số liệu duy nhất trên mỗi server theo thời gian, được tính từ dữ liệu trực tiếp nhận mỗi phút. Chúng cấp dữ liệu cho biểu đồ trên trang server và group, và có thể nuôi alert.
 
-The Monitors page lets you define these metrics. Click "**New Monitor**" to provide an expression, data type, optional regex extraction, and delta or rate options. You can scope a monitor to specific groups.
+Trang Monitors cho phép bạn định nghĩa các số liệu này. Nhấn "**New Monitor**" để cung cấp expression, kiểu dữ liệu, trích xuất regex tuỳ chọn, và tuỳ chọn delta hoặc rate. Bạn có thể giới hạn phạm vi monitor cho các group cụ thể.
 
-Well‑tuned monitors produce clear visualizations and stable alert conditions for capacity and performance tracking. 
+Monitor được tinh chỉnh tốt sẽ tạo ra hình ảnh trực quan rõ ràng và điều kiện alert ổn định cho việc theo dõi công suất và hiệu năng.
 
-Learn more: [Monitors](monitors.md), [Alerts](alerts.md).
+Xem thêm: [Monitors](monitors.md), [Alerts](alerts.md).
 
 ## Plugins
 
-**Plugins** extend xyOps with custom logic written in any language. Event plugins run job code on servers, action plugins run on the conductor in response to job or alert actions, monitor plugins emit metrics, and trigger plugins decide when to run events.
+**Plugin** mở rộng PTOps với logic tuỳ chỉnh viết bằng bất kỳ ngôn ngữ nào. Event plugin chạy code job trên server, action plugin chạy trên conductor để phản hồi action của job hoặc alert, monitor plugin xuất số liệu, và trigger plugin quyết định khi nào chạy event.
 
-The Plugins page lists installed plugins and lets you add new ones. Click "**New Plugin**" to create and configure parameters, icons, and notes for a plugin type.
+Trang Plugins liệt kê các plugin đã cài và cho phép bạn thêm plugin mới. Nhấn "**New Plugin**" để tạo và cấu hình tham số, icon, và ghi chú cho một loại plugin.
 
-Plugins can accept parameters, interact with secrets, push updates during runs, and attach files or data to jobs. 
+Plugin có thể nhận tham số, tương tác với secret, push cập nhật trong lúc chạy, và gắn file hoặc dữ liệu vào job.
 
-Learn more: [Plugins](plugins.md).
+Xem thêm: [Plugins](plugins.md).
 
 ## Secrets
 
-**Secrets** are encrypted vaults of key/value variables such as tokens and passwords. They are delivered securely to jobs and web hooks at runtime without exposing plaintext at rest.
+**Secret** là các vault mã hoá chứa biến key/value như token và mật khẩu. Chúng được chuyển an toàn đến job và web hook lúc runtime mà không để lộ plaintext khi lưu trữ.
 
-The Secrets page lets administrators create secrets, define variables, and assign usage to events, categories, plugins, or web hooks. Enable or disable secrets without deleting them, and decrypt values only when necessary.
+Trang Secrets cho phép quản trị viên tạo secret, định nghĩa biến, và gán phạm vi sử dụng cho event, category, plugin, hoặc web hook. Enable hoặc disable secret mà không cần xoá, và chỉ giải mã giá trị khi cần thiết.
 
-At runtime, jobs receive secret variables as environment variables and web hooks expand them in templates. Usage is logged and administrator decryption is audited. 
+Lúc runtime, job nhận biến secret dưới dạng biến môi trường và web hook mở rộng chúng trong template. Việc sử dụng được ghi log và việc giải mã của quản trị viên được kiểm toán.
 
-Learn more: [Secrets](secrets.md).
+Xem thêm: [Secrets](secrets.md).
 
 ## System
 
-The System status and maintenance page provides a high‑level view of resource usage and offers on‑demand administrative actions. This helps you gauge health and perform routine upkeep.
+Trang trạng thái và bảo trì hệ thống cung cấp góc nhìn tổng quan về sử dụng tài nguyên và cung cấp các hành động quản trị theo yêu cầu. Điều này giúp bạn đánh giá tình trạng và thực hiện bảo trì định kỳ.
 
-The page shows process CPU and memory, database memory and disk usage, cache objects and utilization, and DB row counts. It also lists running internal jobs and connected users with IPs, current page, session duration, and ping RTT.
+Trang này hiển thị CPU và memory của process, memory và dung lượng đĩa của database, đối tượng cache và mức sử dụng, và số dòng DB. Nó cũng liệt kê các job nội bộ đang chạy và người dùng đang kết nối cùng IP, trang hiện tại, thời gian session, và ping RTT.
 
-Maintenance actions include importing, exporting, and deleting bulk data, running nightly maintenance, optimizing the database, resetting daily stats, upgrading worker and master servers, and rotating the secret key.
+Các hành động bảo trì bao gồm import, export, và xoá dữ liệu hàng loạt, chạy bảo trì đêm, tối ưu database, reset số liệu ngày, upgrade server worker và master, và xoay secret key.
 
 ## Users
 
-**Users** are individual accounts that log in to the UI and API. Permissions come from direct privileges and assigned roles, and access can be restricted to specific categories and groups.
+**User** là các tài khoản riêng lẻ đăng nhập vào UI và API. Quyền hạn đến từ privilege trực tiếp và role được gán, và quyền truy cập có thể bị giới hạn trong các category và group cụ thể.
 
-The Users page lists accounts and provides tools for creation, editing, suspension, unlocking, and deletion. Click "**New User**" to set identity fields, initial password, privileges, and roles.
+Trang Users liệt kê tài khoản và cung cấp công cụ để tạo, chỉnh sửa, suspend, unlock, và xoá. Nhấn "**New User**" để đặt các trường danh tính, mật khẩu ban đầu, privilege, và role.
 
-Use this area to manage onboarding and ongoing access, including avatars, password changes, and resource restrictions. 
+Dùng khu vực này để quản lý onboarding và quyền truy cập liên tục, bao gồm avatar, đổi mật khẩu, và giới hạn tài nguyên.
 
-Learn more: [Users and Roles](users.md).
+Xem thêm: [Users and Roles](users.md).
 
 ## Roles
 
-**User Roles** bundle privileges and optional resource restrictions so you can grant capabilities consistently. Assign roles to users to avoid managing dozens of privileges per account.
+**User Role** đóng gói privilege và giới hạn tài nguyên tuỳ chọn để bạn cấp quyền một cách nhất quán. Gán role cho user để tránh phải quản lý hàng chục privilege cho mỗi tài khoản.
 
-The Roles page lets you create and manage these bundles. Click "**New Role**" to define privileges and optional category or group limits, then enable it for use.
+Trang Roles cho phép bạn tạo và quản lý các bó này. Nhấn "**New Role**" để định nghĩa privilege và giới hạn category hoặc group tuỳ chọn, rồi enable để sử dụng.
 
-Changes to roles affect assigned users and take effect shortly after saving. Use roles to standardize policy across teams. 
+Thay đổi role sẽ ảnh hưởng đến user được gán và có hiệu lực ngay sau khi lưu. Dùng role để chuẩn hoá chính sách trên toàn team.
 
-Learn more: [Users and Roles](users.md).
+Xem thêm: [Users and Roles](users.md).
 
 ## WebHooks
 
-**Web Hooks** are outbound HTTP requests that integrate jobs and alerts with external systems such as chat, incident tools, or custom endpoints. They are fully customizable and support templating.
+**Web Hook** là các HTTP request gửi ra ngoài để tích hợp job và alert với hệ thống bên ngoài như chat, công cụ xử lý sự cố, hoặc endpoint tuỳ chỉnh. Chúng có thể tuỳ chỉnh hoàn toàn và hỗ trợ templating.
 
-The Web Hooks page lets you create definitions with URL, method, headers, optional body, timeouts, retries, redirect handling, daily caps, and TLS options. Click "**New Web Hook**" to get started.
+Trang Web Hooks cho phép bạn tạo định nghĩa với URL, method, header, body tuỳ chọn, timeout, số lần retry, xử lý redirect, giới hạn mỗi ngày, và tuỳ chọn TLS. Nhấn "**New Web Hook**" để bắt đầu.
 
-Templates can include job or alert context and reference assigned secrets for tokens or credentials. Executions record timing and success for troubleshooting. 
+Template có thể bao gồm bối cảnh job hoặc alert và tham chiếu các secret được gán cho token hoặc thông tin xác thực. Việc thực thi được ghi lại thời gian và kết quả thành công để xử lý sự cố.
 
-Learn more: [Web Hooks](webhooks.md).
+Xem thêm: [Web Hooks](webhooks.md).
 
 ## Marketplace
 
-The **xyOps Marketplace** allows you to download and install plugins created by PixlCore and the community.  All plugins are checked by PixlCore before publishing to ensure quality and safety, but always use caution when downloading software from the internet.
+**PTOps Marketplace** cho phép bạn tải xuống và cài đặt plugin do PixlCore và cộng đồng tạo ra. Tất cả plugin đều được PixlCore kiểm tra trước khi công bố để đảm bảo chất lượng và an toàn, nhưng luôn cẩn trọng khi tải phần mềm từ internet.
 
-The marketplace doesn't actually "host" the Plugins -- it merely provides a search mechanism to discover them.  The Plugins themselves are hosted on package repositories like NPM, PyPI or GitHub, and the marketplace links to them directly.
+Marketplace thực ra không "host" plugin -- nó chỉ cung cấp cơ chế tìm kiếm để phát hiện chúng. Các plugin thực sự được host trên các package repository như NPM, PyPI hoặc GitHub, và marketplace liên kết trực tiếp đến chúng.
 
-For your privacy, requests never go out to the PixlCore / xyOps servers.  Instead, everything is hosted entirely on GitHub, including the marketplace index.
+Để bảo vệ quyền riêng tư của bạn, các request không bao giờ gửi đến server PixlCore / PTOps. Thay vào đó, mọi thứ được host hoàn toàn trên GitHub, bao gồm cả chỉ mục marketplace.
 
-Learn more: [Marketplace](marketplace.md).
+Xem thêm: [Marketplace](marketplace.md).

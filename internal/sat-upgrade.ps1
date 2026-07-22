@@ -1,4 +1,4 @@
-# Upgrade xyOps Satellite on Windows x64.
+# Upgrade PTOps Satellite on Windows x64.
 # Copyright (c) 2026 PixlCore LLC.  BSD 3-Clause License.
 
 # Pre-populated variables (these values will be replaced server-side)
@@ -54,12 +54,12 @@ catch {
 # Define the installation directory.
 # Using Program Files is a standard location for system-wide applications.
 $installDir = Join-Path $env:ProgramFiles "xyOps Satellite"
-Write-Output "Upgrading xyOps Satellite to: $installDir"
+Write-Output "Upgrading PTOps Satellite to: $installDir"
 
 # Check if the application is already installed
 $packageJsonPath = Join-Path $installDir "package.json"
 if (-Not (Test-Path $packageJsonPath)) {
-	Write-Error "xyOps Satellite is not installed in $installDir. Upgrade cannot continue."
+	Write-Error "PTOps Satellite is not installed in $installDir. Upgrade cannot continue."
 	exit 1
 }
 
@@ -125,4 +125,4 @@ Write-Output "Package extracted to $installDir."
 Write-Output "Running install/start command..."
 & $nodePath $mainJs --install
 
-Write-Output "xyOps Satellite upgrade complete."
+Write-Output "PTOps Satellite upgrade complete."

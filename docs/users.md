@@ -1,105 +1,105 @@
 # Users and Roles
 
-## Overview
+## Tổng Quan
 
-This document explains how user accounts, roles, and permissions work in xyOps. The platform includes account management (creation, login, sessions, password reset) and extends it with roles, resource restrictions, security logging, avatars, and admin tooling.
+Tài liệu này giải thích cách tài khoản người dùng, role, và quyền hạn hoạt động trong PTOps. Nền tảng bao gồm quản lý tài khoản (tạo, đăng nhập, session, đặt lại password) và mở rộng thêm role, giới hạn resource, log an ninh người dùng, avatar, và công cụ admin.
 
-- Core account system: built-in authentication, session management, and password workflows.
-- Extensions: roles and effective privileges, category/group restrictions, user security log, "Logout All Sessions", avatars, and rich UI preferences.
-- Admins manage users and roles in the Admin UI; all changes are enforced by the backend.
+- Hệ thống tài khoản cốt lõi: xác thực tích hợp, quản lý session, và luồng đặt lại password.
+- Mở rộng: role và privilege hiệu lực, giới hạn category/group, log an ninh người dùng, "Logout All Sessions", avatar, và tuỳ chọn UI phong phú.
+- Admin quản lý người dùng và role trong Admin UI; mọi thay đổi được thực thi bởi backend.
 
-See also:
+Xem thêm:
 
-- [User](data.md#user) and [Role](data.md#role) object definitions.
-- [Privilege List](privileges.md)
-- [SSO Integration](sso.md)
+- Định nghĩa đối tượng [User](data.md#user) và [Role](data.md#role).
+- [Danh Sách Privilege](privileges.md)
+- [Tích Hợp SSO](sso.md)
 
-## User Profile
+## Hồ Sơ Người Dùng
 
-Each user represents one human account. The profile combines identity, authentication, permissions, and UI preferences. For the full JSON schema, see [User](data.md#user).
+Mỗi người dùng đại diện cho một tài khoản con người. Hồ sơ kết hợp danh tính, xác thực, quyền hạn, và tuỳ chọn UI. Để xem schema JSON đầy đủ, xem [User](data.md#user).
 
-- **Identity**: `username` (unique), `full_name` (display name), `email` (contact).
-- **Status**: `active` (true/false for active/suspended). Suspended users cannot log in.
-- **Authentication**: `password` (bcrypt hash), `salt` (per-user). Plaintext passwords are never stored.
-- **Roles**: `roles` array of role IDs; see Roles below.
-- **Privileges**: `privileges` object (keys grant capabilities). See [Privileges](privileges.md).
-- **Resource limits**: `categories` and `groups` arrays optionally restrict access to event categories and server groups.
-- **Preferences**: UI/locale options including `language`, `region`, `num_format`, `hour_cycle`, `timezone`, `color_acc`, `privacy_mode`, `effects`, `contrast`, `motion`, `volume`, and saved `searches`.
-- **Avatar**: Optional profile image. Upload/replace in the UI.
+- **Danh tính**: `username` (duy nhất), `full_name` (tên hiển thị), `email` (liên hệ).
+- **Trạng thái**: `active` (true/false cho active/bị đình chỉ). Người dùng bị đình chỉ không thể đăng nhập.
+- **Xác thực**: `password` (hash bcrypt), `salt` (theo từng người dùng). Password dạng plaintext không bao giờ được lưu.
+- **Roles**: mảng `roles` chứa các role ID; xem Roles bên dưới.
+- **Privileges**: object `privileges` (các key cấp khả năng). Xem [Privileges](privileges.md).
+- **Giới hạn resource**: mảng `categories` và `groups` tuỳ chọn giới hạn quyền truy cập đến category event và group server.
+- **Tuỳ chọn**: các tuỳ chọn UI/locale bao gồm `language`, `region`, `num_format`, `hour_cycle`, `timezone`, `color_acc`, `privacy_mode`, `effects`, `contrast`, `motion`, `volume`, và `searches` đã lưu.
+- **Avatar**: Hình ảnh hồ sơ tuỳ chọn. Upload/thay thế trên UI.
 
-Notes:
+Ghi chú:
 
-- The special privilege `admin` grants full access to all current and future capabilities, and bypasses category/group restrictions.
-- xyOps may set internal flags for SSO-managed accounts (e.g., `remote`, `sync`); see [SSO](sso.md) for details.
+- Privilege đặc biệt `admin` cấp toàn quyền truy cập đến tất cả các khả năng hiện tại và tương lai, và bỏ qua giới hạn category/group.
+- PTOps có thể đặt các cờ nội bộ cho tài khoản được quản lý bởi SSO (ví dụ: `remote`, `sync`); xem [SSO](sso.md) để biết chi tiết.
 
 ## Roles
 
-A role bundles a set of privileges and optional resource restrictions. Assign roles to users to simplify permission management. For the full JSON schema, see [Role](data.md#role).
+Một role đóng gói một tập hợp privilege và giới hạn resource tuỳ chọn. Gán role cho người dùng để đơn giản hoá việc quản lý quyền hạn. Để xem schema JSON đầy đủ, xem [Role](data.md#role).
 
-- **Privileges**: A role's `privileges` object contributes privileges to assigned users.
-- **Category restrictions**: `categories` can limit access to specific event categories.
-- **Group restrictions**: `groups` can limit access to specific server groups.
-- **Enabled flag**: Only enabled roles contribute to a user's effective permissions.
+- **Privileges**: object `privileges` của một role đóng góp privilege cho người dùng được gán.
+- **Giới hạn category**: `categories` có thể giới hạn quyền truy cập đến các category event cụ thể.
+- **Giới hạn group**: `groups` có thể giới hạn quyền truy cập đến các group server cụ thể.
+- **Cờ enabled**: Chỉ các role đã bật mới đóng góp vào quyền hiệu lực của người dùng.
 
-Admins can create, edit, enable/disable, and delete roles in the Admin UI. When roles change, user sockets are updated so active sessions reflect new permissions right away.
+Admin có thể tạo, sửa, bật/tắt, và xoá role trong Admin UI. Khi role thay đổi, socket của người dùng được cập nhật để các session đang active phản ánh quyền mới ngay lập tức.
 
-## Effective Permissions
+## Quyền Hiệu Lực
 
-xyOps computes a user's effective authorization by combining direct assignments with role grants.  Privileges are additive when merged with assigned roles.
+PTOps tính toán quyền xác thực hiệu lực của một người dùng bằng cách kết hợp các gán trực tiếp với các quyền cấp từ role. Privilege được cộng dồn khi hợp nhất với role được gán.
 
-- Privilege union: Account and role privileges are merged.
-- Category and group limits: If not assigned, user has access to "all" categories or groups.
-- Admin override: If `admin` is true, directly or inherited by role, the user can perform any action and is not limited by category/group restrictions.
+- Hợp nhất privilege: Privilege của tài khoản và role được hợp nhất.
+- Giới hạn category và group: Nếu không được gán, người dùng có quyền truy cập đến "tất cả" category hoặc group.
+- Ghi đè admin: Nếu `admin` là true, trực tiếp hoặc kế thừa từ role, người dùng có thể thực hiện bất kỳ hành động nào và không bị giới hạn bởi giới hạn category/group.
 
-How enforcement works:
+Cách thực thi hoạt động:
 
-- API checks: The backend enforces privileges on every call, and resource checks for categories/groups/targets.
-- UI filtering: Lists and controls in the UI respect effective permissions and resource limits; inaccessible items are hidden or blocked.
+- Kiểm tra API: Backend thực thi privilege trên mọi lệnh gọi, và kiểm tra resource cho category/group/target.
+- Lọc UI: Danh sách và điều khiển trên UI tuân theo quyền hiệu lực và giới hạn resource; các mục không thể truy cập bị ẩn hoặc chặn.
 
-For the complete list of privilege IDs the system recognizes, see [Privileges](privileges.md). The `admin` privilege is special and implies all others.
+Để xem danh sách đầy đủ các ID privilege mà hệ thống nhận diện, xem [Privileges](privileges.md). Privilege `admin` là đặc biệt và bao hàm tất cả các privilege khác.
 
-## Resource Restrictions
+## Giới Hạn Resource
 
-Users can be limited to specific event categories and/or server groups:
+Người dùng có thể bị giới hạn đến các category event và/hoặc group server cụ thể:
 
-- Categories: If a user/role defines any `categories`, the user can only see and operate on events in those categories. With none defined, all categories are allowed (unless otherwise prohibited by privileges).
-- Groups: If a user/role defines any `groups`, job targets must intersect those groups. With none defined, all groups are allowed (subject to privileges). Target checks cover groups; individual server checks are intentionally not granular.
-- Admin bypass: Administrators are not limited by category/group restrictions.
+- Category: Nếu một người dùng/role định nghĩa bất kỳ `categories` nào, người dùng chỉ có thể xem và thao tác trên event trong các category đó. Nếu không định nghĩa cái nào, tất cả category được cho phép (trừ khi bị cấm bởi privilege khác).
+- Group: Nếu một người dùng/role định nghĩa bất kỳ `groups` nào, target của job phải giao với các group đó. Nếu không định nghĩa cái nào, tất cả group được cho phép (tuỳ thuộc vào privilege). Kiểm tra target bao gồm group; kiểm tra server riêng lẻ không được thiết kế chi tiết.
+- Ghi đè admin: Administrator không bị giới hạn bởi giới hạn category/group.
 
-Typical scenarios:
+Các trường hợp điển hình:
 
-- Department scoping: Assign users to roles that permit only the "Dev" or "Ops" categories.
-- Environment separation: Restrict specific users to the "Staging" group but not "Production".
+- Phân bổ theo phòng ban: Gán người dùng vào role chỉ cho phép category "Dev" hoặc "Ops".
+- Tách biệt môi trường: Giới hạn người dùng cụ thể vào group "Staging" nhưng không có "Production".
 
-## Sessions and Authentication
+## Session Và Xác Thực
 
-xyOps handles account creation, login, session management, and password reset, and also adds activity logging and related features.
+PTOps xử lý việc tạo tài khoản, đăng nhập, quản lý session, và đặt lại password, và cũng thêm việc ghi log hoạt động và các tính năng liên quan.
 
-- Expiration: Sessions expire per the [User.session_expire_days](config.md#user-session_expire_days) configuration setting.
-- Lockouts: Multiple failed logins per hour trigger a lockout requiring password reset (configurable). Admins can "Reset Lockouts" on a user.
-- Password management: Users can change their password (must provide current password). Forgot/reset flows are supported via email templates.
-- Single Sign-On: xyOps supports trusted-header SSO via a proxy (e.g., OAuth2-Proxy), can auto-assign roles/privileges based on IdP groups, and can redirect on logout. See [SSO](sso.md).
+- Hết hạn: Session hết hạn theo cài đặt cấu hình [User.session_expire_days](config.md#user-session_expire_days).
+- Khoá tài khoản: Nhiều lần đăng nhập thất bại trong một giờ sẽ kích hoạt việc khoá tài khoản yêu cầu đặt lại password (có thể cấu hình). Admin có thể "Reset Lockouts" cho một người dùng.
+- Quản lý password: Người dùng có thể đổi password (phải cung cấp password hiện tại). Luồng quên/đặt lại được hỗ trợ qua email template.
+- Single Sign-On: PTOps hỗ trợ SSO qua trusted-header thông qua một proxy (ví dụ: OAuth2-Proxy), có thể tự động gán role/privilege dựa trên group của IdP, và có thể redirect khi logout. Xem [SSO](sso.md).
 
-## Security Log
+## Log An Ninh
 
-xyOps records account-related activity in a per-user security log and a system-wide activity log.
+PTOps ghi lại hoạt động liên quan đến tài khoản trong một log an ninh riêng cho từng người dùng và một log hoạt động toàn hệ thống.
 
-- User security log: Includes actions like login, profile updates, password changes, notices/warnings, and IP/user-agent metadata. Viewable in the UI under Security Log".
-- System activity log: A broader audit log for all system actions (admin-facing).
-- Parsed user agents: The UI shows friendly user agent strings when available.
+- Log an ninh người dùng: Bao gồm các hành động như đăng nhập, cập nhật hồ sơ, đổi password, thông báo/cảnh báo, và metadata IP/user-agent. Có thể xem trên UI dưới "Security Log".
+- Log hoạt động hệ thống: Một log audit rộng hơn cho tất cả hành động hệ thống (hướng đến admin).
+- User agent đã phân tích: UI hiển thị chuỗi user agent thân thiện khi có sẵn.
 
 Logout All Sessions:
 
-- Users can invalidate all their other sessions after entering their current password. The current session remains active.
-- Admins can force a "Logout All Sessions" for any user. This also sends a summary email if sessions were terminated.
+- Người dùng có thể vô hiệu hoá tất cả các session khác của họ sau khi nhập password hiện tại. Session hiện tại vẫn active.
+- Admin có thể buộc "Logout All Sessions" cho bất kỳ người dùng nào. Điều này cũng gửi một email tóm tắt nếu các session đã bị chấm dứt.
 
-## Admin Tasks
+## Nhiệm Vụ Admin
 
-Administrators can perform the following actions from the Admin UI or equivalent APIs:
+Administrator có thể thực hiện các hành động sau từ Admin UI hoặc API tương đương:
 
-- **Create users**: Set username, display name, email, initial password, privileges/roles; optionally send welcome email.
-- **Edit users**: Update profile, change password, adjust privileges/roles, assign category/group restrictions, toggle active/suspended.
-- **Unlock accounts**: Reset lockouts and clear throttles if an account was locked due to failed logins.
-- **Delete users**: Removes the account and deletes the user's security log; active sockets are closed.
-- **Force logout**: Enqueue a background job to terminate all other sessions for a user.
-- **Manage roles**: Create/update roles with privileges and category/group limits; enable/disable roles.
+- **Tạo người dùng**: Đặt username, tên hiển thị, email, password khởi tạo, privilege/role; tuỳ chọn gửi email chào mừng.
+- **Sửa người dùng**: Cập nhật hồ sơ, đổi password, điều chỉnh privilege/role, gán giới hạn category/group, chuyển đổi active/bị đình chỉ.
+- **Mở khoá tài khoản**: Reset lockout và xoá throttle nếu một tài khoản bị khoá do đăng nhập thất bại.
+- **Xoá người dùng**: Xoá tài khoản và xoá log an ninh của người dùng; socket đang active bị đóng.
+- **Buộc logout**: Đưa vào hàng đợi một job nền để chấm dứt tất cả các session khác của một người dùng.
+- **Quản lý role**: Tạo/cập nhật role với privilege và giới hạn category/group; bật/tắt role.

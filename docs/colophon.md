@@ -1,40 +1,40 @@
-# Colophon
+# Đề Tựa (Colophon)
 
-We stand on the shoulders of giants.  xyOps was built using these awesome open source Node packages:
+Chúng tôi đứng trên vai những người khổng lồ. PTOps được xây dựng bằng những package Node mã nguồn mở tuyệt vời sau:
 
-| Package Name | Description | License |
+| Tên Package | Mô Tả | License |
 |--------------|-------------|---------|
-| [highlightjs](https://www.npmjs.com/package/@highlightjs/cdn-assets) | Syntax highlighting with language auto-detection. | BSD-3-Clause |
-| [@mdi/font](https://www.npmjs.com/package/@mdi/font) | Material Design icon webfont distribution. | Apache-2.0 |
-| [@mdi/svg](https://www.npmjs.com/package/@mdi/svg) | Material Design Icons in SVG format. | Apache-2.0 |
-| [@xterm/xterm](https://www.npmjs.com/package/@xterm/xterm) | Full xterm-compatible terminal in the browser. | MIT |
-| [@xterm/addon-fit](https://www.npmjs.com/package/@xterm/addon-fit) | Addon for xterm.js to resize the terminal to fit its container. | MIT |
-| [ansi_up](https://www.npmjs.com/package/ansi_up) | Convert ANSI sequences in text to colorful HTML. | MIT |
-| [async](https://www.npmjs.com/package/async) | Higher-order functions and common patterns for asynchronous code. | MIT |
-| [bcryptjs](https://www.npmjs.com/package/bcryptjs) | Optimized bcrypt in JavaScript with zero dependencies. | BSD-3-Clause |
-| [better-sqlite3](https://www.npmjs.com/package/better-sqlite3) | The fastest and simplest library for SQLite in Node.js. | MIT |
-| [canvas-confetti](https://www.npmjs.com/package/canvas-confetti) | Performant confetti animation in the browser. | ISC |
-| [codemirror](https://www.npmjs.com/package/codemirror) | Full-featured in-browser code editor. | MIT |
-| [diff](https://www.npmjs.com/package/diff) | JavaScript text diff implementation. | BSD-3-Clause |
-| [ioredis](https://www.npmjs.com/package/ioredis) | A robust Redis client for Node.js. | MIT |
-| [jexl](https://www.npmjs.com/package/jexl) | Context-based expression language parser and evaluator. | MIT |
-| [jquery](https://www.npmjs.com/package/jquery) | JavaScript library for DOM operations. | MIT |
-| [juice](https://www.npmjs.com/package/juice) | Inline CSS into HTML source. | MIT |
-| [marked](https://www.npmjs.com/package/marked) | Fast Markdown parser. | MIT |
-| [mime](https://www.npmjs.com/package/mime) | Comprehensive library for MIME type mapping. | MIT |
-| [node-pty](https://www.npmjs.com/package/node-pty) | Fork pseudoterminals in Node.js | MIT |
-| [pg](https://www.npmjs.com/package/pg) | PostgreSQL client for Node.js. | MIT |
-| [sanitize-html](https://www.npmjs.com/package/sanitize-html) | Sanitize user-submitted HTML while preserving allowed elements and attributes. | MIT |
-| [shell-quote](https://www.npmjs.com/package/shell-quote) | Parse and quote shell commands. | MIT |
-| [systeminformation](https://www.npmjs.com/package/systeminformation) | System and OS information library for Node.js | MIT |
-| [uglify-js](https://www.npmjs.com/package/uglify-js) | JavaScript parser, mangler/compressor and beautifier toolkit. | BSD-2-Clause |
-| [useragent-ng](https://www.npmjs.com/package/useragent-ng) | Fast and efficient user agent string parser. | MIT |
-| [ws](https://www.npmjs.com/package/ws) | Fast WebSocket client and server for Node.js. | MIT |
+| [highlightjs](https://www.npmjs.com/package/@highlightjs/cdn-assets) | Syntax highlighting với tự động nhận diện ngôn ngữ. | BSD-3-Clause |
+| [@mdi/font](https://www.npmjs.com/package/@mdi/font) | Bộ font web icon Material Design. | Apache-2.0 |
+| [@mdi/svg](https://www.npmjs.com/package/@mdi/svg) | Material Design Icons ở dạng SVG. | Apache-2.0 |
+| [@xterm/xterm](https://www.npmjs.com/package/@xterm/xterm) | Terminal tương thích đầy đủ xterm trên trình duyệt. | MIT |
+| [@xterm/addon-fit](https://www.npmjs.com/package/@xterm/addon-fit) | Addon cho xterm.js để thay đổi kích thước terminal vừa với container. | MIT |
+| [ansi_up](https://www.npmjs.com/package/ansi_up) | Chuyển đổi chuỗi ANSI trong text thành HTML có màu. | MIT |
+| [async](https://www.npmjs.com/package/async) | Các hàm bậc cao và mẫu phổ biến cho code bất đồng bộ. | MIT |
+| [bcryptjs](https://www.npmjs.com/package/bcryptjs) | Bcrypt được tối ưu hoá bằng JavaScript, không phụ thuộc. | BSD-3-Clause |
+| [better-sqlite3](https://www.npmjs.com/package/better-sqlite3) | Thư viện SQLite nhanh và đơn giản nhất cho Node.js. | MIT |
+| [canvas-confetti](https://www.npmjs.com/package/canvas-confetti) | Hiệu ứng confetti hiệu năng cao trên trình duyệt. | ISC |
+| [codemirror](https://www.npmjs.com/package/codemirror) | Trình chỉnh sửa code đầy đủ tính năng trên trình duyệt. | MIT |
+| [diff](https://www.npmjs.com/package/diff) | Cài đặt diff text bằng JavaScript. | BSD-3-Clause |
+| [ioredis](https://www.npmjs.com/package/ioredis) | Một Redis client mạnh mẽ cho Node.js. | MIT |
+| [jexl](https://www.npmjs.com/package/jexl) | Bộ phân tích và đánh giá ngôn ngữ expression theo context. | MIT |
+| [jquery](https://www.npmjs.com/package/jquery) | Thư viện JavaScript cho các thao tác DOM. | MIT |
+| [juice](https://www.npmjs.com/package/juice) | Nhúng CSS inline vào mã nguồn HTML. | MIT |
+| [marked](https://www.npmjs.com/package/marked) | Bộ phân tích Markdown nhanh. | MIT |
+| [mime](https://www.npmjs.com/package/mime) | Thư viện đầy đủ cho việc ánh xạ loại MIME. | MIT |
+| [node-pty](https://www.npmjs.com/package/node-pty) | Fork pseudoterminal trong Node.js | MIT |
+| [pg](https://www.npmjs.com/package/pg) | Client PostgreSQL cho Node.js. | MIT |
+| [sanitize-html](https://www.npmjs.com/package/sanitize-html) | Làm sạch HTML do người dùng gửi lên, vẫn giữ lại các thẻ và thuộc tính được phép. | MIT |
+| [shell-quote](https://www.npmjs.com/package/shell-quote) | Phân tích và trích dẫn các lệnh shell. | MIT |
+| [systeminformation](https://www.npmjs.com/package/systeminformation) | Thư viện thông tin hệ thống và OS cho Node.js | MIT |
+| [uglify-js](https://www.npmjs.com/package/uglify-js) | Bộ công cụ phân tích, mangle/compress và làm đẹp JavaScript. | BSD-2-Clause |
+| [useragent-ng](https://www.npmjs.com/package/useragent-ng) | Bộ phân tích chuỗi user agent nhanh và hiệu quả. | MIT |
+| [ws](https://www.npmjs.com/package/ws) | WebSocket client và server nhanh cho Node.js. | MIT |
 
-Additionally, we would like to thank:
+Ngoài ra, chúng tôi cũng muốn gửi lời cảm ơn đến:
 
-- [Node.js](https://nodejs.org/): The JavaScript runtime that powers our backend.
-- [V8](https://v8.dev/) - The JavaScript engine that powers Node.js.
-- [Git](https://git-scm.com/): The version control system that tracks our history.
-- [Docker](https://www.docker.com/): How we deploy our software.
-- [Linux](https://kernel.org/): The incredible OS on which we all stand.
+- [Node.js](https://nodejs.org/): Runtime JavaScript vận hành backend của chúng tôi.
+- [V8](https://v8.dev/) - Engine JavaScript vận hành Node.js.
+- [Git](https://git-scm.com/): Hệ thống quản lý phiên bản lưu lại lịch sử của chúng tôi.
+- [Docker](https://www.docker.com/): Cách chúng tôi triển khai phần mềm.
+- [Linux](https://kernel.org/): Hệ điều hành tuyệt vời mà tất cả chúng ta đang dựa vào.

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Start xyOps inside a container
+# Start PTOps inside a container
 # Append common PATHs
 # Delete old PID file, and use exec to replace current process
 # Support NODE_MAX_MEMORY
@@ -21,7 +21,7 @@ if [ ! -f /opt/xyops/conf/config.json ]; then
 	printf '{ "secret_key": "%s" }\n' "$secret_key" > /opt/xyops/conf/overrides.json
 fi
 
-# the path to xyops entrypoint, including options
+# the path to the PTOps entrypoint, including options
 BINARY="node --max-old-space-size=${NODE_MAX_MEMORY:-4096} $HOMEDIR/lib/main.js --foreground"
 
 # the path to the PID file
@@ -34,5 +34,5 @@ rm -f $PIDFILE
 [[ -f conf/config.json ]] && chmod 600 conf/config.json
 [[ -f conf/overrides.json ]] && chmod 600 conf/overrides.json
 
-# start xyops, replace current process
+# start PTOps, replacing the current process
 exec $BINARY

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Install the latest xyOps Satellite to /opt/xyops/satellite/
+# Install the latest PTOps Satellite to /opt/xyops/satellite/
 # Copyright (c) 2026 PixlCore LLC.  BSD 3-Clause License.
 
 set -eu
@@ -11,7 +11,7 @@ INSTALL_DIR="/opt/xyops/satellite"
 
 # Check if satellite is already installed
 if [ -f "$INSTALL_DIR/package.json" ]; then
-    echo "Error: xyOps Satellite appears to be already installed in $INSTALL_DIR/"
+    echo "Error: PTOps Satellite appears to be already installed in $INSTALL_DIR/"
     echo "If you wish to reinstall, please remove the existing installation first."
     exit 1
 fi
@@ -62,7 +62,7 @@ if [ $RC != 0 ]; then
 fi
 
 echo ""
-echo "Installing xyOps Satellite for ${OS}/${ARCH}..."
+echo "Installing PTOps Satellite for ${OS}/${ARCH}..."
 
 # Create directories
 mkdir -p $INSTALL_DIR

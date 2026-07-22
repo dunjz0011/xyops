@@ -1,146 +1,146 @@
 # Server Groups
 
-## Overview
+## Tổng Quan
 
-Server Groups (often simply called "Groups") let you organize multiple servers into logical sets and operate on them as a unit. A single server may belong to any number of groups. Groups power event targeting (run jobs against a group rather than a specific host), aggregate live and historical views in the UI, provide default alert actions, and enable group snapshots and watches.
+Server Group (thường gọi tắt là "Group") cho phép bạn tổ chức nhiều server thành các tập hợp hợp lý và thao tác trên chúng như một đơn vị. Một server có thể thuộc bất kỳ số lượng group nào. Group hỗ trợ việc target event (chạy job trên một group thay vì một host cụ thể), tổng hợp các view trực tiếp và lịch sử trên UI, cung cấp action alert mặc định, và cho phép chụp snapshot/watch theo group.
 
-This document explains what groups are, how servers join groups (manually and automatically), how events target groups and choose servers, how default alert actions work, how to take group snapshots and watches, and what you can do on the group UI pages.
+Tài liệu này giải thích group là gì, server tham gia group như thế nào (tự động và thủ công), event target group và chọn server ra sao, action alert mặc định hoạt động thế nào, cách chụp snapshot/watch cho group, và bạn có thể làm gì trên trang UI của group.
 
-## Key Points
+## Điểm Chính
 
-- Groups are named collections of servers; a server can be in multiple groups.
-- Servers can join groups automatically via a hostname regular expression match, or you can assign groups manually on each server.
-- Events can target groups for running jobs; xyOps selects one eligible server from the group per job using a configurable algorithm.
-- Each group has a dedicated UI page showing the group's servers, live status, monitors, processes, connections, jobs, upcoming jobs, and stats.
-- Groups can define default alert actions that run when any alert fires or clears on any server in the group.
-- You can take a snapshot of a group on demand, or set a "watch" to take snapshots every minute for a duration.
+- Group là tập hợp server có tên; một server có thể ở trong nhiều group.
+- Server có thể tham gia group tự động qua khớp regular expression với hostname, hoặc bạn có thể gán group thủ công cho từng server.
+- Event có thể target group để chạy job; PTOps chọn một server phù hợp trong group cho mỗi job bằng thuật toán có thể cấu hình.
+- Mỗi group có một trang UI riêng hiển thị server của group, trạng thái trực tiếp, monitor, process, connection, job, job sắp tới, và thống kê.
+- Group có thể định nghĩa action alert mặc định chạy khi bất kỳ alert nào fire hoặc clear trên bất kỳ server nào trong group.
+- Bạn có thể chụp snapshot của group theo yêu cầu, hoặc đặt "watch" để chụp snapshot mỗi phút trong một khoảng thời gian.
 
-## Creating and Editing Groups
+## Tạo Và Sửa Group
 
-- **Location**: Sidebar → Monitoring → Groups.
-- **Create**: Click "New Group...", set a title, optional icon, and an optional hostname regex for auto-assignment. You can also add default alert actions and notes.
-- **Edit**: Click a group → Edit Group to change fields; ID is immutable.
-- **Reorder**: Drag rows in the list to change sort order.
-- **Import/Export**: Use the Import/Export buttons on the list and editor.
-- **Permissions**: Creating, editing, deleting groups require privileges [create_groups](privileges.md#create_groups), [edit_groups](privileges.md#edit_groups), and [delete_groups](privileges.md#delete_groups) respectively.
+- **Vị trí**: Sidebar → Monitoring → Groups.
+- **Tạo**: Nhấn "New Group...", đặt tiêu đề, icon tuỳ chọn, và regex hostname tuỳ chọn để tự gán. Bạn cũng có thể thêm action alert mặc định và notes.
+- **Sửa**: Nhấn vào một group → Edit Group để thay đổi các trường; ID không thể thay đổi.
+- **Sắp xếp lại**: Kéo các dòng trong danh sách để thay đổi thứ tự.
+- **Import/Export**: Sử dụng nút Import/Export trên danh sách và trình chỉnh sửa.
+- **Quyền**: Tạo, sửa, xoá group cần các privilege [create_groups](privileges.md#create_groups), [edit_groups](privileges.md#edit_groups), và [delete_groups](privileges.md#delete_groups) tương ứng.
 
-Group fields:
+Các trường của group:
 
-- **Title**: Display name for the group.
-- **Icon**: Optional Material Design Icon ID.
-- **Hostname Match**: Regular expression to auto-assign servers by hostname. Leave blank to match none; use `.+` to match all servers.
-- **Alert Actions**: Default alert actions for alerts in this group (details below).
-- **Notes**: Optional freeform text.
+- **Title**: Tên hiển thị của group.
+- **Icon**: ID Material Design Icon tuỳ chọn.
+- **Hostname Match**: Regular expression để tự gán server theo hostname. Để trống để không khớp gì; dùng `.+` để khớp tất cả server.
+- **Alert Actions**: Action alert mặc định cho các alert trong group này (chi tiết bên dưới).
+- **Notes**: Văn bản tự do tuỳ chọn.
 
-## Adding Servers to Groups
+## Thêm Server Vào Group
 
-Servers can be added to groups in two ways, and a server may belong to multiple groups at once.
+Server có thể được thêm vào group theo hai cách, và một server có thể thuộc nhiều group cùng lúc.
 
-1. **Automatic by Hostname**
-	- Each group may specify a hostname regular expression in `hostname_match`.
-	- When a server connects (or its hostname changes), xyOps tests it against all groups and assigns any matching groups.
-	- This automatic assignment is re-evaluated whenever groups change (create/edit/delete) and propagated to servers and storage.
-	- To match all servers, use `.+`.
-2. **Manual Assignment per Server**
-	- From any Server page, choose "Edit Server..." and set Groups explicitly, or use "Add Server..." on a Group view.
-	- When you manually assign groups to a server, the server's "Auto Group" behavior is disabled for that server.
-	- To return a server to automatic assignment, clear its manual group list and re-enable Auto Group in the server editor.
+1. **Tự Động Theo Hostname**
+	- Mỗi group có thể chỉ định một regular expression hostname trong `hostname_match`.
+	- Khi một server kết nối (hoặc hostname của nó thay đổi), PTOps kiểm tra nó với tất cả group và gán bất kỳ group nào khớp.
+	- Việc tự gán này được đánh giá lại mỗi khi group thay đổi (tạo/sửa/xoá) và truyền tới server và storage.
+	- Để khớp tất cả server, dùng `.+`.
+2. **Gán Thủ Công Cho Mỗi Server**
+	- Từ bất kỳ trang Server nào, chọn "Edit Server..." và đặt Groups rõ ràng, hoặc dùng "Add Server..." trên view của Group.
+	- Khi bạn gán group thủ công cho một server, hành vi "Auto Group" của server đó sẽ bị tắt.
+	- Để đưa một server trở về việc tự gán, xoá danh sách group thủ công của nó và bật lại Auto Group trong trình chỉnh sửa server.
 
-Notes:
+Ghi chú:
 
-- Group membership is additive: a server can be in many groups via both automatic and manual assignment (unless Auto Group is disabled by manual override).
-- Event targeting honors the server's current live groups; changes take effect immediately for new jobs.
+- Việc thuộc group là cộng dồn: một server có thể ở trong nhiều group qua cả gán tự động và thủ công (trừ khi Auto Group bị tắt bởi override thủ công).
+- Việc target event tuân theo group hiện tại của server đang trực tiếp (live); thay đổi có hiệu lực ngay cho các job mới.
 
-## Default Alert Actions
+## Action Alert Mặc Định
 
-Groups can define default alert actions that run when any alert fires or clears on any server in the group.
+Group có thể định nghĩa action alert mặc định, chạy khi bất kỳ alert nào fire hoặc clear trên bất kỳ server nào trong group.
 
-- In the Group editor, under "Alert Actions".
-- When they run: On `alert_new` (alert fired) and/or `alert_cleared` (alert cleared), based on each action's `condition`.
-- How they combine: For a given alert event, the final action list is a merge of:
-	- The alert definition's own actions.
-	- All matching servers' group default actions (for each group the server is in).
-	- Universal alert actions from configuration.
-	- Actions are deduplicated by type + target (e.g., same email recipients, same web hook ID).
-- Target context: Group actions include group and server context in notifications (emails/web hooks include group titles and links).
+- Trong trình chỉnh sửa Group, dưới "Alert Actions".
+- Khi chúng chạy: Khi `alert_new` (alert đã fire) và/hoặc `alert_cleared` (alert đã clear), dựa trên `condition` của từng action.
+- Cách chúng kết hợp: Với một sự kiện alert cho trước, danh sách action cuối cùng là sự hợp nhất của:
+	- Action của chính định nghĩa alert.
+	- Action mặc định của group của tất cả server khớp (cho mỗi group mà server thuộc vào).
+	- Action alert toàn hệ thống (universal) từ cấu hình.
+	- Action được loại bỏ trùng lặp theo type + target (ví dụ: cùng người nhận email, cùng ID web hook).
+- Context target: Action của group bao gồm context group và server trong thông báo (email/web hook có tiêu đề và link của group).
 
-See [Actions](actions.md) for supported types and parameters.
+Xem [Actions](actions.md) để biết các loại và tham số được hỗ trợ.
 
-## Targeting Events at Groups
+## Target Event Vào Group
 
-Instead of selecting specific servers, you can target one or more Groups for an Event. At job launch time, xyOps resolves groups to the set of currently online, enabled servers and selects one server for the job using the event's selection algorithm.
+Thay vì chọn server cụ thể, bạn có thể target một hoặc nhiều Group cho một Event. Lúc khởi chạy job, PTOps giải quyết group thành tập hợp các server đang online, đã bật, và chọn một server cho job bằng thuật toán chọn của event.
 
-Behavior:
+Hành vi:
 
-- **Resolution**: Event `targets` may include server IDs and/or group IDs. Groups expand to their member servers (as of launch time).
-- **Eligibility**: Only online and enabled servers are considered. Servers may be excluded if certain active alerts specify "limit jobs" (alert-level setting).
-- **No servers available**: If none qualify, xyOps can queue the job if the event defines a Queue limit; otherwise it fails immediately. See [Limits](limits.md#max-queue-limit).
+- **Giải quyết**: `targets` của Event có thể bao gồm cả server ID và/hoặc group ID. Group được mở rộng thành các server thành viên của nó (tính đến thời điểm khởi chạy).
+- **Đủ điều kiện**: Chỉ server đang online và được bật mới được xem xét. Server có thể bị loại trừ nếu một số alert đang active chỉ định "limit jobs" (cài đặt cấp alert).
+- **Không có server nào khả dụng**: Nếu không server nào đủ điều kiện, PTOps có thể queue job nếu event có định nghĩa Queue limit; ngược lại nó sẽ fail ngay lập tức. Xem [Limits](limits.md#max-queue-limit).
 
-Selection algorithms:
+Thuật toán chọn:
 
-- `random`: Pick a random server from the eligible set.
-- `round_robin`: Cycle through the eligible set per event; persists across runs.
-- `prefer_first_natural`: Prefer the first server by the natural order in the [Event.targets](data.md#event-targets) list.
-- `prefer_last_natural`: Prefer the last server by the natural order in the [Event.targets](data.md#event-targets) list.
-- `prefer_first`: Pick the first server after sorting by label or hostname ascending.
-- `prefer_last`: Pick the last server after sorting by label or hostname ascending.
-- `least_cpu`: Pick the server with the lowest current average CPU load (`info.cpu.avgLoad`).
-- `least_mem`: Pick the server with the lowest current active memory usage (`info.memory.active`).
-- `monitor:<id>`: Pick the server with the lowest value of the specified monitor.
+- `random`: Chọn một server ngẫu nhiên từ tập hợp đủ điều kiện.
+- `round_robin`: Xoay vòng qua tập hợp đủ điều kiện theo mỗi event; được duy trì qua các lần chạy.
+- `prefer_first_natural`: Ưu tiên server đầu tiên theo thứ tự tự nhiên trong danh sách [Event.targets](data.md#event-targets).
+- `prefer_last_natural`: Ưu tiên server cuối cùng theo thứ tự tự nhiên trong danh sách [Event.targets](data.md#event-targets).
+- `prefer_first`: Chọn server đầu tiên sau khi sắp xếp theo label hoặc hostname tăng dần.
+- `prefer_last`: Chọn server cuối cùng sau khi sắp xếp theo label hoặc hostname tăng dần.
+- `least_cpu`: Chọn server có tải CPU trung bình hiện tại thấp nhất (`info.cpu.avgLoad`).
+- `least_mem`: Chọn server có mức sử dụng bộ nhớ active hiện tại thấp nhất (`info.memory.active`).
+- `monitor:<id>`: Chọn server có giá trị thấp nhất của monitor được chỉ định.
 
-Details:
+Chi tiết:
 
-- The eligible set is de-duplicated and built from all targets (groups and servers), then filtered by online/enabled status and alert exclusion.
-- For `round_robin`, xyOps maintains per-event rotation state so distribution is fair across restarts or conductor failover.
+- Tập hợp đủ điều kiện được loại bỏ trùng lặp và xây dựng từ tất cả target (group và server), sau đó được lọc theo trạng thái online/enabled và loại trừ theo alert.
+- Với `round_robin`, PTOps duy trì trạng thái xoay vòng theo mỗi event để việc phân bổ công bằng qua các lần restart hoặc chuyển đổi conductor.
 
-See [Events → Server Selection](events.md#server-selection) and [Data → Event.algo](data.md#event-algo) for additional context.
+Xem [Events → Server Selection](events.md#server-selection) và [Data → Event.algo](data.md#event-algo) để biết thêm ngữ cảnh.
 
-## Group Snapshots and Watches
+## Snapshot Và Watch Cho Group
 
-Snapshots capture the group's state at a point in time (including member servers, recent metrics, jobs, and alerts). Watches automate snapshots every minute for a duration.
+Snapshot chụp lại trạng thái của group tại một thời điểm (bao gồm server thành viên, metric gần đây, job, và alert). Watch tự động chụp snapshot mỗi phút trong một khoảng thời gian.
 
-- **Take snapshot**: On a Group view, click "Snapshot". Requires privilege [create_snapshots](privileges.md#create_snapshots).
-- **Group watch**: Click the Watch button, set a duration, and xyOps will take a group snapshot every minute until the duration elapses. Set duration to 0 to cancel.
-- **History**: Group snapshots appear on the Snapshots page and link back to the group.
-- **Contents**: A Group snapshot includes the group definition, the matching servers, each server's last minute of "quick" metrics, active jobs on those servers, and alerts touching the group.
+- **Chụp snapshot**: Trên view của Group, nhấn "Snapshot". Cần privilege [create_snapshots](privileges.md#create_snapshots).
+- **Group watch**: Nhấn nút Watch, đặt thời gian, và PTOps sẽ chụp snapshot của group mỗi phút cho đến khi hết thời gian. Đặt thời gian bằng 0 để hủy.
+- **Lịch sử**: Snapshot của group xuất hiện trên trang Snapshots và liên kết ngược về group.
+- **Nội dung**: Một snapshot của Group bao gồm định nghĩa group, các server khớp, phút metric "quick" cuối cùng của mỗi server, job đang active trên các server đó, và alert liên quan đến group.
 
-See also: [Snapshots](snapshots.md) and [Data → GroupSnapshot](data.md#groupsnapshot).
+Xem thêm: [Snapshots](snapshots.md) và [Data → GroupSnapshot](data.md#groupsnapshot).
 
-## Group UI
+## UI Của Group
 
-Each group has a dedicated live view aggregating all member servers. From Monitoring → Groups, click a group to open its page.
+Mỗi group có một view trực tiếp riêng tổng hợp toàn bộ server thành viên. Từ Monitoring → Groups, nhấn vào một group để mở trang của nó.
 
-What you'll see:
+Bạn sẽ thấy:
 
-- Summary: Group ID/title/icon, hostname match regex, server count, alert action count, author, created/modified, and fleet breakdown (architectures, OSes, CPU types, virtualization).
-- Controls: Edit Group, Snapshot, Watch, Add Server, plus shortcuts to Group History, Alert History, and Job History.
-- Server table: All servers in the group (online and recently offline), with live status, resource donuts, running jobs, and controls. Supports filtering and selection.
-- Quick Look: Live per-second charts for CPU, memory, disk, and network across visible servers for the last minute.
-- Memory and CPU details: Aggregated memory/CPU breakdowns per server with merging options for compact views.
-- Monitors: Last hour of configured monitors, with filter and chart sizing; one layer per server.
-- Processes and Connections: Aggregated current process table and active network connections across the group with filters.
-- Jobs: Active jobs running on any server in the group; includes progress bars and remaining time.
-- Upcoming jobs: Predicted future jobs that will land on any server in the group (based on event schedules targeting the group).
-- Alerts: Active alerts affecting any member server, with links to detail.
+- Tóm tắt: ID/tiêu đề/icon của group, regex hostname match, số lượng server, số lượng action alert, tác giả, thời gian tạo/sửa, và phân tích fleet (kiến trúc, OS, loại CPU, virtualization).
+- Điều khiển: Edit Group, Snapshot, Watch, Add Server, cùng các shortcut đến Group History, Alert History, và Job History.
+- Bảng server: Tất cả server trong group (online và mới offline gần đây), với trạng thái trực tiếp, biểu đồ donut tài nguyên, job đang chạy, và điều khiển. Hỗ trợ lọc và chọn.
+- Quick Look: Biểu đồ trực tiếp theo giây cho CPU, memory, disk, và network trên các server hiển thị trong phút cuối cùng.
+- Chi tiết Memory và CPU: Phân tích memory/CPU tổng hợp theo từng server với tuỳ chọn gộp cho view gọn.
+- Monitors: Giờ cuối cùng của các monitor đã cấu hình, có tuỳ chọn lọc và điều chỉnh kích thước biểu đồ; một layer cho mỗi server.
+- Process và Connection: Bảng process hiện tại tổng hợp và các connection network đang active trên toàn group với các bộ lọc.
+- Jobs: Job đang active chạy trên bất kỳ server nào trong group; bao gồm progress bar và thời gian còn lại.
+- Upcoming jobs: Job dự kiến trong tương lai sẽ chạy trên bất kỳ server nào trong group (dựa trên lịch của event target group).
+- Alerts: Alert đang active ảnh hưởng đến bất kỳ server thành viên nào, có link đến chi tiết.
 
 ## API
 
-The following endpoints back groups in the UI and automation:
+Các endpoint sau hỗ trợ group trên UI và automation:
 
-- List groups: `app/get_groups`
-- Get group: `app/get_group`
-- Create group: `app/create_group`
-- Update group: `app/update_group`
-- Delete group: `app/delete_group`
-- Reorder groups: `app/multi_update_group`
-- Create group snapshot: `app/create_group_snapshot`
-- Set/cancel watch: `app/watch_group`
+- Liệt kê group: `app/get_groups`
+- Lấy group: `app/get_group`
+- Tạo group: `app/create_group`
+- Cập nhật group: `app/update_group`
+- Xoá group: `app/delete_group`
+- Sắp xếp lại group: `app/multi_update_group`
+- Tạo snapshot của group: `app/create_group_snapshot`
+- Đặt/hủy watch: `app/watch_group`
 
-See [API](api.md) for request/response details.
+Xem [API](api.md) để biết chi tiết request/response.
 
-## Best Practices
+## Thực Hành Tốt Nhất
 
-- Prefer automatic grouping with clear, stable hostname patterns (e.g., environment or role prefixes). Fall back to manual assignments for one-offs.
-- Use multiple groups to express orthogonal concepts (e.g., "prod", "db", "east"), then target events with multiple groups as needed.
-- Combine group default alert actions with alert-specific actions to keep on-call routing centralized.
-- For heterogeneous fleets, consider `monitor:<id>` selection to route jobs based on current load or capacity.
+- Ưu tiên nhóm tự động với các pattern hostname rõ ràng, ổn định (ví dụ: tiền tố môi trường hoặc vai trò). Dùng gán thủ công cho các trường hợp đơn lẻ.
+- Sử dụng nhiều group để diễn đạt các khái niệm độc lập (ví dụ: "prod", "db", "east"), sau đó target event với nhiều group khi cần.
+- Kết hợp action alert mặc định của group với action riêng của alert để tập trung việc điều hướng on-call.
+- Với fleet đa dạng, xem xét chọn `monitor:<id>` để định tuyến job dựa trên tải hoặc năng lực hiện tại.

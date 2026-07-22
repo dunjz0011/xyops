@@ -271,9 +271,9 @@
 	},
 	
 	"client": {
-		"name": "xyOps",
+		"name": "PTOps",
 		"company": "PixlCore LLC",
-		"logo_url": "/images/logotype.png",
+		"logo_url": "/images/logotype.png?v=20260721-ptops2",
 		"hide_sidebar_sections": [],
 		"tables": {},
 		
@@ -488,7 +488,7 @@
 		"max_upload_size": 1073741824,
 		"static_ttl": 31536000,
 		"static_index": "index.html",
-		"server_signature": "xyOps",
+		"server_signature": "PTOps",
 		"compress_text": true,
 		"enable_brotli": true,
 		"timeout": 30,

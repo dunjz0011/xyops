@@ -1,249 +1,244 @@
 # Events
 
-## Overview
+## Tổng Quan
 
-Events are the core building block of xyOps. An event describes what to run (a Plugin with parameters), where to run it (one or more target servers or groups), when to run it (Triggers), and how to constrain and react to runs (Limits and Actions). Each time an event "runs" it launches a job. Jobs have full lifecycle state, logs, metrics, limits, and actions.
+Event là thành phần cốt lõi của PTOps. Một event mô tả cái gì sẽ chạy (một Plugin cùng tham số), chạy ở đâu (một hoặc nhiều server/group đích), khi nào chạy (Trigger), và cách kiểm soát/phản ứng với các lần chạy (Limit và Action). Mỗi lần một event "chạy" nó sẽ khởi tạo một job. Job có đầy đủ trạng thái lifecycle, log, metrics, limit, và action.
 
-## Key Points
+## Điểm Chính
 
-- An event is a saved configuration for launching jobs. It has an `id`, `title`, `category`, `plugin`, `params`, optional `fields`, `tags`, `targets`, `algo`, `triggers`, `limits`, and `actions`.
-- When a trigger fires (schedule, interval, single-shot, plugin, or manual), the scheduler creates a job from the event and launches it on a chosen target server.
-- Category defaults apply automatically: category-defined actions and limits are merged into the job in addition to any defined on the event. System "universal" defaults may also apply.
-- Jobs run code provided by an Event Plugin on the selected server, stream logs back to the UI, update metrics, and honor configured limits and actions.
-- Workflows are a special kind of event that launch a graph of nodes; they use a special workflow pseudo-plugin. See [Workflows](workflows.md).
+- Một event là một cấu hình đã lưu để khởi tạo job. Nó có `id`, `title`, `category`, `plugin`, `params`, và tuỳ chọn `fields`, `tags`, `targets`, `algo`, `triggers`, `limits`, `actions`.
+- Khi một trigger kích hoạt (schedule, interval, single-shot, plugin, hoặc manual), scheduler tạo một job từ event và khởi chạy nó trên một server đích được chọn.
+- Giá trị mặc định của category tự động áp dụng: action và limit định nghĩa trong category được gộp vào job cùng với những gì định nghĩa trên event. Giá trị mặc định "universal" của hệ thống cũng có thể áp dụng.
+- Job chạy code do Event Plugin cung cấp trên server được chọn, truyền log về UI, cập nhật metrics, và tuân theo limit/action đã cấu hình.
+- Workflow là một loại event đặc biệt khởi chạy một đồ thị các node; chúng dùng một pseudo-plugin workflow đặc biệt. Xem [Workflows](workflows.md).
 
-## Creating and Editing Events
+## Tạo và Sửa Event
 
-You can create and edit events in the Events page of the UI or via the API. The minimum you typically need:
+Bạn có thể tạo và sửa event trên trang Events của giao diện hoặc qua API. Những thứ tối thiểu bạn thường cần:
 
-- `title`: Human-friendly name, displayed in the UI.
-- `category`: Controls access and provides default actions/limits. See [Categories](categories.md).
-- `plugin`: The Event Plugin that runs the job code (not required for workflow events).  See [Event Plugins](plugins.md#event-plugins).
-- `targets`: One or more servers and/or groups where jobs may run.
-- `algo`: Server selection algorithm when multiple targets are available (default is random).
-- `params`: Plugin parameters passed to your job. Locked parameters may be enforced by admins or categories.
-- `fields`: Optional user-defined parameters that are prompted when launching manually, then merged into params.
-- `tags`: Labels that help searching and filtering job history.  See [Tags](tags.md).
-- `triggers`: One or more entries that determine run timing and rules.  See [Triggers](triggers.md).
-- `limits`: Self-imposed resource constraints for the job to follow.  See [Limits](limits.md).
-- `actions`: Optional per-event notifications/chaining behavior.  See [Actions](actions.md).
+- `title`: Tên thân thiện, hiển thị trên giao diện.
+- `category`: Kiểm soát quyền truy cập và cung cấp action/limit mặc định. Xem [Categories](categories.md).
+- `plugin`: Event Plugin chạy code của job (không cần với event workflow). Xem [Event Plugins](plugins.md#event-plugins).
+- `targets`: Một hoặc nhiều server và/hoặc group nơi job có thể chạy.
+- `algo`: Thuật toán chọn server khi có nhiều target khả dụng (mặc định là random).
+- `params`: Tham số plugin được truyền vào job của bạn. Tham số bị khoá (locked) có thể được admin hoặc category ép buộc.
+- `fields`: Tham số tuỳ chọn do người dùng định nghĩa, được hỏi khi khởi chạy thủ công, sau đó gộp vào params.
+- `tags`: Nhãn giúp tìm kiếm và lọc lịch sử job. Xem [Tags](tags.md).
+- `triggers`: Một hoặc nhiều mục xác định thời gian chạy và quy tắc. Xem [Triggers](triggers.md).
+- `limits`: Giới hạn tài nguyên tự áp đặt mà job phải tuân theo. Xem [Limits](limits.md).
+- `actions`: Hành vi thông báo/chuỗi liên kết tuỳ chọn cho từng event. Xem [Actions](actions.md).
 
-## How Events Run
+## Cách Event Chạy
 
-Running an event produces a job. Here is the lifecycle from trigger to execution:
+Chạy một event tạo ra một job. Đây là lifecycle từ trigger đến thực thi:
 
-1. **Trigger fires**
-	- The scheduler evaluates all event triggers once per minute (with optional second precision) and emits launches when conditions match.
-	- Manual runs from the UI/API also count as launches. 
-2. **Job object is created**
-	- The job starts as a copy of the event plus trigger context and any user/API overrides. 
-	- It is assigned a unique `job.id`, and `job.event` is set to the event's ID. 
-	- Category-defined actions/limits and system defaults are merged in. 
-3. **Parameters resolved**
-	- `event.params` and any prompted `fields` are merged and can use `{{ macros }}` that resolve against the job context.  See [Parameter Macro Expansion](#parameter-macro-expansion) for details and examples.
-4. **Target selection**
-	- The system collects candidate servers from targets (servers and/or groups), filters to enabled, online servers, and optionally removes servers under active job-limiting alerts. 
-	- If no servers are available, a queue limit (if configured) may place the job in a queue; otherwise the job aborts and may be eligible for retry. 
-	- Details on server algorithms appear below.
-5. **Plugin execution**
-	- Once a server is chosen, the job is dispatched to that server's xySat agent and the Event Plugin runs with the final parameters and environment. 
-	- Output streams into the job log; CPU/memory/IO metrics are sampled for limits and history. 
-	- See [Event Plugins](plugins.md#event-plugins) for plugin anatomy and execution details.
-6. **Limits and actions**
-	- Active limits (time, log size, CPU, memory, etc.) are continuously evaluated. 
-	- When exceeded, configured actions fire (email, web hooks, tags, snapshots, abort, etc.).
-7. **Completion**
-	- On finish, final actions run (success/fail/progress/abort, plus any tag-based actions), and the job record is stored in history for searching and analytics.
+1. **Trigger kích hoạt**
+	- Scheduler đánh giá tất cả trigger của event mỗi phút một lần (có thể tuỳ chọn độ chính xác cấp giây) và phát sinh lần chạy khi điều kiện khớp.
+	- Chạy thủ công từ UI/API cũng được tính là một lần khởi chạy.
+2. **Đối tượng Job được tạo**
+	- Job bắt đầu như một bản sao của event cùng context của trigger và bất kỳ override từ user/API.
+	- Nó được gán một `job.id` duy nhất, và `job.event` được đặt bằng ID của event.
+	- Action/limit định nghĩa trong category và giá trị mặc định hệ thống được gộp vào.
+3. **Tham số được xử lý**
+	- `event.params` và bất kỳ `fields` được hỏi sẽ được gộp lại và có thể dùng `{{ macros }}` để giải quyết theo context của job. Xem [Parameter Macro Expansion](#parameter-macro-expansion) để biết chi tiết và ví dụ.
+4. **Chọn target**
+	- Hệ thống thu thập các server ứng viên từ targets (server và/hoặc group), lọc ra server đang bật và online, và tuỳ chọn loại bỏ server đang bị chặn bởi alert đang hoạt động.
+	- Nếu không có server nào khả dụng, một limit `queue` (nếu được cấu hình) có thể đưa job vào hàng chờ; nếu không job sẽ hủy (abort) và có thể được đánh dấu là có thể retry.
+	- Chi tiết về thuật toán chọn server xem bên dưới.
+5. **Thực thi Plugin**
+	- Khi một server được chọn, job sẽ được gửi đến agent xySat của server đó và Event Plugin chạy với tham số và môi trường cuối cùng.
+	- Output truyền vào log của job; metrics CPU/memory/IO được lấy mẫu cho limit và lịch sử.
+	- Xem [Event Plugins](plugins.md#event-plugins) để biết cấu trúc plugin và chi tiết thực thi.
+6. **Limit và action**
+	- Limit đang hoạt động (time, log size, CPU, memory, v.v.) được liên tục đánh giá.
+	- Khi vượt ngưỡng, action đã cấu hình sẽ kích hoạt (email, web hook, tag, snapshot, abort, v.v.).
+7. **Hoàn tất**
+	- Khi kết thúc, action cuối cùng chạy (success/fail/progress/abort, cùng bất kỳ action dựa trên tag), và bản ghi job được lưu vào lịch sử để tìm kiếm và phân tích.
 
-## Triggers
+## Trigger
 
-Triggers define when jobs are allowed to launch, and optional modifiers. Common patterns:
+Trigger định nghĩa khi nào job được phép khởi chạy, và các modifier tuỳ chọn. Các mẫu phổ biến:
 
-- `manual`: Allows on-demand runs via UI/API. If omitted or disabled, manual runs are rejected.
-- `schedule`: Cron-style arrays of years/months/days/weekdays/hours/minutes with optional timezone.
-- `interval`: Run every N minutes; mutually exclusive with precision/delay.
-- `single`: One-time run at a specific date/time.
-- `plugin`: Scheduler Plugin decides when to run; useful for external signals.
-- Modifiers: `catchup`, `nth`, `range`, `blackout`, `delay`, `precision` provide windowing, lockouts, and sub-minute behavior.
+- `manual`: Cho phép chạy theo yêu cầu qua UI/API. Nếu bỏ qua hoặc tắt, chạy thủ công sẽ bị từ chối.
+- `schedule`: Mảng kiểu cron của năm/tháng/ngày/ngày trong tuần/giờ/phút với timezone tuỳ chọn.
+- `interval`: Chạy mỗi N phút; loại trừ với precision/delay.
+- `single`: Chạy một lần vào một ngày/giờ cụ thể.
+- `plugin`: Scheduler Plugin quyết định khi nào chạy; hữu ích cho tín hiệu bên ngoài.
+- Modifier: `catchup`, `nth`, `range`, `blackout`, `delay`, `precision` cung cấp cửa sổ thời gian, khoá, và hành vi dưới cấp phút.
 
-See the full trigger list and composition rules: [Triggers](triggers.md).
+Xem đầy đủ danh sách trigger và quy tắc kết hợp: [Triggers](triggers.md).
 
-## Server Selection
+## Chọn Server
 
-The `targets` list may contain server IDs and/or group IDs. At launch time xyOps:
+Danh sách `targets` có thể chứa ID server và/hoặc ID group. Tại thời điểm khởi chạy, PTOps:
 
-- Expands groups into member servers and de-duplicates the list.
-- Filters to currently enabled, online servers.
-- Optionally removes servers that are under active blocking alerts (e.g. maintenance or capacity limits).
-- Optionally applies a [Target Expression](#target-expressions) to further reduce the list (see below).
-- If the resulting set is empty, and a `queue` limit is present, the job may enter a per-event queue up to the configured size; otherwise it aborts with a retry-ok flag.
+- Mở rộng group thành các server thành viên và loại bỏ trùng lặp trong danh sách.
+- Lọc ra các server hiện đang bật và online.
+- Tuỳ chọn loại bỏ các server đang bị chặn bởi alert đang hoạt động (ví dụ maintenance hoặc giới hạn công suất).
+- Tuỳ chọn áp dụng một [Target Expression](#target-expressions) để lọc tiếp danh sách (xem bên dưới).
+- Nếu tập kết quả trống, và có limit `queue`, job có thể vào hàng chờ riêng của event lên đến kích cỡ đã cấu hình; nếu không nó sẽ abort với cờ retry-ok.
 
-Selection among remaining candidates is controlled by `algo`:
+Việc chọn giữa các ứng viên còn lại được kiểm soát bởi `algo`:
 
-- `random`: Choose randomly among candidates.
-- `round_robin`: Cycle through candidates in order, persisting position between runs.
-- `least_cpu`: Choose the server reporting the lowest CPU load.
-- `least_mem`: Choose the server reporting the lowest active memory.
-- `prefer_first_natural` / `prefer_last_natural`: Prefer first/last by the natural order in the [Event.targets](data.md#event-targets) list.
-- `prefer_first` / `prefer_last`: Prefer first/last by label or hostname sort for stability.
-- `monitor:_ID_`: Choose the server with the smallest current value of a specific monitor.
+- `random`: Chọn ngẫu nhiên trong số ứng viên.
+- `round_robin`: Xoay vòng qua các ứng viên theo thứ tự, giữ vị trí giữa các lần chạy.
+- `least_cpu`: Chọn server báo cáo tải CPU thấp nhất.
+- `least_mem`: Chọn server báo cáo bộ nhớ đang dùng thấp nhất.
+- `prefer_first_natural` / `prefer_last_natural`: Ưu tiên đầu/cuối theo thứ tự tự nhiên trong danh sách [Event.targets](data.md#event-targets).
+- `prefer_first` / `prefer_last`: Ưu tiên đầu/cuối theo thứ tự sắp xếp label hoặc hostname để đảm bảo tính ổn định.
+- `monitor:_ID_`: Chọn server có giá trị hiện tại nhỏ nhất của một monitor cụ thể.
 
-The chosen server ID is stored on the job as `server` and the server's group memberships are copied into `groups` for analytics.
+ID server được chọn được lưu trên job dưới dạng `server` và các group mà server đó thuộc về được sao chép vào `groups` để phục vụ phân tích.
 
-### Target Expressions
+### Target Expression
 
-Events can include an optional "target expression" to further reduce the set of candidate servers to run jobs.  The expression is applied to each server in the matched set generated by the [Event.targets](data.md#event-targets) list, and if it evaluates to `false`, the server is eliminated from the candidate pool.
+Event có thể bao gồm một "target expression" tuỳ chọn để lọc tiếp tập server ứng viên chạy job. Expression được áp dụng cho mỗi server trong tập khớp được tạo ra từ danh sách [Event.targets](data.md#event-targets), và nếu nó trả về `false`, server đó bị loại khỏi nhóm ứng viên.
 
-The expression should be in [xyOps Expression Format](xyexp.md), and the context is the [Server](data.md#server) object itself (so you can directly reference all properties within it).  Here is an example:
+Expression nên theo [PTOps Expression Format](xyexp.md), và context là chính đối tượng [Server](data.md#server) (nên bạn có thể tham chiếu trực tiếp mọi thuộc tính trong đó). Ví dụ:
 
 ```js
 info.arch == "arm64" && info.cpu.cores >= 4
 ```
 
-This would reduce the candidate servers to only those with ARM64 architecture, and 4 or more CPU cores, using the [Server.info](data.md#server-info) sub-object.
+Điều này sẽ giảm số server ứng viên chỉ còn những server có kiến trúc ARM64, và 4 hoặc nhiều CPU core hơn, sử dụng sub-object [Server.info](data.md#server-info).
 
-One common use case for this feature is to apply the target expression to properties in the [Server User Data](servers.md#user-data) object.  Example:
+Một trường hợp sử dụng phổ biến của tính năng này là áp dụng target expression lên các thuộc tính trong object [Server User Data](servers.md#user-data). Ví dụ:
 
 ```js
 userData.foo == "bar"
 ```
 
-### Custom Job Weight
+### Trọng Số Job Tuỳ Chỉnh
 
-You can set an optional "job weight" per event, which is used when selecting a server to run a job.  This is designed to compliment [Max Jobs Per Server](servers.md#max-jobs-per-server), and allows you to limit how many jobs can run on specific servers based on their weight.
+Bạn có thể đặt "trọng số job" tuỳ chọn cho mỗi event, dùng khi chọn server để chạy job. Tính năng này được thiết kế để bổ trợ cho [Max Jobs Per Server](servers.md#max-jobs-per-server), và cho phép bạn giới hạn số job có thể chạy trên các server cụ thể dựa trên trọng số của chúng.
 
-As an example, say you have a job that is particularly "heavy", like a video conversion script using ffmpeg.  You can set the weight to something high like `8`, and this effectively treats the job as taking up 8 "slots" when calculating server availability and the "max jobs" server setting.
+Ví dụ, nếu bạn có một job đặc biệt "nặng", như một script chuyển đổi video dùng ffmpeg. Bạn có thể đặt trọng số cao như `8`, và điều này khiến job được coi như chiếm 8 "chỗ" khi tính khả dụng của server và cài đặt "max jobs" của server.
 
-If a new job would exceed the "max jobs" setting on a server, that server is removed from consideration (just as if it was otherwise unavailable or offline).  If a server's "max jobs" is less than the job weight, it will never be chosen for that job.
+Nếu một job mới sẽ vượt quá cài đặt "max jobs" trên một server, server đó sẽ bị loại khỏi xem xét (giống như nếu nó không khả dụng hoặc offline). Nếu "max jobs" của một server nhỏ hơn trọng số job, nó sẽ không bao giờ được chọn cho job đó.
 
-By default all jobs have a weight of `1`.  To set a job weight higher, edit the [Max Concurrent Jobs](limits.md#max-concurrent-jobs) limit on the event (or attach a [Limit Node](workflows.md#limit-nodes) in your workflow), and in the dialog you will see a new "Server Job Weight" field.  Note that this weight is **only** used for server selection, and does not affect the job's own concurrent maximum setting.
+Theo mặc định tất cả job có trọng số là `1`. Để đặt trọng số job cao hơn, sửa limit [Max Concurrent Jobs](limits.md#max-concurrent-jobs) trên event (hoặc gắn một [Limit Node](workflows.md#limit-nodes) trong workflow của bạn), và trong dialog bạn sẽ thấy một trường mới "Server Job Weight". Lưu ý trọng số này **chỉ** dùng cho việc chọn server, và không ảnh hưởng đến giới hạn đồng thời tối đa của riêng job đó.
 
-### Group Priority Targeting
+### Nhắm Mục Tiêu Ưu Tiên Theo Group
 
-The [prefer_first_natural](data.md#event-algo) event algorithm can be used in conjunction with [Max Jobs Per Server](servers.md#max-jobs-per-server) feature to effectively implement group priority targeting.  When an event is targeted at multiple groups, and `prefer_first_natural` is selected, the first group of servers will be preferred, *until* they cannot be (i.e. via max jobs per server limits), and only then will the second group will be considered.
+Thuật toán event [prefer_first_natural](data.md#event-algo) có thể dùng kết hợp với tính năng [Max Jobs Per Server](servers.md#max-jobs-per-server) để triển khai hiệu quả việc nhắm mục tiêu ưu tiên theo group. Khi một event nhắm vào nhiều group, và `prefer_first_natural` được chọn, group server đầu tiên sẽ được ưu tiên, *cho đến khi* không thể (ví dụ do giới hạn max jobs per server), và chỉ khi đó group thứ hai mới được xem xét.
 
-Remember that the max jobs setting on servers will effectively "remove" the server from consideration when it is filled up (or cannot fit the new job based on its [weight](#custom-job-weight)).  With `prefer_first_natural` this will pick the very next server in the group, until all those servers are maxed out (i.e. unavailable for further jobs), and only then will the additional groups be considered.
+Nhớ rằng cài đặt max jobs trên server sẽ hiệu quả "loại bỏ" server khỏi xem xét khi nó đã đầy (hoặc không thể chứa job mới dựa trên [trọng số](#custom-job-weight) của nó). Với `prefer_first_natural`, hệ thống sẽ chọn server tiếp theo trong group, cho đến khi tất cả server đó đã đầy (nghĩa là không khả dụng cho job tiếp theo), và chỉ khi đó các group bổ sung mới được xem xét.
 
-Note that you can control the order in which groups are sorted inside of the [Event.targets](data.md#event-targets) list by going to the "Groups" page and dragging your groups around to resort them.  Groups higher on the list will appear first in the event target list.
+Lưu ý bạn có thể kiểm soát thứ tự sắp xếp group trong danh sách [Event.targets](data.md#event-targets) bằng cách vào trang "Groups" và kéo group của bạn để sắp xếp lại. Group ở trên cao hơn trong danh sách sẽ xuất hiện trước trong danh sách target của event.
 
-### Priority Job Queuing
+### Xếp Hàng Job Ưu Tiên
 
-Jobs have an optional [Job.priority](data.md#job-priority) flag.  When this is set to `true` and [queuing](limits.md#max-queue-limit) is enabled on the event, the priority job will effectively "hop" the queue, and be inserted right at the head, so it is processed before all other non-priority jobs.
+Job có một cờ tuỳ chọn [Job.priority](data.md#job-priority). Khi được đặt là `true` và [xếp hàng](limits.md#max-queue-limit) được bật trên event, job ưu tiên sẽ hiệu quả "vượt hàng", và được chèn ngay vào đầu, để nó được xử lý trước tất cả các job không ưu tiên khác.
 
-The priority flag can be set when a job is started manually, or via API.  For manual runs in the UI, the job configuration dialog will show a new "High Priority" checkbox, if [queuing](limits.md#max-queue-limit) is enabled on the event.  For API calls, when using the [run_event](api.md#run_event) API, simply include a `priority` property and set it to `true`.
+Cờ ưu tiên có thể được đặt khi một job được khởi chạy thủ công, hoặc qua API. Với chạy thủ công trên UI, dialog cấu hình job sẽ hiện một checkbox mới "High Priority", nếu [xếp hàng](limits.md#max-queue-limit) được bật trên event. Với các lệnh gọi API, khi dùng API [run_event](api.md#run_event), chỉ cần bao gồm thuộc tính `priority` và đặt là `true`.
 
-When multiple priority jobs are queued for an event, the ones waiting the longest will be processed first (i.e. FIFO).  Once all the priority jobs are processed, the non-priority jobs are dequeued (also FIFO).
+Khi nhiều job ưu tiên được xếp hàng cho một event, những job chờ lâu nhất sẽ được xử lý trước (nghĩa là FIFO). Sau khi tất cả job ưu tiên được xử lý, các job không ưu tiên mới được lấy ra khỏi hàng (cũng FIFO).
 
-Note that you cannot set the priority flag via [Magic Link](triggers.md#magic-link) triggers (by design).
+Lưu ý bạn không thể đặt cờ priority qua trigger [Magic Link](triggers.md#magic-link) (theo thiết kế).
 
-## Plugins
+## Plugin
 
-Every non-workflow event references an Event Plugin via `plugin`, which defines how to execute the job: command/script, user/group IDs, kill signals, and parameter definitions. The scheduler copies missing default parameter values from the plugin spec at launch time, and enforces locked/required parameters for non-admin users.
+Mỗi event không phải workflow tham chiếu đến một Event Plugin qua `plugin`, định nghĩa cách thực thi job: lệnh/script, ID user/group, kill signal, và định nghĩa tham số. Scheduler sao chép các giá trị tham số mặc định còn thiếu từ đặc tả plugin tại thời điểm khởi chạy, và ép buộc các tham số bị khoá/bắt buộc cho người dùng không phải admin.
 
-- **Parameters**: `params` are passed to the plugin. Locked/required attributes can be set by admins or categories. Optional `fields` collected at manual run time are merged into `params`.
-- **Environment**: Jobs inherit configured `job_env` plus any event-specific `env` overrides.  Additionally, all Plugin params are passed as environment variables as well.
-- **Input**: Jobs may include structured `input.data` and uploaded `input.files` when launched from the UI/API. Actions like "Bucket Fetch" can also populate inputs before your code runs.
+- **Tham số**: `params` được truyền cho plugin. Thuộc tính khoá/bắt buộc có thể được đặt bởi admin hoặc category. `fields` tuỳ chọn thu thập lúc chạy thủ công được gộp vào `params`.
+- **Môi trường**: Job kế thừa `job_env` đã cấu hình cộng với bất kỳ override `env` riêng của event. Ngoài ra, tất cả tham số Plugin cũng được truyền như biến môi trường.
+- **Input**: Job có thể bao gồm `input.data` có cấu trúc và `input.files` được upload khi khởi chạy từ UI/API. Action như "Bucket Fetch" cũng có thể điền input trước khi code của bạn chạy.
 
-See [Event Plugins](plugins.md#event-plugins) for plugin parameters, and lifecycle details.
+Xem [Event Plugins](plugins.md#event-plugins) để biết tham số plugin, và chi tiết lifecycle.
 
-### Parameter Macro Expansion
+### Mở Rộng Macro Tham Số
 
-All string values in an event's `params` object support inline macro expansion using `{{ ... }}` syntax.  This includes regular Plugin parameter values, plus any user field values that are collected when manually launching the event, because those fields are merged into `params` before the job runs.
+Tất cả giá trị chuỗi trong object `params` của một event hỗ trợ mở rộng macro nội tuyến dùng cú pháp `{{ ... }}`. Điều này bao gồm giá trị tham số Plugin thông thường, cộng với các đường dẫn tiện lợi sau:
 
-When these macros are evaluated, the context is the [Job](data.md#job) object itself.  This means you can reference job properties directly, without a `job.` prefix.  For example:
+| Cú pháp Macro | Mô tả |
+|---------------|-------|
+| `{{ params.NAME }}` | Giá trị tham số event hoặc user field có tên `NAME`. |
+| `{{ workflow.params.NAME }}` | Một tham số khởi chạy workflow, cho sub-job bên trong workflow. |
+| `{{ parent.job }}` | ID job cha, khi job này được khởi chạy bởi job khác. |
+| `{{ data.NAME }}` | Bí danh tiện lợi cho `input.data.NAME`, nếu input data được cung cấp. |
+| `{{ files[0].filename }}` | Bí danh tiện lợi cho `input.files[0].filename`, nếu input files được cung cấp. |
 
-| Macro | Description |
-|-------|-------------|
-| `{{ id }}` | The current [Job.id](data.md#job-id). |
-| `{{ event }}` | The [Event.id](data.md#event-id) that spawned the job. |
-| `{{ server }}` | The selected [Server.id](data.md#server-id). |
-| `{{ params.NAME }}` | A Plugin parameter or user field value named `NAME`. |
-| `{{ workflow.params.NAME }}` | A workflow launch parameter, for sub-jobs inside workflows. |
-| `{{ parent.job }}` | The parent job ID, when this job was launched by another job. |
-| `{{ data.NAME }}` | A convenience alias for `input.data.NAME`, if input data was supplied. |
-| `{{ files[0].filename }}` | A convenience alias for `input.files[0].filename`, if input files were supplied. |
+Đây chỉ là danh sách nhanh các đường dẫn phổ biến. Để biết đầy đủ các thuộc tính khả dụng, xem tài liệu tham chiếu object [Job](data.md#job).
 
-This is only a quick list of common paths.  For the complete set of available properties, see the [Job](data.md#job) object reference.
-
-The most common pattern is to reference one parameter from another.  For example, if your event has a user field named `region`, another text parameter can include it like this:
+Mẫu phổ biến nhất là tham chiếu một tham số từ tham số khác. Ví dụ, nếu event của bạn có một user field tên `region`, một tham số text khác có thể bao gồm nó như thế này:
 
 ```text
 Deploying to {{ params.region }}
 ```
 
-Input data from workflows, API launches, and actions can also be inserted directly.  The full path is `input.data`, but xyOps also exposes `data` at the top level for convenience:
+Input data từ workflow, khởi chạy API, và action cũng có thể được chèn trực tiếp. Đường dẫn đầy đủ là `input.data`, nhưng PTOps cũng expose `data` ở cấp cao nhất để tiện lợi:
 
 ```text
 Process account {{ data.account_id }} from {{ data.source }}
 ```
 
-Similarly, input files are available as both `input.files` and `files`:
+Tương tự, input files khả dụng ở cả `input.files` và `files`:
 
 ```text
 First uploaded file: {{ files[0].filename }}
 ```
 
-Macros use the same JavaScript-style expression syntax and helper functions described in [xyOps Expression Format](xyexp.md), so simple expressions are allowed as well:
+Macro dùng cùng cú pháp expression kiểu JavaScript và hàm hỗ trợ được mô tả trong [PTOps Expression Format](xyexp.md), nên các expression đơn giản cũng được cho phép:
 
 ```text
 Retry attempt {{ retry_count + 1 }} for {{ params.target }}
 ```
 
-## Limits
+## Limit
 
-Limits constrain running jobs and optionally trigger actions. Common types include:
+Limit giới hạn job đang chạy và tuỳ chọn kích hoạt action. Các loại phổ biến bao gồm:
 
-- `time`: Maximum wall clock duration.
-- `log`: Maximum output size (bytes).
-- `cpu` and `mem`: Sustained usage thresholds with grace periods.
-- `queue`: Allow queuing when no targets are available, up to N jobs per event.
+- `time`: Thời gian chạy tối đa (wall clock).
+- `log`: Kích cỡ output tối đa (bytes).
+- `cpu` và `mem`: Ngưỡng sử dụng liên tục với thời gian ân hạn (grace period).
+- `queue`: Cho phép xếp hàng khi không có target khả dụng, tối đa N job mỗi event.
 
-Limits can apply tags, send email/web hooks, generate snapshots, and abort jobs. Event limits combine with category defaults and universal limits. See docs/limits.md for complete reference and UI usage.
+Limit có thể áp dụng tag, gửi email/web hook, tạo snapshot, và abort job. Limit của event kết hợp với giá trị mặc định của category và limit universal. Xem docs/limits.md để biết tài liệu tham chiếu đầy đủ và cách dùng UI.
 
-## Actions
+## Action
 
-Actions run at specific job lifecycle stages and conditions: `start`, `progress`, `success`, `warning`, `critical`, `abort`, `complete`, and tag-based triggers (`tag:xyz`). Actions can:
+Action chạy tại các giai đoạn và điều kiện lifecycle cụ thể của job: `start`, `progress`, `success`, `warning`, `critical`, `abort`, `complete`, và các trigger dựa trên tag (`tag:xyz`). Action có thể:
 
-- Send email to users and/or custom addresses.
-- Fire web hooks with rich job payloads.
-- Run another event (chaining).
-- Invoke an [Action Plugin](plugins.md#action-plugins).
-- Store or fetch job files/data to/from [Storage Buckets](buckets.md).
-- Create [Tickets](tickets.md), post to [Channels](channels.md), capture [Server Snapshots](snapshots.md), and more.
+- Gửi email đến user và/hoặc địa chỉ tuỳ chỉnh.
+- Kích hoạt web hook với payload job phong phú.
+- Chạy event khác (chaining).
+- Gọi một [Action Plugin](plugins.md#action-plugins).
+- Lưu hoặc lấy file/data của job đến/từ [Storage Buckets](buckets.md).
+- Tạo [Tickets](tickets.md), đăng vào [Channels](channels.md), chụp [Server Snapshots](snapshots.md), và nhiều hơn nữa.
 
-Event actions combine with category defaults and universal actions. See [Actions](actions.md) for all action types and configuration.
+Action của event kết hợp với giá trị mặc định của category và action universal. Xem [Actions](actions.md) để biết tất cả loại action và cấu hình.
 
-## Manual Runs and Prompts
+## Chạy Thủ Công và Prompt
 
-To allow on-demand runs from the UI or API, include an enabled `manual` trigger on the event. When launching manually:
+Để cho phép chạy theo yêu cầu từ UI hoặc API, thêm một trigger `manual` đã bật vào event. Khi khởi chạy thủ công:
 
-- Any `fields` defined on the event are presented as a UI form, and their values are merged into `params`.
-- The UI/API may attach uploaded files; these become `input.files`. Arbitrary JSON may be provided as `input.data` when testing.
-- Non-admin users must satisfy any locked/required parameters defined by the plugin or event fields; the system enforces these and applies defaults.
+- Bất kỳ `fields` định nghĩa trên event sẽ được hiển thị dưới dạng form UI, và giá trị của chúng được gộp vào `params`.
+- UI/API có thể gắn file đã upload; những file này trở thành `input.files`. JSON tuỳ ý có thể được cung cấp dưới dạng `input.data` khi test.
+- Người dùng không phải admin phải thoả mãn bất kỳ tham số bị khoá/bắt buộc định nghĩa bởi plugin hoặc event fields; hệ thống ép buộc những điều này và áp dụng giá trị mặc định.
 
-To run an event programmatically, see [API](api.md) for the run endpoint and parameter overrides.
+Để chạy một event theo cách lập trình, xem [API](api.md) để biết endpoint chạy và override tham số.
 
-## Permissions and Inheritance
+## Quyền Hạn và Kế Thừa
 
-- You must have privileges to create/edit events and to run jobs. The system enforces category and target privileges for all operations including history access where applicable.
-- Category actions and limits are appended to the event at runtime. Universal actions/limits may also apply based on system configuration.
+- Bạn phải có quyền để tạo/sửa event và để chạy job. Hệ thống ép buộc quyền category và target cho mọi tác vụ bao gồm truy cập lịch sử nếu áp dụng.
+- Action và limit của category được thêm vào event tại thời điểm chạy. Action/limit universal cũng có thể áp dụng dựa trên cấu hình hệ thống.
 
-## Workflows
+## Workflow
 
-Workflow events are special "multi-event" graphs with connected nodes. Triggers on a workflow event define entry points into the graph. When launched, the workflow orchestrates sub-jobs and actions per node and connection. See [Workflows](workflows.md) for full details.
+Event workflow là các đồ thị "multi-event" đặc biệt với các node được kết nối. Trigger trên một event workflow định nghĩa điểm vào của đồ thị. Khi khởi chạy, workflow điều phối sub-job và action cho từng node và kết nối. Xem [Workflows](workflows.md) để biết chi tiết đầy đủ.
 
-## Related Reading
+## Đọc Thêm
 
-- Event schema: [Event](data.md#event)
-- Triggers: [Triggers](triggers.md)
-- Plugins: [Plugins](plugins.md)
-- Limits: [Limits](limits.md)
-- Actions: [Actions](actions.md)
+- Schema Event: [Event](data.md#event)
+- Trigger: [Triggers](triggers.md)
+- Plugin: [Plugins](plugins.md)
+- Limit: [Limits](limits.md)
+- Action: [Actions](actions.md)
 - API: [API](api.md)
 
-## Example
+## Ví Dụ
 
-Here is a trimmed example of an event in JSON format (see [Data Structures](data.md#event) for the complete version):
+Đây là một ví dụ event đã rút gọn ở dạng JSON (xem [Data Structures](data.md#event) để biết phiên bản đầy đủ):
 
 ```json
 {
@@ -261,4 +256,4 @@ Here is a trimmed example of an event in JSON format (see [Data Structures](data
 }
 ```
 
-When the scheduled time hits, a job is created from this event, a server is chosen using the `random` algorithm among eligible targets, the `shellplug` plugin runs the script, and any limits/actions apply during the run.
+Khi thời điểm lên lịch đến, một job được tạo từ event này, một server được chọn dùng thuật toán `random` trong số các target đủ điều kiện, plugin `shellplug` chạy script, và bất kỳ limit/action nào áp dụng trong suốt lần chạy.

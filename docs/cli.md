@@ -1,115 +1,115 @@
 # Command Line
 
-## Overview
+## Tổng Quan
 
-Here are all the xyOps services available to you on the command line.  Most of these are accessed via the following shell script:
+Dưới đây là tất cả các dịch vụ PTOps có sẵn cho bạn trên command line. Hầu hết các dịch vụ này được truy cập qua shell script sau:
 
 ```
 /opt/xyops/bin/control.sh [COMMAND]
 ```
 
-Here are all the accepted commands:
+Dưới đây là tất cả các lệnh được hỗ trợ:
 
-| Command | Description |
+| Lệnh | Mô Tả |
 |---------|-------------|
-| `start` | Starts xyOps in daemon mode. See [Starting and Stopping](CommandLine.md#starting-and-stopping). |
-| `stop` | Stops the xyOps daemon and waits for exit. See [Starting and Stopping](CommandLine.md#starting-and-stopping). |
-| `restart` | Calls `stop`, then `start`, in sequence. See [Starting and Stopping](CommandLine.md#starting-and-stopping).  |
-| `status` | Checks whether xyOps is currently running. See [Starting and Stopping](CommandLine.md#starting-and-stopping).  |
-| `admin` | Creates new emergency admin account (specify user / pass). See [Recover Admin Access](CommandLine.md#recover-admin-access). |
-| `grant` | Manually grant a privilege to a user: `bin/control.sh grant USERNAME PRIVILEGE_ID`. |
-| `revoke` | Manually revoke a privilege from a user: `bin/control.sh revoke USERNAME PRIVILEGE_ID`. |
-| `upgrade` | Upgrades xyOps to the latest stable (or specify version). See [Upgrading xyOps](CommandLine.md#upgrading-xyops). |
-| `version` | Outputs the current xyOps package version and exits. |
-| `help` | Displays a list of available commands and exits. |
+| `start` | Khởi động PTOps ở chế độ daemon. Xem [Starting and Stopping](CommandLine.md#starting-and-stopping). |
+| `stop` | Dừng daemon PTOps và chờ thoát. Xem [Starting and Stopping](CommandLine.md#starting-and-stopping). |
+| `restart` | Gọi `stop`, sau đó `start`, theo thứ tự. Xem [Starting and Stopping](CommandLine.md#starting-and-stopping). |
+| `status` | Kiểm tra xem PTOps hiện có đang chạy hay không. Xem [Starting and Stopping](CommandLine.md#starting-and-stopping). |
+| `admin` | Tạo tài khoản admin khẩn cấp mới (chỉ định user / pass). Xem [Recover Admin Access](CommandLine.md#recover-admin-access). |
+| `grant` | Cấp một privilege cho user theo cách thủ công: `bin/control.sh grant USERNAME PRIVILEGE_ID`. |
+| `revoke` | Thu hồi một privilege khỏi user theo cách thủ công: `bin/control.sh revoke USERNAME PRIVILEGE_ID`. |
+| `upgrade` | Nâng cấp PTOps lên bản stable mới nhất (hoặc chỉ định version). Xem [Upgrading PTOps](#upgrading-ptops). |
+| `version` | Xuất ra version package PTOps hiện tại và thoát. |
+| `help` | Hiển thị danh sách các lệnh có sẵn và thoát. |
 
-## Starting and Stopping
+## Khởi Động và Dừng
 
-To start the service, use the `start` command:
+Để khởi động dịch vụ, dùng lệnh `start`:
 
 ```
 /opt/xyops/bin/control.sh start
 ```
 
-And to stop it, the `stop` command:
+Và để dừng nó, dùng lệnh `stop`:
 
 ```
 /opt/xyops/bin/control.sh stop
 ```
 
-You can also issue a quick stop + start with the `restart` command:
+Bạn cũng có thể dừng + khởi động nhanh với lệnh `restart`:
 
 ```
 /opt/xyops/bin/control.sh restart
 ```
 
-The `status` command will tell you if the service is running or not:
+Lệnh `status` sẽ cho bạn biết dịch vụ có đang chạy hay không:
 
 ```
 /opt/xyops/bin/control.sh status
 ```
 
-## Recover Admin Access
+## Khôi Phục Quyền Truy Cập Admin
 
-Lost access to your admin account?  You can create a new temporary administrator account on the command-line.  Just execute this command on your primary server:
+Mất quyền truy cập vào tài khoản admin? Bạn có thể tạo một tài khoản administrator tạm thời mới trên command-line. Chỉ cần thực thi lệnh này trên server chính của bạn:
 
 ```
 /opt/xyops/bin/control.sh admin USERNAME PASSWORD
 ```
 
-Replace `USERNAME` with the desired username, and `PASSWORD` with the desired password for the new account.  Note that the new user will not show up in the main list of users in the UI.  But you will be able to login using the provided credentials.  This is more of an emergency operation, just to allow you to get back into the system.  *This is not a good way to create permanent users*.  Once you are logged back in, you should consider creating another account from the UI, then deleting the emergency admin account.
+Thay `USERNAME` bằng username mong muốn, và `PASSWORD` bằng password mong muốn cho tài khoản mới. Lưu ý rằng user mới sẽ không hiển thị trong danh sách chính của user trên UI. Nhưng bạn sẽ có thể đăng nhập bằng thông tin đăng nhập đã cung cấp. Đây chủ yếu là một biện pháp khẩn cấp, chỉ để cho phép bạn truy cập lại vào hệ thống. *Đây không phải là cách tốt để tạo user vĩnh viễn*. Sau khi đăng nhập lại được, bạn nên xem xét tạo một tài khoản khác từ UI, sau đó xóa tài khoản admin khẩn cấp.
 
-For recovering an admin account in a containerized environment, you can use the following environment variable:
+Để khôi phục quyền truy cập admin trong môi trường container, bạn có thể dùng biến môi trường sau:
 
 ```
 XYOPS_recover_admin="USERNAME:PASSWORD"
 ```
 
-This will create the specified emergency administrator account on next startup (when the conductor becomes primary).  Note that as with the CLI method, the new user will not show up in the main list of users in the UI.  But you will be able to login using the provided credentials.  This is more of an emergency operation, just to allow you to get back into the system.  *This is not a good way to create permanent users*.  Once you are logged back in, you should consider creating another account from the UI, then deleting the emergency admin account.
+Việc này sẽ tạo tài khoản administrator khẩn cấp được chỉ định vào lần khởi động tiếp theo (khi conductor trở thành primary). Lưu ý rằng giống như phương pháp CLI, user mới sẽ không hiển thị trong danh sách chính của user trên UI. Nhưng bạn sẽ có thể đăng nhập bằng thông tin đăng nhập đã cung cấp. Đây chủ yếu là một biện pháp khẩn cấp, chỉ để cho phép bạn truy cập lại vào hệ thống. *Đây không phải là cách tốt để tạo user vĩnh viễn*. Sau khi đăng nhập lại được, bạn nên xem xét tạo một tài khoản khác từ UI, sau đó xóa tài khoản admin khẩn cấp.
 
-Also, don't forget to remove the environment variable, or else xyOps will keep recreating the account on each restart!
+Cũng đừng quên xóa biến môi trường này, nếu không PTOps sẽ tiếp tục tạo lại tài khoản mỗi lần restart!
 
-Note that recovering admin access does **not** work with [SSO](sso.md).  It only applies to setups that use the built-in user management system.  If you lose access to your SSO IdP, you can disable SSO in the xyOps config, then use the above commands to regain admin access.
+Lưu ý rằng khôi phục quyền truy cập admin **không** hoạt động với [SSO](sso.md). Nó chỉ áp dụng cho các thiết lập dùng hệ thống quản lý user tích hợp sẵn. Nếu bạn mất quyền truy cập vào SSO IdP, bạn có thể tắt SSO trong cấu hình PTOps, sau đó dùng các lệnh trên để giành lại quyền truy cập admin.
 
-## Server Startup
+## Khởi Động Cùng Server
 
-To register xyOps as a background daemon startup service (so it automatically start on server reboot), type this:
+Để đăng ký PTOps làm dịch vụ khởi động daemon nền (để nó tự động khởi động khi server reboot), gõ lệnh này:
 
 ```sh
 cd /opt/xyops
 npm run boot
 ```
 
-This is done via the [pixl-boot](https://github.com/jhuckaby/pixl-boot) module, and it supports [Systemd](https://en.wikipedia.org/wiki/Systemd) if available, falling back to [Sysv Init](https://en.wikipedia.org/wiki/Init#SysV-style) or [launchd](https://support.apple.com/guide/terminal/script-management-with-launchd-apdc6c1077b-5d5d-4d35-9c19-60f2397b2369/mac) on macOS.
+Việc này được thực hiện qua module [pixl-boot](https://github.com/jhuckaby/pixl-boot), và nó hỗ trợ [Systemd](https://en.wikipedia.org/wiki/Systemd) nếu có sẵn, chuyển sang [Sysv Init](https://en.wikipedia.org/wiki/Init#SysV-style) hoặc [launchd](https://support.apple.com/guide/terminal/script-management-with-launchd-apdc6c1077b-5d5d-4d35-9c19-60f2397b2369/mac) trên macOS.
 
-**For Linux users:** Once you register xyOps as a Systemd service, you should always start / stop it using the proper `systemctl` commands.  The service name is `xyops.service`.
+**Đối với người dùng Linux:** Khi đã đăng ký PTOps làm dịch vụ Systemd, bạn nên luôn khởi động / dừng nó bằng các lệnh `systemctl` thích hợp. Tên dịch vụ là `xyops.service`.
 
-If you change your mind or want to uninstall xyOps, you can deregister the startup service with this command:
+Nếu bạn đổi ý hoặc muốn gỡ cài đặt PTOps, bạn có thể hủy đăng ký dịch vụ khởi động bằng lệnh này:
 
 ```sh
 cd /opt/xyops
 npm run unboot
 ```
 
-**Important Note:** When xyOps starts on server boot, it typically does not have a proper user environment, namely a `PATH` environment variable.  So if your scripts rely on binary executables in non-standard locations, you may have to restore your custom `PATH` and other variables inside your scripts by redeclaring them.
+**Lưu Ý Quan Trọng:** Khi PTOps khởi động cùng server boot, nó thường không có môi trường user đầy đủ, tức là không có biến môi trường `PATH`. Vì vậy nếu script của bạn phụ thuộc vào các file thực thi binary ở vị trí không chuẩn, bạn có thể phải khôi phục `PATH` tuỳ chỉnh và các biến khác trong script của bạn bằng cách khai báo lại chúng.
 
-## Upgrading xyOps
+## Nâng Cấp PTOps
 
-To upgrade xyOps, you can use the built-in `upgrade` command:
+Để nâng cấp PTOps, bạn có thể dùng lệnh `upgrade` tích hợp sẵn:
 
 ```
 /opt/xyops/bin/control.sh upgrade
 ```
 
-This will upgrade the app and all dependencies to the latest stable release, if a new one is available.  It will not affect your data storage, users, or configuration settings.  All those will be preserved and imported to the new version.  For multi-server clusters, you'll need to repeat this command on each server.
+Việc này sẽ nâng cấp app và tất cả dependency lên bản stable mới nhất, nếu có bản mới. Nó không ảnh hưởng đến storage dữ liệu, user, hoặc cài đặt cấu hình của bạn. Tất cả những thứ đó sẽ được giữ lại và import vào version mới. Đối với cluster nhiều server, bạn cần lặp lại lệnh này trên mỗi server.
 
-Alternately, you can specify the exact version you want to upgrade (or downgrade) to:
+Ngoài ra, bạn có thể chỉ định chính xác version bạn muốn nâng cấp (hoặc hạ cấp) đến:
 
 ```
 /opt/xyops/bin/control.sh upgrade 1.0.4
 ```
 
-If you upgrade to the `HEAD` version, this will grab the very latest from GitHub.  Note that this is primarily for developers or beta-testers, and is likely going to contain bugs.  Use at your own risk:
+Nếu bạn nâng cấp lên version `HEAD`, việc này sẽ lấy bản mới nhất từ GitHub. Lưu ý rằng đây chủ yếu dành cho developer hoặc beta-tester, và có khả năng chứa bug. Sử dụng với rủi ro của riêng bạn:
 
 ```
 /opt/xyops/bin/control.sh upgrade HEAD
@@ -117,26 +117,26 @@ If you upgrade to the `HEAD` version, this will grab the very latest from GitHub
 
 ## Database CLI
 
-xyOps comes with a simple DB CLI from which you can execute raw commands.  The responses are always in JSON format.  This is mainly used for debugging and troubleshooting.  The command is located here:
+PTOps đi kèm một DB CLI đơn giản để bạn có thể thực thi các lệnh thô. Các response luôn ở định dạng JSON. Cái này chủ yếu dùng để debug và khắc phục sự cố. Lệnh này nằm ở đây:
 
 ```
 /opt/xyops/bin/db-cli.js COMMAND INDEX ARG1, ARG2, ...
 ```
 
-To perform a search query on a specific database:
+Để thực hiện một truy vấn tìm kiếm trên một database cụ thể:
 
 ```sh
 /opt/xyops/bin/db-cli.js search tickets "status:open"
 ```
 
-To fetch a single record from a database:
+Để lấy một record đơn từ database:
 
 ```sh
 /opt/xyops/bin/db-cli.js get alerts "amg6sl6z0cc"
 ```
 
-This is a low-level developer tool, and requires advanced knowledge of the database system in xyOps.  To learn more, see:
+Đây là công cụ dành cho developer ở cấp độ thấp, và yêu cầu kiến thức nâng cao về hệ thống database trong PTOps. Để tìm hiểu thêm, xem:
 
-- The `/opt/xyops/internal/unbase.json` file, which describes all the database tables in xyOps.
-- The [Unbase](https://github.com/jhuckaby/pixl-server-unbase) database system which powers xyOps.
-- The [query syntax](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries) documentation.
+- File `/opt/xyops/internal/unbase.json`, mô tả tất cả các bảng database trong PTOps.
+- Hệ thống database [Unbase](https://github.com/jhuckaby/pixl-server-unbase) cung cấp năng lượng cho PTOps.
+- Tài liệu [cú pháp truy vấn](https://github.com/jhuckaby/pixl-server-storage/blob/master/docs/Indexer.md#simple-queries).

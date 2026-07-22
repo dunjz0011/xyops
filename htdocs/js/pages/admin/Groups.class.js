@@ -436,7 +436,7 @@ Page.Groups = class Groups extends Page.ServerUtils {
 					value: group.id
 				}),
 				suffix: this.getFormIDCopier(),
-				caption: 'This is a unique ID for the group, used by the xyOps API.  It cannot be changed.'
+				caption: 'This is a unique ID for the group, used by the PTOps API.  It cannot be changed.'
 			});
 		}
 		
@@ -1658,7 +1658,7 @@ Page.Groups = class Groups extends Page.ServerUtils {
 		}
 		
 		var html = '';
-		html += `<div class="dialog_intro">This allows you to set a "watch" on a server group, which means that xyOps will take snapshots of it every minute until the watch duration elapses.</div>`;
+		html += `<div class="dialog_intro">This allows you to set a "watch" on a server group, which means that PTOps will take snapshots of it every minute until the watch duration elapses.</div>`;
 		html += '<div class="dialog_box_content">';
 		
 		html += this.getFormRow({

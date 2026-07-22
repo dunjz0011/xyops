@@ -2193,7 +2193,7 @@ Page.Events = class Events extends Page.PageUtils {
 		var getExportedPayload = function() {
 			var json = {
 				type: 'xypdf',
-				description: "xyOps Portable Data Object",
+				description: "PTOps Portable Data Object",
 				version: "1.0",
 				xyops: app.version,
 				items: getExportedItems(event)
@@ -2243,7 +2243,7 @@ Page.Events = class Events extends Page.PageUtils {
 			app.clearError();
 			
 			var payload = getExportedPayload();
-			var filename = 'xyops-' + (event.type || 'event') + '-' + event.id + '.json';
+			var filename = 'ptops-' + (event.type || 'event') + '-' + event.id + '.json';
 			var blob = new Blob([payload], { type: "application/json" });
 			var url = URL.createObjectURL(blob);
 			
@@ -2603,7 +2603,7 @@ Page.Events = class Events extends Page.PageUtils {
 					value: event.id
 				}),
 				suffix: this.getFormIDCopier(),
-				caption: 'This is a unique ID for the event, used by the xyOps API.  It cannot be changed.'
+				caption: 'This is a unique ID for the event, used by the PTOps API.  It cannot be changed.'
 			});
 		}
 		

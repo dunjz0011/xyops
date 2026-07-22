@@ -515,7 +515,7 @@ Page.LogViewer = class LogViewer extends Page.PageUtils {
 			}; // formatters
 			
 			var formatter = formatters[format];
-			var filename = 'xyops-log-export-' + args.log + '-' + (args.date || yyyy_mm_dd(0, '-')) + '-' + get_unique_id(8) + formatter.file_ext;
+			var filename = 'ptops-log-export-' + args.log + '-' + (args.date || yyyy_mm_dd(0, '-')) + '-' + get_unique_id(8) + formatter.file_ext;
 			
 			var payload = formatter.format_header ? formatter.format_header() : '';
 			var lines = self.rows.map( formatter.format_row );

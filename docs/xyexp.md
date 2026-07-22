@@ -1,8 +1,8 @@
-# xyOps Expression Format
+# Định Dạng Expression của PTOps
 
-## Overview
+## Tổng Quan
 
-xyOps uses a custom expression syntax built upon the open-source [JavaScript Expression Language](https://www.npmjs.com/package/jexl) (or JEXL).  We extend JEXL by adding a set of custom functions you can call from inside your expressions (see below), and also allow for inline macro expansion in string evaluations, using the popular `{{ mustache }}` syntax.  This is used to power the following xyOps subsystems:
+PTOps sử dụng một cú pháp expression tuỳ chỉnh xây dựng trên nền [JavaScript Expression Language](https://www.npmjs.com/package/jexl) (hay JEXL) mã nguồn mở. Chúng ta mở rộng JEXL bằng cách thêm một bộ hàm tuỳ chỉnh mà bạn có thể gọi từ trong expression (xem bên dưới), và cũng cho phép mở rộng macro nội tuyến (inline) trong đánh giá chuỗi, sử dụng cú pháp `{{ mustache }}` phổ biến. Điều này được dùng để cung cấp năng lượng cho các hệ thống con sau của PTOps:
 
 - Monitor Expressions
 - Alert Trigger Expressions
@@ -13,60 +13,60 @@ xyOps uses a custom expression syntax built upon the open-source [JavaScript Exp
 - Web Hook Messages
 - Email Templates
 
-The xyOps Expression Format is a JavaScript-style syntax with dot paths, array indexing, arithmetic and boolean operators.  Using it you can traverse deep object trees (e.g. [ServerMonitorData](data.md#servermonitordata)), pull out individual values, and perform operations on one or more values.
+Định Dạng Expression của PTOps là cú pháp giống JavaScript với dot path, chỉ mục mảng (array indexing), toán tử số học và boolean. Sử dụng nó bạn có thể duyệt qua các cây object sâu (ví dụ [ServerMonitorData](data.md#servermonitordata)), lấy ra từng giá trị riêng lẻ, và thực hiện các phép toán trên một hoặc nhiều giá trị.
 
-Since it is built upon JEXL you can easily traverse arrays of objects, and select items from an array based on sub-object keys.  See examples below for details.
+Vì được xây dựng trên JEXL, bạn có thể dễ dàng duyệt qua mảng các object, và chọn item từ một mảng dựa trên key của sub-object. Xem ví dụ bên dưới để biết chi tiết.
 
-### Examples
+### Ví Dụ
 
 - **Monitor Expression**: `processes.list[.command == 'ffmpeg'].memRss`
 - **Alert Expression**: `monitors.load_avg >= (cpu.cores + 1)`
 - **Alert Message**: `Less than 5% of total memory is available ({{bytes(memory.available)}} of {{bytes(memory.total)}})`
 
-## Custom Functions
+## Hàm Tuỳ Chỉnh
 
-In addition to the standard JEXL operators, the following custom functions are available to use inside expressions:
+Bên cạnh các toán tử JEXL chuẩn, các hàm tuỳ chỉnh sau có sẵn để sử dụng trong expression:
 
-### Math and Array
+### Toán Học và Mảng
 
-| Function | Usage | Description |
+| Hàm | Cách Dùng | Mô Tả |
 |----------|-------|-------------|
-| `min` | `min(4, 5) == 4` | See [Math.min](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/min). |
-| `max` | `min(4, 5) == 5` | See [Math.max](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/max). |
-| `floor` | `floor(1.2) == 1` | See [Math.floor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/floor). |
-| `ceil` | `ceil(1.2) == 2` | See [Math.ceil](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/ceil). |
-| `round` | `round(1.2) == 1` | See [Math.round](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round). |
-| `clamp` | `clamp(50, 0, 100) == 50` | Clamps a numerical value between a lower and upper limit. |
-| `count` | `count(array)` | Returns the number of items in an array (as JEXL arrays don't have a `length` inside expressions). |
+| `min` | `min(4, 5) == 4` | Xem [Math.min](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/min). |
+| `max` | `min(4, 5) == 5` | Xem [Math.max](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/max). |
+| `floor` | `floor(1.2) == 1` | Xem [Math.floor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/floor). |
+| `ceil` | `ceil(1.2) == 2` | Xem [Math.ceil](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/ceil). |
+| `round` | `round(1.2) == 1` | Xem [Math.round](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round). |
+| `clamp` | `clamp(50, 0, 100) == 50` | Kẹp (clamp) một giá trị số giữa giới hạn dưới và giới hạn trên. |
+| `count` | `count(array)` | Trả về số lượng item trong một mảng (vì mảng JEXL không có `length` trong expression). |
 
-### Searching
+### Tìm Kiếm
 
-| Function | Usage | Description |
+| Hàm | Cách Dùng | Mô Tả |
 |----------|-------|-------------|
-| `find` | `find(array, key, value)` | Finds objects in an array using a named property and a substring match. |
-| `includes` | `includes(array, key)` | Find a substring in a string, or an element in an array. |
-| `match` | `match(string, pattern)` | Perform a regex match on a string.  The pattern itself must also be specified as a string. |
+| `find` | `find(array, key, value)` | Tìm object trong một mảng dùng một property được đặt tên và khớp chuỗi con (substring match). |
+| `includes` | `includes(array, key)` | Tìm chuỗi con trong một chuỗi, hoặc một phần tử trong mảng. |
+| `match` | `match(string, pattern)` | Thực hiện khớp regex trên một chuỗi. Pattern cũng phải được chỉ định dưới dạng chuỗi. |
 
-### String Formatting
+### Định Dạng Chuỗi
 
-| Function | Usage | Description |
+| Hàm | Cách Dùng | Mô Tả |
 |----------|-------|-------------|
-| `bytes` | `bytes(1048576) == "1 MB"` | Returns a human-friendly size given a raw byte count. |
-| `number` | `number(1048576) == "1,048,576"` | Returns a human-friendly localized number (in the server's locale). |
-| `pct` | `pct(0.5, 1.0) == "50%"` | Returns a human-friendly percentage given a value and a maximum. |
-| `integer` | `integer("1abc") == "1"` | Attempts to coerce an integer out of a string. |
-| `float` | `float(1.33333333) == "1.33"` | Shortens a float to a maximum of 2 digits after the decimal. |
+| `bytes` | `bytes(1048576) == "1 MB"` | Trả về kích thước dễ đọc dựa trên số byte thô. |
+| `number` | `number(1048576) == "1,048,576"` | Trả về số đã định dạng dễ đọc theo locale (theo locale của server). |
+| `pct` | `pct(0.5, 1.0) == "50%"` | Trả về phần trăm dễ đọc dựa trên một giá trị và giá trị tối đa. |
+| `integer` | `integer("1abc") == "1"` | Cố gắng ép ra một số nguyên từ một chuỗi. |
+| `float` | `float(1.33333333) == "1.33"` | Rút gọn một số thực xuống tối đa 2 chữ số sau dấu chấm thập phân. |
 
-### Misc
+### Khác
 
-| Function | Usage | Description |
+| Hàm | Cách Dùng | Mô Tả |
 |----------|-------|-------------|
-| `encode` | `encode("a b") == "a%20b` | Calls [encodeURIComponent](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) to encode a string. |
-| `stringify` | `stringify(obj) == "{...}"` | Calls [JSON.stringify](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) to serialize an object into a string. |
-| `server` | `server("smog7ph67nvh6891z") == "myhostname.domain.com"` | Resolve a server ID to its label (or hostname if no label is set). |
-| `event` | `event("emq3y5434ggm74ezk") == "Backup Database"` | Resolve an Event ID or Job ID to the event title. |
+| `encode` | `encode("a b") == "a%20b` | Gọi [encodeURIComponent](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) để mã hoá một chuỗi. |
+| `stringify` | `stringify(obj) == "{...}"` | Gọi [JSON.stringify](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) để serialize một object thành chuỗi. |
+| `server` | `server("smog7ph67nvh6891z") == "myhostname.domain.com"` | Phân giải một Server ID thành label của nó (hoặc hostname nếu không có label). |
+| `event` | `event("emq3y5434ggm74ezk") == "Backup Database"` | Phân giải một Event ID hoặc Job ID thành tiêu đề event. |
 
-## See Also
+## Xem Thêm
 
 - [Monitor Expressions](monitors.md#expressions)
 - [Alert Expressions](alerts.md#alert-expressions)

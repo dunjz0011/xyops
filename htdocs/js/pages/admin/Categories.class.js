@@ -429,7 +429,7 @@ Page.Categories = class Categories extends Page.PageUtils {
 					value: category.id
 				}),
 				suffix: this.getFormIDCopier(),
-				caption: 'This is a unique ID for the category, used by the xyOps API.  It cannot be changed.'
+				caption: 'This is a unique ID for the category, used by the PTOps API.  It cannot be changed.'
 			});
 		}
 		
