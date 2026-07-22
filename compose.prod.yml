@@ -2,14 +2,7 @@ name: ptops
 
 services:
   ptops:
-    image: ptops:local
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        NODE_VERSION: "22"
-        XYSAT_VERSION: "v1.0.37"
-        UV_VERSION: "0.11.30"
+    image: "${PTOPS_IMAGE:-dunjz00/ptops}:${PTOPS_IMAGE_TAG:-latest}"
 
     container_name: ptops
     hostname: "${PTOPS_HOSTNAME:-ptops01}"
